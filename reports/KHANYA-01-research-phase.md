@@ -56,6 +56,34 @@ Benchmarks we are measured against:
 *Summarise DATA-SOURCES.md. State access status honestly, including that
 LumenStone access is unresolved at time of writing, and what the fallback is.*
 
+### 5.0 Baseline run, 2026-08-04 — pipeline check, not an accuracy result
+
+Trained ResNet18 (ImageNet-pretrained) on the MUMDMC2025 public sample: 583
+images, 5 classes, **8 physical specimens total** (1-2 per class). 15 epochs,
+CPU. Train accuracy 98.3%, loss 0.32 -> 0.03.
+
+**This is not a reportable accuracy figure.** Every class has too few specimens
+to hold any out for testing without either leaving a class with zero training
+data or testing on a rotation-photo of a rock already seen in training - the
+exact near-duplicate leakage this project's split logic (`src/data.py`) exists
+to prevent. The 98.3% number shows the model memorised these 8 rocks; it says
+nothing about generalisation. Value of this run: confirms the training pipeline,
+data loader, and checkpointing all work correctly end to end.
+
+Checked whether a larger version of this dataset is publicly available: the
+paper (Scientific Data, 2025) describes 14,400 images / 2,880 per class, but the
+figshare item actually linked to the paper's DOI (10.1038/s41597-025-05879-9,
+figshare 28513535) publishes only one thumbnail image and a summary CSV - the
+full dataset is not public. The 4.8GB file we obtained (figshare 29483204,
+same dataset name, unofficial upload) is the only public version found and is
+the 583-image/8-specimen set above. No larger public version exists as of this
+writing.
+
+**Next step:** either find additional specimens for these 5 mineral classes
+from another public source, or reduce scope to a defensible statement ("model
+converges cleanly; specimen diversity is the open constraint") and pair it with
+strong segmentation/advisor work where evaluation is more tractable.
+
 ### 5.1 Methodological risk: class imbalance
 
 Mineral class frequencies are naturally very unbalanced; some phases occupy a few

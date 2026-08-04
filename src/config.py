@@ -5,12 +5,13 @@ RAW_DIR = ROOT / "data" / "raw"
 CKPT_DIR = ROOT / "checkpoints"
 REPORT_DIR = ROOT / "reports"
 
-# Must stay >= 3 to satisfy the brief. Edit to match the dataset actually used.
-CLASSES = ["hematite", "magnetite", "quartz", "goethite"]
+# Must stay >= 3 to satisfy the brief. MUMDMC2025 sample classes:
+CLASSES = ["Biotite", "Hornblende", "Plagioclase", "Potassium_Feldspar", "Quartz"]
+MUMDMC_DIR = RAW_DIR / "mumdmc" / "MUMDMC2025_DataSet" / "Cropped_Images"
 
 IMAGE_SIZE = 224
-BATCH_SIZE = 32
-EPOCHS = 20
+BATCH_SIZE = 16
+EPOCHS = 15
 LR = 3e-4
 WEIGHT_DECAY = 1e-4
 SEED = 42

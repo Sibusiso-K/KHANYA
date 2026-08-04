@@ -38,24 +38,40 @@ def main():
     )
 
     config.CKPT_DIR.mkdir(exist_ok=True)
+    has_val = len(val_loader.dataset) > 0
+    if not has_val:
+        print(
+            "NOTE: no held-out specimens for this dataset (too few specimens "
+            "per class). Training as a PIPELINE SANITY CHECK only - the "
+            "numbers below are train-set fit, not a generalisation estimate. "
+            "Do not report this as accuracy in the deliverable."
+        )
+
     best_val = 0.0
     for epoch in range(1, config.EPOCHS + 1):
         train_loss, train_acc = run_epoch(
             model, train_loader, criterion, optimiser, dev, True
         )
-        val_loss, val_acc = run_epoch(
-            model, val_loader, criterion, optimiser, dev, False
-        )
-        print(
-            f"epoch {epoch:02d}  train {train_loss:.3f}/{train_acc:.3f}  "
-            f"val {val_loss:.3f}/{val_acc:.3f}"
-        )
-        if val_acc > best_val:
-            best_val = val_acc
-            torch.save(model.state_dict(), config.CKPT_DIR / "best.pt")
-            print(f"  saved (val acc {val_acc:.3f})")
+        if has_val:
+            val_loss, val_acc = run_epoch(
+                model, val_loader, criterion, optimiser, dev, False
+            )
+            print(
+                f"epoch {epoch:02d}  train {train_loss:.3f}/{train_acc:.3f}  "
+                f"val {val_loss:.3f}/{val_acc:.3f}"
+            )
+            if val_acc > best_val:
+                best_val = val_acc
+                torch.save(model.state_dict(), config.CKPT_DIR / "best.pt")
+                print(f"  saved (val acc {val_acc:.3f})")
+        else:
+            print(f"epoch {epoch:02d}  train {train_loss:.3f}/{train_acc:.3f}")
 
-    print(f"best val accuracy {best_val:.3f}")
+    if not has_val:
+        torch.save(model.state_dict(), config.CKPT_DIR / "best.pt")
+        print(f"final train accuracy (NOT a generalisation estimate): {train_acc:.3f}")
+    else:
+        print(f"best val accuracy {best_val:.3f}")
 
 
 if __name__ == "__main__":

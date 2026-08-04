@@ -17,15 +17,23 @@ from . import config
 
 
 def specimen_id_from_path(path: Path) -> str:
-    """Specimen id = filename up to the first underscore.
+    """Specimen id for MUMDMC2025 Cropped_Images.
 
-    Adapt this to the dataset's naming. If a dataset gives no specimen id at all,
-    say so in the report rather than silently falling back to a random split.
+    Two layouts appear in the sample: a numbered subfolder per specimen
+    (.../CN/1/36.PNG -> specimen "1"), or a flat filename
+    F44-Potassium_Feldspar-CN-1-9-40deg.jpg where the specimen number is the
+    field right after the polarisation code (CN/PL).
     """
-    return path.stem.split("_")[0]
+    if path.parent.name.isdigit():
+        return path.parent.name
+    fields = path.stem.split("-")
+    for i, field in enumerate(fields):
+        if field in ("CN", "PL") and i + 1 < len(fields):
+            return fields[i + 1]
+    raise ValueError(f"Could not determine specimen id for {path}")
 
 
-def index_images(raw_dir: Path = config.RAW_DIR):
+def index_images(raw_dir: Path = config.MUMDMC_DIR):
     """Return [(path, label_index, specimen_id)] for every image found."""
     items = []
     for label_index, class_name in enumerate(config.CLASSES):
@@ -36,28 +44,43 @@ def index_images(raw_dir: Path = config.RAW_DIR):
             )
         for path in sorted(class_dir.rglob("*")):
             if path.suffix.lower() in {".jpg", ".jpeg", ".png", ".tif", ".tiff"}:
-                items.append((path, label_index, specimen_id_from_path(path)))
+                # Namespaced by class: specimen "1" under Biotite and specimen
+                # "1" under Hornblende are different physical rocks.
+                specimen = f"{class_name}:{specimen_id_from_path(path)}"
+                items.append((path, label_index, specimen))
     if not items:
         raise FileNotFoundError(f"No images under {raw_dir}. See data/README.md.")
     return items
 
 
 def split_by_specimen(items, seed: int = config.SEED):
-    """Group-aware split. Returns (train, val, test) lists of items."""
-    specimens = sorted({specimen for _, _, specimen in items})
+    """Group-aware split, done per class.
+
+    The MUMDMC sample has as few as 1-2 specimens for some classes, so a global
+    pooled split can starve a class out of train or test entirely. Splitting
+    per class avoids that; a class with too few specimens goes entirely to
+    train and is flagged, rather than silently producing a broken split.
+    """
     rng = random.Random(seed)
-    rng.shuffle(specimens)
+    val_set, test_set = set(), set()
+    by_class = {}
+    for item in items:
+        by_class.setdefault(item[1], set()).add(item[2])
 
-    n_val = max(1, round(len(specimens) * config.VAL_FRACTION))
-    n_test = max(1, round(len(specimens) * config.TEST_FRACTION))
-    if n_val + n_test >= len(specimens):
-        raise ValueError(
-            f"Only {len(specimens)} specimens found - too few for a clean "
-            "group split. Get more specimens before trusting any accuracy number."
-        )
-
-    val_set = set(specimens[:n_val])
-    test_set = set(specimens[n_val:n_val + n_test])
+    for label_index, specimens in by_class.items():
+        specimens = sorted(specimens)
+        rng.shuffle(specimens)
+        if len(specimens) < 3:
+            print(
+                f"WARNING: class {config.CLASSES[label_index]} has only "
+                f"{len(specimens)} specimen(s) - all go to train, no val/test "
+                "coverage for this class. Report this limitation plainly."
+            )
+            continue
+        n_val = max(1, round(len(specimens) * config.VAL_FRACTION))
+        n_test = max(1, round(len(specimens) * config.TEST_FRACTION))
+        val_set.update(specimens[:n_val])
+        test_set.update(specimens[n_val:n_val + n_test])
 
     train = [i for i in items if i[2] not in val_set and i[2] not in test_set]
     val = [i for i in items if i[2] in val_set]
