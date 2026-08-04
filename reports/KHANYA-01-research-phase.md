@@ -84,6 +84,31 @@ from another public source, or reduce scope to a defensible statement ("model
 converges cleanly; specimen diversity is the open constraint") and pair it with
 strong segmentation/advisor work where evaluation is more tractable.
 
+### 5.0.1 Segmentation baseline, 2026-08-04 — real held-out result
+
+Trained DeepLabv3+ResNet50 (ImageNet-pretrained) on FeM (ore/resin binary
+segmentation, reflected-light microscopy, 81 distinct polished sections - no
+rotation duplicates, so a plain image-level split is legitimate here, unlike
+MUMDMC). Split 57 train / 12 val / 12 test, all at image level, 10 epochs, CPU.
+
+**Held-out test set (12 unseen images), unlike the classification run above:**
+
+| Metric | Value |
+|---|---|
+| Mean IoU | **0.872** |
+| Pixel accuracy | **93.75%** |
+| IoU - resin (background) | 0.836 |
+| IoU - ore | 0.908 |
+
+This is a legitimate number: the test images were never seen in training and
+are not rotations/duplicates of training images. For context, the published
+PSPNet+ResNet18 benchmark on LumenStone (a different, multi-class dataset)
+reports mean IoU 0.88 - we are in the same range on a binary task with a much
+smaller model budget (10 epochs, CPU, no GPU). Note this is ore-vs-resin, not
+the REEFPRINT phase set (see DATA-SOURCES.md Section 0) - it demonstrates the
+segmentation pipeline works, not phase-level performance on our actual target
+classes.
+
 ### 5.1 Methodological risk: class imbalance
 
 Mineral class frequencies are naturally very unbalanced; some phases occupy a few

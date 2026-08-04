@@ -17,6 +17,33 @@ Entry format:
 
 ---
 
+## 2026-08-04 — Sibusiso (4) — end of day
+
+**Did:** Got a real, honest segmentation result. DeepLabv3+ResNet50 on FeM
+(ore/resin, reflected-light microscopy), 10 epochs CPU, image-level split
+(81 distinct sections, no rotation duplicates so this split is legitimate,
+unlike MUMDMC). Held-out TEST SET (12 images the model never saw): **mean IoU
+0.872, pixel accuracy 93.75%**. This is a real, defensible number - comparable
+to the published PSPNet+ResNet18 LumenStone benchmark (mIoU 0.88) despite far
+less compute. Also fixed a real bug along the way: `build_model(pretrained=
+False)` silently built a different architecture (no aux classifier head) than
+training did, so the saved checkpoint failed to load - fixed by pinning
+`aux_loss=True` always in `src/segmentation/model.py`.
+**Changed:** `src/segmentation/config.py` (25->10 epochs), `src/segmentation/model.py`
+(aux_loss fix), `reports/KHANYA-01-research-phase.md` (added section 5.0.1
+with the real numbers).
+**Blocked on:** same as entry (3) below - no public dataset yet for the
+REEFPRINT phase set (chromite/orthopyroxene/plagioclase/BMS/talc), and the
+R6,000 rig decision. The segmentation result above is ore-vs-resin (FeM), not
+those five phases - good proof the pipeline works, not yet evidence on the
+real target classes.
+**Next:** Lethabo - same asks as below (Bushveld-phase data lead, rig
+decision). When you're back on this: `git pull`, read this file top-down,
+then `reports/KHANYA-01-research-phase.md` section 5 for the current data/
+results picture before writing any new code.
+
+---
+
 ## 2026-08-04 — Sibusiso (3)
 
 **Did:** Read REEFPRINT (the abstract you submitted) and re-scoped the code's

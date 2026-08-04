@@ -71,7 +71,10 @@ class FeMDataset(Dataset):
 def build_loaders():
     train_ids, val_ids, test_ids = split_ids()
     make = lambda ids, train: DataLoader(
-        FeMDataset(ids, train), batch_size=config.BATCH_SIZE, shuffle=train, num_workers=0
+        FeMDataset(ids, train), batch_size=config.BATCH_SIZE, shuffle=train,
+        num_workers=0, drop_last=train,
+        # drop_last on train only: a size-1 last batch crashes BatchNorm
+        # ("Expected more than 1 value per channel"). val/test keep every image.
     )
     return make(train_ids, True), make(val_ids, False), make(test_ids, False)
 

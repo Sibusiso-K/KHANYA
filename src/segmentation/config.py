@@ -8,7 +8,7 @@ REPORT_DIR = ROOT / "reports"
 
 IMAGE_SIZE = 512  # downsized from 999x756; full-res optional for final report
 BATCH_SIZE = 4
-EPOCHS = 25
+EPOCHS = 10
 LR = 1e-3
 SEED = 42
 
