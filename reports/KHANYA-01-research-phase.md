@@ -104,14 +104,17 @@ plant recommendation. Say where each stage's uncertainty comes from.*
 
 ## 7. Operational feedback layer
 
-*The differentiator. Thresholds in src/advisor.py are placeholders — each must be
-replaced with a sourced value before the event, and the source recorded here.*
+*The differentiator. Thresholds in src/advisor.py, checked 2026-08-04:*
 
-| Threshold | Placeholder | Source | Status |
+| Threshold | Value | Source | Status |
 |---|---|---|---|
-| Gangue dilution | 0.40 | — | UNSOURCED |
-| Liberation floor | 0.65 | — | UNSOURCED |
-| Goethite penalty | 0.15 | — | UNSOURCED |
+| Liberation floor | 0.50 | Recovery of composite particles drops considerably below ~50% surface exposure, further below ~25% (911 Metallurgist, "Grinding for Liberation and Flotation"). Olympic Dam grinds to P80 30um specifically to hit a liberation target (AusIMM 2024 Mill Operators' Conference). | SOURCED |
+| Gangue dilution | 0.40 | No universal constant exists - economically this is the cutoff-grade concept (deposit- and commodity-price-specific: Wikipedia "Cutoff grade"). Current value is a demo placeholder, not derived from real economics. | UNSOURCED - placeholder |
+| Goethite penalty | 0.15 | Goethite's practical downsides (needs agglomeration, dehydrates during sintering) are documented (IspatGuru, "The Sintering Process of Iron Ore Fines"), but no source gives a numeric threshold - plant-specific. Also: goethite doesn't appear in the MUMDMC igneous-silicate class set we're actually training on; this threshold is a holdover from the original iron-ore-themed scaffold and needs re-deriving for whichever mineral set the final submission uses. | UNSOURCED - wrong mineral set |
+
+Honest framing for judges: one threshold is genuinely literature-backed, one is
+an economics formula we haven't wired up, one doesn't apply to our current data
+at all. Better to say this plainly than claim three sourced numbers we don't have.
 
 ## 8. Limitations
 

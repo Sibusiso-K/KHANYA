@@ -1,18 +1,37 @@
 """Operational feedback layer.
 
 This is the part of the brief most teams will skip: turning phase identification
-into a plant decision. The thresholds below are PLACEHOLDERS. Before the event,
-each one must be replaced with a value backed by a citation or by a Mintek
-contact, and the source recorded in the report. Judges from this sector will ask
-where the numbers came from, and "we picked them" is a losing answer.
+into a plant decision. Threshold sourcing status, checked 2026-08-04:
+
+- LOW_LIBERATION: SOURCED. Composite-particle recovery in conventional flotation
+  drops considerably once surface exposure falls below ~50%, and drops further
+  below ~25% (911 Metallurgist, "Grinding for Liberation and Flotation").
+  Olympic Dam runs primary grind P80 75um with regrind to P80 30um (AusIMM 2024
+  Mill Operators' Conference) - a real plant using a two-stage grind specifically
+  to hit a liberation target, corroborating that this is a real operating lever,
+  not a made-up number.
+- HIGH_GANGUE: NOT a universal constant. Economically this is the cutoff grade
+  concept (Wikipedia "Cutoff grade"; MNG 230 course notes) - the grade at which
+  processing cost equals commodity value - and it is deposit- and price-specific,
+  not a fixed fraction. The 0.40 below is a placeholder for demo purposes only;
+  a real deployment would compute this from current commodity price and cost,
+  not read it off a constant.
+- GOETHITE_PENALTY: NOT sourced. Goethite's practical effect (needs agglomeration
+  before blast furnace use, dehydrates during sintering) is well documented
+  (IspatGuru, "The Sintering Process of Iron Ore Fines"), but no source found
+  gives a numeric goethite-fraction threshold - it is plant- and process-specific.
+  Also note: this threshold assumes an iron-ore mineral set (hematite/magnetite/
+  goethite/quartz) left over from the original scaffold. The dataset actually in
+  use (MUMDMC2025: biotite/hornblende/plagioclase/K-feldspar/quartz) is igneous
+  silicates, not iron ore - goethite will not appear in that data. Re-derive
+  thresholds for whichever mineral set the final submission actually uses.
 """
 from dataclasses import dataclass
 
-# Placeholder thresholds - replace with sourced values. See module docstring.
 GANGUE_PHASES = {"quartz"}
-HIGH_GANGUE = 0.40          # gangue fraction above which the feed is diluted
-LOW_LIBERATION = 0.65       # liberation below which regrinding is indicated
-GOETHITE_PENALTY = 0.15     # goethite fraction that harms downstream handling
+HIGH_GANGUE = 0.40          # UNSOURCED placeholder - see module docstring
+LOW_LIBERATION = 0.50       # SOURCED - see module docstring
+GOETHITE_PENALTY = 0.15     # UNSOURCED placeholder - see module docstring
 
 
 @dataclass
