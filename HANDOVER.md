@@ -17,6 +17,31 @@ Entry format:
 
 ---
 
+## 2026-08-04 — Sibusiso (3)
+
+**Did:** Read REEFPRINT (the abstract you submitted) and re-scoped the code's
+target phase set to match it: chromite, orthopyroxene, plagioclase,
+base-metal sulphide, talc/serpentine. `advisor.py` logic rewritten around
+BMS-as-payload (report low-BMS explicitly rather than falling through, per
+your Section 1 point about aggregate accuracy hiding the sub-1% class).
+Kept MUMDMC as a labelled dev-proxy (its classes don't match REEFPRINT's -
+see config.py comments) so the pipeline stays exercised while real data is
+missing. Segmentation baseline on FeM (ore/resin, unrelated phase set) still
+training in background, unaffected by this change.
+**Changed:** `src/config.py`, `src/advisor.py`, `DATA-SOURCES.md`.
+**Blocked on:** no public dataset found yet for the REEFPRINT phase set
+(chromite/orthopyroxene/plagioclase/BMS/talc). This is now the real data
+blocker, not MUMDMC's specimen scarcity. Also: REEFPRINT Section 3.13 specs a
+~R6,000 self-funded rig - conflicts with our earlier "no money" decision,
+needs a call between us.
+**Next:** Lethabo - if you have a lead on Bushveld/UG2/chromitite thin-section
+imagery (public or from your own contacts), that unblocks the real target.
+Also need your read on the R6,000 rig: build it, scope it down, or cut it and
+lean harder on the software/simulation deliverables (plant simulator, OPC UA
+advisory channel, conformal calibration) which don't need hardware spend.
+
+---
+
 ## 2026-08-04 — Sibusiso (2)
 
 **Did:** Ran the classification baseline on the MUMDMC2025 sample (583 images,

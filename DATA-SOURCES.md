@@ -2,6 +2,22 @@
 
 Status as of 2026-08-04. Verify licences again before the report is finalised.
 
+## 0. REEFPRINT target phases — NO PUBLIC DATASET FOUND YET
+
+Lethabo's submitted abstract (REEFPRINT) commits to five Bushveld-relevant
+phases: **chromite, orthopyroxene, plagioclase, base-metal sulphide,
+talc/serpentine** (src/config.py REEFPRINT_CLASSES). Searched for a public
+petrographic/microscopy dataset covering this phase set on 2026-08-04 - found
+nothing. This is the actual data blocker for the real submission target; the
+MUMDMC/FeM work below is dev-proxy work done while this is unresolved.
+
+Per the abstract's own Section 3.14, the plan if no Mintek dataset is released
+is to run the demonstration on public data with the same architecture. That
+still requires finding *some* public multi-class Bushveld-adjacent dataset
+(chromitite, UG2, pyroxenite thin sections) that we have not located yet -
+worth a dedicated search pass, distinct from the MUMDMC/LumenStone search
+already done below.
+
 ## 1. LumenStone — primary target, ACCESS BLOCKED
 
 Reflected-light images of **polished ore sections** with pixel-level multi-class
