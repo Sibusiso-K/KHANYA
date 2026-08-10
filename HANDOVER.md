@@ -17,6 +17,27 @@ Entry format:
 
 ---
 
+## 2026-08-10 — Sibusiso (5)
+
+**Did:** Checked in - you'd accepted the GitHub invite but hadn't pushed
+anything yet, so the two open asks below (Bushveld-phase data lead, R6,000 rig
+decision) are still unanswered. Used this session to keep chasing the data
+blocker: found and ruled out LITHOS-DATASET (Kaggle, NeurIPS 2025 paper,
+211k patches / 25 classes) - genuinely large, but it's a sedimentary/carbonate
+petrography dataset (foraminifer, coral, dolomite etc.), wrong rock type for
+Bushveld ultramafic-mafic ores. Only nominal overlap on Plagioclase/Pyroxene,
+no chromite/BMS/talc. Full class list and reasoning in DATA-SOURCES.md so this
+isn't re-discovered later.
+**Changed:** `DATA-SOURCES.md` (LITHOS ruled-out entry).
+**Blocked on:** still no public dataset for chromite/orthopyroxene/plagioclase/
+BMS/talc-serpentine. Still need the R6,000 rig call.
+**Next:** Lethabo - when you're on this, `git pull` and check this file plus
+`DATA-SOURCES.md` before starting anything. If you or a contact has any lead
+on Bushveld/UG2/Merensky/Platreef thin-section or QEMSCAN imagery, that's the
+single thing that unblocks the most work right now.
+
+---
+
 ## 2026-08-04 — Sibusiso (4) — end of day
 
 **Did:** Got a real, honest segmentation result. DeepLabv3+ResNet50 on FeM

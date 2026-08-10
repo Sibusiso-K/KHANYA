@@ -18,6 +18,22 @@ still requires finding *some* public multi-class Bushveld-adjacent dataset
 worth a dedicated search pass, distinct from the MUMDMC/LumenStone search
 already done below.
 
+**Checked and ruled out (2026-08-10): LITHOS-DATASET.** Kaggle,
+paolaruizpuentes/lithos-dataset, companion to a NeurIPS 2025 Datasets and
+Benchmarks paper ("Towards Automated Petrography", arXiv:2511.00328). Genuinely
+large - 211,604 patches, 105,802 expert-annotated grains, 25 mineral classes,
+CC BY-NC-SA 4.0. Its 25 classes (from the paper's Figure 1 caption): Polycrystalline,
+Monocrystalline, Feldspar, Rock fragment, Mica, Echinoderm, Quartz, Plagioclase,
+Foraminifer, Fossil Fragment, Amphibole, Calcareous fossil, Red Algae, Calcite,
+Heavy mineral, Coral, Pyroxene, Dolomite, Hornblende, Muscovite, Crystalline
+mosaic, Microcline, Opaque, Sanidine, Other. This is a **sedimentary/carbonate
+petrography dataset** (foraminifer, coral, calcareous fossil, echinoderm, red
+algae, dolomite are bioclastic/sedimentary features) - wrong rock type for
+Bushveld ultramafic-mafic cumulates. Only "Plagioclase" and generic "Pyroxene"
+nominally overlap with REEFPRINT_CLASSES, and not in cumulate-rock context.
+No chromite, no base-metal sulphide, no talc/serpentine. Does not solve the
+data blocker - recorded here so this dead end isn't rediscovered.
+
 ## 1. LumenStone — primary target, ACCESS BLOCKED
 
 Reflected-light images of **polished ore sections** with pixel-level multi-class
