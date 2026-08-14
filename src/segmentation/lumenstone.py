@@ -30,6 +30,10 @@ CLASS_CODES = [0, 1, 3, 5, 7]
 CLASS_NAMES = ["background", "chalcopyrite", "magnetite", "pyrrhotite", "pentlandite"]
 NUM_CLASSES = len(CLASS_CODES)
 
+# petroscope's own colours, kept so our visualisations are directly comparable
+# to the published LumenStone figures.
+CLASS_COLORS = ["#000000", "#ffa500", "#ff4500", "#a9a9a9", "#ffff00"]
+
 # Base-metal sulphides, in contiguous index space. These carry the PGM payload
 # in the Bushveld analogue and are the classes the advisor cares about.
 BMS_INDICES = [1, 3, 4]  # chalcopyrite, pyrrhotite, pentlandite
@@ -113,6 +117,22 @@ class LumenStoneS2(Dataset):
             unexpected = sorted(set(codes[labels == 255].flatten().tolist()))
             raise ValueError(f"{stem}: mask codes {unexpected} not in CLASS_CODES")
         return image_t, labels.long()
+
+
+def preprocess(image):
+    """PIL image -> normalised 1x3xHxW tensor, identical to the eval transform.
+
+    Shared with the dashboard so inference at demo time cannot silently drift
+    from inference at evaluation time.
+    """
+    resized = transforms.functional.resize(
+        image, list(IMAGE_HW), interpolation=transforms.InterpolationMode.BILINEAR
+    )
+    normalised = transforms.functional.normalize(
+        transforms.functional.to_tensor(resized),
+        (0.485, 0.456, 0.406), (0.229, 0.224, 0.225),
+    )
+    return normalised.unsqueeze(0)
 
 
 def build_loaders(batch_size: int = BATCH_SIZE):

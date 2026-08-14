@@ -1,66 +1,117 @@
 """Demo dashboard. Must run offline on one laptop - assume venue wifi fails.
 
     streamlit run dashboard/app.py
+
+Full path, end to end: micrograph -> segmentation -> modal mineralogy ->
+liberation by particle composition -> operational recommendation. Every number
+shown is measured from the predicted mask. Nothing here is a slider.
 """
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import numpy as np
 import streamlit as st
 import torch
 from PIL import Image
 
-from src import config
+from src import modal
 from src.advisor import advise
-from src.data import build_transforms
-from src.model import build_model, device
+from src.segmentation import lumenstone as ls
+from src.segmentation.model import build_model, device
+from src.segmentation.train_lumenstone import CKPT
+
+st.set_page_config(page_title="Ore processability advisor", layout="wide")
 
 
 @st.cache_resource
 def load_model():
     dev = device()
-    model = build_model(pretrained=False).to(dev)
-    model.load_state_dict(
-        torch.load(config.CKPT_DIR / "best.pt", map_location=dev)
-    )
+    model = build_model(num_classes=ls.NUM_CLASSES, pretrained=False).to(dev)
+    model.load_state_dict(torch.load(CKPT, map_location=dev))
     model.eval()
     return model, dev
 
 
+def colourise(labels):
+    rgb = np.zeros(labels.shape + (3,), dtype=np.uint8)
+    for index, hex_colour in enumerate(ls.CLASS_COLORS):
+        h = hex_colour.lstrip("#")
+        rgb[labels == index] = [int(h[i:i + 2], 16) for i in (0, 2, 4)]
+    return rgb
+
+
 st.title("Ore processability advisor")
-st.caption("Mintek-SCi Grad Hackathon 2026 - Problem 3")
+st.caption("Mintek-SCi Grad Hackathon 2026 - Problem 3 | LumenStone S2, Norilsk Group")
+
+if not CKPT.exists():
+    st.error(
+        f"No trained model at {CKPT}. Run: python -m src.segmentation.train_lumenstone"
+    )
+    st.stop()
 
 uploaded = st.file_uploader(
-    "Reflected-light micrograph", type=["jpg", "jpeg", "png", "tif", "tiff"]
+    "Reflected-light micrograph of a polished section",
+    type=["jpg", "jpeg", "png", "tif", "tiff"],
 )
 
 if uploaded:
     image = Image.open(uploaded).convert("RGB")
-    st.image(image, width=400)
-
     model, dev = load_model()
-    tensor = build_transforms(train=False)(image).unsqueeze(0).to(dev)
+
+    x = ls.preprocess(image).to(dev)
+
     with torch.no_grad():
-        probabilities = model(tensor).softmax(1)[0].cpu()
+        logits = model(x)["out"][0]
+        probabilities = logits.softmax(0)
+        labels = probabilities.argmax(0).cpu().numpy()
+        mean_confidence = probabilities.max(0).values.mean().item()
 
-    fractions = {name: probabilities[i].item() for i, name in enumerate(config.CLASSES)}
+    left, right = st.columns(2)
+    left.image(image, caption="Input", use_container_width=True)
+    right.image(colourise(labels), caption="Predicted phases", use_container_width=True)
 
-    st.subheader("Phase distribution")
-    st.bar_chart(fractions)
+    result = modal.analyse(labels, ls.CLASS_NAMES)
 
-    # Placeholder: a single-image classifier gives a distribution, not true modal
-    # mineralogy. Replace with segmented area fractions once the segmentation
-    # model lands in weeks 4-5, and say so out loud if asked before then.
+    st.subheader("Modal mineralogy")
     st.caption(
-        "Fractions are classifier confidences, not segmented area fractions. "
-        "Replaced by the segmentation model in the final build."
+        "Area fractions are a proportion of ORE area, excluding mounting resin - "
+        "otherwise every number would track how densely the section was mounted."
+    )
+    st.bar_chart(result.phase_fractions)
+
+    a, b, c = st.columns(3)
+    a.metric("Ore in field", f"{result.ore_area_fraction:.1%}")
+    b.metric("Particles", result.n_particles)
+    c.metric(
+        "Liberation",
+        "not measurable" if result.liberation is None else f"{result.liberation:.0%}",
+    )
+    st.caption(
+        "Liberation is computed by particle composition: connected components of "
+        "non-resin pixels are particles, and a particle counts as liberated when "
+        "the payload phase occupies at least "
+        f"{modal.LIBERATION_THRESHOLD:.0%} of it. Mass-weighted. This is a 2D "
+        "section through 3D particles, so apparent liberation is biased HIGH "
+        "against true volumetric liberation - treat it as an upper bound."
     )
 
-    liberation = st.slider("Liberation (from segmentation)", 0.0, 1.0, 0.7)
-
-    result = advise(fractions, liberation, probabilities.max().item())
+    recommendation = advise(result, mean_confidence)
     st.subheader("Recommendation")
-    st.metric("Action", result.action)
-    st.write(result.reason)
-    st.caption(f"Confidence: {result.confidence}")
+    st.metric("Action", recommendation.action)
+    st.write(recommendation.reason)
+    st.caption(
+        f"Model confidence: {recommendation.confidence} "
+        f"(mean max-softmax {mean_confidence:.2f})"
+    )
+
+    with st.expander("Role fractions and caveats"):
+        st.write({k: f"{v:.1%}" for k, v in result.role_fractions.items()})
+        st.write(
+            "Roles come from src/modal.py. On S2, pentlandite and chalcopyrite "
+            "are payload, pyrrhotite is the rejection target, magnetite is oxide. "
+            "S2 is Norilsk massive sulphide: it is an analogue for the Bushveld "
+            "BMS assemblage and its optical appearance, not for its abundance "
+            "(<1 vol% in UG2). See DATA-SOURCES.md Section 1."
+        )

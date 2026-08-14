@@ -3,6 +3,7 @@ torchvision>=0.17
 numpy
 pillow
 scikit-learn
+scipy          # connected components for liberation; src/modal.py falls back if absent
 matplotlib
 pandas
 streamlit

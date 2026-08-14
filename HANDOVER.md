@@ -17,6 +17,56 @@ Entry format:
 
 ---
 
+## 2026-08-14 — Sibusiso (7)
+
+**Did:** Built the operational feedback layer for real - it was the weakest of
+the brief's three deliverables and both its inputs were fake (classifier
+confidences standing in for area fractions, liberation coming from a slider the
+presenter dragged). Both are now measured from the predicted mask.
+`src/modal.py` computes modal mineralogy as a fraction of **ore** area excluding
+mounting resin, and computes **liberation by particle composition**: connected
+components of non-resin pixels are particles, a particle is liberated when the
+payload phase occupies >=50% of it, and the index is the mass-weighted share of
+payload sitting in liberated particles. Validated on all 12 held-out S2 test
+sections using ground-truth masks - it spans 0% to 100% and tracks the
+mineralogy correctly (few large massive-sulphide particles score ~0%, many
+small disseminated grains score >80%). `src/advisor.py` rewritten to reason over
+metallurgical **roles** (payload/reject/oxide/gangue/deleterious) rather than
+mineral names, with the mapping in `modal.py` - so swapping ore body changes a
+mapping, not the decision logic, and REEFPRINT data drops straight in if Mintek
+releases any. Dashboard rewritten onto the segmentation path end to end.
+
+**Two findings worth knowing before you quote anything:**
+(1) Calling all three sulphides "payload" made liberation saturate at ~100%
+everywhere - in massive sulphide the payload IS the rock. Fixed by the correct
+metallurgy: pentlandite + chalcopyrite are payload, **pyrrhotite is the
+rejection target** (grade dilution, smelter sulphur load - standard practice in
+magmatic Ni-Cu). Caveat: pyrrhotite does carry some Ni/PGE in solid solution, so
+that is a grade-vs-recovery trade, not free money. The saturation result is
+written up in report section 7.4 as a negative result, not deleted.
+(2) Liberation from 2D sections is biased **high** against true volumetric
+liberation - a section plane can cut the free rim of a particle with a locked
+core. We apply no stereological correction, so our index is an upper bound.
+Safe direction for "grind finer", unsafe for "continue at setpoint". Say this
+before a judge does.
+
+**Changed:** new `src/modal.py`, rewrote `src/advisor.py`, rewrote
+`dashboard/app.py`, `src/segmentation/lumenstone.py` (colours + shared
+`preprocess` so demo inference cannot drift from eval inference),
+`requirements.txt` (scipy), `reports/KHANYA-01-research-phase.md` (section 7
+rewritten).
+**Blocked on:** nothing new. S2 baseline training still running (12 epochs, CPU,
+~2h); epoch 1 val mIoU 0.09 with all minerals at 0.0, which is normal for a
+fresh head but needs watching - if minerals are still at 0.0 by epoch 4 the LR
+(1e-3) is too high for a 5-class fine-tune and should come down to ~2e-4.
+**Next:** all advisor numbers so far come from GROUND-TRUTH masks, which proves
+the measurement logic, not the end-to-end system. Once training finishes, the
+same 12 sections need re-running on PREDICTED masks - the gap between those two
+liberation numbers is the honest measure of how much segmentation error costs at
+the decision layer, and that comparison is a strong slide.
+
+---
+
 ## 2026-08-14 — Sibusiso (6)
 
 **Did:** Two things, both significant. (1) **We're in** - acceptance letter

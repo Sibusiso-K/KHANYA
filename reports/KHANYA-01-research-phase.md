@@ -129,17 +129,84 @@ plant recommendation. Say where each stage's uncertainty comes from.*
 
 ## 7. Operational feedback layer
 
-*The differentiator. Thresholds in src/advisor.py, checked 2026-08-04:*
+The differentiator, and as of 2026-08-14 the stage where the inputs are measured
+rather than asserted. The full path is: micrograph -> segmentation -> modal
+mineralogy -> liberation -> recommendation (`src/modal.py`, `src/advisor.py`).
+
+### 7.1 Modal mineralogy
+
+Phase area fractions are computed from the predicted mask as a proportion of
+**ore area, excluding mounting resin**. Including resin would make every
+reported fraction a function of how densely the section happened to be mounted
+rather than of the ore itself. Resin coverage is reported separately, as a
+data-quality signal: below 5% ore in the field the advisor declines to give a
+recommendation instead of computing fractions from too few pixels.
+
+### 7.2 Liberation, measured rather than asserted
+
+Earlier versions of the demo took liberation from a slider the presenter dragged.
+It is now computed. Grains in a polished section are separated by resin, so
+connected components of non-resin pixels are particles; for each particle we
+measure the fraction that is payload phase, and a particle counts as liberated
+when that fraction clears 50%. The reported index is the share of total payload
+**area** in liberated particles, so it is mass-weighted - one large locked grain
+outweighs several small free ones.
+
+Measured across the 12 held-out S2 test sections using ground-truth masks, the
+index spans 0% to 100% and behaves the way the mineralogy says it should:
+sections that are a few large massive-sulphide particles score near zero
+(payload locked inside pyrrhotite), while sections of many small disseminated
+grains score above 80%.
+
+**Stereological limitation, stated first.** This is a 2D section through 3D
+particles. A section plane can cut the free-standing rim of a particle whose
+core is locked, so apparent liberation measured from sections is biased **high**
+relative to true volumetric liberation. Plant practice applies a stereological
+correction; we do not. Our liberation index is therefore an upper bound, which
+means the case for grinding finer is always at least as strong as we report it -
+the bias runs in the safe direction for that particular recommendation, and in
+the unsafe direction for any "continue at setpoint" call.
+
+### 7.3 Roles, not mineral names
+
+The advisor reasons over metallurgical roles - payload, reject, oxide, gangue,
+deleterious - with a per-deposit mineral-to-role mapping in `src/modal.py`.
+Changing ore body changes a mapping, not the decision logic, so the same
+operational layer serves LumenStone S2 now and the REEFPRINT phase set if Mintek
+releases data.
+
+On S2 the mapping is: pentlandite and chalcopyrite are payload, **pyrrhotite is
+the rejection target**, magnetite is oxide. Pyrrhotite rejection is established
+practice in magmatic Ni-Cu processing - it dilutes concentrate grade and drives
+smelter sulphur load. The honest caveat is that pyrrhotite does carry some Ni and
+PGE in solid solution, so rejecting it trades grade against recovery rather than
+discarding pure waste.
+
+### 7.4 A negative result worth reporting
+
+The first role mapping tried called all three sulphides payload. Liberation then
+saturated at ~100% on every test section - correct arithmetic, useless
+measurement, because in massive sulphide the payload *is* the rock and every
+particle trivially clears the threshold. This is recorded rather than quietly
+fixed because it defines what the measurement can discriminate: liberation is
+informative when the payload is dispersed in a contrasting host, which is the
+UG2 case, and uninformative when the payload dominates the section.
+
+### 7.5 Threshold sourcing status, checked 2026-08-14
 
 | Threshold | Value | Source | Status |
 |---|---|---|---|
 | Liberation floor | 0.50 | Recovery of composite particles drops considerably below ~50% surface exposure, further below ~25% (911 Metallurgist, "Grinding for Liberation and Flotation"). Olympic Dam grinds to P80 30um specifically to hit a liberation target (AusIMM 2024 Mill Operators' Conference). | SOURCED |
-| Gangue dilution | 0.40 | No universal constant exists - economically this is the cutoff-grade concept (deposit- and commodity-price-specific: Wikipedia "Cutoff grade"). Current value is a demo placeholder, not derived from real economics. | UNSOURCED - placeholder |
-| Goethite penalty | 0.15 | Goethite's practical downsides (needs agglomeration, dehydrates during sintering) are documented (IspatGuru, "The Sintering Process of Iron Ore Fines"), but no source gives a numeric threshold - plant-specific. Also: goethite doesn't appear in the MUMDMC igneous-silicate class set we're actually training on; this threshold is a holdover from the original iron-ore-themed scaffold and needs re-deriving for whichever mineral set the final submission uses. | UNSOURCED - wrong mineral set |
+| Payload floor | 0.003 | Answers "is there enough payload in this field to say anything at all". Needs a real per-deposit assay reference. | UNSOURCED - placeholder |
+| Reject ceiling | 0.60 | Pyrrhotite rejection is established practice, but the fraction at which a plant acts is deposit- and smelter-contract-specific. | UNSOURCED - placeholder |
+| Deleterious ceiling | 0.05 | Talc is naturally floatable and drives depressant demand in PGM flotation (REEFPRINT's own reason for including the phase), but no source gives a numeric fraction threshold. | UNSOURCED - placeholder |
 
-Honest framing for judges: one threshold is genuinely literature-backed, one is
-an economics formula we haven't wired up, one doesn't apply to our current data
-at all. Better to say this plainly than claim three sourced numbers we don't have.
+Honest framing for judges: one threshold is literature-backed and three are
+placeholders awaiting plant-specific numbers. The structure of the decision is
+defensible; the exact trip points are not yet, and we would rather say so than
+claim four sourced numbers we do not have. The previous goethite threshold has
+been removed entirely - it was a holdover from the original iron-ore scaffold
+and applied to no mineral in any dataset we now use.
 
 ## 8. Limitations
 
