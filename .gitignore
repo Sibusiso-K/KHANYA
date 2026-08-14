@@ -8,3 +8,4 @@ reports/*.png
 reports/*.csv
 .ipynb_checkpoints/
 seg_train.log
+lumenstone_train.log

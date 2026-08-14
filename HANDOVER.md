@@ -17,6 +17,64 @@ Entry format:
 
 ---
 
+## 2026-08-14 — Sibusiso (6)
+
+**Did:** Two things, both significant. (1) **We're in** - acceptance letter
+received, we're selected for the hackathon. Read it and put the real dates in
+README.md; the ones we had were wrong in shape. 1 Oct is a working day on site
+with a **13:00 hard submission cutoff** and a **10-minute** pitch at 14:00, not
+a presentation day. A **one-page abstract is due 30 Aug** (approach, methods,
+expected outcomes) along with per-member admin: ID number, T-shirt size, contact
+details, and either your mentor's details or an explicit request for a Mintek
+mentor. 2 Oct conference attendance is compulsory; five finalists announced
+there, then originality authentication. Prizes R25k/R15k/R10k, possible vacation
+work at Mintek. (2) **LumenStone is back up** - the HTTP 500 has cleared, all
+subsets download straight off Yandex Disk, no registration, usage agreement
+allows research use with citation. There are now **v2** releases we didn't know
+about. The important part: **S2 is a Norilsk Group layered-ultramafic magmatic
+sulphide assemblage** - pyrrhotite, pentlandite, chalcopyrite, magnetite. That's
+the same BMS assemblage that carries the PGM payload in UG2/Merensky, and the
+same intrusion type. It's a real geological analogue for our BMS class, 5
+classes with pixel masks and an author-defined split, so it clears the brief's
+>=3 phase floor with a legitimate held-out number. Full reasoning in
+DATA-SOURCES.md Section 1.
+(3) **Downloaded S2 v2 and built the multi-class pipeline.** 418.7 MB, extracted
+to `data/raw/lumenstone/S2_v2/` (gitignored - re-download from DATA-SOURCES.md
+Section 1). Verified contents against petroscope's codebook: 37 train / 12 test,
+author-defined split, five classes - background, chalcopyrite, magnetite,
+pyrrhotite, pentlandite. Masks are RGB with the label in all three channels, and
+the class codes are non-contiguous (0,1,3,5,7) because they index petroscope's
+global 50-class codebook shared with S1/S3 - they need remapping to 0-4 for
+CrossEntropyLoss, which `lumenstone.py` does at tensor-build time while keeping
+the original codes so petroscope stays drop-in compatible. Wrote
+`src/segmentation/lumenstone.py` and `train_lumenstone.py` as **separate**
+modules rather than folding S2 into `data.py`/`train.py`, so the FeM 0.872 result
+already quoted in the report stays reproducible with zero regression risk.
+Carved a 6-image val set out of train; **test/ untouched.** 12-epoch baseline
+training running now on CPU (~8-9 min/epoch, ~1.7h).
+
+**Changed:** `README.md` (status + real dates + plan to 1 Oct), `DATA-SOURCES.md`
+(Sections 0 and 1 rewritten + verified S2 contents), `reports/KHANYA-01-research-phase.md`
+(Section 9), new `src/segmentation/lumenstone.py`, new
+`src/segmentation/train_lumenstone.py`, `.gitignore`.
+**Blocked on:** still no data for chromite/orthopyroxene/plagioclase/
+talc-serpentine - S2 covers the BMS payload phase only. R6,000 rig call still
+open and now urgent: it needs answering before the 30 Aug abstract, not after.
+
+**Read before quoting any S2 number:** Norilsk is massive sulphide - BMS is 62.8%
+of S2 pixels, against <1 vol% in UG2. S2 is an analogue for the assemblage and
+its optical appearance, not its abundance. Magnetite at 1.8% is the in-dataset
+rare-class test; report per-class IoU, never mean IoU alone. Full caveat in
+DATA-SOURCES.md Section 1.
+**Next:** Lethabo - three things, all time-boxed by 30 Aug: (a) your ID number,
+T-shirt size, contact details, and whether we're requesting a Mintek mentor
+(I'd say yes, and ask about polished-section imagery in the same message);
+(b) the rig decision; (c) your call on whether the abstract keeps the full
+five-phase REEFPRINT scope or re-scopes to what we can actually evidence by
+1 October. Read DATA-SOURCES.md Section 1 before answering (c).
+
+---
+
 ## 2026-08-10 — Sibusiso (5)
 
 **Did:** Checked in - you'd accepted the GitHub invite but hadn't pushed

@@ -2,7 +2,18 @@
 
 Status as of 2026-08-04. Verify licences again before the report is finalised.
 
-## 0. REEFPRINT target phases — NO PUBLIC DATASET FOUND YET
+## 0. REEFPRINT target phases — PARTIALLY UNBLOCKED 2026-08-14
+
+**Update 2026-08-14:** LumenStone access has cleared (Section 1) and its **S2
+subset is a layered-ultramafic magmatic sulphide assemblage (Norilsk Group)** —
+a genuine geological analogue for the REEFPRINT base-metal-sulphide class, with
+pixel-level masks and 5 classes. This does not deliver the full REEFPRINT phase
+set (no chromite, orthopyroxene, plagioclase or talc/serpentine), but it does
+give the project a real multi-class held-out result on the phase that carries
+the economic payload. Read the rest of this section as the still-open half of
+the problem: the silicate and chromite phases.
+
+
 
 Lethabo's submitted abstract (REEFPRINT) commits to five Bushveld-relevant
 phases: **chromite, orthopyroxene, plagioclase, base-metal sulphide,
@@ -34,25 +45,102 @@ nominally overlap with REEFPRINT_CLASSES, and not in cumulate-rock context.
 No chromite, no base-metal sulphide, no talc/serpentine. Does not solve the
 data blocker - recorded here so this dead end isn't rediscovered.
 
-## 1. LumenStone — primary target, ACCESS BLOCKED
+## 1. LumenStone — primary target, ACCESS OPEN (re-checked 2026-08-14)
 
 Reflected-light images of **polished ore sections** with pixel-level multi-class
 masks. Exact match for Problem 3.
 
-| Subset | Images | Minerals |
-|---|---|---|
-| S1 | 84 (59 train / 16 test) | sphalerite, pyrite/marcasite, galena, bornite, tennantite-tetrahedrite, chalcopyrite, background (7 classes) |
-| S2 | 39 | pyrrhotite, pentlandite, chalcopyrite |
-| S3 | 35 | arsenopyrite, covellite |
-| V1 / P1 | — | colour adaptation; panoramas |
+**The HTTP 500 recorded on 2026-08-04 has cleared.** Host returns 200 and every
+subset downloads directly from Yandex Disk — no registration, no email needed.
+Note the site now carries a **v2** of each set (released 15.06.2025 / 30.12.2025)
+that the earlier entry here predates; v2 is a superset of v1 by the site's own
+versioning rule ("every new version besides offering new images will contain all
+images from the previous version"), with annotations possibly revised.
 
-- Host `https://imaging.cs.msu.ru/en/research/geology/lumenstone` returns **HTTP 500**
-  (server down, not blocking us). Licence and download links UNCONFIRMED.
-- Wayback snapshot exists (2026-03-09) but archive.org is unreachable from here.
-- **Action:** email Alexander Khvostikov, ORCID 0000-0002-4217-7141. Repo active
-  (last commit 2026-06-16).
+| Set | v2 images | Task | Assemblage |
+|---|---|---|---|
+| S1 | 64 train / 20 test | segmentation, 7 classes | Berezovskoe hydrothermal: sphalerite, pyrite, galena, bornite, tennantite-tetrahedrite, chalcopyrite |
+| **S2** | **37 train / 12 test** | **segmentation, 5 classes** | **Layered Ultramafic (Norilsk Group): pyrrhotite, chalcopyrite, pentlandite, magnetite** |
+| S3 | 33 train / 14 test (+XPL rotations) | segmentation, 9 classes | high-temperature hydrothermal: pyrite, arsenopyrite, covelline, bornite, chalcopyrite, magnetite, hematite |
+| V1 | 30 (10 x 3 variations) | colour adaptation | same samples as S1 |
+| P1 / P2 | 1552 / 671 | panorama stitching | — |
+
+All x50 magnification, 3396x2547 px. Source material: 30 CIS ore deposits,
+Carl Zeiss AxioScope 40 microscope, Canon Powershot G10.
+
+**Licence / Data Usage Agreement** (verbatim from the site, 2026-08-14): free use
+in your own research work; if publishing work that uses the dataset, cite the
+references. Permissive enough for the hackathon — acknowledge it explicitly in
+the submission, per Mintek's requirement that external data be acknowledged.
+
+- Contact if needed: Alexander Khvostikov, khvostikov@cs.msu.ru,
+  ORCID 0000-0002-4217-7141. No longer blocking — download works.
 - Benchmark to beat: **mean IoU 0.8373** (ResUNet, S1v1). Also PSPNet+ResNet18 on
   S1+S2: IoU 0.88, pixel accuracy 0.96.
+
+### Why S2 is the one that matters to us
+
+S2 is drawn from the **Norilsk Group — layered ultramafic intrusions hosting
+magmatic Ni-Cu-PGE sulphide**. Its four mineral classes are pyrrhotite,
+pentlandite, chalcopyrite and magnetite. Pyrrhotite-pentlandite-chalcopyrite is
+the same base-metal sulphide assemblage that carries the PGM payload in Bushveld
+UG2 and Merensky reef ores, and both are layered ultramafic-mafic intrusions
+rather than the hydrothermal or sedimentary settings every other candidate
+dataset covers.
+
+That makes S2 a defensible geological analogue for REEFPRINT's
+`Base_Metal_Sulphide` class, not a convenience substitute — the transfer argument
+is about ore genesis and mineral assemblage, and it should be stated in those
+terms rather than as "closest available data". It does not contain chromite,
+orthopyroxene, plagioclase or talc/serpentine, so it is an analogue for the
+payload phase specifically, not for the full REEFPRINT phase set (see Section 0).
+
+Practical fit: 5 classes clears the brief's >=3 phase floor, masks are
+pixel-level, and the authors ship a train/test split so held-out numbers are
+directly comparable to their published benchmarks.
+
+**Where the analogue breaks — say this before a judge says it.** Norilsk ore is
+massive magmatic sulphide: across S2's 37 training images the base-metal
+sulphides (pyrrhotite + chalcopyrite + pentlandite) occupy **62.8% of pixels**.
+In UG2 the same assemblage is <1 vol%. So S2 is an analogue for the *mineral
+assemblage and its optical appearance*, not for its *abundance*. Any claim we
+make from S2 transfers as "these phases are separable in reflected light at
+these IoUs", and explicitly not as "we can find sub-1% BMS in UG2" — that second
+claim needs the rare-class evidence below, and honestly it is a different and
+harder problem.
+
+Partial mitigation already in the data: **magnetite is only 1.58% of S2 pixels**,
+so per-class IoU on magnetite is a real, in-dataset test of rare-phase
+performance, and is the number to report against the imbalance risk in Section
+5.1 of the research report. Report per-class IoU always; a mean IoU here is
+flattered by pyrrhotite at 42.8%.
+
+### Verified contents, downloaded and checked 2026-08-14
+
+`data/raw/lumenstone/S2_v2.zip` (418.7 MB) -> `S2_v2/`. 37 train / 12 test,
+author-defined split, matching the site.
+
+```
+S2_v2/imgs/{train,test}/           JPEG, 3396x2547
+S2_v2/masks/{train,test}/          PNG, label in all 3 channels (R==G==B)
+S2_v2/masks_colored/{train,test}/  RGB visualisation
+S2_v2/masks_human/{train,test}/    human-readable overlay
+```
+
+Class codes are indices into petroscope's global 50-class LumenStone codebook
+(`petroscope/segmentation/lumenstone.yaml`), shared across S1/S2/S3, so they are
+**non-contiguous** and must be remapped to 0-4 before CrossEntropyLoss:
+
+| Code | label | Mineral | Colour | % of train pixels |
+|---|---|---|---|---|
+| 0 | bg | background / resin | `#000000` | 35.60 |
+| 1 | ccp | chalcopyrite | `#ffa500` | 11.65 |
+| 3 | mag | magnetite | `#ff4500` | **1.58** |
+| 5 | po | pyrrhotite | `#a9a9a9` | 42.80 |
+| 7 | pn | pentlandite | `#ffff00` | 8.38 |
+
+Keeping petroscope's codes rather than renumbering ours means their pretrained
+weights, metrics and visualisations stay drop-in compatible.
 
 ### petroscope — the authors' toolkit
 `pip install petroscope` — https://github.com/xubiker/petroscope

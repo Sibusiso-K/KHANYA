@@ -49,15 +49,35 @@ streamlit run dashboard/app.py
 - Write our own prose and cite sources — originality is a scored criterion with
   explicit AI-generation checks.
 
-## Timeline
+## Status: SELECTED
 
-| Weeks | Goal |
+Acceptance letter received 2026-08-14 (Boitumelo Lekalakala, Mintek SCI Grad
+Hackathon 2026). Prizes R25,000 / R15,000 / R10,000; strong teams may be
+considered for vacation work at Mintek. AI tools are permitted, but all
+submissions undergo **plagiarism, AI-generation, IP and originality checks**, and
+external sources, data and contributions must be acknowledged — the five finalist
+teams go through explicit originality authentication after the conference.
+
+## Hard dates
+
+| Date | What |
 |---|---|
-| 1 | Data secured, IP agreement read, Mintek contacted |
-| 2-3 | Baseline classification on >=3 phases |
-| 4-5 | Segmentation + modal mineralogy |
-| 6 | Operational feedback layer |
-| 7 | Validation, failure analysis, energy case |
-| 8 | Pitch, rehearse, freeze (event 1-2 Oct, Mintek Randburg) |
+| **30 Aug 2026** | **One-page abstract due** — approach, methods/technologies, expected outcomes/impact |
+| 30 Aug 2026 | Per-member admin due: ID number, T-shirt size, contact details, mentor name + contact — or a clear request for a Mintek mentor |
+| **1 Oct 2026** | **Final hacking day, on site at Mintek.** Physical attendance required. 08:00 teams report and continue development; **13:00 hard submission deadline**; 14:00 presentations begin; **10 minutes per team** to the judging panel |
+| 2 Oct 2026 | Mintek SCI Conference — attendance and registration required for all selected teams. Five finalists announced here |
 
-Feature freeze: end of week 7.
+Note the shape of 1 October: it is a working day with a 13:00 cutoff, not a
+presentation day. Anything not finished and submitted by 13:00 does not count,
+and the pitch is 10 minutes.
+
+## Plan to 1 October
+
+| Window | Goal |
+|---|---|
+| to 30 Aug | Abstract submitted. LumenStone S2 downloaded, multi-class segmentation running |
+| Sep wk 1-2 | Real held-out multi-class result (>=3 phases). Modal mineralogy from segmented areas |
+| Sep wk 3 | Operational feedback layer wired to segmented area fractions, not classifier confidences |
+| Sep wk 4 | Validation, failure analysis, energy/cost case, originality + acknowledgement pass |
+| 29 Sep | **Feature freeze.** Offline demo rehearsed end to end on the venue laptop |
+| 1 Oct | On site: refine only. Submit by 13:00 |

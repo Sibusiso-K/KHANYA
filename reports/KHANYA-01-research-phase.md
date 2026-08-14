@@ -148,9 +148,17 @@ African ores. Single-modality optical. Dataset size.*
 
 ## 9. Open questions
 
-- LumenStone access — awaiting reply from A. Khvostikov (ORCID 0000-0002-4217-7141).
-- Can Mintek share polished-section imagery, or assign a P3 technical mentor?
+- ~~LumenStone access~~ — **RESOLVED 2026-08-14.** Host is up, all subsets
+  download without registration, usage agreement permits research use with
+  citation. See DATA-SOURCES.md Section 1.
+- ~~Can Mintek assign a P3 technical mentor?~~ — **ANSWERED by the acceptance
+  letter:** teams needing a Mintek mentor must say so explicitly in the 30 Aug
+  submission. Still open whether Mintek will share polished-section imagery —
+  ask in the same message.
 - What exactly does the Mintek T&Cs / IP Agreement assign to MOTT?
+- Does the 30 Aug abstract commit us to the full REEFPRINT phase set, or can it
+  be re-scoped to the phases we can actually evidence? Bears directly on whether
+  the accuracy report is defensible on 1 October.
 
 ## 10. References
 
