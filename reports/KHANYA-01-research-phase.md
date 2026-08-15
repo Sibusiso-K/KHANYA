@@ -109,6 +109,80 @@ the REEFPRINT phase set (see DATA-SOURCES.md Section 0) - it demonstrates the
 segmentation pipeline works, not phase-level performance on our actual target
 classes.
 
+### 5.0.2 LumenStone S2 multi-class baseline, 2026-08-14 — first result that meets the brief's floor
+
+DeepLabv3+ResNet50 (ImageNet-pretrained), 12 epochs, CPU, plain cross-entropy,
+images resized 3396x2547 -> 512x688. Split: 31 train / 6 val / 12 test, using the
+authors' own train/test division with val carved from train. **Test set never
+seen during training or checkpoint selection.**
+
+| Class | % of test pixels | Test IoU |
+|---|---|---|
+| background (resin) | 24.95 | 0.827 |
+| chalcopyrite | 5.08 | 0.548 |
+| magnetite | 0.79 | **0.000** |
+| pyrrhotite | 58.33 | 0.864 |
+| pentlandite | 10.84 | 0.485 |
+| **mean** | | **0.545** |
+
+Pixel accuracy 0.879. Numbers in `reports/lumenstone_s2_test_metrics.json`.
+
+This is five phases with pixel-level masks on a held-out test set, so it clears
+the brief's >=3 phase requirement with a defensible number. It is also well short
+of the published PSPNet+ResNet18 benchmark on S1+S2 (mIoU 0.88) and should be
+presented as such: 12 CPU epochs at roughly one-sixth linear resolution, with no
+patch-based sampling, is not a serious attempt at the benchmark.
+
+**Magnetite fails completely.** IoU is 0.000 and magnetite is genuinely present
+in the test set (0.79% of pixels), so this is total failure on the rare class,
+not an artefact of absence. This is precisely the imbalance failure the
+petroscope authors warn about (section 5.1) reproduced in our own numbers.
+Two contributing causes, separable by experiment: the class is rare, and the
+6.6x linear downsample from 3396x2547 destroys fine grains before the model ever
+sees them. Patch-based sampling at native resolution addresses both and is the
+next experiment.
+
+**The validation set is too small to select on.** 6 images, and its composition
+differs sharply from test (45.8% vs 25.0% background; magnetite 0.20% vs 0.79%).
+Pentlandite scored 0.026 on val against 0.485 on test. Checkpoint selection on
+best val mIoU is therefore close to noise, and grouped cross-validation over the
+37 training sections would be a sounder protocol given how few images exist.
+
+### 5.0.3 What the segmentation error costs at the decision layer
+
+Per-class IoU says how wrong the mask is; it does not say whether being that
+wrong changes what the plant is told to do. `src/decision_gap.py` runs the full
+advisor path twice over the same 12 held-out sections - once on ground-truth
+masks, once on predicted masks - and records where the recommendation changes.
+
+**4 of 12 recommendations flip (33%).** Numbers in `reports/decision_gap.json`.
+
+| Section | Liberation, truth -> predicted | Change | Direction |
+|---|---|---|---|
+| test_02 | 0% -> not measurable | payload 1.0% -> 0.0%; "no payload detected" | detection miss |
+| test_04 | 9% -> 75% | "grind finer" -> "continue at setpoint" | **unsafe** |
+| test_05 | 4% -> 58% | "grind finer" -> "continue at setpoint" | **unsafe** |
+| test_09 | 100% -> 0% | "continue at setpoint" -> "grind finer" | conservative |
+
+The direction matters more than the count. Two flips tell the plant to continue
+at setpoint on ore whose payload is in fact locked in composite particles - that
+sends recoverable metal to tailings, and it is the expensive direction of error.
+One flip is conservative, costing unnecessary grinding energy but no metal. One
+is an outright detection miss on a 1% payload field: exactly the sub-1% failure
+this project exists to argue about, occurring in our own pipeline.
+
+Honest reading: **the segmentation model is not yet fit to drive this advisor.**
+Reporting mIoU 0.545 alone would obscure that; the flip rate is the number that
+reflects operational usefulness, and improving it is the priority before the
+event.
+
+Methodological note. Ground-truth masks are downsampled to the network's working
+size before comparison. Compared at native resolution instead, the flip rate
+reads 50% - but that figure is inflated, because the same physical grain carries
+~44x fewer pixels in a prediction, so the minimum-particle-size filter discards
+far more particles on the predicted side. Three of those six flips were artefacts
+of scale, not model error. The like-for-like 33% is the honest figure.
+
 ### 5.1 Methodological risk: class imbalance
 
 Mineral class frequencies are naturally very unbalanced; some phases occupy a few

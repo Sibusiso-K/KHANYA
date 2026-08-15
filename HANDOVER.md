@@ -17,6 +17,55 @@ Entry format:
 
 ---
 
+## 2026-08-14 — Sibusiso (8)
+
+**Did:** S2 baseline finished. **First result that meets the brief's >=3 phase
+floor with a real held-out number: mean IoU 0.545, pixel accuracy 0.879 on 12
+unseen sections, 5 classes.** Per-class: pyrrhotite 0.864, background 0.827,
+chalcopyrite 0.548, pentlandite 0.485, **magnetite 0.000**. Numbers in
+`reports/lumenstone_s2_test_metrics.json`.
+
+**Read this before quoting the headline number.** Magnetite fails completely,
+and it IS present in test (0.79% of pixels), so that is total failure on the
+rare class, not absence - the exact imbalance failure petroscope warns about,
+reproduced in our own numbers. Two separable causes: the class is rare, and the
+6.6x downsample from 3396x2547 to 512x688 destroys fine grains before the model
+sees them. Also, our val set (6 images) is too small to select checkpoints on -
+pentlandite scored 0.026 on val against 0.485 on test, and val is 45.8%
+background against test's 25.0%.
+
+Then built `src/decision_gap.py` to answer the question IoU cannot: does being
+this wrong change what the plant is told to do? Runs the advisor twice over the
+same 12 sections, ground-truth masks vs predicted. **4 of 12 recommendations
+flip (33%)** - `reports/decision_gap.json`. Direction matters more than count:
+two flips say "continue at setpoint" on ore whose payload is actually locked
+(test_04 liberation 9%->75%, test_05 4%->58%), which sends recoverable metal to
+tailings and is the expensive direction. One is conservative (test_09, wasted
+grinding energy, no metal lost). One is an outright detection miss on a 1%
+payload field (test_02). **Conclusion: the model is not yet fit to drive this
+advisor**, and the flip rate is a better measure of that than mIoU.
+
+Caught a methodology trap worth knowing about: comparing GT at native
+resolution against predictions at 512x688 gave a 50% flip rate, but ~44x fewer
+pixels per grain means the minimum-particle-size filter drops far more particles
+on the predicted side. Three of those six flips were scale artefacts. GT is now
+downsampled to the network's working size before comparison; **33% is the
+like-for-like figure, 50% is wrong** - do not quote the 50%.
+
+**Changed:** new `src/decision_gap.py`, `reports/KHANYA-01-research-phase.md`
+(new sections 5.0.2 and 5.0.3), `reports/lumenstone_s2_test_metrics.json`,
+`reports/decision_gap.json`.
+**Blocked on:** nothing. Access check: you (LethaboMH14) have write access and
+it is active - clone, pull and push all work.
+**Next, in priority order:** (1) patch-based sampling at native resolution -
+addresses both magnetite causes at once and is what petroscope's authors say is
+necessary; this is the single highest-value experiment left. (2) Grouped
+cross-validation over the 37 training sections instead of the 6-image val set.
+(3) Re-run decision_gap after both and show the flip rate coming down - that
+before/after is the strongest slide we have.
+
+---
+
 ## 2026-08-14 — Sibusiso (7)
 
 **Did:** Built the operational feedback layer for real - it was the weakest of

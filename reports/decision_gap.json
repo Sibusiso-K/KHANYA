@@ -1,0 +1,127 @@
+{
+  "n_sections": 12,
+  "n_recommendation_flips": 4,
+  "flip_rate": 0.3333333333333333,
+  "rows": [
+    {
+      "id": "test_01",
+      "liberation_truth": 0.9889196402095483,
+      "liberation_predicted": 0.9997869166844237,
+      "payload_truth": 0.9092134589114962,
+      "payload_predicted": 0.9993796640927356,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Continue at current setpoint",
+      "flipped": false
+    },
+    {
+      "id": "test_02",
+      "liberation_truth": 0.0,
+      "liberation_predicted": null,
+      "payload_truth": 0.00986238665680525,
+      "payload_predicted": 0.0,
+      "action_truth": "Grind finer",
+      "action_predicted": "Flag for manual review - no payload detected",
+      "flipped": true
+    },
+    {
+      "id": "test_03",
+      "liberation_truth": 0.0,
+      "liberation_predicted": 0.0,
+      "payload_truth": 0.49961807765754296,
+      "payload_predicted": 0.45433680503998475,
+      "action_truth": "Grind finer",
+      "action_predicted": "Grind finer",
+      "flipped": false
+    },
+    {
+      "id": "test_04",
+      "liberation_truth": 0.08507338026488485,
+      "liberation_predicted": 0.7476539135815201,
+      "payload_truth": 0.21025300101601796,
+      "payload_predicted": 0.40785968650982807,
+      "action_truth": "Grind finer",
+      "action_predicted": "Continue at current setpoint",
+      "flipped": true
+    },
+    {
+      "id": "test_05",
+      "liberation_truth": 0.04355386271425023,
+      "liberation_predicted": 0.582093126689247,
+      "payload_truth": 0.19446569033951389,
+      "payload_predicted": 0.4963195028144978,
+      "action_truth": "Grind finer",
+      "action_predicted": "Continue at current setpoint",
+      "flipped": true
+    },
+    {
+      "id": "test_06",
+      "liberation_truth": 0.004322417025030323,
+      "liberation_predicted": 0.0025275393660877206,
+      "payload_truth": 0.1682323086169668,
+      "payload_predicted": 0.3129428086812708,
+      "action_truth": "Grind finer",
+      "action_predicted": "Grind finer",
+      "flipped": false
+    },
+    {
+      "id": "test_07",
+      "liberation_truth": 0.0,
+      "liberation_predicted": 0.0,
+      "payload_truth": 0.02435230858107808,
+      "payload_predicted": 0.019766840732587117,
+      "action_truth": "Grind finer",
+      "action_predicted": "Grind finer",
+      "flipped": false
+    },
+    {
+      "id": "test_08",
+      "liberation_truth": 0.0,
+      "liberation_predicted": 0.0,
+      "payload_truth": 0.2511007203636234,
+      "payload_predicted": 0.24409638130310618,
+      "action_truth": "Grind finer",
+      "action_predicted": "Grind finer",
+      "flipped": false
+    },
+    {
+      "id": "test_09",
+      "liberation_truth": 0.9999788727335724,
+      "liberation_predicted": 0.0,
+      "payload_truth": 0.6987045117709927,
+      "payload_predicted": 0.45187779463951505,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Grind finer",
+      "flipped": true
+    },
+    {
+      "id": "test_10",
+      "liberation_truth": 0.0,
+      "liberation_predicted": 0.0,
+      "payload_truth": 0.027151184989432354,
+      "payload_predicted": 0.019396670465386703,
+      "action_truth": "Grind finer",
+      "action_predicted": "Grind finer",
+      "flipped": false
+    },
+    {
+      "id": "test_11",
+      "liberation_truth": 0.0,
+      "liberation_predicted": 0.0,
+      "payload_truth": 0.03186897634733904,
+      "payload_predicted": 0.04180410006807153,
+      "action_truth": "Grind finer",
+      "action_predicted": "Grind finer",
+      "flipped": false
+    },
+    {
+      "id": "test_12",
+      "liberation_truth": 0.0,
+      "liberation_predicted": 0.0,
+      "payload_truth": 0.04673934232032269,
+      "payload_predicted": 0.02818769498699606,
+      "action_truth": "Grind finer",
+      "action_predicted": "Grind finer",
+      "flipped": false
+    }
+  ]
+}
