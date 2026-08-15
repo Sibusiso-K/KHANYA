@@ -1,0 +1,131 @@
+"""Train / evaluate the patch-based native-resolution model on LumenStone S2.
+
+    python -m src.segmentation.train_patches          # train
+    python -m src.segmentation.train_patches --eval   # held-out test, full sections
+
+Kept separate from train_lumenstone.py so the resize baseline (mIoU 0.545,
+magnetite 0.000) stays reproducible - the whole point is a controlled comparison
+between the two, and that is worthless if the baseline drifts.
+
+Evaluation is deliberately NOT patch-based: it runs sliding-window inference over
+whole native-resolution sections, so the number is directly comparable to the
+resize baseline's, which also scored whole sections. Scoring on balanced patches
+instead would flatter the rare classes by construction and would not be an
+honest comparison.
+"""
+import argparse
+import json
+
+import numpy as np
+import torch
+from PIL import Image
+from torch import nn
+from tqdm import tqdm
+
+from . import config, lumenstone as ls, metrics, patches
+from .model import build_model, device
+
+CKPT_DIR = config.ROOT / "checkpoints" / "lumenstone_s2_patches"
+CKPT = CKPT_DIR / "best.pt"
+
+
+def run_epoch(model, loader, criterion, optimiser, dev, train: bool):
+    model.train() if train else model.eval()
+    total_loss, seen = 0.0, 0
+    confusion = metrics.new_confusion(ls.NUM_CLASSES)
+    with torch.set_grad_enabled(train):
+        for images, masks in tqdm(loader, leave=False):
+            images, masks = images.to(dev), masks.to(dev)
+            out = model(images)["out"]
+            loss = criterion(out, masks)
+            if train:
+                optimiser.zero_grad()
+                loss.backward()
+                optimiser.step()
+            total_loss += loss.item() * images.size(0)
+            seen += images.size(0)
+            metrics.confusion_from_batch(out.argmax(1), masks, ls.NUM_CLASSES, confusion)
+    return total_loss / max(seen, 1), metrics.summarise(confusion)
+
+
+def report(summary):
+    lines = [f"  mean IoU {summary['mean_iou']:.4f}   "
+             f"pixel accuracy {summary['pixel_accuracy']:.4f}"]
+    for name, iou in zip(ls.CLASS_NAMES, summary["iou_per_class"]):
+        lines.append(f"    {name:14s} IoU {iou:.4f}")
+    return "\n".join(lines)
+
+
+def train():
+    torch.manual_seed(patches.SEED)
+    dev = device()
+    print(f"device: {dev}")
+    train_loader, val_loader = patches.build_loaders()
+    print(f"patches/epoch: train {patches.PATCHES_PER_EPOCH}  val {patches.VAL_PATCHES}"
+          f"  size {patches.PATCH}px native  lr {patches.LR}")
+
+    model = build_model(num_classes=ls.NUM_CLASSES).to(dev)
+    criterion = nn.CrossEntropyLoss()
+    optimiser = torch.optim.AdamW(model.parameters(), lr=patches.LR)
+
+    CKPT_DIR.mkdir(parents=True, exist_ok=True)
+    best_iou = 0.0
+    for epoch in range(1, patches.EPOCHS + 1):
+        train_loss, train_summary = run_epoch(
+            model, train_loader, criterion, optimiser, dev, True
+        )
+        val_loss, val_summary = run_epoch(
+            model, val_loader, criterion, optimiser, dev, False
+        )
+        print(f"epoch {epoch:02d}  train loss {train_loss:.3f} "
+              f"mIoU {train_summary['mean_iou']:.3f}  |  val loss {val_loss:.3f}")
+        print(report(val_summary))
+        if val_summary["mean_iou"] > best_iou:
+            best_iou = val_summary["mean_iou"]
+            torch.save(model.state_dict(), CKPT)
+            print(f"  saved (val patch mIoU {best_iou:.4f})")
+
+    print(f"best val patch mean IoU: {best_iou:.4f}")
+    print("NOTE: val here is balanced patches, so it is NOT comparable to the "
+          "resize baseline's whole-section val. Use --eval for the real number.")
+
+
+@torch.no_grad()
+def evaluate():
+    dev = device()
+    model = build_model(num_classes=ls.NUM_CLASSES, pretrained=False).to(dev)
+    model.load_state_dict(torch.load(CKPT, map_location=dev))
+    model.eval()
+
+    _, _, test_ids = ls.split_ids()
+    confusion = metrics.new_confusion(ls.NUM_CLASSES)
+    for stem in tqdm(sorted(test_ids), leave=False):
+        image = Image.open(ls.S2_DIR / "imgs" / "test" / f"{stem}.jpg")
+        predicted, _ = patches.sliding_window_predict(model, image, dev)
+        truth = patches.labels_for(stem, "test")
+        metrics.confusion_from_batch(
+            torch.from_numpy(predicted), torch.from_numpy(truth),
+            ls.NUM_CLASSES, confusion,
+        )
+
+    summary = metrics.summarise(confusion)
+    summary["class_names"] = ls.CLASS_NAMES
+    summary["n_test_images"] = len(test_ids)
+    summary["method"] = (
+        f"sliding window, {patches.PATCH}px patches at native resolution, "
+        "whole sections, no downsampling"
+    )
+    print(f"held-out test set ({len(test_ids)} whole sections, native resolution):")
+    print(report(summary))
+
+    config.REPORT_DIR.mkdir(exist_ok=True)
+    out = config.REPORT_DIR / "lumenstone_s2_patches_test_metrics.json"
+    with open(out, "w") as f:
+        json.dump(summary, f, indent=2)
+    print(f"wrote {out}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--eval", action="store_true")
+    evaluate() if parser.parse_args().eval else train()

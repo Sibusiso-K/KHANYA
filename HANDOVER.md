@@ -17,6 +17,55 @@ Entry format:
 
 ---
 
+## 2026-08-14 — Sibusiso (9)
+
+**Did:** Built patch-based sampling at native resolution - the fix for the
+magnetite IoU 0.000 failure in entry (8). Two independent changes, deliberately
+kept conceptually separate in `src/segmentation/patches.py`:
+
+1. **Native resolution.** Patches are cropped from the full 3396x2547 image and
+   never resized, so the model sees real grain boundaries at sensor resolution.
+   The resize baseline threw away a 6.6x linear downsample before training.
+2. **Balanced patch centres.** A class is picked uniformly first, then a pixel
+   of that class, then a 512px patch is cropped around it. Magnetite centres
+   ~20% of patches against its 1.84% area share.
+
+**Verified the sampler does what it claims before spending compute on it:**
+across 32 sampled patches, magnetite appears in 14 of them (vs 1.84% of pixels
+overall). But its pixel share *inside* those patches is still 1.70% - so
+**balanced centring fixes EXPOSURE, not PRIOR.** Be precise about that
+distinction if asked; claiming it "fixes class imbalance" would be wrong and is
+exactly the kind of overclaim the petroscope authors warn against.
+
+Also dropped LR to 2e-4 from the baseline's 1e-3. In the baseline run the
+minerals sat at IoU 0.0 for several epochs, which is the signature of too high
+an LR for a 5-class fine-tune of a pretrained backbone.
+
+**Changed:** new `src/segmentation/patches.py`, new
+`src/segmentation/train_patches.py`, `.gitignore`. Kept separate from
+`train_lumenstone.py` on purpose - the whole value here is a controlled
+comparison against the resize baseline, which is worthless if the baseline
+drifts. A class-coordinate index is cached to
+`data/raw/lumenstone/s2_class_index.npz` (gitignored, rebuilds in ~40s).
+
+**Blocked on:** nothing. Training running now (8 epochs, 64 patches/epoch, CPU,
+~2.2h).
+
+**Important on how to read the two runs:** the patch model's *validation*
+numbers are computed on balanced patches and are therefore NOT comparable to
+the resize baseline's whole-section validation - balanced patches flatter rare
+classes by construction. The only fair comparison is `--eval`, which runs
+sliding-window inference over whole native-resolution sections, exactly like the
+baseline scored. **Do not put patch-val numbers next to baseline-val numbers on
+a slide.**
+
+**Next:** when training finishes, run `--eval` for the honest whole-section
+number, then re-run `python -m src.decision_gap` and compare the flip rate
+against the baseline's 33%. That before/after, framed as metal recovered rather
+than IoU, is the strongest slide available.
+
+---
+
 ## 2026-08-14 — Sibusiso (8)
 
 **Did:** S2 baseline finished. **First result that meets the brief's >=3 phase

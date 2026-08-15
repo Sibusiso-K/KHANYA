@@ -9,3 +9,4 @@ reports/*.csv
 .ipynb_checkpoints/
 seg_train.log
 lumenstone_train.log
+patches_train.log
