@@ -19,11 +19,16 @@ CLAUDE.md  >  docs/01-design-v3.md  >  docs/02-gauntlet-findings.md  >  everythi
 | File | What it is |
 |---|---|
 | [`../CLAUDE.md`](../CLAUDE.md) | Project constitution. Outranks everything here. |
-| [`01-design-v3.md`](01-design-v3.md) | **The current design.** Computational ore microscope: quantitative reflectance + full linear Stokes polarimetry at 0.2–1.6 µm/px. |
+| [`01-design-v3.md`](01-design-v3.md) | **The current design** for everything except the instrument. Computational ore microscope: quantitative reflectance + full linear Stokes polarimetry. Its 0.2–1.6 µm/px is now a *design target*, not something that will be measured — see ADR-0002 below. |
 | [`02-gauntlet-findings.md`](02-gauntlet-findings.md) | Adversarial review findings and dispositions. **Why the design is what it is.** Read before proposing anything. |
 | [`03-free-stack.md`](03-free-stack.md) | Resources: Craig & Vaughan (open access), IMA/COM QDF, OpenFlexure, LumenStone, IronOreRLM, CGS core library. |
 | [`tools/gauntlet.md`](tools/gauntlet.md) | The adversarial review prompt. Re-run at week 3 and week 6 with real code attached. |
-| `04-decisions/` | One ADR per significant decision. Currently empty. |
+| `04-decisions/` | One ADR per significant decision. **[0001](04-decisions/0001-ome-tiff-via-tifffile-not-bioformats.md)** OME-TIFF via `tifffile`, not Bio-Formats. **[0002](04-decisions/0002-software-only-no-instrument-is-built.md)** Software only — no instrument is built. |
+
+> **ADR-0002 overrides the hardware content of every document in this folder, including
+> `01-design-v3.md`.** Where a doc describes building, calibrating, or measuring on a rig, read it
+> as a costed design. Nothing is bought. The optical *physics* in those docs is untouched — it is
+> a property of the data, not of the instrument.
 
 ## Partially superseded — read with the header
 
@@ -75,16 +80,23 @@ microscopy, standardised since the 1940s.
 
 Two consequences:
 
-1. **The resolution gap closes.** A Raspberry Pi HQ camera with a reversed M12 lens reaches
-   ~0.2 µm/px; SEM-MLA runs at ~3 µm/px. We stop inferring across three orders of magnitude
-   and start measuring directly.
+1. **The resolution gap closes** — *on paper*. A Raspberry Pi HQ camera with a reversed M12 lens
+   is calculated to reach ~0.2 µm/px against SEM-MLA's ~3 µm/px. Since ADR-0002 that is an
+   argument about the design, not a measurement, and must be presented as one.
 2. **Polarimetry splits the sulphides.** Pentlandite is cubic and stays dark through a full
    analyser rotation; pyrrhotite is anisotropic and lights up. That distinction governs PGE
    deportment — and it is the entire point of the project.
 
-The defensible claim, kept narrow: published automated optical mineralogy uses **non-polarised**
-light. Adding full Stokes polarimetry to multispectral quantitative reflectance discriminates
-the base-metal sulphides.
+The defensible claim, kept narrow: published automated optical mineralogy classifies on
+**multispectral specular reflectance**. Recovering the full linear Stokes vector per pixel adds
+an axis reflectance does not contain, and that axis splits the base-metal sulphides.
+
+**pivot 4 — "we are not building it."** 2026-08-15, [ADR-0002](04-decisions/0002-software-only-no-instrument-is-built.md).
+No hardware is purchased. The rig becomes a costed BOM; evaluation runs on public data. This
+works only because `RotationSeries` is the acquisition boundary — a rotation series is a rotation
+series whether the analyser was turned by a stepper, by a hand on a Leitz stage, or by a forward
+model, and `reefprint.polarim` never learns which. Read the ADR for what it costs, including the
+half of the week-1 gate it turns into a phantom.
 
 ---
 
@@ -95,6 +107,8 @@ the base-metal sulphides.
 | **F1** | Chromite-proxy collapse. v3 measures directly rather than inferring, but the falsification test still runs and the result is reported either way. | Week 2 gate |
 | **F2 (partial)** | Talc/serpentine without SWIR is unproven. If it fails, drop to two properties. | Week 2, empirical |
 | **S2** | Closed-loop confounding: plant history was generated under FloatStar control. No causal claim may be drawn from observational plant data. | Any use of the Kaggle flotation dataset |
+| **N1** *(new, 2026-08-15)* | **Prior art on polarised-light ore imaging.** Pirard, Lebichot & Krier (2007), *Particle texture analysis using polarized light imaging and grey level intercepts*. "Nobody uses polarised light" is false. The narrow claim — per-pixel Stokes recovery, not imaging under crossed polars — appears to survive, but the paper is unread. | The ten-minute talk. Read before week 6. |
+| **N2** *(new, 2026-08-15)* | **Anisotropy noise floor goes as 1/S0.** `E[DOLP \| isotropic] = σ√(8/n)·√(π/2)/S0`, confirmed to 3 s.f. in `experiments/001-week1-gate/`. Any fixed anisotropy threshold is therefore a reflectance-dependent classifier in disguise: dark gangue reads ~10× pentlandite's apparent anisotropy from identical noise. | Every discrimination rule downstream. Threshold must be conditioned on S0 and reported with an interval. |
 
 Plus the blind spots in `02-gauntlet-findings.md` — particularly that **abstention fires exactly
 when it is least safe** (novel texture triggers OOD; novel texture *is* an ore transition), and
@@ -106,7 +120,7 @@ that **adaptive illumination is a leakage channel** (freeze the schedule for all
 
 | Week | Gate — binary, on evidence |
 |---|---|
-| **1** | **Analyser rotates, pentlandite stays dark while pyrrhotite lights up, on screen** ← current |
+| **1** | **Rotation series in, per-pixel Stokes out, pentlandite dark while pyrrhotite lights up, on screen** ← current. Leg (a) synthetic phantom — **passed**, 40.4× separation, `experiments/001-week1-gate/`. Leg (b) the same inversion on a public reflected-light rotation series (LumenStone S3 v2 XPL rotations) — **outstanding**. |
 | 2 | Falsification test computed, with CI |
 | 3 | Conformal coverage within band, per held-out locality |
 | 4 | Zero silent failures under degraded input |

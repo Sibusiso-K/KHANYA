@@ -2,7 +2,7 @@
 
 - **Date:** 2026-08-15
 - **Status:** Accepted
-- **Decider:** *(unassigned — CLAUDE.md open question 4)*
+- **Decider:** Lethabo Mphukuile
 - **Relates to:** gauntlet **S3** (licence stack unassignable) · CLAUDE.md Rule 7 · `SBOM.md`
 
 ## Context

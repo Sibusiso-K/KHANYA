@@ -75,8 +75,9 @@ licence here before any weight is used in a graded artefact.
 | Item | Issue | Disposition |
 |---|---|---|
 | **Bio-Formats** | The OME Bio-Formats distribution is **GPL-2.0**. CLAUDE.md's stack line lists it for OME-TIFF. Linking GPL-2.0 into a deliverable assigned to Mintek is exactly the S3 failure mode. | **Use `tifffile` (BSD-3-Clause)** for OME-TIFF read/write and OME-XML metadata. Bio-Formats stays a *manual, offline* conversion tool if ever needed, never a dependency. Confirm the licence text before citing this. |
-| **Micro-Manager / `pymmcore`** | Mixed licensing across core, device adapters, and vendor device SDKs. Vendor camera SDKs are frequently non-redistributable. | Confirm per adapter *before* the acquisition path depends on it. The Pi/`picamera2` path avoids it entirely. |
-| **`picamera2` / `libcamera`** | Apache-2.0 / LGPL-2.1 respectively — VERIFY. | Confirm before the Pi build is load-bearing. |
+| **`petroscope`** | **GPL-3.0.** The library published alongside LumenStone (github.com/xubiker/petroscope). Copyleft, and funded under a Russian Science Foundation grant — a second, non-licence reason to keep it out of an assigned deliverable. | **BLOCKED as a dependency.** The LumenStone *data* is a separate question and is handled in the data table. Never `pip install petroscope`. |
+| **Micro-Manager / `pymmcore`** | Mixed licensing across core, device adapters, and vendor device SDKs. Vendor camera SDKs are frequently non-redistributable. | **Moot — ADR-0002, no rig, nothing to drive.** Removed from the stack. Revisit only if microscope access is ever donated. |
+| **`picamera2` / `libcamera`** | Apache-2.0 / LGPL-2.1 respectively — VERIFY. | **Moot — ADR-0002.** Not installed; not an extra. Was documented as an apt package on Raspberry Pi OS. |
 | **Hailo compiler** | EULA non-assignable. S3. | Optional accelerator, never load-bearing. On the kill list. |
 | **DINOv3** | Non-transferable, no patent grant, unilaterally amendable, Californian jurisdiction. | **BLOCKED.** Do not use. Use `timm`. |
 
@@ -86,9 +87,10 @@ Licence of *data* is separate from licence of *code*, and it constrains what may
 
 | Source | Terms | Status |
 |---|---|---|
-| IMA/COM Quantitative Data File | Published reflectance data, GTK-hosted | VERIFY — confirm reuse terms before redistributing values |
-| LumenStone | VERIFY | Check before training on it |
-| IronOreRLM | VERIFY | Check before training on it |
+| IMA/COM Quantitative Data File | Published reflectance data, GTK-hosted (`projects.gtk.fi/com/results/reflectance_data.html`). Also USGS OFR 79-658 and OFR 89-306A/B; Criddle & Stanley 1993, 3rd ed. | VERIFY — confirm reuse terms before redistributing values. **Blocks the `Provenance.PLACEHOLDER` reflectances in `reefprint.acquire.phantom`.** |
+| LumenStone (S2, S3) | **No named licence.** Stated informally as free to use in research, with a citation requirement if published. Contact `khvostikov@cs.msu.ru`. | **CONDITION** — usable for evaluation, cite the references. Get the terms in writing before anything derived from it is published or assigned. |
+| IronOreRLM | 563 reflected-light images. ScienceDirect `S2352340925002720`. | VERIFY — check before training on it |
+| MUMDMC2025 | 14,400 photomicrographs, 5 silicate classes, 72 rotational positions at 5° over 360°, PPL + XPL. *Nature Sci Data* 2025. | VERIFY. **Transmitted light on granite silicates** — exercises the rotation pipeline, carries none of the reflected-light ore physics. Do not cite it as ore evidence. |
 | CGS National Core Library specimens | Sampling policy — open question 2 | VERIFY — phone call |
 | Craig & Vaughan, *Ore Microscopy and Ore Petrography* 2nd ed. | Open access, MSA | Reference only; do not reproduce figures without checking |
 | Mine-sourced specimens | Possible MTA restrictions | Blind spot 3 — an MTA can make the open benchmark unreleasable |

@@ -6,7 +6,9 @@ Project constitution. Claude Code reads this at the start of every session. Keep
 
 ## What this is
 
-**REEFPRINT is a computational ore microscope.** A ~R5,000 instrument that identifies ore minerals and quantifies their deportment by **multispectral quantitative reflectance plus full linear Stokes polarimetry**, at 0.2–1.6 µm/pixel, with calibrated uncertainty and an explicit refusal mechanism.
+**REEFPRINT is a computational ore microscope.** It identifies ore minerals and quantifies their deportment by **multispectral quantitative reflectance plus full linear Stokes polarimetry**, with calibrated uncertainty and an explicit refusal mechanism.
+
+**It is software, evaluated on public data. No instrument is built — see [ADR-0002](docs/04-decisions/0002-software-only-no-instrument-is-built.md).** The ~R5,000 rig is a costed design presented as a design. Never imply it exists. The 0.2–1.6 µm/pixel figure is a design target, not a measurement, and nothing may be derived from it.
 
 Built for the Mintek-SCi Grad Hackathon 2026, challenge: *Computer Vision for Real-Time Mineralogical Characterisation*. Team Sonar, University of the Witwatersrand. Final: 1 October 2026, 13:00 submission, 10-minute presentation.
 
@@ -26,13 +28,15 @@ Opaque ore minerals are identified by **quantitative specular reflectance (R%), 
 | Chromite | cubic, isotropic, R ≈ 13% | entrainment risk, smelter penalty |
 | Gangue / resin | R ≈ 4.5–5% | discriminated by reflectance alone |
 
-**The defensible claim (narrow, keep it narrow):** published automated optical mineralogy uses *non-polarised* light. Adding full Stokes polarimetry to multispectral quantitative reflectance discriminates the sulphides, and that discrimination governs PGE deportment and flotation response.
+**The defensible claim (narrow, keep it narrow):** published automated optical mineralogy — the Castroviejo/Pirard line, CAMEVA and AMCO — classifies on *multispectral specular reflectance*. Recovering the **full linear Stokes vector per pixel** from a rotating-analyser series adds an axis that reflectance does not contain, and that axis discriminates the base-metal sulphides whose split governs PGE deportment and flotation response.
+
+> ⚠️ **Prior-art risk, open.** Do not say "nobody uses polarised light" — that is false and a judge may know it. **Pirard, Lebichot & Krier (2007), *Particle texture analysis using polarized light imaging and grey level intercepts*** is direct prior art on polarised-light imaging in ore microscopy. Imaging under crossed polars is *not* per-pixel Stokes recovery, which is why the narrow claim above survives — but the paper must be read before week 6 and the distinction stated in the talk, not discovered on stage. A targeted search for Stokes polarimetry on sulphides returned nothing specific; that is weak support, not clearance.
 
 ## Hard constraints
 
 - **No proprietary Mintek data.** Public sources only.
 - Free-tier compute only: Kaggle (30 h/wk), Colab, Lightning AI, Modal, CHPC if granted.
-- Hardware budget ≈ R5,000. Polarisers salvaged from dead LCD panels.
+- **Hardware budget is R0. Nothing is bought, nothing is built** (ADR-0002). The rig is a BOM. Any claim that needed a rig to measure it is now a citation or a flagged assumption.
 - Every dependency must be **assignable to Mintek**. See licence rules below.
 - Demo must run **fully offline on one laptop**. No network dependency on stage.
 
@@ -86,23 +90,25 @@ reefprint/
 
 ## Stack
 
-Python 3.12 · `uv` · `ruff` · pytest + hypothesis · **Micro-Manager** (µManager, Python wrapper) for acquisition · ImageJ/Fiji · scikit-image · OpenCV · napari · PyTorch · `timm` (Apache-2.0) · `segmentation_models_pytorch` · XGBoost · `crepes`/MAPIE · ONNX Runtime · `asyncua` · `omf` (MIT) · Eclipse BaSyx · MLflow · DVC · OME-TIFF via Bio-Formats
+Python 3.12 · `uv` · `ruff` · pytest + hypothesis · scikit-image · OpenCV · napari · PyTorch · `timm` (Apache-2.0) · `segmentation_models_pytorch` · XGBoost · `crepes`/MAPIE · ONNX Runtime · `asyncua` · `omf` (MIT) · Eclipse BaSyx · MLflow · DVC · **OME-TIFF via `tifffile`, not Bio-Formats** ([ADR-0001](docs/04-decisions/0001-ome-tiff-via-tifffile-not-bioformats.md) — Bio-Formats is GPL-2.0)
 
-Hardware: Raspberry Pi 5 · Pi HQ Camera · reversed M12 or microscope objective · **OpenFlexure** printed stage (sub-100 nm, open source) · steppers + PCA9685 · multispectral LED ring · salvaged LCD polarisers · acrylic-resin polished sections (ready in <3 h)
+Micro-Manager and ImageJ/Fiji are **not** dependencies. They were acquisition-side; with no rig there is nothing to drive. Data comes in through `RotationSeries`, which is the acquisition boundary and takes a phantom, a stored public series, or a driver that does not exist.
+
+Instrument design, **not built** (ADR-0002): Raspberry Pi 5 · Pi HQ Camera · reversed M12 or microscope objective · **OpenFlexure** printed stage (sub-100 nm, open source) · steppers + PCA9685 · multispectral LED ring · salvaged LCD polarisers · acrylic-resin polished sections. This is a BOM to present, not kit to buy.
 
 ## Reference sources — free and authoritative
 
 - **Craig & Vaughan, *Ore Microscopy and Ore Petrography* 2nd ed.** — full open access, MSA. Chapters 3, 5, 11 are essential.
 - **IMA/COM Quantitative Data File** — 510 species, reflectance spectra; searchable at projects.gtk.fi/com/results/reflectance_data.html. **This is the teacher.**
-- **LumenStone** — polished-section segmentation dataset, PPL + XPL
-- **IronOreRLM** — 563 reflected-light images, domain-shift testing
+- **LumenStone** — polished-section segmentation dataset with pixel masks, ×50, 3396×2547. Informal terms ("free to use… cite the references"), **no named licence** — confirm before publishing anything derived. Two subsets matter: **S2** (Norilsk layered ultramafic — pyrrhotite, chalcopyrite, pentlandite, magnetite; the same Ni-Cu-PGE sulphide assemblage as the Merensky/UG2 BMS) and **S3 v2, which ships XPL *rotation* sequences** on strongly anisotropic ore minerals. S3's rotations are the public reflected-light data the week-1 gate's second leg runs on. The `petroscope` library that accompanies it is **GPL-3.0 — data yes, library never**.
+- **IronOreRLM** — 563 reflected-light images, India. Domain-shift testing.
 - **CGS National Core Library**, Donkerhoek — 1,500 boreholes, real Bushveld
 
 ## Weekly gates
 
 | Week | Gate — binary, on evidence |
 |---|---|
-| 1 | Analyser rotates, pentlandite stays dark while pyrrhotite lights up, on screen |
+| 1 | Rotation series in, per-pixel Stokes out, pentlandite dark while pyrrhotite lights up, on screen. **Two legs:** (a) synthetic phantom with analytic ground truth — *passed, `experiments/001-week1-gate/`*; (b) the same inversion on a stored **public reflected-light rotation series** — outstanding. Leg (a) alone proves the maths, not the mineralogy; do not present it as more. |
 | 2 | **Falsification test computed, with CI** |
 | 3 | Conformal coverage within band, **per held-out locality** |
 | 4 | Zero silent failures under degraded input |
@@ -120,4 +126,24 @@ Federated layer → four of five agents (keep Curator) → adaptive illumination
 1. Can talc/serpentine be discriminated without SWIR? Empirical, week 2. If no, drop to two properties.
 2. CGS sampling policy — phone call.
 3. Polish quality control protocol.
-4. Single technical decision-maker — **name them in this file.**
+4. ~~Single technical decision-maker~~ — **CLOSED, 2026-08-15.**
+
+## Single technical decision-maker
+
+**Lethabo Mphukuile** — Domain lead (Business Informatics / prior metallurgical engineering).
+
+*(Name taken from the git commit identity. Correct the spelling here if it is wrong — it goes
+on every ADR.)*
+
+Breaks all architecture ties. Not a consensus role: when the team splits on a technical
+decision, this is the person who ends it, and the decision is written up as an ADR in
+`docs/04-decisions/` the same day.
+
+Two standing checks on this role, from the gauntlet blind spots:
+
+- **Blind spot 8** — the domain lead is also the rusty met-eng, who tends to be treated as the
+  oracle and to under-push against three CS majors. The tie-breaker role makes that worse, not
+  better. No load-bearing mineralogical claim rests on this person alone; book two external
+  calls instead.
+- **Blind spot 11** — the same person owns the ten-minute narrative. Do not let the talk
+  quietly become the specification.
