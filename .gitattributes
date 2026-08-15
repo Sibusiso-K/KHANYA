@@ -1,0 +1,13 @@
+# Normalise to LF in the repository. Team is on Windows + Linux; the commit history is the
+# originality defence and must not fill with whitespace-only diffs.
+* text=auto eol=lf
+
+# Binary — never diff, never convert.
+*.png    binary
+*.jpg    binary
+*.tif    binary
+*.tiff   binary
+*.pt     binary
+*.pth    binary
+*.onnx   binary
+*.pdf    binary

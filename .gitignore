@@ -1,0 +1,67 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- uv / venv ---
+.venv/
+venv/
+.python-version
+
+# --- test / lint / type caches ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# --- notebooks ---
+.ipynb_checkpoints/
+
+# --- ML / experiment tracking ---
+mlruns/
+mlartifacts/
+*.onnx
+*.pt
+*.pth
+*.ckpt
+
+# --- data: DVC-tracked, never committed raw (CLAUDE.md repo layout) ---
+data/**
+!data/.gitkeep
+!data/**/*.dvc
+!data/**/.gitignore
+
+# --- acquisition output: large, regenerable, provenance lives in the OME-XML header ---
+*.ome.tif
+*.ome.tiff
+captures/
+experiments/**/output/
+experiments/**/figures/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# --- secrets: nothing in this project should need one, which is the point ---
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# --- session scratch ---
+.remember/
