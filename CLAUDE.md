@@ -2,6 +2,10 @@
 
 Project constitution. Claude Code reads this at the start of every session. Keep it current; it outranks anything in `docs/`.
 
+**Read [`CONTEXT.md`](CONTEXT.md) next.** This file says what is *true* and what the *rules* are. `CONTEXT.md` says where we are, what the single next action is, and what has already bitten us — it is the file that lets a fresh session or a different machine pick up cold. Then [`docs/BUILDLOG.md`](docs/BUILDLOG.md) for what was tried and what failed, and [`docs/05-toolchain.md`](docs/05-toolchain.md) for what to install.
+
+**Maintenance rule — these four are updated as work proceeds, not at the end.** Any session that changes the state updates `CONTEXT.md` (§3 next action, §5 if something bit you) and appends to `docs/BUILDLOG.md`. Any session that adds a dependency updates `SBOM.md` **and** `docs/05-toolchain.md` in the same commit. A stale `CONTEXT.md` is worse than none, because it will be trusted.
+
 ---
 
 ## What this is
@@ -62,16 +66,19 @@ Nested model comparison, grouped by locality, CIs at honest n. If H₀ cannot be
 
 ```
 reefprint/
-├── CLAUDE.md                    ← this file
+├── CLAUDE.md                    ← this file. Constitution.
+├── CONTEXT.md                   situation report — read second, every session
 ├── README.md
 ├── pyproject.toml               uv, ruff, pytest
 ├── SBOM.md                      every dependency + licence
 ├── docs/
+│   ├── BUILDLOG.md              append-only: what was tried, what worked, what did not
 │   ├── 00-STATUS.md             what is current vs superseded
 │   ├── 01-design-v3.md          current design
 │   ├── 02-gauntlet-findings.md  adversarial review + dispositions
-│   ├── 03-free-stack.md         resources, data, references
+│   ├── 03-free-stack.md         resources, data, references (§2 §3 §6 superseded)
 │   ├── 04-decisions/            one ADR per significant decision
+│   ├── 05-toolchain.md          every piece of software we install, and what we do not
 │   └── archive/                 v1, v2, UMLILO — historical only
 ├── src/reefprint/
 │   ├── acquire/                 µManager control, LED sequencing, analyser rotation
@@ -89,6 +96,8 @@ reefprint/
 ```
 
 ## Stack
+
+**What to actually install, and when: [`docs/05-toolchain.md`](docs/05-toolchain.md).** It also lists what we decided *not* to install and why, so nobody helpfully re-adds Bio-Formats. Licences are in [`SBOM.md`](SBOM.md), which governs.
 
 Python 3.12 · `uv` · `ruff` · pytest + hypothesis · scikit-image · OpenCV · napari · PyTorch · `timm` (Apache-2.0) · `segmentation_models_pytorch` · XGBoost · `crepes`/MAPIE · ONNX Runtime · `asyncua` · `omf` (MIT) · Eclipse BaSyx · MLflow · DVC · **OME-TIFF via `tifffile`, not Bio-Formats** ([ADR-0001](docs/04-decisions/0001-ome-tiff-via-tifffile-not-bioformats.md) — Bio-Formats is GPL-2.0)
 

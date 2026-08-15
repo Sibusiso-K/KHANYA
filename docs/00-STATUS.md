@@ -19,9 +19,11 @@ CLAUDE.md  >  docs/01-design-v3.md  >  docs/02-gauntlet-findings.md  >  everythi
 | File | What it is |
 |---|---|
 | [`../CLAUDE.md`](../CLAUDE.md) | Project constitution. Outranks everything here. |
+| [`../CONTEXT.md`](../CONTEXT.md) | **Situation report.** Where we are, the single next action, and the five things that have already bitten us. Read second, after CLAUDE.md. |
+| [`BUILDLOG.md`](BUILDLOG.md) | Append-only record of what was tried, what worked, what failed. Rule 8 — the commit history is the originality defence and this is its prose companion. |
+| [`05-toolchain.md`](05-toolchain.md) | Every piece of software we install, when, and what we deliberately do not. Supersedes `03-free-stack.md` §3. |
 | [`01-design-v3.md`](01-design-v3.md) | **The current design** for everything except the instrument. Computational ore microscope: quantitative reflectance + full linear Stokes polarimetry. Its 0.2–1.6 µm/px is now a *design target*, not something that will be measured — see ADR-0002 below. |
 | [`02-gauntlet-findings.md`](02-gauntlet-findings.md) | Adversarial review findings and dispositions. **Why the design is what it is.** Read before proposing anything. |
-| [`03-free-stack.md`](03-free-stack.md) | Resources: Craig & Vaughan (open access), IMA/COM QDF, OpenFlexure, LumenStone, IronOreRLM, CGS core library. |
 | [`tools/gauntlet.md`](tools/gauntlet.md) | The adversarial review prompt. Re-run at week 3 and week 6 with real code attached. |
 | `04-decisions/` | One ADR per significant decision. **[0001](04-decisions/0001-ome-tiff-via-tifffile-not-bioformats.md)** OME-TIFF via `tifffile`, not Bio-Formats. **[0002](04-decisions/0002-software-only-no-instrument-is-built.md)** Software only — no instrument is built. |
 
@@ -34,6 +36,7 @@ CLAUDE.md  >  docs/01-design-v3.md  >  docs/02-gauntlet-findings.md  >  everythi
 
 | File | Status |
 |---|---|
+| [`03-free-stack.md`](03-free-stack.md) | **Mixed.** §1 knowledge and §5 compute are **live**. §4 data and §7 pitch are live **with an inline correction each** — the "that's your gap" novelty claim (finding N1) and the past tense on the R5,200 BOM. **§2 is a design, nothing is built** (ADR-0002). **§3 software table is superseded by [`05-toolchain.md`](05-toolchain.md)** — it lists Micro-Manager, ImageJ/Fiji and Bio-Formats, all three out (ADR-0001, ADR-0002). **§6 BOM is superseded** — hardware budget is R0; it is a costing we present, not a spend. |
 | [`archive/reefprint-deployment-agents-training.md`](archive/reefprint-deployment-agents-training.md) | **Mixed.** §1 tiers, §2 degradation ladder / load-shedding / calibration drift, §4 training and compute plan, and §6 formats are **live**. §3 agent roster beyond Curator, §5 hyperspectral data stack, §7 capture modes, §8 capability stack are **obsolete**. |
 
 ## The record — not wrong, just not current

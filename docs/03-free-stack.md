@@ -2,6 +2,17 @@
 
 **Team Sonar · 15 August 2026 · everything verified against a live source**
 
+> **PARTIALLY SUPERSEDED, 2026-08-15.**
+> §1 (knowledge) and §5 (compute) are **live**. §4 (data) and §7 (the pitch) are live **with an
+> inline correction each** — the novelty claim in §4 and the past tense in §7.
+> **§2 is now a design, not a plan** — nothing is built ([ADR-0002](04-decisions/0002-software-only-no-instrument-is-built.md)).
+> **§3 is superseded by [`05-toolchain.md`](05-toolchain.md)** — it still lists Micro-Manager,
+> ImageJ/Fiji and Bio-Formats, all three of which are out ([ADR-0001](04-decisions/0001-ome-tiff-via-tifffile-not-bioformats.md), ADR-0002).
+> **§6 is superseded** — it is a purchase list totalling ≈R5,200 and the hardware budget is R0.
+> Read it as the costed BOM we *present*, never as something we bought.
+> The section headers below carry their own markers. Do not delete the stale content — it is the
+> record of what was believed on 15 August, and the ADRs point back at it.
+
 The v3 pivot to computational ore microscopy turns out to sit on top of a field that has been giving its foundations away for decades. Almost every component is free, and — more importantly — *authoritative* rather than improvised.
 
 ---
@@ -39,7 +50,11 @@ Also free: **RRUFF** (rruff.info — Raman, XRD, chemistry), **Mindat**, and MSA
 
 ---
 
-## 2. The instrument — open hardware
+## 2. The instrument — open hardware  ⚠️ *design only, nothing is built*
+
+> **ADR-0002.** Everything in this section is a costed design we present. No board, lens, stepper
+> or polariser is purchased. The physics arguments are untouched — they are properties of the
+> data, not of the instrument — but no number here may be quoted as measured.
 
 ### OpenFlexure Microscope
 
@@ -65,7 +80,13 @@ Certified standards are the one genuinely expensive item. You may not need them.
 
 ---
 
-## 3. The software — all free, all standard
+## 3. The software — all free, all standard  ⛔ *SUPERSEDED by [`05-toolchain.md`](05-toolchain.md)*
+
+> **Three rows in this table are wrong as of 15 August 2026.** Micro-Manager and ImageJ/Fiji were
+> acquisition-side and there is no rig to drive (ADR-0002). Bio-Formats is **GPL-2.0** and
+> unassignable — OME-TIFF goes through `tifffile` (BSD-3-Clause) instead (ADR-0001).
+> [`05-toolchain.md`](05-toolchain.md) is the current answer to *what do we download*.
+> The table is left intact as the record.
 
 | Tool | Role | Note |
 |---|---|---|
@@ -94,7 +115,15 @@ Certified standards are the one genuinely expensive item. You may not need them.
 | **CGS National Core Library** | 1,500 boreholes, 420 km, Donkerhoek | real Bushveld material, an hour away |
 | USGS splib07 · ECOSTRESS · RockSL | spectral libraries | free |
 
-**Prior art to cite (and to beat):** *Deep learning semantic segmentation of opaque and non-opaque minerals from epoxy resin in reflected light microscopy* (Minerals Engineering); *Res-UNet Ensemble Learning for Semantic Segmentation of Mineral Optical Microscopy Images* (Minerals); improved YOLOv8n for fine-grained mineral recognition; *Automated ore microscopy based on multispectral measurements of specular reflectance*. All of these use **non-polarised** light. That's your gap.
+**Prior art to cite (and to beat):** *Deep learning semantic segmentation of opaque and non-opaque minerals from epoxy resin in reflected light microscopy* (Minerals Engineering); *Res-UNet Ensemble Learning for Semantic Segmentation of Mineral Optical Microscopy Images* (Minerals); improved YOLOv8n for fine-grained mineral recognition; *Automated ore microscopy based on multispectral measurements of specular reflectance*. All of these use **non-polarised** light.
+
+> ⚠️ **The sentence that used to end this paragraph — "that's your gap" — was too broad and is
+> withdrawn (finding N1, 2026-08-15).** Those four papers use non-polarised light; **the field
+> does not.** *Pirard, Lebichot & Krier (2007), Particle texture analysis using polarized light
+> imaging and grey level intercepts* is direct prior art on polarised-light imaging in ore
+> microscopy, and it is **unread**. The surviving claim is narrower: **per-pixel full linear
+> Stokes recovery**, which is not the same thing as imaging under crossed polars. Read the paper
+> before week 6 and state the distinction in the talk rather than discovering it on stage.
 
 ---
 
@@ -106,7 +135,11 @@ Otherwise: Kaggle (30 hrs/week, P100), Colab (15–30 hrs/week T4), Lightning AI
 
 ---
 
-## 6. Revised bill of materials
+## 6. Revised bill of materials  ⛔ *SUPERSEDED — nothing is bought*
+
+> **ADR-0002. Hardware budget is R0.** This is the BOM we *present* as a design, and the R5,200
+> figure is a costing, not a spend. Nothing on this list exists. Never imply it does — and never
+> let "≈R5,200" drift into the talk as though a rig were assembled and measured.
 
 | Item | Cost |
 |---|---|
@@ -130,6 +163,12 @@ Textbook R0. Reference database R0. Instrument design R0. Control software R0. A
 You are not a student team improvising on a budget. You are a team that noticed the entire foundation of quantitative ore microscopy — the textbook, the international reference database, the instrument design, the control software — has been open for years, and that nobody had assembled it into a working computational instrument with polarimetry and modern learning on top.
 
 **"Five thousand rand and a broken monitor"** is a better line than any capex comparison you could construct. And it makes the tailings-and-junior-miner impact argument real rather than rhetorical — because if it costs R5,000, it actually is deployable by an operation that will never buy an SEM.
+
+> ⚠️ **Say it in the conditional, always** (ADR-0002). *"This is a R5,000 bill of materials"* is
+> true. *"We built it for R5,000"* is not, and one careless past tense turns a strong line into a
+> false claim under originality authentication. The honest version is stronger anyway: the whole
+> foundation of quantitative ore microscopy has been open for years, we assembled it into working
+> software, and the instrument it targets costs five thousand rand on paper.
 
 ---
 
