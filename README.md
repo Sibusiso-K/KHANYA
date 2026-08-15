@@ -37,8 +37,15 @@ Requires [`uv`](https://docs.astral.sh/uv/). Python 3.12.
 uv sync
 ```
 
-Heavy extras (`ml`, `integrate`, `dev-viz`, `hardware`) are opt-in — `uv sync --extra ml` — so
-a clean checkout does not pull PyTorch to run the tests.
+Heavy extras (`ml`, `integrate`, `viz`) are opt-in — `uv sync --extra ml` — so a clean checkout
+does not pull PyTorch to run the tests.
+
+**On the Pi**, the camera stack comes from apt, not pip — `picamera2` sits on system
+`libcamera` and pip-installing it drags in a Linux-only build dependency:
+
+```bash
+sudo apt install -y python3-picamera2
+```
 
 ```bash
 uv run pytest

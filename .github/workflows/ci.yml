@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_FROZEN: "0"
+
+jobs:
+  # Blocking. This is the contract: the tree is clean and the built code works.
+  check:
+    name: lint + tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - run: uv python install 3.12
+
+      - name: Install
+        run: uv sync --all-groups
+
+      - name: Lint
+        run: uv run ruff check --output-format=github .
+
+      - name: Format
+        run: uv run ruff format --check .
+
+      - name: Tests
+        run: uv run pytest -m "not placeholder" --cov --cov-report=term-missing
+
+  # Non-blocking on purpose. These fail by design — one per unbuilt module — so the red list is
+  # the backlog. CLAUDE.md Rule 8: commit early and often, including failures. A build that
+  # blocks on unbuilt work would just train the team to stop reading CI.
+  gates:
+    name: unbuilt gates (informational)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - run: uv python install 3.12
+
+      - name: Install
+        run: uv sync --all-groups
+
+      - name: What is still unbuilt
+        continue-on-error: true
+        run: |
+          uv run pytest -m placeholder -q --no-header -rf 2>&1 | tee gates.txt
+
+      - name: Summarise
+        if: always()
+        run: |
+          {
+            echo "## Unbuilt gates"
+            echo
+            echo '```'
+            grep -E '^FAILED' gates.txt || echo "none — every placeholder has been replaced"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,129 @@
+[project]
+name = "reefprint"
+version = "0.1.0"
+description = "A computational ore microscope: quantitative reflectance + full linear Stokes polarimetry"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "Apache-2.0" }
+
+# Kept deliberately lean. Anything heavy is an extra, so a clean checkout can run the test
+# suite without pulling PyTorch. Every addition here needs a matching row in SBOM.md, in the
+# same commit (CLAUDE.md Rule 7).
+dependencies = [
+    "numpy>=2.1",
+    "scipy>=1.14",
+    "scikit-image>=0.24",
+    "tifffile>=2024.8.30",   # OME-TIFF read/write. BSD-3. NOT Bio-Formats — see SBOM.md.
+    "imagecodecs>=2024.6.1",
+    "matplotlib>=3.9",
+]
+
+[project.optional-dependencies]
+ml = [
+    "torch>=2.4",
+    "timm>=1.0",                          # Apache-2.0. Not DINOv3 — gauntlet S3.
+    "segmentation-models-pytorch>=0.3.4",
+    "xgboost>=2.1",
+    "mapie>=0.9",
+    "onnxruntime>=1.19",
+]
+integrate = [
+    "asyncua>=1.1",   # LGPL-3.0: general-purpose machine only, never a sealed appliance. S3.
+]
+viz = [
+    "napari[pyqt6]>=0.5",   # dev-time inspection only; the demo UI must not depend on it.
+]
+
+# Deliberately not an extra: `picamera2`. On Raspberry Pi OS it is an apt package
+# (`sudo apt install -y python3-picamera2`) sitting on system `libcamera`, and pip-installing
+# it drags in `python-prctl`, which does not build off Linux. The Pi is a deployment target,
+# not something a dev laptop should have to resolve. See README, "On the Pi".
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=5.0",
+    "hypothesis>=6.112",   # physics invariants: Malus, S0 >= |S|, DOLP in [0,1]
+    "ruff>=0.6",
+    "pre-commit>=3.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/reefprint"]
+
+[tool.uv]
+package = true
+
+
+# ----------------------------------------------------------------------------------------------
+# ruff
+# ----------------------------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",    # pycodestyle
+    "F",         # pyflakes
+    "I",         # isort
+    "UP",        # pyupgrade
+    "B",         # bugbear
+    "SIM",       # simplify
+    "C4",        # comprehensions
+    "RUF",       # ruff-specific
+    "NPY",       # numpy-specific
+    "ANN",       # annotations — a physics codebase should say what its arrays are
+    "PT",        # pytest style
+    "PTH",       # pathlib over os.path
+    "ARG",       # unused arguments
+    "TID",       # tidy imports
+]
+ignore = [
+    "ANN401",   # Any is occasionally the honest annotation
+    "E501",     # line length is enforced by the formatter, not the linter
+    "B008",     # function call in default arg — normal in scientific signatures
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ANN201", "ANN001", "ARG001"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
+
+[tool.ruff.lint.isort]
+known-first-party = ["reefprint"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+
+# ----------------------------------------------------------------------------------------------
+# pytest
+# ----------------------------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-ra --strict-markers --strict-config"
+markers = [
+    "placeholder: unbuilt module. Fails on purpose — the red list is the backlog.",
+    "hardware: needs the physical rig (camera, rotating analyser, stage). Skipped in CI.",
+    "slow: takes more than a few seconds.",
+]
+filterwarnings = ["error::DeprecationWarning:reefprint.*"]
+
+
+# ----------------------------------------------------------------------------------------------
+# coverage
+# ----------------------------------------------------------------------------------------------
+[tool.coverage.run]
+source = ["src/reefprint"]
+branch = true
+
+[tool.coverage.report]
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError"]

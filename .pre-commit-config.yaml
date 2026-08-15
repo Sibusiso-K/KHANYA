@@ -1,0 +1,34 @@
+default_language_version:
+  python: python3.12
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-case-conflict          # Windows + Linux team
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: detect-private-key
+      - id: check-added-large-files       # raw data belongs in DVC, not in git
+        args: [--maxkb=2048]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.4.20
+    hooks:
+      - id: uv-lock
+
+# Deliberately NOT here: pytest. CLAUDE.md Rule 8 says commit early and often *including
+# failures*, and the placeholder tests fail by design. A hook that blocks the commit would
+# fight the constitution. CI runs the tests; the hook keeps the tree clean.
