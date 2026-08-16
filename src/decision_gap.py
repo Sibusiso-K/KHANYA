@@ -71,18 +71,31 @@ def main(model_name="resize"):
 
     for stem in sorted(test_ids):
         image = Image.open(ls.S2_DIR / "imgs" / "test" / f"{stem}.jpg").convert("RGB")
+        # Everything is compared at NATIVE resolution, for both models.
+        #
+        # MIN_PARTICLE_PIXELS is a fixed pixel count, so it corresponds to a
+        # different PHYSICAL grain size at each resolution. Comparing the resize
+        # model at 512x688 and the patch model at native therefore measures the
+        # models against two different references, and their flip rates are not
+        # comparable - which is how a 33% and a 50% appeared to be a regression
+        # when they were partly a change of ruler. Native is also the
+        # operationally honest choice: a plant receives a full-resolution mask
+        # whichever model produced it.
         if native:
             predicted, confidence = patch_module.sliding_window_predict(
                 model, image, dev
             )
         else:
             probabilities = model(ls.preprocess(image).to(dev))["out"][0].softmax(0)
-            predicted = probabilities.argmax(0).cpu().numpy()
             confidence = probabilities.max(0).values.mean().item()
+            small = probabilities.argmax(0).cpu().numpy().astype(np.uint8)
+            predicted = np.array(
+                Image.fromarray(small).resize(
+                    (image.width, image.height), Image.NEAREST
+                )
+            )
 
-        # Ground truth is matched to whatever resolution the prediction is at,
-        # so the minimum-particle-size filter treats both identically.
-        truth = ground_truth_labels(stem, match_prediction_size=not native)
+        truth = ground_truth_labels(stem, match_prediction_size=False)
         truth_result = modal.analyse(truth, ls.CLASS_NAMES)
         predicted_result = modal.analyse(predicted, ls.CLASS_NAMES)
 

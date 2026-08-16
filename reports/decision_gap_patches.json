@@ -1,5 +1,5 @@
 {
-  "model": "resize",
+  "model": "patches",
   "n_sections": 12,
   "n_recommendation_flips": 6,
   "flip_rate": 0.5,
@@ -9,7 +9,7 @@
       "liberation_truth": 0.9990911523134579,
       "liberation_predicted": 1.0,
       "payload_truth": 0.9094413311340954,
-      "payload_predicted": 0.9993887970764818,
+      "payload_predicted": 0.8848371498584928,
       "action_truth": "Continue at current setpoint",
       "action_predicted": "Continue at current setpoint",
       "flipped": false
@@ -17,49 +17,49 @@
     {
       "id": "test_02",
       "liberation_truth": 0.0024543420197791093,
-      "liberation_predicted": null,
-      "payload_truth": 0.009857085424990305,
-      "payload_predicted": 0.0,
-      "action_truth": "Grind finer",
-      "action_predicted": "Flag for manual review - no payload detected",
-      "flipped": true
-    },
-    {
-      "id": "test_03",
-      "liberation_truth": 0.005834512022630835,
       "liberation_predicted": 0.0,
-      "payload_truth": 0.49962781374022475,
-      "payload_predicted": 0.45440159916793504,
+      "payload_truth": 0.009857085424990305,
+      "payload_predicted": 0.007648905725736079,
       "action_truth": "Grind finer",
       "action_predicted": "Grind finer",
       "flipped": false
     },
     {
-      "id": "test_04",
-      "liberation_truth": 0.10588489852281899,
-      "liberation_predicted": 0.7474735590357294,
-      "payload_truth": 0.21005444857413372,
-      "payload_predicted": 0.40773017984241305,
+      "id": "test_03",
+      "liberation_truth": 0.005834512022630835,
+      "liberation_predicted": 0.9999942566923892,
+      "payload_truth": 0.49962781374022475,
+      "payload_predicted": 0.6752839973991356,
       "action_truth": "Grind finer",
       "action_predicted": "Continue at current setpoint",
+      "flipped": true
+    },
+    {
+      "id": "test_04",
+      "liberation_truth": 0.10588489852281899,
+      "liberation_predicted": 0.925980241731078,
+      "payload_truth": 0.21005444857413372,
+      "payload_predicted": 0.29246263946206974,
+      "action_truth": "Grind finer",
+      "action_predicted": "Adjust reagent dosage - depress reject phase",
       "flipped": true
     },
     {
       "id": "test_05",
       "liberation_truth": 0.08096421060442775,
-      "liberation_predicted": 0.5830472022298029,
+      "liberation_predicted": 0.7862408206738046,
       "payload_truth": 0.1943604936264393,
-      "payload_predicted": 0.49631108044692895,
+      "payload_predicted": 0.36613186943204606,
       "action_truth": "Grind finer",
-      "action_predicted": "Continue at current setpoint",
+      "action_predicted": "Adjust reagent dosage - depress reject phase",
       "flipped": true
     },
     {
       "id": "test_06",
       "liberation_truth": 0.04295877556262703,
-      "liberation_predicted": 0.003933531303642191,
+      "liberation_predicted": 0.023626282567548316,
       "payload_truth": 0.168221676890874,
-      "payload_predicted": 0.3128956986776425,
+      "payload_predicted": 0.40355936106966217,
       "action_truth": "Grind finer",
       "action_predicted": "Grind finer",
       "flipped": false
@@ -69,7 +69,7 @@
       "liberation_truth": 0.0,
       "liberation_predicted": 0.0,
       "payload_truth": 0.02435575621944218,
-      "payload_predicted": 0.01974398943624947,
+      "payload_predicted": 0.020246235630568224,
       "action_truth": "Grind finer",
       "action_predicted": "Grind finer",
       "flipped": false
@@ -77,9 +77,9 @@
     {
       "id": "test_08",
       "liberation_truth": 0.00041915605743063594,
-      "liberation_predicted": 0.0,
+      "liberation_predicted": 0.00014252718072794144,
       "payload_truth": 0.2510733220345496,
-      "payload_predicted": 0.2440603039172805,
+      "payload_predicted": 0.2442964365603603,
       "action_truth": "Grind finer",
       "action_predicted": "Grind finer",
       "flipped": false
@@ -89,7 +89,7 @@
       "liberation_truth": 0.9999681667689632,
       "liberation_predicted": 0.0,
       "payload_truth": 0.698757358457898,
-      "payload_predicted": 0.4518146044452648,
+      "payload_predicted": 0.458536500534903,
       "action_truth": "Continue at current setpoint",
       "action_predicted": "Grind finer",
       "flipped": true
@@ -99,7 +99,7 @@
       "liberation_truth": 0.8191671446184139,
       "liberation_predicted": 0.0,
       "payload_truth": 0.027110078444163015,
-      "payload_predicted": 0.019382036901127202,
+      "payload_predicted": 0.010469759246272328,
       "action_truth": "Adjust reagent dosage - depress reject phase",
       "action_predicted": "Grind finer",
       "flipped": true
@@ -109,7 +109,7 @@
       "liberation_truth": 0.9209294576226529,
       "liberation_predicted": 0.0,
       "payload_truth": 0.03192265318973586,
-      "payload_predicted": 0.041803207399975326,
+      "payload_predicted": 0.014301445300588512,
       "action_truth": "Adjust reagent dosage - depress reject phase",
       "action_predicted": "Grind finer",
       "flipped": true
@@ -117,9 +117,9 @@
     {
       "id": "test_12",
       "liberation_truth": 0.3289427270185597,
-      "liberation_predicted": 0.0,
+      "liberation_predicted": 0.009672141611710044,
       "payload_truth": 0.04673791092794252,
-      "payload_predicted": 0.028195971235795037,
+      "payload_predicted": 0.03574322097144411,
       "action_truth": "Grind finer",
       "action_predicted": "Grind finer",
       "flipped": false

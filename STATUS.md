@@ -294,10 +294,53 @@ than a Norilsk tool — swap the mapping, keep the logic.
 
 ---
 
+## 5b. UPDATE 2026-08-16 (final): better segmentation did NOT buy better decisions
+
+Both models re-measured at native resolution against the same ground truth:
+
+| | Resize (CE) | Patch (CE) |
+|---|---|---|
+| Mean IoU | 0.545 | **0.5725** |
+| **Recommendation flips** | **6/12 (50%)** | **6/12 (50%)** |
+| Liberation correlation vs truth | +0.128 | **-0.079** |
+| Liberation mean absolute error | 38.7% | 46.7% |
+
+**+2.8 points of mean IoU produced zero change in decision quality**, and
+predicted liberation is uncorrelated with true liberation — slightly *negative*
+for the better model. Predicted liberation is currently noise.
+
+Why, and it is structural: liberation comes from connected components, so
+particle identity is a question of **topology**. A few misclassified boundary
+pixels bridge two particles into one or split one in two, changing that
+particle's payload fraction discontinuously. Per-class IoU rewards correct grain
+*interiors*, which is nearly independent of correct grain *boundaries*.
+
+**This supersedes the earlier 33% figure**, which was measured at 512x688 where
+`MIN_PARTICLE_PIXELS` corresponds to a different physical grain size. Native is
+the correct reference and is what a plant receives.
+
+**What this means for the pitch.** The advisor's decision logic is validated — on
+ground-truth masks it gives coherent recommendations across the full range of ore
+textures. The *chain* is not validated, because segmentation cannot yet supply
+accurate particle topology. That is an honest and defensible position, and the
+finding itself is the most transferable thing we have: **in image-based
+mineralogy, per-class IoU is a poor proxy for operational value.**
+
+**Effort should now go to boundary topology, not class accuracy:** morphological
+post-processing and watershed separation; a liberation estimator less brittle
+than raw connected components (erode particles before measuring composition, or
+an area-fraction proxy that degrades gracefully); or instance-aware segmentation
+predicting particles directly. Chasing IoU is now demonstrably the wrong target.
+
+---
+
 ## 6. Numbers that must never be quoted
 
-- **50% flip rate** — resolution artefact from comparing native-resolution ground
-  truth against 512x688 predictions. **33%** is the like-for-like figure.
+- **33% flip rate** — measured at 512x688, where `MIN_PARTICLE_PIXELS` means a
+  different physical grain size. **50% at native resolution, for both models**,
+  is the correct figure (section 5b). The earlier note in this file claiming 33%
+  was the honest number is itself superseded — the ruler was wrong, not just the
+  alignment.
 - **Patch-model validation IoUs** — computed on balanced patches, which flatter
   rare classes by construction. Only whole-section `--eval` numbers are
   comparable to the baseline.

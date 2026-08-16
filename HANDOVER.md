@@ -17,6 +17,65 @@ Entry format:
 
 ---
 
+## 2026-08-16 — Sibusiso (13)
+
+**Did:** Ran the decision-gap on the better model, and got the most important
+result of the project so far. **It is not the one we were chasing.**
+
+**Better segmentation did NOT buy better decisions.** Both models measured at
+native resolution against the same ground truth:
+
+| | Resize | Patch |
+|---|---|---|
+| Mean IoU | 0.545 | **0.5725** |
+| Flips | **6/12 (50%)** | **6/12 (50%)** |
+| Liberation corr. vs truth | +0.128 | **-0.079** |
+| Liberation mean abs error | 38.7% | 46.7% |
+
++2.8 points of mean IoU changed the flip rate by **nothing**, and predicted
+liberation is **uncorrelated** with true liberation - slightly negative for the
+better model. Predicted liberation is currently noise.
+
+**Why, and it is structural not statistical:** liberation comes from connected
+components, so particle identity is a matter of **topology**. A few misclassified
+boundary pixels bridge two particles into one or split one in two, which changes
+that particle's payload fraction discontinuously. Per-class IoU rewards getting
+grain *interiors* right, which is nearly independent of getting grain
+*boundaries* right. Optimising one does not optimise the other.
+
+**Correction you need to know about: the 33% figure is dead.** It was measured
+with both sides at 512x688, and `MIN_PARTICLE_PIXELS` is a fixed pixel count, so
+it meant a different *physical* grain size there. Native resolution is the
+correct reference and is what a plant actually receives. **50% is the figure,
+for both models.** I have corrected `STATUS.md`, the research report section
+5.0.3, and added report section 5.0.4. If you already wrote 33% anywhere, change
+it.
+
+**What this means for the pitch, and I think it is actually a stronger story:**
+the advisor's decision logic is *validated* - on ground-truth masks it gives
+coherent recommendations across the full range of ore textures. The *chain* is
+not validated, because segmentation cannot yet supply accurate particle
+topology. That is honest and defensible, and the finding generalises: **in
+image-based mineralogy, per-class IoU is a poor proxy for operational value.**
+That is a genuinely useful thing to tell a room full of metallurgists.
+
+**Changed:** `src/decision_gap.py` (all comparisons now at native resolution for
+both models - the resize model's prediction is upsampled, which is what a plant
+would receive anyway), `STATUS.md` section 5b and section 6,
+`reports/KHANYA-01-research-phase.md` sections 5.0.3 and new 5.0.4,
+`reports/decision_gap.json`, `reports/decision_gap_patches.json`.
+**Blocked on:** nothing technical.
+**Next - and this redirects the remaining effort:** stop chasing IoU, it is
+demonstrably the wrong target. Go at boundary topology instead: morphological
+post-processing and watershed separation; or a liberation estimator less brittle
+than raw connected components (erode particles before measuring composition, or
+an area-fraction proxy that degrades gracefully); or instance-aware segmentation
+that predicts particles directly. Alongside that, the three decisions still with
+you - abstract scope, R6,000 rig, mentor request - are now the critical path at
+14 days out.
+
+---
+
 ## 2026-08-16 — Sibusiso (12)
 
 **Did:** Both jobs from entry (11) finished. Headline: **the patch model is our

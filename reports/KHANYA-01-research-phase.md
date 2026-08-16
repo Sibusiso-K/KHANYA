@@ -155,7 +155,18 @@ wrong changes what the plant is told to do. `src/decision_gap.py` runs the full
 advisor path twice over the same 12 held-out sections - once on ground-truth
 masks, once on predicted masks - and records where the recommendation changes.
 
-**4 of 12 recommendations flip (33%).** Numbers in `reports/decision_gap.json`.
+> **Superseded 2026-08-16.** The 33% below was measured with both sides at
+> 512x688. Because `MIN_PARTICLE_PIXELS` is a fixed pixel count, it represents a
+> different *physical* grain size at each resolution, so that figure is tied to
+> the working size rather than to the ore. Both models are now compared at
+> **native resolution**, which is also what a plant would receive. The corrected
+> figures are **6 of 12 (50%) for both the resize and the patch model** — see
+> section 5.0.4, which supersedes this subsection's headline number. The
+> per-section table below is retained because the failure *directions* it
+> describes are unchanged.
+
+**4 of 12 recommendations flip (33%)** at 512x688 reference — superseded, see
+above. Numbers in `reports/decision_gap.json`.
 
 | Section | Liberation, truth -> predicted | Change | Direction |
 |---|---|---|---|
@@ -182,6 +193,53 @@ reads 50% - but that figure is inflated, because the same physical grain carries
 ~44x fewer pixels in a prediction, so the minimum-particle-size filter discards
 far more particles on the predicted side. Three of those six flips were artefacts
 of scale, not model error. The like-for-like 33% is the honest figure.
+
+### 5.0.4 Better segmentation did not produce better decisions
+
+Both models evaluated at native resolution against the same ground truth, so the
+comparison isolates model quality:
+
+| | Resize (CE) | Patch (CE) |
+|---|---|---|
+| Mean IoU (whole sections) | 0.545 | **0.5725** |
+| Pixel accuracy | 0.879 | **0.8914** |
+| **Recommendation flips** | **6/12 (50%)** | **6/12 (50%)** |
+| Liberation correlation with truth | +0.128 | **-0.079** |
+| Liberation mean absolute error | 38.7% | 46.7% |
+
+Sources: `reports/decision_gap.json`, `reports/decision_gap_patches.json`.
+
+**Raising mean IoU by 2.8 points changed the flip rate not at all**, and left
+predicted liberation essentially uncorrelated with true liberation — marginally
+*negative* for the better-scoring model. Predicted liberation is, at present,
+noise.
+
+The mechanism is structural rather than statistical. Liberation is computed from
+connected components, so particle identity depends on **topology**: a handful of
+misclassified pixels along a grain boundary can bridge two particles into one or
+split one into two, and either changes that particle's payload fraction
+discontinuously. Per-class IoU rewards labelling grain *interiors* correctly,
+which is nearly independent of whether grain *boundaries* are topologically
+right. Optimising one does not optimise the other.
+
+**Consequence for the deliverable, stated plainly:** the advisor's decision logic
+is validated — on ground-truth masks it produces sensible, mineralogically
+coherent recommendations across the full range of ore textures. What is not yet
+validated is the *chain*, because the segmentation stage cannot yet supply
+particle topology accurate enough to drive it. Reporting mean IoU alone would
+completely hide this.
+
+**Where effort should go** (and this is the practically useful conclusion): not
+into per-class accuracy. Candidate directions, in order of expected value —
+morphological post-processing and watershed separation to repair boundary
+topology; a liberation estimator less brittle than raw connected components,
+for example eroding particles before composition is measured, or an
+area-fraction proxy that degrades gracefully; or instance-aware segmentation
+that predicts particles directly rather than inferring them from a semantic mask.
+
+This is arguably the project's most transferable finding: **in image-based
+mineralogy, per-class IoU is a poor proxy for operational value**, and a plant
+advisory system must be evaluated on the decisions it produces.
 
 ### 5.1 Methodological risk: class imbalance
 
