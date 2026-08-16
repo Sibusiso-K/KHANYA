@@ -17,6 +17,51 @@ Entry format:
 
 ---
 
+## 2026-08-16 — Sibusiso (17)
+
+**Did:** Final band results, and **a correction you need before writing
+anything.**
+
+| Config | Flips | unsafe | conservative | flagged |
+|---|---|---|---|---|
+| resize + refined + band | 4/12 (33%) | **0** | 1 | 3 |
+| patch + refined + band | 2/12 (17%) | **1** | 0 | 1 |
+
+**CORRECTION: entry (15) claimed patch+refined had ZERO unsafe flips. That was
+wrong.** It used a narrow definition counting only a predicted "Continue at
+current setpoint". The severity classifier is stricter and right: test_04 has
+truth liberation 40% ("grind finer") against predicted 74% ("adjust reagent
+dosage"). The plant does not grind, so locked payload still reports to
+tailings - unsafe by consequence even if the action is not literally "continue".
+**The honest figure is 1 unsafe, not 0. Do not quote the zero.**
+
+**The better model is the LESS safe one, and this is worth presenting rather
+than hiding.** On test_04 the resize model predicts 55% - inside the band, so it
+hedges. The patch model predicts 74% - outside the band, so it is confidently
+wrong. Higher average accuracy, worse calibration on exactly the case that
+matters. Real trade-off: patch is more decisive (half the disagreements), resize
+is safer (no metal at risk). In flotation an unnecessary check costs far less
+than lost metal, so **for a deployed advisory system resize+band is the
+defensible default**, with patch reserved for human-in-the-loop use. That is a
+more sophisticated answer than "we picked the highest mIoU" and judges will
+respect it.
+
+Also note the flip rate barely moves when the band is added. That is expected
+and is the point - the band converts dangerous disagreements into honest ones
+rather than removing them. **Anyone reading flip rate alone concludes nothing
+improved, so always show the severity split alongside it.**
+
+**Changed:** `STATUS.md` section 5d, `reports/decision_gap_patches_refined.json`.
+Prediction caches for both models are now populated, so any future threshold or
+policy change re-scores in seconds.
+**Blocked on:** nothing. **Modelling is finished** - further experiments have
+poor expected value versus writing.
+**Next:** report prose (sections 1, 2, 4, 6, 8, 10 still skeleton), energy/cost
+case, and your three calls: abstract scope, R6,000 rig, mentor request. 14 days
+to the abstract.
+
+---
+
 ## 2026-08-16 — Sibusiso (16)
 
 **Did:** Built the uncertainty band from entry (15). Three parts:

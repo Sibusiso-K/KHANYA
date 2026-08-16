@@ -367,7 +367,44 @@ setpoint while its payload is locked. Improved per-class accuracy was not
 useless; it was *unusable* until particle topology was repaired well enough to
 exploit it. Reporting either change in isolation would have understated both.
 
-**Both remaining flips straddle the liberation threshold** — test_04 truth 40%
+### 5d. UPDATE 2026-08-16: uncertainty band, and a correction
+
+The advisor now returns **"Marginal - verify before acting"** when liberation
+falls within `LIBERATION_MARGIN` (0.089) of the 0.50 floor. That width is the
+estimator's own mean absolute error on the held-out sections, not a chosen
+number, and must be re-derived if the estimator changes. Ground truth is scored
+with margin 0, since an annotation carries no estimator error.
+
+Flips are now classified by consequence, because counting a hedge the same as a
+confident wrong instruction would hide the band's entire effect:
+
+| Config | Flips | unsafe | conservative | flagged |
+|---|---|---|---|---|
+| resize + refined + band | 4/12 (33%) | **0** | 1 | 3 |
+| patch + refined + band | 2/12 (17%) | **1** | 0 | 1 |
+
+**Correction to the earlier claim of "zero unsafe flips" for patch+refined.**
+That used a narrow definition counting only a predicted "Continue at current
+setpoint". The severity classifier is stricter and correct: test_04 has truth
+liberation 40% ("grind finer") against predicted 74% ("adjust reagent dosage").
+The plant does not grind, so locked payload still reports to tailings - unsafe
+by consequence even though the action is not literally "continue". **The honest
+figure is 1 unsafe, not 0.**
+
+**The better model is the less safe one here, and that is worth presenting.** On
+test_04 the resize model predicts 55%, inside the band, and hedges; the patch
+model predicts 74%, outside the band, and is confidently wrong. Higher average
+accuracy, worse calibration on the case that matters. The trade-off is real:
+patch is more decisive (half the disagreements), resize is safer (no metal at
+risk). In flotation an unnecessary check is cheaper than lost metal, so **for a
+deployed advisory system the resize+band configuration is the defensible
+default**, with patch reserved for where a human reviews the output.
+
+Note the flip rate barely moves when the band is added. That is the point: the
+band does not remove disagreements, it converts dangerous ones into honest ones.
+Anyone reading flip rate alone will conclude nothing improved.
+
+**Both remaining patch flips straddle the liberation threshold** — test_04 truth 40%
 vs predicted 74%, test_05 truth 32% vs predicted 52%, against a 0.50 floor.
 test_05's prediction clears the threshold by two points. So what survives is not
 gross error but *threshold brittleness*: near 0.50 a small liberation error
