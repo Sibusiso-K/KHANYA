@@ -241,6 +241,50 @@ This is arguably the project's most transferable finding: **in image-based
 mineralogy, per-class IoU is a poor proxy for operational value**, and a plant
 advisory system must be evaluated on the decisions it produces.
 
+### 5.0.5 Repairing particle topology — the result to lead with
+
+Section 5.0.4 concluded that per-class accuracy was the wrong target and that
+particle topology was the binding constraint. Acting on that, `src/modal.py`
+gained a refinement stage applied identically to ground-truth and predicted
+masks (the estimator is what changed, so both sides must use it):
+
+- **morphological opening** — isolated misclassified pixels were inventing tiny
+  particles that scored as perfectly liberated and inflated the index
+- **binary hole filling** — a phase predicted as background *inside* a grain
+  punches a hole that splits one particle into two. This directly repairs a
+  known failure: magnetite is predicted as background 92.3% of the time, so
+  every magnetite inclusion was fragmenting its host grain
+- **marker-controlled watershed** on the Euclidean distance transform — the
+  centre of a grain lies further from background than the neck joining two
+  touching grains, so distance-transform peaks seed one marker per grain and the
+  watershed line falls on the neck
+
+| Setup | Flips | Liberation corr. | MAE | Unsafe "continue" |
+|---|---|---|---|---|
+| resize + raw components | 6/12 (50%) | +0.128 | 38.7% | 2 |
+| resize + refined | 4/12 (33%) | +0.709 | 16.4% | 1 |
+| patch + raw components | 6/12 (50%) | -0.079 | 46.7% | 1 |
+| **patch + refined** | **2/12 (17%)** | **+0.947** | **8.9%** | **0** |
+
+**The two interventions are complementary.** Better segmentation alone changed
+nothing; better topology alone helped substantially; together they reduce
+recommendation error to 2 sections in 12 and eliminate every flip in the
+expensive direction. Improved per-class accuracy was not worthless — it was
+unusable until topology was accurate enough to exploit it. This is the central
+methodological result of the project: **in image-based mineralogy, segmentation
+quality and particle-topology fidelity are separate axes, and operational value
+requires both.**
+
+**What still fails, and it is instructive.** Both surviving flips sit on the
+liberation threshold: test_04 truth 40% against predicted 74%, test_05 truth 32%
+against predicted 52%, with the floor at 50%. test_05 clears it by two points.
+The residual failure is therefore *threshold brittleness* rather than gross
+measurement error — within roughly one mean-absolute-error of the trip point, the
+recommendation is effectively a coin toss. The correct response is a declared
+uncertainty band: where the liberation estimate falls within the estimator's own
+error margin of a threshold, the honest output is "marginal — verify" rather than
+a confident instruction.
+
 ### 5.1 Methodological risk: class imbalance
 
 Mineral class frequencies are naturally very unbalanced; some phases occupy a few

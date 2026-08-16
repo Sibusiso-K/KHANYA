@@ -17,6 +17,46 @@ Entry format:
 
 ---
 
+## 2026-08-16 — Sibusiso (15)
+
+**Did:** Best model + best estimator. **This is our headline result.**
+
+| Setup | Flips | Liberation corr. | MAE | Unsafe "continue" |
+|---|---|---|---|---|
+| resize + raw | 6/12 (50%) | +0.128 | 38.7% | 2 |
+| resize + refined | 4/12 (33%) | +0.709 | 16.4% | 1 |
+| patch + raw | 6/12 (50%) | -0.079 | 46.7% | 1 |
+| **patch + refined** | **2/12 (17%)** | **+0.947** | **8.9%** | **0** |
+
+**The two changes are complementary and that is the story.** Better segmentation
+alone bought nothing (50% -> 50%). Better estimator alone helped (50% -> 33%).
+Together: **17% flip rate, liberation correlation 0.947, and ZERO flips in the
+expensive direction** - no section is told to continue at setpoint while its
+payload is locked. Better per-class accuracy was not useless, it was *unusable*
+until particle topology was good enough to exploit it. **Do not present either
+change on its own - in isolation each looks far weaker than it is.**
+
+**What still fails is worth knowing precisely:** both remaining flips straddle
+the 0.50 liberation threshold (test_04 truth 40% vs predicted 74%; test_05 truth
+32% vs predicted 52% - clearing the floor by two points). So the residual issue
+is **threshold brittleness**, not gross error: within about one MAE of a trip
+point the recommendation is close to a coin toss. The fix is cheap and I would
+build it before the event - a declared uncertainty band, so when the estimate
+sits within the estimator's own error margin of a threshold the output is
+"marginal - verify" rather than a confident instruction. That is also a good
+answer to the obvious judge question about trusting the number.
+
+**Changed:** `STATUS.md` section 5c, `reports/KHANYA-01-research-phase.md`
+new section 5.0.5, new `reports/decision_gap_patches_refined.json`.
+**Blocked on:** nothing.
+**Next:** the modelling is now good enough to stop. Remaining work is writing
+and decisions, not experiments: report prose (sections 1, 2, 4, 6, 8, 10 are
+still skeleton), the energy/cost case, the uncertainty band above, and your
+three calls - abstract scope, R6,000 rig, mentor request. 14 days to the
+abstract.
+
+---
+
 ## 2026-08-16 — Sibusiso (14)
 
 **Did:** Acted on entry (13)'s conclusion and **it worked.** Added a particle

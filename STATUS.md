@@ -349,15 +349,33 @@ ground-truth and predicted masks, since the *estimator* is what changed:
 - **marker-controlled watershed** on the distance transform — separates touching
   grains that raw connected components merge into one averaged particle
 
-| Setup | Flips | Liberation corr. vs truth | Liberation MAE |
-|---|---|---|---|
-| resize, raw components | 6/12 (50%) | +0.128 | 38.7% |
-| **resize, watershed+fill** | **4/12 (33%)** | **+0.709** | **16.4%** |
-| patch, raw components | 6/12 (50%) | -0.079 | 46.7% |
-| patch, watershed+fill | *running* | | |
+| Setup | Flips | Liberation corr. vs truth | Liberation MAE | Unsafe "continue" flips |
+|---|---|---|---|---|
+| resize, raw components | 6/12 (50%) | +0.128 | 38.7% | 2 |
+| resize, watershed+fill | 4/12 (33%) | +0.709 | 16.4% | 1 |
+| patch, raw components | 6/12 (50%) | -0.079 | 46.7% | 1 |
+| **patch, watershed+fill** | **2/12 (17%)** | **+0.947** | **8.9%** | **0** |
 
 Sources: `reports/decision_gap.json`, `reports/decision_gap_refined.json`,
-`reports/decision_gap_patches.json`.
+`reports/decision_gap_patches.json`, `reports/decision_gap_patches_refined.json`.
+
+**The two changes are complementary, and that is the finding.** Better
+segmentation alone bought nothing (50% -> 50%). Better estimator alone helped
+(50% -> 33%). Together they reach 17% with liberation correlation 0.947 and
+**zero flips in the expensive direction** — no section is told to continue at
+setpoint while its payload is locked. Improved per-class accuracy was not
+useless; it was *unusable* until particle topology was repaired well enough to
+exploit it. Reporting either change in isolation would have understated both.
+
+**Both remaining flips straddle the liberation threshold** — test_04 truth 40%
+vs predicted 74%, test_05 truth 32% vs predicted 52%, against a 0.50 floor.
+test_05's prediction clears the threshold by two points. So what survives is not
+gross error but *threshold brittleness*: near 0.50 a small liberation error
+flips the recommendation. That argues for a declared uncertainty band around
+each threshold — reporting "marginal, verify" rather than a confident action
+when the estimate sits within the model's own error margin (currently ~9% MAE).
+Worth building before the event; it is cheap and it directly addresses the
+failure mode that remains.
 
 **Liberation correlation went from +0.128 to +0.709 and error more than halved —
 by changing the estimator, on the WEAKER model, with no retraining.** This
