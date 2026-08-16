@@ -96,6 +96,92 @@ class ModalResult:
         return self.payload_pixels > 0
 
 
+# --- Boundary-topology refinement -------------------------------------------
+#
+# Raw connected components are brittle: predicted liberation came out
+# UNCORRELATED with true liberation (+0.128 resize, -0.079 patch) even as mean
+# IoU improved, because particle identity is a topological property. Three
+# distinct failure modes, each with its own repair:
+#
+#   speckle      isolated misclassified pixels invent tiny particles, which
+#                score as perfectly liberated and inflate the index
+#                -> morphological opening
+#   holes        a phase predicted as background INSIDE a grain punches a hole
+#                that can split one particle into two. This is not hypothetical
+#                here: magnetite is predicted as background 92.3% of the time,
+#                so every magnetite inclusion becomes a hole
+#                -> binary hole filling
+#   merging      genuinely separate grains that touch are read as one particle,
+#                whose composition is then an average of both
+#                -> marker-controlled watershed on the distance transform
+#
+# Applied identically to ground-truth and predicted masks. The estimator is what
+# is being changed, so both sides must use it or the comparison is meaningless.
+
+SPECKLE_KERNEL = 3
+SEED_MIN_DISTANCE = 5   # px; distance-transform peaks closer to an edge than
+                        # this are noise, not particle centres
+PEAK_FOOTPRINT = 9
+
+
+def refine_ore_mask(binary):
+    """Speckle removal then hole filling on the ore/background binary."""
+    import numpy as np
+    from scipy import ndimage
+
+    try:
+        import cv2
+        kernel = np.ones((SPECKLE_KERNEL, SPECKLE_KERNEL), np.uint8)
+        cleaned = cv2.morphologyEx(
+            binary.astype(np.uint8), cv2.MORPH_OPEN, kernel
+        ).astype(bool)
+    except ImportError:
+        cleaned = ndimage.binary_opening(binary, iterations=1)
+
+    return ndimage.binary_fill_holes(cleaned)
+
+
+def watershed_particles(binary):
+    """Split touching grains via marker-controlled watershed.
+
+    Seeds are local maxima of the Euclidean distance transform: the centre of
+    each grain is further from background than the neck joining two grains, so
+    two touching grains yield two seeds and the watershed line falls on the neck.
+    Falls back to plain connected components if OpenCV is unavailable, so the
+    venue demo cannot die on a missing import.
+    """
+    import numpy as np
+    from scipy import ndimage
+
+    distance = ndimage.distance_transform_edt(binary)
+    peaks = (
+        (distance == ndimage.maximum_filter(distance, size=PEAK_FOOTPRINT))
+        & (distance > SEED_MIN_DISTANCE)
+    )
+    markers, count = ndimage.label(peaks)
+    if count == 0:
+        return ndimage.label(binary)
+
+    try:
+        import cv2
+    except ImportError:
+        return ndimage.label(binary)
+
+    # cv2.watershed floods from markers over an image; the inverted distance
+    # transform makes grain necks the ridges that flooding stops at.
+    relief = distance.max() - distance
+    relief = (255 * relief / max(relief.max(), 1e-6)).astype(np.uint8)
+    relief = np.repeat(relief[:, :, None], 3, axis=2)
+
+    markers = markers.astype(np.int32) + 1
+    markers[~binary] = 1                      # background basin
+    markers[binary & (markers == 1)] = 0      # unknown, to be flooded
+    cv2.watershed(relief, markers)
+
+    markers[markers <= 1] = 0                 # background and watershed lines
+    return markers, int(markers.max())
+
+
 def _connected_components(binary):
     """Label 4-connected components. Uses scipy when present (it ships with
     scikit-learn, already a dependency) and falls back to a union-find pass so
@@ -151,14 +237,20 @@ def _connected_components(binary):
 
 def liberation_index(labels, payload_mask, background_index=0,
                      threshold: float = LIBERATION_THRESHOLD,
-                     min_pixels: int = MIN_PARTICLE_PIXELS):
+                     min_pixels: int = MIN_PARTICLE_PIXELS,
+                     refine: bool = False):
     """Share of payload area sitting in particles that are >=threshold payload.
 
     Returns (liberation, n_particles). Liberation is None when there is no
     payload in the field - that is "no measurement", which is a different
     statement from "zero liberation", and the advisor must not conflate them.
     """
-    particles, _ = _connected_components(labels != background_index)
+    ore = labels != background_index
+    if refine:
+        ore = refine_ore_mask(ore)
+        particles, _ = watershed_particles(ore)
+    else:
+        particles, _ = _connected_components(ore)
     payload_total = int(payload_mask.sum())
     if payload_total == 0:
         return None, 0
@@ -180,7 +272,8 @@ def liberation_index(labels, payload_mask, background_index=0,
     return liberated_payload / payload_total, kept
 
 
-def analyse(labels, class_names, roles=None, background_index=0):
+def analyse(labels, class_names, roles=None, background_index=0,
+            refine: bool = False):
     """Labelled mask (H x W of class indices) -> ModalResult."""
     labels = np.asarray(labels)
     roles = roles or S2_ROLES
@@ -203,7 +296,7 @@ def analyse(labels, class_names, roles=None, background_index=0):
     ]
     payload_mask = np.isin(labels, payload_indices)
     liberation, n_particles = liberation_index(
-        labels, payload_mask, background_index
+        labels, payload_mask, background_index, refine=refine
     )
 
     return ModalResult(

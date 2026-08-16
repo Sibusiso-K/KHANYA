@@ -17,6 +17,50 @@ Entry format:
 
 ---
 
+## 2026-08-16 — Sibusiso (14)
+
+**Did:** Acted on entry (13)'s conclusion and **it worked.** Added a particle
+refinement stage to `src/modal.py` - speckle removal, hole filling, and
+marker-controlled watershed on the distance transform - applied identically to
+ground-truth and predicted masks, because the *estimator* is what changed.
+
+| Setup | Flips | Liberation corr. | MAE |
+|---|---|---|---|
+| resize, raw components | 6/12 (50%) | +0.128 | 38.7% |
+| **resize, watershed+fill** | **4/12 (33%)** | **+0.709** | **16.4%** |
+| patch, raw components | 6/12 (50%) | -0.079 | 46.7% |
+
+**Liberation correlation +0.128 -> +0.709, error more than halved, flip rate
+50% -> 33% - by changing the estimator, on the WEAKER model, with no
+retraining.** That is direct confirmation of the entry (13) diagnosis: the
+binding constraint was particle topology, not per-class accuracy.
+
+Why each piece matters, in case you are writing this up: hole filling is not
+generic hygiene here, it is specifically repairing the magnetite failure -
+magnetite is predicted as background 92.3% of the time, so every magnetite
+inclusion punches a hole that splits a grain in two. The three failure modes
+(speckle / holes / merged grains) each get their own repair and each is
+documented in `modal.py`.
+
+**Important: all liberation numbers before this change are superseded.** The
+refinement alters ground-truth liberation too, sometimes drastically (test_10
+82% -> 3%, as 209 particles resolve to 51). That is correct rather than
+alarming - the raw estimator was counting annotation speckle as fully liberated
+particles - but it means every liberation figure in older entries is stale.
+
+**Changed:** `src/modal.py` (refinement stage, `refine=` on `analyse` and
+`liberation_index`), `src/decision_gap.py` (`--refine`), `requirements.txt`
+(opencv-python), `STATUS.md` section 5c, new `reports/decision_gap_refined.json`.
+Both scipy and OpenCV fall back to plain connected components if missing, so the
+venue demo cannot die on an import.
+**Blocked on:** nothing. `decision_gap --model patches --refine` running
+(~75 min) - best model plus best estimator, expected to be our headline number.
+**Next:** once that lands, the modelling is in good enough shape to stop and
+write. Priorities become the report prose, then the three decisions still with
+you - abstract scope, R6,000 rig, mentor request - at 14 days to the abstract.
+
+---
+
 ## 2026-08-16 — Sibusiso (13)
 
 **Did:** Ran the decision-gap on the better model, and got the most important

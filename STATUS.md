@@ -334,6 +334,49 @@ predicting particles directly. Chasing IoU is now demonstrably the wrong target.
 
 ---
 
+## 5c. UPDATE 2026-08-16: watershed refinement — the fix works
+
+Acting on 5b's conclusion (the bottleneck is particle topology, not class
+accuracy), `src/modal.py` gained a refinement stage applied identically to
+ground-truth and predicted masks, since the *estimator* is what changed:
+
+- **speckle removal** (morphological opening) — isolated misclassified pixels
+  were inventing tiny particles that scored as perfectly liberated
+- **hole filling** — a phase predicted as background *inside* a grain punches a
+  hole that splits one particle into two. Not hypothetical: magnetite is
+  predicted as background 92.3% of the time, so every magnetite inclusion
+  becomes a hole
+- **marker-controlled watershed** on the distance transform — separates touching
+  grains that raw connected components merge into one averaged particle
+
+| Setup | Flips | Liberation corr. vs truth | Liberation MAE |
+|---|---|---|---|
+| resize, raw components | 6/12 (50%) | +0.128 | 38.7% |
+| **resize, watershed+fill** | **4/12 (33%)** | **+0.709** | **16.4%** |
+| patch, raw components | 6/12 (50%) | -0.079 | 46.7% |
+| patch, watershed+fill | *running* | | |
+
+Sources: `reports/decision_gap.json`, `reports/decision_gap_refined.json`,
+`reports/decision_gap_patches.json`.
+
+**Liberation correlation went from +0.128 to +0.709 and error more than halved —
+by changing the estimator, on the WEAKER model, with no retraining.** This
+confirms the 5b diagnosis directly: the binding constraint was particle
+topology, and repairing topology recovers most of the decision quality that
+better per-class accuracy could not buy.
+
+Note the refinement changes ground-truth liberation too, sometimes a lot
+(test_10: 82% -> 3% as 209 particles become 51). That is the point rather than a
+problem — the raw estimator was counting annotation speckle as liberated
+particles, so the refined figure is the more faithful measurement of both
+sides. It does mean **all liberation numbers predating this change are
+superseded.**
+
+Requires `opencv-python` (watershed) and `scipy`; both fall back gracefully to
+plain connected components if absent, so the venue demo cannot die on an import.
+
+---
+
 ## 6. Numbers that must never be quoted
 
 - **33% flip rate** — measured at 512x688, where `MIN_PARTICLE_PIXELS` means a

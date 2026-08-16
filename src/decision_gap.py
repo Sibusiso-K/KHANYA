@@ -47,7 +47,7 @@ def ground_truth_labels(stem, subdir="test", match_prediction_size=True):
 
 
 @torch.no_grad()
-def main(model_name="resize"):
+def main(model_name="resize", refine=False):
     """model_name: 'resize' (train_lumenstone) or 'patches' (native sliding window).
 
     The patch model scores higher per-class, so the question this answers is
@@ -96,8 +96,8 @@ def main(model_name="resize"):
             )
 
         truth = ground_truth_labels(stem, match_prediction_size=False)
-        truth_result = modal.analyse(truth, ls.CLASS_NAMES)
-        predicted_result = modal.analyse(predicted, ls.CLASS_NAMES)
+        truth_result = modal.analyse(truth, ls.CLASS_NAMES, refine=refine)
+        predicted_result = modal.analyse(predicted, ls.CLASS_NAMES, refine=refine)
 
         truth_action = advisor.advise(truth_result, 1.0).action
         predicted_action = advisor.advise(predicted_result, confidence).action
@@ -128,6 +128,7 @@ def main(model_name="resize"):
 
     summary = {
         "model": model_name,
+        "refine": refine,
         "n_sections": len(rows),
         "n_recommendation_flips": flips,
         "flip_rate": flips / len(rows),
@@ -138,6 +139,7 @@ def main(model_name="resize"):
 
     config.REPORT_DIR.mkdir(exist_ok=True)
     suffix = "" if model_name == "resize" else f"_{model_name}"
+    suffix += "_refined" if refine else ""
     out = config.REPORT_DIR / f"decision_gap{suffix}.json"
     with open(out, "w") as f:
         json.dump(summary, f, indent=2)
@@ -148,4 +150,6 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", choices=("resize", "patches"), default="resize")
-    main(parser.parse_args().model)
+    parser.add_argument("--refine", action="store_true", help="watershed + hole-fill particle refinement")
+    args = parser.parse_args()
+    main(args.model, args.refine)

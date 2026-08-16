@@ -4,6 +4,7 @@ numpy
 pillow
 scikit-learn
 scipy          # connected components for liberation; src/modal.py falls back if absent
+opencv-python  # marker-controlled watershed for particle separation; falls back if absent
 matplotlib
 pandas
 streamlit
