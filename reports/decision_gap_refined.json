@@ -4,6 +4,11 @@
   "n_sections": 12,
   "n_recommendation_flips": 4,
   "flip_rate": 0.3333333333333333,
+  "severity_counts": {
+    "unsafe": 0,
+    "conservative": 1,
+    "flagged": 3
+  },
   "rows": [
     {
       "id": "test_01",
@@ -13,7 +18,8 @@
       "payload_predicted": 0.9993887970764818,
       "action_truth": "Continue at current setpoint",
       "action_predicted": "Continue at current setpoint",
-      "flipped": false
+      "flipped": false,
+      "severity": "none"
     },
     {
       "id": "test_02",
@@ -23,7 +29,8 @@
       "payload_predicted": 0.0,
       "action_truth": "Grind finer",
       "action_predicted": "Flag for manual review - no payload detected",
-      "flipped": true
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_03",
@@ -32,8 +39,9 @@
       "payload_truth": 0.49962781374022475,
       "payload_predicted": 0.45440159916793504,
       "action_truth": "Continue at current setpoint",
-      "action_predicted": "Grind finer",
-      "flipped": true
+      "action_predicted": "Marginal - verify before acting",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_04",
@@ -42,8 +50,9 @@
       "payload_truth": 0.21005444857413372,
       "payload_predicted": 0.40773017984241305,
       "action_truth": "Grind finer",
-      "action_predicted": "Continue at current setpoint",
-      "flipped": true
+      "action_predicted": "Marginal - verify before acting",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_05",
@@ -53,7 +62,8 @@
       "payload_predicted": 0.49631108044692895,
       "action_truth": "Grind finer",
       "action_predicted": "Grind finer",
-      "flipped": false
+      "flipped": false,
+      "severity": "none"
     },
     {
       "id": "test_06",
@@ -63,7 +73,8 @@
       "payload_predicted": 0.3128956986776425,
       "action_truth": "Grind finer",
       "action_predicted": "Grind finer",
-      "flipped": false
+      "flipped": false,
+      "severity": "none"
     },
     {
       "id": "test_07",
@@ -73,7 +84,8 @@
       "payload_predicted": 0.01974398943624947,
       "action_truth": "Grind finer",
       "action_predicted": "Grind finer",
-      "flipped": false
+      "flipped": false,
+      "severity": "none"
     },
     {
       "id": "test_08",
@@ -83,7 +95,8 @@
       "payload_predicted": 0.2440603039172805,
       "action_truth": "Adjust reagent dosage - depress reject phase",
       "action_predicted": "Grind finer",
-      "flipped": true
+      "flipped": true,
+      "severity": "conservative"
     },
     {
       "id": "test_09",
@@ -93,7 +106,8 @@
       "payload_predicted": 0.4518146044452648,
       "action_truth": "Continue at current setpoint",
       "action_predicted": "Continue at current setpoint",
-      "flipped": false
+      "flipped": false,
+      "severity": "none"
     },
     {
       "id": "test_10",
@@ -103,7 +117,8 @@
       "payload_predicted": 0.019382036901127202,
       "action_truth": "Grind finer",
       "action_predicted": "Grind finer",
-      "flipped": false
+      "flipped": false,
+      "severity": "none"
     },
     {
       "id": "test_11",
@@ -113,7 +128,8 @@
       "payload_predicted": 0.041803207399975326,
       "action_truth": "Grind finer",
       "action_predicted": "Grind finer",
-      "flipped": false
+      "flipped": false,
+      "severity": "none"
     },
     {
       "id": "test_12",
@@ -123,7 +139,8 @@
       "payload_predicted": 0.028195971235795037,
       "action_truth": "Grind finer",
       "action_predicted": "Grind finer",
-      "flipped": false
+      "flipped": false,
+      "severity": "none"
     }
   ]
 }

@@ -46,6 +46,24 @@ def ground_truth_labels(stem, subdir="test", match_prediction_size=True):
     return ls._LOOKUP[torch.from_numpy(array).long()].numpy()
 
 
+# A flip is not a single kind of error. Counting a hedge the same as a
+# confident wrong instruction would understate the uncertainty band, whose
+# entire purpose is to convert the former into the latter.
+UNSAFE_ACTIONS = ("Continue at current setpoint",)
+HEDGED_ACTIONS = ("Marginal - verify before acting", "Flag for manual review")
+
+
+def classify(truth_action, predicted_action):
+    """Severity of a disagreement, from the plant's point of view."""
+    if any(predicted_action.startswith(a) for a in HEDGED_ACTIONS):
+        return "flagged"        # hedged: costs a check, loses nothing
+    if any(predicted_action.startswith(a) for a in UNSAFE_ACTIONS):
+        return "unsafe"         # told to carry on while payload is locked
+    if any(truth_action.startswith(a) for a in UNSAFE_ACTIONS):
+        return "conservative"   # acts when it need not: energy, not metal
+    return "unsafe" if truth_action.startswith("Grind") else "conservative"
+
+
 @torch.no_grad()
 def main(model_name="resize", refine=False):
     """model_name: 'resize' (train_lumenstone) or 'patches' (native sliding window).
@@ -66,43 +84,66 @@ def main(model_name="resize", refine=False):
     model.eval()
     print(f"model: {model_name}  weights: {weights}")
 
+    # Predicted masks depend only on the model, never on the advisor policy or
+    # the particle estimator, so they are cached. Inference over 12 native-
+    # resolution sections costs over an hour; re-scoring a threshold change
+    # against cached masks costs seconds. Threshold and policy work should not
+    # be gated on GPU-less inference.
+    cache_dir = config.ROOT / "data" / "derived" / f"preds_{model_name}"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
     _, _, test_ids = ls.split_ids()
     rows, flips = [], 0
 
     for stem in sorted(test_ids):
-        image = Image.open(ls.S2_DIR / "imgs" / "test" / f"{stem}.jpg").convert("RGB")
-        # Everything is compared at NATIVE resolution, for both models.
-        #
-        # MIN_PARTICLE_PIXELS is a fixed pixel count, so it corresponds to a
-        # different PHYSICAL grain size at each resolution. Comparing the resize
-        # model at 512x688 and the patch model at native therefore measures the
-        # models against two different references, and their flip rates are not
-        # comparable - which is how a 33% and a 50% appeared to be a regression
-        # when they were partly a change of ruler. Native is also the
-        # operationally honest choice: a plant receives a full-resolution mask
-        # whichever model produced it.
-        if native:
-            predicted, confidence = patch_module.sliding_window_predict(
-                model, image, dev
-            )
+        cached = cache_dir / f"{stem}.npz"
+        if cached.exists():
+            store = np.load(cached)
+            predicted, confidence = store["mask"], float(store["confidence"])
         else:
-            probabilities = model(ls.preprocess(image).to(dev))["out"][0].softmax(0)
-            confidence = probabilities.max(0).values.mean().item()
-            small = probabilities.argmax(0).cpu().numpy().astype(np.uint8)
-            predicted = np.array(
-                Image.fromarray(small).resize(
-                    (image.width, image.height), Image.NEAREST
+            image = Image.open(
+                ls.S2_DIR / "imgs" / "test" / f"{stem}.jpg"
+            ).convert("RGB")
+            # Everything is compared at NATIVE resolution, for both models.
+            #
+            # MIN_PARTICLE_PIXELS is a fixed pixel count, so it corresponds to a
+            # different PHYSICAL grain size at each resolution. Comparing the
+            # resize model at 512x688 and the patch model at native therefore
+            # measures the models against two different references, and their
+            # flip rates are not comparable - which is how a 33% and a 50%
+            # appeared to be a regression when they were partly a change of
+            # ruler. Native is also the operationally honest choice: a plant
+            # receives a full-resolution mask whichever model produced it.
+            if native:
+                predicted, confidence = patch_module.sliding_window_predict(
+                    model, image, dev
                 )
+            else:
+                probabilities = model(
+                    ls.preprocess(image).to(dev)
+                )["out"][0].softmax(0)
+                confidence = probabilities.max(0).values.mean().item()
+                small = probabilities.argmax(0).cpu().numpy().astype(np.uint8)
+                predicted = np.array(
+                    Image.fromarray(small).resize(
+                        (image.width, image.height), Image.NEAREST
+                    )
+                )
+            np.savez_compressed(
+                cached, mask=predicted.astype(np.uint8), confidence=confidence
             )
 
         truth = ground_truth_labels(stem, match_prediction_size=False)
         truth_result = modal.analyse(truth, ls.CLASS_NAMES, refine=refine)
         predicted_result = modal.analyse(predicted, ls.CLASS_NAMES, refine=refine)
 
-        truth_action = advisor.advise(truth_result, 1.0).action
+        # margin=0 on ground truth: an annotation carries no estimator error,
+        # and banding the reference would hide the disagreement being measured.
+        truth_action = advisor.advise(truth_result, 1.0, liberation_margin=0.0).action
         predicted_action = advisor.advise(predicted_result, confidence).action
         flipped = truth_action != predicted_action
         flips += flipped
+        severity = classify(truth_action, predicted_action) if flipped else "none"
 
         rows.append({
             "id": stem,
@@ -113,6 +154,7 @@ def main(model_name="resize", refine=False):
             "action_truth": truth_action,
             "action_predicted": predicted_action,
             "flipped": bool(flipped),
+            "severity": severity,
         })
 
         def show(value):
@@ -132,8 +174,16 @@ def main(model_name="resize", refine=False):
         "n_sections": len(rows),
         "n_recommendation_flips": flips,
         "flip_rate": flips / len(rows),
+        "severity_counts": {
+            level: sum(1 for r in rows if r["severity"] == level)
+            for level in ("unsafe", "conservative", "flagged")
+        },
         "rows": rows,
     }
+    counts = summary["severity_counts"]
+    print(f"\n  unsafe  (confident wrong, metal at risk):    {counts['unsafe']}")
+    print(f"  conservative (wasted energy, no metal lost): {counts['conservative']}")
+    print(f"  flagged (hedged to manual review):           {counts['flagged']}")
     print(f"\n{flips}/{len(rows)} recommendations flipped "
           f"({summary['flip_rate']:.0%}) when running on predicted masks.")
 

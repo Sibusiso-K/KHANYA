@@ -39,6 +39,26 @@ PAYLOAD_FLOOR = 0.003        # UNSOURCED placeholder
 REJECT_CEILING = 0.60        # UNSOURCED placeholder
 DELETERIOUS_CEILING = 0.05   # UNSOURCED placeholder
 
+# Uncertainty band around the liberation threshold.
+#
+# Not invented: this is the mean absolute error of our own liberation estimate,
+# measured on the 12 held-out sections with the best model and the refined
+# particle estimator (reports/decision_gap_patches_refined.json - MAE 8.9%,
+# correlation 0.947). Both recommendation errors that survived that
+# configuration straddled the 0.50 floor: truth 40% vs predicted 74%, and truth
+# 32% vs predicted 52%, the latter clearing the threshold by two points.
+#
+# Within one MAE of a trip point the recommendation is close to a coin toss, so
+# claiming a confident action there is not supportable. Inside the band the
+# advisor reports "marginal - verify" and names both candidate actions, which is
+# the honest output and also the correct operational one: a plant metallurgist
+# can act on "this is borderline, check it" and cannot act on a confident
+# instruction that is wrong half the time.
+#
+# Re-derive this constant whenever the estimator changes. It is a property of
+# the measurement chain, not a preference.
+LIBERATION_MARGIN = 0.089
+
 # Below this, the field is mostly mounting resin and any area fraction computed
 # from it is derived from too few ore pixels to act on.
 MIN_ORE_AREA = 0.05
@@ -51,8 +71,15 @@ class Recommendation:
     confidence: str
 
 
-def advise(result, mean_confidence: float) -> Recommendation:
+def advise(result, mean_confidence: float,
+           liberation_margin: float = LIBERATION_MARGIN) -> Recommendation:
     """result: a modal.ModalResult. Returns one operational recommendation.
+
+    liberation_margin: half-width of the uncertainty band around the liberation
+    threshold. Pass 0.0 when the input is a ground-truth mask - an annotation
+    carries no estimator error, so banding it would compare a hedged reference
+    against a hedged prediction and hide exactly the disagreement we are trying
+    to measure.
 
     Checked in payload-first order. A low or unmeasurable payload signal is
     reported explicitly rather than falling through to "continue", because
@@ -98,6 +125,21 @@ def advise(result, mean_confidence: float) -> Recommendation:
             "Payload is present but no particle cleared the minimum size for a "
             "liberation measurement. Reported as unmeasured rather than as a "
             "number we cannot defend.",
+            confidence,
+        )
+
+    if abs(result.liberation - LOW_LIBERATION) < liberation_margin:
+        return Recommendation(
+            "Marginal - verify before acting",
+            f"Liberation is {result.liberation:.0%}, within the "
+            f"+/-{liberation_margin:.1%} uncertainty band around the "
+            f"{LOW_LIBERATION:.0%} floor. That band is this estimator's own mean "
+            "absolute error on held-out sections, so the true value could sit "
+            "either side of the threshold and the honest answer is that this "
+            "field does not decide. Candidate actions are 'grind finer' if "
+            "liberation is genuinely below the floor, or 'continue at setpoint' "
+            "if above. Confirm with an additional field or an assay before "
+            "changing the circuit.",
             confidence,
         )
 

@@ -17,6 +17,54 @@ Entry format:
 
 ---
 
+## 2026-08-16 — Sibusiso (16)
+
+**Did:** Built the uncertainty band from entry (15). Three parts:
+
+1. **The band itself** (`src/advisor.py`). When liberation sits within
+   `LIBERATION_MARGIN` of the 0.50 floor, the advisor returns **"Marginal -
+   verify before acting"** and names both candidate actions instead of asserting
+   one. **The width is not invented: 0.089 is this estimator's own mean absolute
+   error on the 12 held-out sections** (reports/decision_gap_patches_refined.json).
+   If the estimator changes, re-derive it - it is a property of the measurement
+   chain, not a preference.
+
+2. **Ground truth gets margin=0.** An annotation carries no estimator error, so
+   banding the reference too would compare a hedged reference against a hedged
+   prediction and hide the very disagreement we are measuring. `advise()` takes
+   `liberation_margin` for this reason.
+
+3. **Flip severity classification** (`src/decision_gap.py`). Counting a hedge
+   the same as a confident wrong instruction would understate the band entirely,
+   since converting the former into the latter is its whole purpose. Flips are
+   now **unsafe** (told to continue while payload is locked - metal at risk),
+   **conservative** (acts unnecessarily - energy, not metal), or **flagged**
+   (hedged to manual review - costs a check, loses nothing).
+
+**Result on the resize model: unsafe flips 1 -> 0.** Full: 0 unsafe, 1
+conservative, 3 flagged, flip rate unchanged at 33%. That flat flip rate is the
+point - the band does not make disagreements disappear, it **converts dangerous
+disagreements into honest ones.** Report it that way; a judge who sees flip rate
+alone will think nothing improved.
+
+**Also added prediction caching.** Predicted masks depend only on the model,
+never on advisor policy or the particle estimator, so they are cached to
+`data/derived/preds_{model}/` (gitignored). Inference over 12 native-resolution
+sections costs over an hour; re-scoring a threshold change against cached masks
+now costs seconds. **Threshold and policy work is no longer gated on inference** -
+this matters for the remaining weeks, since three of four thresholds are still
+placeholders and will need tuning.
+
+**Changed:** `src/advisor.py` (band + `liberation_margin` arg),
+`src/decision_gap.py` (severity classification, prediction cache),
+`.gitignore`, `reports/decision_gap_refined.json`.
+**Blocked on:** nothing. `patches --refine` re-running with the band (~75 min,
+also populating its cache so future runs are instant).
+**Next:** modelling is done. Report prose, energy/cost case, and your three
+calls - abstract scope, R6,000 rig, mentor request. 14 days to the abstract.
+
+---
+
 ## 2026-08-16 — Sibusiso (15)
 
 **Did:** Best model + best estimator. **This is our headline result.**
