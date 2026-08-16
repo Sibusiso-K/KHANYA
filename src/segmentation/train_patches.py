@@ -22,11 +22,21 @@ from PIL import Image
 from torch import nn
 from tqdm import tqdm
 
-from . import config, lumenstone as ls, metrics, patches
+from . import config, losses, lumenstone as ls, metrics, patches
 from .model import build_model, device
 
 CKPT_DIR = config.ROOT / "checkpoints" / "lumenstone_s2_patches"
 CKPT = CKPT_DIR / "best.pt"
+
+
+def checkpoint_for(loss_name: str):
+    """Each loss gets its own checkpoint directory. Runs must never clobber each
+    other's weights - the whole value here is a controlled comparison, and an
+    evaluation reading a checkpoint while another run overwrites it is a silent
+    way to produce nonsense."""
+    if loss_name == "ce":
+        return CKPT
+    return config.ROOT / "checkpoints" / f"lumenstone_s2_patches_{loss_name}" / "best.pt"
 
 
 def run_epoch(model, loader, criterion, optimiser, dev, train: bool):
@@ -56,19 +66,20 @@ def report(summary):
     return "\n".join(lines)
 
 
-def train():
+def train(loss_name="ce"):
     torch.manual_seed(patches.SEED)
     dev = device()
-    print(f"device: {dev}")
+    checkpoint = checkpoint_for(loss_name)
+    print(f"device: {dev}   loss: {loss_name}   checkpoint: {checkpoint}")
     train_loader, val_loader = patches.build_loaders()
     print(f"patches/epoch: train {patches.PATCHES_PER_EPOCH}  val {patches.VAL_PATCHES}"
           f"  size {patches.PATCH}px native  lr {patches.LR}")
 
     model = build_model(num_classes=ls.NUM_CLASSES).to(dev)
-    criterion = nn.CrossEntropyLoss()
+    criterion = losses.build_loss(loss_name, ls.NUM_CLASSES)
     optimiser = torch.optim.AdamW(model.parameters(), lr=patches.LR)
 
-    CKPT_DIR.mkdir(parents=True, exist_ok=True)
+    checkpoint.parent.mkdir(parents=True, exist_ok=True)
     best_iou = 0.0
     for epoch in range(1, patches.EPOCHS + 1):
         train_loss, train_summary = run_epoch(
@@ -82,7 +93,7 @@ def train():
         print(report(val_summary))
         if val_summary["mean_iou"] > best_iou:
             best_iou = val_summary["mean_iou"]
-            torch.save(model.state_dict(), CKPT)
+            torch.save(model.state_dict(), checkpoint)
             print(f"  saved (val patch mIoU {best_iou:.4f})")
 
     print(f"best val patch mean IoU: {best_iou:.4f}")
@@ -91,10 +102,10 @@ def train():
 
 
 @torch.no_grad()
-def evaluate():
+def evaluate(loss_name="ce"):
     dev = device()
     model = build_model(num_classes=ls.NUM_CLASSES, pretrained=False).to(dev)
-    model.load_state_dict(torch.load(CKPT, map_location=dev))
+    model.load_state_dict(torch.load(checkpoint_for(loss_name), map_location=dev))
     model.eval()
 
     _, _, test_ids = ls.split_ids()
@@ -119,7 +130,9 @@ def evaluate():
     print(report(summary))
 
     config.REPORT_DIR.mkdir(exist_ok=True)
-    out = config.REPORT_DIR / "lumenstone_s2_patches_test_metrics.json"
+    summary["loss"] = loss_name
+    suffix = "" if loss_name == "ce" else f"_{loss_name}"
+    out = config.REPORT_DIR / f"lumenstone_s2_patches{suffix}_test_metrics.json"
     with open(out, "w") as f:
         json.dump(summary, f, indent=2)
     print(f"wrote {out}")
@@ -128,4 +141,7 @@ def evaluate():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--eval", action="store_true")
-    evaluate() if parser.parse_args().eval else train()
+    parser.add_argument("--loss", choices=("ce", "dice"), default="ce",
+                        help="'dice' = cross-entropy + soft Dice; see losses.py")
+    args = parser.parse_args()
+    evaluate(args.loss) if args.eval else train(args.loss)

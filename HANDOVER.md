@@ -17,6 +17,49 @@ Entry format:
 
 ---
 
+## 2026-08-16 — Sibusiso (11)
+
+**Did:** Acted on entry (10)'s finding. Since native-resolution patch sampling
+did NOT move magnetite off IoU 0.000, the problem is the objective, not the
+data pipeline - so added `src/segmentation/losses.py`: soft Dice combined with
+cross-entropy, selectable via `--loss dice`.
+
+**The distinction that makes this legitimate, and it matters for the writeup:**
+petroscope warn that class weighting does not fix mineral imbalance. That is a
+statement about reweighting the *per-pixel* CE term - each pixel still competes
+individually, so a 1.84% class still contributes ~1.84% of gradient no matter
+what constant multiplies it. Soft Dice is computed **per class over the whole
+batch and then averaged across classes**, so magnetite's term counts as much as
+pyrrhotite's despite 24x fewer pixels. Different mechanism, so their warning
+does not cover it. **Do not write this up as "petroscope were wrong."**
+
+Verified the loss actually does what is claimed before spending compute: on a
+synthetic case with a 1.46% rare class, a model that never predicts it pays
+0.829 in the Dice term, and predicting it correctly drops total loss 2.08 ->
+1.84. Under plain CE that same correction is nearly free, which is precisely why
+the model never bothers. Gradients finite.
+
+Combined with CE rather than used alone - Dice alone is unstable early, its
+gradient is near-flat while predictions are diffuse.
+
+**Changed:** new `src/segmentation/losses.py`; `train_patches.py` takes
+`--loss {ce,dice}`. Each loss writes to its **own** checkpoint directory and its
+own metrics JSON - the CE run's checkpoint must not be clobbered while it is
+being evaluated, and a controlled comparison is worthless if runs overwrite each
+other.
+
+**Blocked on:** nothing. Two jobs running concurrently on CPU (they share cores,
+so both are slower than solo): whole-section eval of the CE patch model
+(~56 min), and CE+Dice training.
+**Next:** when both land, compare three whole-section results like-for-like -
+resize baseline (mIoU 0.545, magnetite 0.000), patch+CE, patch+CE+Dice - then
+re-run `python -m src.decision_gap` against the best and check the flip rate
+versus 33%. If Dice still leaves magnetite at 0.000, stop attacking it and
+report it honestly as a four-phase result with a named limitation; four working
+phases still clears the brief's >=3 floor.
+
+---
+
 ## 2026-08-16 — Sibusiso (10)
 
 **Did:** Added **`STATUS.md`** - a single snapshot of what exists, what does not,

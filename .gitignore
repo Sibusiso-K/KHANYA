@@ -11,3 +11,4 @@ seg_train.log
 lumenstone_train.log
 patches_train.log
 patches_eval.log
+dice_train.log
