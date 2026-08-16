@@ -17,6 +17,48 @@ Entry format:
 
 ---
 
+## 2026-08-16 — Sibusiso (10)
+
+**Did:** Added **`STATUS.md`** - a single snapshot of what exists, what does not,
+and what to do next, written for you to build architecture against. Read that
+first; this log is the running history, STATUS.md is the current picture.
+
+**The headline, and it is a negative result:** the patch experiment's core
+hypothesis is dead. We believed magnetite scored IoU 0.000 because the 6.6x
+downsample destroyed fine grains, and that native-resolution patches would fix
+it. The patch model trained to epoch 7 at full native resolution with magnetite
+present in ~44% of patches, and **magnetite still scored IoU 0.0000 at every
+epoch.** Resolution was not the binding constraint.
+
+What that means for architecture: magnetite is not failing because it is small,
+it is failing because the model never learns to predict it at all under plain
+cross-entropy - the loss stays dominated by pyrrhotite at 45% of pixels.
+Balanced sampling fixed **exposure** but not **prior**. The next thing to try is
+a region-based loss (Dice / Focal / Tversky), which is a different mechanism
+from the class weighting petroscope warns against - worth being precise about
+that distinction, they are not the same claim.
+
+Caveat: those are balanced-patch *validation* numbers and are not comparable to
+whole-section numbers. The whole-section eval of the patch checkpoint is running
+now and settles it. Training itself was cut off at epoch 7 of 8 when the machine
+session ended - the checkpoint saved, so nothing was lost.
+
+**Changed:** new `STATUS.md`.
+**Blocked on:** nothing technical. Three decisions still sitting with you and now
+14 days from the abstract deadline - see issue #1: abstract scope, the R6,000
+rig, and the mentor request plus your ID/T-shirt/contact details.
+**Next for you:** read `STATUS.md` sections 4 and 5 - section 4 is the pipeline
+architecture and where uncertainty enters it, ranked by severity; section 5 is
+the priority order. Section 6 lists four numbers that must never be quoted, which
+matters most for whatever goes into the abstract.
+
+**Admin note so nobody retries it:** repo-collaborator *admin* cannot be granted
+on a personal GitHub repo - only read/write. The API accepts the request and
+silently no-ops. You have write, which covers clone/pull/push/branch/PR, i.e.
+everything the build needs. Admin would require moving the repo into an org.
+
+---
+
 ## 2026-08-14 — Sibusiso (9)
 
 **Did:** Built patch-based sampling at native resolution - the fix for the

@@ -1,0 +1,245 @@
+# KHANYA / REEFPRINT — where the project actually stands
+
+**As of 2026-08-16.** Single source of truth for what exists, what does not, and
+what to do next. `HANDOVER.md` is the running log; this file is the snapshot.
+
+| | |
+|---|---|
+| Competition | Mintek SCi Grad Hackathon 2026, Problem 3 — **selected** (letter 14 Aug) |
+| Abstract due | **30 Aug 2026** — 14 days out |
+| Final hacking day | **1 Oct 2026**, on site at Mintek, 13:00 hard submission cutoff, 10-min pitch |
+| Conference | 2 Oct 2026, compulsory; five finalists announced, then originality authentication |
+
+**Brief's deliverable floor:** trained model identifying **>=3 mineral phases**,
+an accuracy report, and demonstration of **operational feedback integration**.
+
+---
+
+## 1. The one-paragraph version
+
+We have a working end-to-end pipeline — micrograph in, plant recommendation out —
+and a real held-out result on five mineral phases that clears the brief's floor.
+The pipeline's weakest link is the segmentation model itself: it fails completely
+on the rarest phase, and when its output drives the advisor, **a third of the
+operational recommendations change**, two of them in the direction that loses
+metal. The honest position today is: *the system is real, the measurements are
+real, the model is not yet good enough to trust*, and we can prove all three
+statements with numbers in `reports/`.
+
+---
+
+## 2. What is DONE
+
+### 2.1 Data (the original blocker, now half solved)
+
+| Dataset | Status | Use |
+|---|---|---|
+| **LumenStone S2 v2** | Secured, 419 MB | **Primary.** 37 train / 12 test, 5 classes, pixel masks, native 3396x2547, author-defined split |
+| FeM iron ore | Secured | Binary ore/resin only. Earlier result mIoU 0.872 — different task, does not meet the >=3 phase floor |
+| MUMDMC2025 | Secured (583 images) | Dev proxy only. 8 specimens total; too specimen-poor for any honest accuracy claim |
+| LITHOS-DATASET | **Ruled out** | Sedimentary/carbonate petrography — wrong rock type. Recorded so it is not rediscovered |
+| Bushveld / UG2 / Merensky | **None public** | The remaining gap |
+
+**Why S2 is defensible:** it is the Norilsk Group layered-ultramafic assemblage
+(pyrrhotite, pentlandite, chalcopyrite, magnetite) — the same base-metal sulphide
+assemblage carrying the PGM payload in Bushveld reef ores, same intrusion type.
+
+**Where it breaks, and this must always be said in the same breath:** Norilsk is
+*massive* sulphide. BMS is 62.8% of S2 pixels against <1 vol% in UG2. S2 is an
+analogue for the **assemblage and its optical appearance, not its abundance**.
+
+### 2.2 Segmentation — meets the brief's floor
+
+Resize baseline, DeepLabv3+ResNet50, 12 epochs CPU, whole held-out sections:
+
+| Class | % test pixels | IoU |
+|---|---|---|
+| pyrrhotite | 58.33 | 0.864 |
+| background (resin) | 24.95 | 0.827 |
+| chalcopyrite | 5.08 | 0.548 |
+| pentlandite | 10.84 | 0.485 |
+| **magnetite** | **0.79** | **0.000** |
+| **mean** | | **0.545** |
+
+Pixel accuracy 0.879. Source: `reports/lumenstone_s2_test_metrics.json`.
+
+Five phases, pixel masks, held-out test never seen in training or checkpoint
+selection. **This clears the brief's >=3 phase requirement.** It is also well
+short of the published PSPNet+ResNet18 benchmark on S1+S2 (mIoU 0.88), which
+should be stated rather than hidden.
+
+### 2.3 Operational feedback — measured, not asserted
+
+This was the weakest deliverable and is now the strongest differentiator.
+
+- **Modal mineralogy** — phase area fractions computed as a proportion of *ore*
+  area, excluding mounting resin (otherwise every number tracks how densely the
+  section was mounted).
+- **Liberation by particle composition** — grains in a polished section are
+  separated by resin, so connected components of non-resin pixels are particles.
+  A particle is liberated when the payload phase occupies >=50% of it; the index
+  is the mass-weighted share of payload in liberated particles. Validated across
+  all 12 test sections: spans 0%–100% and tracks the mineralogy correctly.
+- **Role-based advisor** — reasons over metallurgical roles (payload / reject /
+  oxide / gangue / deleterious), not mineral names. Swapping ore body changes a
+  mapping in `src/modal.py`, not the decision logic, so REEFPRINT data drops in
+  unchanged if Mintek releases any.
+
+Both inputs were previously fake: classifier confidences standing in for area
+fractions, and liberation from a slider the presenter dragged. Both are gone.
+
+### 2.4 The decision-gap analysis — our best original contribution
+
+Per-class IoU says how wrong the mask is. It does not say whether being that
+wrong changes what the plant is told to do. `src/decision_gap.py` runs the
+advisor twice over the same 12 held-out sections — ground-truth masks vs
+predicted — and records where the recommendation flips.
+
+**4 of 12 flip (33%).** Source: `reports/decision_gap.json`.
+
+| Section | Liberation truth → predicted | Effect | Direction |
+|---|---|---|---|
+| test_04 | 9% → 75% | "grind finer" → "continue at setpoint" | **unsafe** |
+| test_05 | 4% → 58% | "grind finer" → "continue at setpoint" | **unsafe** |
+| test_09 | 100% → 0% | "continue" → "grind finer" | conservative |
+| test_02 | payload 1.0% → 0.0% | payload missed entirely | detection miss |
+
+Two flips tell the plant to carry on while payload is locked in composite
+particles — recoverable metal to tailings, the expensive direction of error.
+
+### 2.5 Infrastructure
+
+Offline Streamlit dashboard on the segmentation path; specimen-safe splitting;
+per-class metrics; every reported claim traced to a JSON in `reports/`.
+Lethabo has write access (confirmed active). Issue #1 opened summarising all of
+this. **Note:** repo-collaborator *admin* is not grantable on a personal GitHub
+repo — only read/write — so that was tried and abandoned; it needs an org.
+
+---
+
+## 3. What is NOT done
+
+### 3.1 The magnetite failure is NOT fixed — and the leading hypothesis is dead
+
+Magnetite scores **IoU 0.000** in the resize baseline. The stated hypothesis was
+that the 6.6x linear downsample destroyed fine grains before the model saw them,
+and the fix was patch-based sampling at native resolution.
+
+**That hypothesis is not supported.** The patch model trained to epoch 7 at full
+native resolution, with balanced sampling putting magnetite in roughly 44% of
+patches (against its 1.84% area share), and **magnetite still scored IoU 0.0000
+at every single epoch.** Resolution was not the binding constraint.
+
+This reframes the problem for architecture purposes: magnetite is not failing
+because it is *small*, it is failing because the model never learns to predict it
+at all under plain cross-entropy. Sampling fixed exposure; it did not fix the
+prior, and the loss remains dominated by pyrrhotite at 45% of pixels.
+
+Caveat on the above: those are *balanced-patch validation* numbers, which are not
+comparable to whole-section numbers. The whole-section evaluation of the patch
+checkpoint is running now and is the figure that settles it.
+
+### 3.2 Everything else outstanding
+
+| Item | Status |
+|---|---|
+| Whole-section eval of patch model | **running now** |
+| `decision_gap` re-run on patch model | blocked on the above |
+| Diagnostic: what does magnetite get confused *with*? | not started — cheap and high value |
+| Cross-validation instead of the 6-image val set | not started. Val is unrepresentative (45.8% vs 25.0% background); pentlandite scored 0.026 val vs 0.485 test, so checkpoint selection is near noise |
+| Data for chromite / orthopyroxene / plagioclase / talc-serpentine | **4 of REEFPRINT's 5 phases still have no data** |
+| Advisor thresholds | 1 of 4 literature-sourced; 3 are placeholders |
+| Research report prose (sections 1, 2, 4, 6, 8, 10) | still skeleton |
+| Energy / cost case | not started |
+| R6,000 rig decision (REEFPRINT §3.13) | **open since 4 Aug** |
+| Mintek mentor request + per-member admin | **due 30 Aug** |
+| One-page abstract | Lethabo |
+| Offline demo rehearsal on venue laptop | not started |
+
+---
+
+## 4. Architecture as it stands — for Lethabo
+
+```
+micrograph (3396x2547 reflected light, polished section)
+        |
+        v
+  SEGMENTATION            DeepLabv3+ResNet50, 5 classes
+        |                 src/segmentation/
+        |                 two interchangeable paths:
+        |                   - resize   (train_lumenstone.py)  mIoU 0.545
+        |                   - patches  (train_patches.py)     native res, eval pending
+        v
+  labelled mask
+        |
+        v
+  MODAL MINERALOGY        src/modal.py
+        |                 area fractions as proportion of ORE (resin excluded)
+        |                 -> mineral -> metallurgical ROLE mapping
+        v
+  LIBERATION              connected components = particles
+        |                 mass-weighted share of payload in liberated particles
+        v
+  ADVISOR                 src/advisor.py — reasons over ROLES, not minerals
+        |                 grind finer / adjust reagent / continue / flag
+        v
+  recommendation + confidence + explicit caveats
+```
+
+**Where uncertainty enters, in order of severity:**
+
+1. **Segmentation error** — dominates. Quantified: 33% of recommendations flip.
+2. **Rare-class blindness** — magnetite never predicted. In UG2 terms this is the
+   sub-1% payload problem, which is the entire premise of REEFPRINT.
+3. **Stereological bias** — liberation from 2D sections is biased *high* against
+   true volumetric liberation. No correction applied, so our index is an upper
+   bound: safe for "grind finer", unsafe for "continue at setpoint".
+4. **Threshold provenance** — 3 of 4 advisor trip points are placeholders.
+5. **Ore-body transfer** — S2 is an assemblage analogue, not an abundance one.
+
+**The design property worth defending in the pitch:** the advisor consumes
+*roles*, not mineral names. That is what makes the system a Bushveld tool rather
+than a Norilsk tool — swap the mapping, keep the logic.
+
+---
+
+## 5. What should be done next, in priority order
+
+**Before 30 Aug (abstract):**
+
+1. **Settle the magnetite question.** Finish the whole-section eval, then run the
+   confusion diagnostic — is magnetite predicted as *anything*, and if so what?
+   If it is systematically absorbed into pyrrhotite or background, that is a
+   loss-function problem (Dice / Focal / Tversky), not a sampling one. Note
+   petroscope's warning is specifically that *class weighting* does not work;
+   region-based losses are a different mechanism and untested here.
+2. **Decide abstract scope** — full five-phase REEFPRINT, or what we can
+   evidence? Recommendation: claim what we can show, name the rest as the
+   extension. Originality authentication goes better when claims match evidence.
+3. **Rig decision, mentor request, admin.** Hard deadline, no technical blocker.
+
+**September:**
+
+4. Grouped cross-validation to replace the 6-image val set — current checkpoint
+   selection is close to noise.
+5. Re-run `decision_gap` on the improved model and show the flip rate coming
+   down. **This before/after, framed as metal recovered rather than IoU, is the
+   strongest slide available.**
+6. Source the three placeholder thresholds, or state them as configurable plant
+   parameters rather than claims.
+7. Write the report prose; build the energy/cost case.
+
+**Freeze 29 Sep.** Rehearse the demo offline, end to end, on the venue laptop.
+
+---
+
+## 6. Numbers that must never be quoted
+
+- **50% flip rate** — resolution artefact from comparing native-resolution ground
+  truth against 512x688 predictions. **33%** is the like-for-like figure.
+- **Patch-model validation IoUs** — computed on balanced patches, which flatter
+  rare classes by construction. Only whole-section `--eval` numbers are
+  comparable to the baseline.
+- **MUMDMC 98.3%** — train-set fit on 8 specimens. Memorisation, not accuracy.
+- **FeM mIoU 0.872** — real, but a *binary* ore/resin task. It does not meet the
+  >=3 phase floor and must not be presented as if it does.
