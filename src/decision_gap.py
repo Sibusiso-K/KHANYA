@@ -47,22 +47,42 @@ def ground_truth_labels(stem, subdir="test", match_prediction_size=True):
 
 
 @torch.no_grad()
-def main():
+def main(model_name="resize"):
+    """model_name: 'resize' (train_lumenstone) or 'patches' (native sliding window).
+
+    The patch model scores higher per-class, so the question this answers is
+    whether better IoU actually buys better decisions - which is not guaranteed,
+    since the thresholds sit on liberation and payload fraction rather than on
+    IoU.
+    """
+    from .segmentation import patches as patch_module
+    from .segmentation.train_patches import checkpoint_for
+
     dev = device()
+    native = model_name == "patches"
+    weights = checkpoint_for("ce") if native else CKPT
     model = build_model(num_classes=ls.NUM_CLASSES, pretrained=False).to(dev)
-    model.load_state_dict(torch.load(CKPT, map_location=dev))
+    model.load_state_dict(torch.load(weights, map_location=dev))
     model.eval()
+    print(f"model: {model_name}  weights: {weights}")
 
     _, _, test_ids = ls.split_ids()
     rows, flips = [], 0
 
     for stem in sorted(test_ids):
         image = Image.open(ls.S2_DIR / "imgs" / "test" / f"{stem}.jpg").convert("RGB")
-        probabilities = model(ls.preprocess(image).to(dev))["out"][0].softmax(0)
-        predicted = probabilities.argmax(0).cpu().numpy()
-        confidence = probabilities.max(0).values.mean().item()
+        if native:
+            predicted, confidence = patch_module.sliding_window_predict(
+                model, image, dev
+            )
+        else:
+            probabilities = model(ls.preprocess(image).to(dev))["out"][0].softmax(0)
+            predicted = probabilities.argmax(0).cpu().numpy()
+            confidence = probabilities.max(0).values.mean().item()
 
-        truth = ground_truth_labels(stem)
+        # Ground truth is matched to whatever resolution the prediction is at,
+        # so the minimum-particle-size filter treats both identically.
+        truth = ground_truth_labels(stem, match_prediction_size=not native)
         truth_result = modal.analyse(truth, ls.CLASS_NAMES)
         predicted_result = modal.analyse(predicted, ls.CLASS_NAMES)
 
@@ -94,6 +114,7 @@ def main():
         )
 
     summary = {
+        "model": model_name,
         "n_sections": len(rows),
         "n_recommendation_flips": flips,
         "flip_rate": flips / len(rows),
@@ -103,11 +124,15 @@ def main():
           f"({summary['flip_rate']:.0%}) when running on predicted masks.")
 
     config.REPORT_DIR.mkdir(exist_ok=True)
-    out = config.REPORT_DIR / "decision_gap.json"
+    suffix = "" if model_name == "resize" else f"_{model_name}"
+    out = config.REPORT_DIR / f"decision_gap{suffix}.json"
     with open(out, "w") as f:
         json.dump(summary, f, indent=2)
     print(f"wrote {out}")
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", choices=("resize", "patches"), default="resize")
+    main(parser.parse_args().model)

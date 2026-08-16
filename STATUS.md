@@ -119,7 +119,68 @@ repo — only read/write — so that was tried and abandoned; it needs an org.
 
 ## 3. What is NOT done
 
-### 3.1 The magnetite failure is NOT fixed — and the leading hypothesis is dead
+### 3.0 UPDATE 2026-08-16 (later): three approaches tried, magnetite diagnosed
+
+**Patch sampling at native resolution works — for every class except magnetite.**
+Whole-section held-out result, directly comparable to the resize baseline:
+
+| Class | Resize (CE) | **Patch (CE)** |
+|---|---|---|
+| background | 0.827 | **0.871** |
+| chalcopyrite | 0.548 | **0.576** |
+| pyrrhotite | 0.864 | **0.870** |
+| pentlandite | 0.485 | **0.547** |
+| magnetite | 0.000 | **0.000** |
+| **mean IoU** | 0.545 | **0.5725** |
+| pixel accuracy | 0.879 | **0.8914** |
+
+Source: `reports/lumenstone_s2_patches_test_metrics.json`. **Use the patch model
+as the primary result from here on.**
+
+**CE+Dice did not help.** Ran the full 8 epochs; best val patch mIoU 0.4739
+against CE's 0.5384, and magnetite stayed at IoU 0.0000 every epoch. Three
+independent approaches have now failed on magnetite: resize+CE, native
+patches+CE, native patches+CE+Dice.
+
+**Diagnosis — the model never predicts magnetite at all.** Zero pixels predicted
+across the whole test set, against 33,469 in ground truth. This is total class
+collapse, not poor boundary placement. Source:
+`reports/magnetite_confusion.json`.
+
+| Truth ↓ / Predicted → | background | chalcopyrite | magnetite | pyrrhotite | pentlandite |
+|---|---|---|---|---|---|
+| **magnetite** | **92.3%** | 0.0% | **0.0%** | 6.5% | 1.2% |
+| **pentlandite** | 2.7% | 14.0% | 0.0% | **29.2%** | 54.2% |
+
+Magnetite is absorbed into **background**, not into another sulphide. That is
+mineralogically coherent: magnetite has low reflectance in reflected light — dark
+grey, optically much closer to the dark mounting resin than to the bright
+sulphides. The model is not confusing two minerals; it is failing to separate a
+dark mineral from empty space. This also explains why neither more pixels
+(native resolution) nor a rebalanced objective (Dice) helped — **neither
+addresses a reflectance ambiguity.**
+
+Second finding, worth naming in the report as domain knowledge rather than
+generic error: **pentlandite is predicted as pyrrhotite 29.2% of the time.**
+That is the classic exsolution-intergrowth problem — pentlandite exsolves as
+flames within pyrrhotite and the two are similar bronze-cream colours. It is the
+main reason pentlandite sits at ~0.55 rather than ~0.85.
+
+**Untested hypothesis, do not state as fact yet:** if magnetite is being called
+background, it is excluded from ore area, shrinking the denominator in modal
+mineralogy and inflating the payload fraction — which is the direction of both
+unsafe flips (test_04 payload 21%→41%, test_05 19%→50%). If it holds, it is a
+clean causal chain from rare-class collapse to the expensive operational error.
+Verify before putting it in the pitch.
+
+**Recommended position:** stop attacking magnetite. Report a **four-phase**
+result with magnetite as a named, diagnosed limitation. Four working phases
+still clears the brief's >=3 floor, and a well-characterised failure with a
+mineralogical explanation is worth more to judges than a fifth class we cannot
+make work. If anything is tried, try increasing input bit depth / contrast
+normalisation on the dark end, since that targets the actual mechanism.
+
+### 3.1 The original hypothesis, now dead (retained for the record)
 
 Magnetite scores **IoU 0.000** in the resize baseline. The stated hypothesis was
 that the 6.6x linear downsample destroyed fine grains before the model saw them,

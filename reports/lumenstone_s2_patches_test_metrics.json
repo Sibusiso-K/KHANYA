@@ -1,0 +1,20 @@
+{
+  "iou_per_class": [
+    0.8708902779778616,
+    0.5754969710765927,
+    0.0,
+    0.8694771936576402,
+    0.5468007683291473
+  ],
+  "mean_iou": 0.5725330422082483,
+  "pixel_accuracy": 0.8913571306242792,
+  "class_names": [
+    "background",
+    "chalcopyrite",
+    "magnetite",
+    "pyrrhotite",
+    "pentlandite"
+  ],
+  "n_test_images": 12,
+  "method": "sliding window, 512px patches at native resolution, whole sections, no downsampling"
+}

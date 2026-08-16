@@ -17,6 +17,59 @@ Entry format:
 
 ---
 
+## 2026-08-16 — Sibusiso (12)
+
+**Did:** Both jobs from entry (11) finished. Headline: **the patch model is our
+best result and should be the primary one from here — whole-section mean IoU
+0.5725, pixel accuracy 0.8914**, against the resize baseline's 0.545 / 0.879.
+Native resolution improved every class that was already working (pentlandite
+0.485 -> 0.547, chalcopyrite 0.548 -> 0.576, background 0.827 -> 0.871).
+
+**CE+Dice did not help.** Full 8 epochs, best val patch mIoU 0.4739 vs CE's
+0.5384, magnetite still 0.0000 every epoch. So three independent approaches have
+now failed on magnetite. I stopped guessing and diagnosed it.
+
+**Diagnosis, and this is the useful part: the model never predicts magnetite at
+all.** Zero pixels across the entire test set against 33,469 in ground truth -
+total class collapse, not sloppy boundaries. **92.3% of magnetite is predicted as
+BACKGROUND**, not as another sulphide. That is mineralogically coherent:
+magnetite has low reflectance, it is dark grey and optically closer to the dark
+mounting resin than to the bright sulphides. The model is not confusing two
+minerals, it is failing to separate a dark mineral from empty space - which is
+exactly why neither more pixels nor a rebalanced loss helped. **Neither
+addresses a reflectance ambiguity.**
+
+Bonus finding worth writing up as domain knowledge rather than generic error:
+**pentlandite is predicted as pyrrhotite 29.2% of the time** - the classic
+exsolution-intergrowth problem, pentlandite exsolves as flames within pyrrhotite
+and both are similar bronze-cream colours. That is why pentlandite sits at ~0.55
+rather than ~0.85.
+
+**My recommendation: stop attacking magnetite.** Report a **four-phase** result
+with magnetite as a named, diagnosed limitation. Four phases still clears the
+brief's >=3 floor, and a well-characterised failure with a real mineralogical
+explanation is worth more to judges than a fifth class we cannot make work. If
+we try anything, try contrast normalisation on the dark end - that targets the
+actual mechanism rather than guessing again.
+
+**Untested - do NOT put in the abstract yet:** if magnetite is called background,
+it is excluded from ore area, which shrinks the modal-mineralogy denominator and
+inflates payload fraction - the direction of both unsafe flips. Plausible causal
+chain from rare-class collapse to the expensive operational error, but verify it
+first.
+
+**Changed:** `STATUS.md` section 3.0 (full comparison + diagnosis),
+`src/decision_gap.py` (takes `--model {resize,patches}`), new
+`reports/magnetite_confusion.json`, `reports/lumenstone_s2_patches_test_metrics.json`.
+**Blocked on:** nothing. `decision_gap --model patches` running (~75 min) to see
+whether the better model actually buys better decisions - not guaranteed, since
+the thresholds sit on liberation and payload fraction, not on IoU.
+**Next:** that flip rate vs the baseline's 33% is the headline slide. After it,
+the priorities are report prose and the three decisions still open with you -
+abstract scope, the R6,000 rig, and the mentor request. 14 days to the abstract.
+
+---
+
 ## 2026-08-16 — Sibusiso (11)
 
 **Did:** Acted on entry (10)'s finding. Since native-resolution patch sampling
