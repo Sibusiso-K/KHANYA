@@ -17,6 +17,61 @@ Entry format:
 
 ---
 
+## 2026-08-17 — Sibusiso (20)
+
+**Did:** Three things. Downloaded LumenStone S1, researched Mintek properly, and
+**found that our core value proposition is wrong for this audience.**
+
+**1. Read `MINTEK-FIT.md` before writing any part of the abstract.** Our pitch
+has been "cheap optical rig instead of a multi-million-rand automated mineralogy
+instrument". **Mintek's Mineralogy Division already owns QEMSCAN**, plus XRD,
+SEM-EDS, EPMA and micro-XRF - they are the national *provider* of automated
+mineralogy, not a customer priced out of it. Opening on instrument cost tells the
+room we did not research them and positions us against the capability they built.
+
+The reframe, in one line: we are not a cheaper instrument, we are **an advanced
+process-control input for flotation circuits** - and both halves of that are
+things Mintek has publicly committed to in 2026. Their flotation group is
+targeting recognition as a global centre of excellence (PGM Industry Day, July
+2026), and their own R&D voice names AI, ML, digital twins and advanced process
+control as what will reshape mineral processing.
+
+**The single highest-leverage item, and it changes our data ask.** A QEMSCAN map
+of a polished section IS a pixel-level label for an optical image of that same
+section. Mintek runs those jobs routinely. So the 30 August mentor request should
+not be "please send us some images" - it should be **"can QEMSCAN maps be used as
+segmentation labels for optical images of the same sections"**. That is
+specific, it is valuable to them (every characterisation job becomes reusable
+training data for African ore types no public dataset covers), and it is the one
+thing that closes our largest gap. Confirmed by search that **no open dataset of
+Bushveld/UG2/Merensky/Platreef material exists** - published papers, not released
+data. That absence is exactly why their archive is the asset.
+
+**2. S1 downloaded and wired up.** 64 train / 20 test, 7 classes, verified by
+scanning the masks. Subset now selected by `KHANYA_SUBSET` env var, default S2,
+so every existing result reproduces unchanged and S1 cannot overwrite S2
+checkpoints or metrics. S1 patch training running now (~2.5h). This tests whether
+the topology-over-IoU finding generalises to a different ore genesis, or is an S2
+artefact - which we need to know before 1 October, not after a judge asks.
+
+**3. Commodity honesty table is in MINTEK-FIT.md section 4.** We can defensibly
+claim PGM/base-metal relevance by assemblage analogue and Cu-Pb-Zn directly. We
+have **no chromite data**, so we cannot claim UG2 grade estimation. Do not let
+the abstract imply otherwise.
+
+**Changed:** new `MINTEK-FIT.md`, `DATA-SOURCES.md` (section 0b dataset search),
+`src/segmentation/lumenstone.py` (subset support + full codebook),
+`src/segmentation/patches.py`, `src/segmentation/train_patches.py`,
+`src/decision_gap.py`, `src/modal.py` (S1 roles).
+**Blocked on:** nothing. S1 training in progress.
+**Next:** (a) S1 eval + decision_gap to test generalisation; (b) reframe report
+section 3 away from instrument cost toward deployment location and turnaround;
+(c) re-voice the drafted report sections and clear the 8 [CITE] markers;
+(d) your three calls, now including the reframed mentor/QEMSCAN-labelling ask.
+**13 days to the abstract.**
+
+---
+
 ## 2026-08-17 — Sibusiso (19)
 
 **Did:** Built the venv and **the demo now runs.** `python -m venv .venv` then
