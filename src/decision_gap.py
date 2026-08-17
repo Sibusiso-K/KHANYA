@@ -96,11 +96,18 @@ def main(model_name="resize", refine=False):
     rows, flips = [], 0
 
     for stem in sorted(test_ids):
+        # The cache is keyed by model NAME, so a retrained checkpoint would
+        # otherwise be silently scored against its predecessor's predictions -
+        # a wrong-answer bug with no error message. Stamp the checkpoint's
+        # modification time and invalidate when it moves.
         cached = cache_dir / f"{stem}.npz"
-        if cached.exists():
+        stamp = weights.stat().st_mtime_ns
+        if cached.exists() and int(np.load(cached).get("ckpt", -1)) == stamp:
             store = np.load(cached)
             predicted, confidence = store["mask"], float(store["confidence"])
         else:
+            if cached.exists():
+                print(f"  {stem}: checkpoint changed, re-predicting")
             image = Image.open(
                 ls.DATA_DIR / "imgs" / "test" / f"{stem}.jpg"
             ).convert("RGB")
@@ -130,7 +137,8 @@ def main(model_name="resize", refine=False):
                     )
                 )
             np.savez_compressed(
-                cached, mask=predicted.astype(np.uint8), confidence=confidence
+                cached, mask=predicted.astype(np.uint8), confidence=confidence,
+                ckpt=stamp,
             )
 
         truth = ground_truth_labels(stem, match_prediction_size=False)

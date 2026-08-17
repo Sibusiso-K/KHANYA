@@ -23,6 +23,7 @@ magnetite pixel guarantees the class is PRESENT in that patch, not that it
 dominates it. The pixel-level imbalance inside a patch is untouched. The fix is
 to exposure, not to prior.
 """
+import os
 import random
 from pathlib import Path
 
@@ -38,9 +39,18 @@ Image.MAX_IMAGE_PIXELS = None
 
 PATCH = 512
 BATCH_SIZE = 2
-PATCHES_PER_EPOCH = 64
-VAL_PATCHES = 32
-EPOCHS = 8
+
+# Budget is env-overridable so a longer run needs no code edit, and — more
+# importantly — so the defaults stay exactly what produced the recorded S2
+# results. Unset means reproduce the report.
+#
+# S1 needed this: seven classes were trained on the same 64x8 budget as S2's
+# five, and came out at mean IoU 0.33 with two classes near zero against a
+# published 0.84. That is an undertrained model, not a method result, and it
+# left our headline topology claim untestable.
+PATCHES_PER_EPOCH = int(os.environ.get("KHANYA_PATCHES_PER_EPOCH", 64))
+VAL_PATCHES = int(os.environ.get("KHANYA_VAL_PATCHES", 32))
+EPOCHS = int(os.environ.get("KHANYA_EPOCHS", 8))
 LR = 2e-4  # lower than the resize baseline's 1e-3: minerals sat at IoU 0.0 for
            # several epochs there, which is the signature of too high an LR for
            # a 5-class fine-tune of a pretrained backbone.
