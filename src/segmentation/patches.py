@@ -51,11 +51,11 @@ SEED = 42
 # for choosing patch centres and keeps the index at tens of megabytes.
 MAX_COORDS = 20000
 
-CACHE = ls.S2_DIR.parent / "s2_class_index.npz"
+CACHE = ls.DATA_DIR.parent / f"{ls.SUBSET.lower()}_class_index.npz"
 
 
 def labels_for(stem: str, subdir: str) -> np.ndarray:
-    array = np.array(Image.open(ls.S2_DIR / "masks" / subdir / f"{stem}.png"))
+    array = np.array(Image.open(ls.DATA_DIR / "masks" / subdir / f"{stem}.png"))
     if array.ndim == 3:
         array = array[:, :, 0]
     return ls._LOOKUP[torch.from_numpy(array).long()].numpy()
@@ -134,7 +134,7 @@ class BalancedPatches(Dataset):
                 self._cache.pop(next(iter(self._cache)))
             self._cache[stem] = (
                 np.array(Image.open(
-                    ls.S2_DIR / "imgs" / self.subdir / f"{stem}.jpg"
+                    ls.DATA_DIR / "imgs" / self.subdir / f"{stem}.jpg"
                 ).convert("RGB")),
                 labels_for(stem, self.subdir),
             )

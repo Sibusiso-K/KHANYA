@@ -60,6 +60,35 @@ S2_ROLES = {
     "magnetite": "oxide",
 }
 
+# LumenStone S1 - Berezovskoe polymetallic hydrothermal Cu-Pb-Zn-Au ore.
+#
+# Payload is the Cu-Pb-Zn sulphides. Two deliberate calls, both metallurgically
+# motivated rather than convenient:
+#
+#   pyrite -> reject. Pyrite depression is standard practice in Cu-Pb-Zn
+#   flotation; it dilutes concentrate grade and adds smelter sulphur load.
+#
+#   tennantite -> deleterious. Tennantite-tetrahedrite does carry copper, so
+#   calling it deleterious rather than payload is a judgement: it is the main
+#   arsenic and antimony host in ores of this type, and arsenic attracts
+#   concentrate penalties that in practice dominate the decision. Recording the
+#   trade-off rather than hiding it - this is a grade-versus-penalty call, and a
+#   different smelter contract could justify the other choice.
+S1_ROLES = {
+    "background": "resin",
+    "chalcopyrite": "payload",
+    "galena": "payload",
+    "sphalerite": "payload",
+    "bornite": "payload",
+    "pyrite": "reject",
+    "tennantite": "deleterious",
+}
+
+# Union of every mineral across the subsets we run, so `analyse` needs no subset
+# argument and a mineral keeps one role wherever it appears. Chalcopyrite is
+# payload in both S1 and S2, which is consistent.
+LUMENSTONE_ROLES = {**S1_ROLES, **S2_ROLES}
+
 REEFPRINT_ROLES = {
     "Chromite": "oxide",
     "Orthopyroxene": "gangue",
@@ -276,7 +305,7 @@ def analyse(labels, class_names, roles=None, background_index=0,
             refine: bool = False):
     """Labelled mask (H x W of class indices) -> ModalResult."""
     labels = np.asarray(labels)
-    roles = roles or S2_ROLES
+    roles = roles or LUMENSTONE_ROLES
 
     counts = np.bincount(labels.ravel(), minlength=len(class_names))
     total = int(counts.sum())

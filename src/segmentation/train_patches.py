@@ -25,7 +25,7 @@ from tqdm import tqdm
 from . import config, losses, lumenstone as ls, metrics, patches
 from .model import build_model, device
 
-CKPT_DIR = config.ROOT / "checkpoints" / "lumenstone_s2_patches"
+CKPT_DIR = config.ROOT / "checkpoints" / f"lumenstone_{ls.SUBSET.lower()}_patches"
 CKPT = CKPT_DIR / "best.pt"
 
 
@@ -36,7 +36,8 @@ def checkpoint_for(loss_name: str):
     way to produce nonsense."""
     if loss_name == "ce":
         return CKPT
-    return config.ROOT / "checkpoints" / f"lumenstone_s2_patches_{loss_name}" / "best.pt"
+    return (config.ROOT / "checkpoints"
+            / f"lumenstone_{ls.SUBSET.lower()}_patches_{loss_name}" / "best.pt")
 
 
 def run_epoch(model, loader, criterion, optimiser, dev, train: bool):
@@ -111,7 +112,7 @@ def evaluate(loss_name="ce"):
     _, _, test_ids = ls.split_ids()
     confusion = metrics.new_confusion(ls.NUM_CLASSES)
     for stem in tqdm(sorted(test_ids), leave=False):
-        image = Image.open(ls.S2_DIR / "imgs" / "test" / f"{stem}.jpg")
+        image = Image.open(ls.DATA_DIR / "imgs" / "test" / f"{stem}.jpg")
         predicted, _ = patches.sliding_window_predict(model, image, dev)
         truth = patches.labels_for(stem, "test")
         metrics.confusion_from_batch(
@@ -132,7 +133,7 @@ def evaluate(loss_name="ce"):
     config.REPORT_DIR.mkdir(exist_ok=True)
     summary["loss"] = loss_name
     suffix = "" if loss_name == "ce" else f"_{loss_name}"
-    out = config.REPORT_DIR / f"lumenstone_s2_patches{suffix}_test_metrics.json"
+    out = config.REPORT_DIR / f"lumenstone_{ls.SUBSET.lower()}_patches{suffix}_test_metrics.json"
     with open(out, "w") as f:
         json.dump(summary, f, indent=2)
     print(f"wrote {out}")

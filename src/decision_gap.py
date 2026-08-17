@@ -36,7 +36,7 @@ def ground_truth_labels(stem, subdir="test", match_prediction_size=True):
     rather than of model error. NEAREST only - interpolating class indices
     would invent minerals that do not exist.
     """
-    image = Image.open(ls.S2_DIR / "masks" / subdir / f"{stem}.png")
+    image = Image.open(ls.DATA_DIR / "masks" / subdir / f"{stem}.png")
     if match_prediction_size:
         height, width = ls.IMAGE_HW
         image = image.resize((width, height), Image.NEAREST)
@@ -89,7 +89,7 @@ def main(model_name="resize", refine=False):
     # resolution sections costs over an hour; re-scoring a threshold change
     # against cached masks costs seconds. Threshold and policy work should not
     # be gated on GPU-less inference.
-    cache_dir = config.ROOT / "data" / "derived" / f"preds_{model_name}"
+    cache_dir = config.ROOT / "data" / "derived" / f"preds_{ls.SUBSET.lower()}_{model_name}"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     _, _, test_ids = ls.split_ids()
@@ -102,7 +102,7 @@ def main(model_name="resize", refine=False):
             predicted, confidence = store["mask"], float(store["confidence"])
         else:
             image = Image.open(
-                ls.S2_DIR / "imgs" / "test" / f"{stem}.jpg"
+                ls.DATA_DIR / "imgs" / "test" / f"{stem}.jpg"
             ).convert("RGB")
             # Everything is compared at NATIVE resolution, for both models.
             #
@@ -188,7 +188,8 @@ def main(model_name="resize", refine=False):
           f"({summary['flip_rate']:.0%}) when running on predicted masks.")
 
     config.REPORT_DIR.mkdir(exist_ok=True)
-    suffix = "" if model_name == "resize" else f"_{model_name}"
+    suffix = f"_{ls.SUBSET.lower()}" if ls.SUBSET != "S2" else ""
+    suffix += "" if model_name == "resize" else f"_{model_name}"
     suffix += "_refined" if refine else ""
     out = config.REPORT_DIR / f"decision_gap{suffix}.json"
     with open(out, "w") as f:

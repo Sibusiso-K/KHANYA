@@ -10,6 +10,7 @@ Kept separate from data.py rather than folded into it: the FeM binary pipeline
 produced the 0.872 mIoU currently quoted in the research report, and that number
 has to stay reproducible without regression risk.
 """
+import os
 import random
 from pathlib import Path
 
@@ -20,19 +21,51 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-S2_DIR = ROOT / "data" / "raw" / "lumenstone" / "S2_v2"
 
-# Codes are indices into petroscope's global 50-class LumenStone codebook
-# (shared across S1/S2/S3), so they are non-contiguous. Held as-is for
-# compatibility with petroscope's weights and visualisations, and remapped to a
-# contiguous 0..4 only at tensor-build time for CrossEntropyLoss.
-CLASS_CODES = [0, 1, 3, 5, 7]
-CLASS_NAMES = ["background", "chalcopyrite", "magnetite", "pyrrhotite", "pentlandite"]
+# petroscope's global 50-class LumenStone codebook (petroscope/segmentation/
+# lumenstone.yaml), shared across S1/S2/S3. Codes are therefore NON-CONTIGUOUS
+# within any one subset and are remapped to a dense 0..N-1 only at tensor-build
+# time for CrossEntropyLoss. Held in petroscope's own numbering and colours so our
+# masks and figures stay directly comparable to the published ones.
+CODEBOOK = {
+    0: ("background", "#000000"),
+    1: ("chalcopyrite", "#ffa500"),
+    2: ("galena", "#9acd32"),
+    3: ("magnetite", "#ff4500"),
+    4: ("bornite", "#00bfff"),
+    5: ("pyrrhotite", "#a9a9a9"),
+    6: ("pyrite", "#2f4f4f"),
+    7: ("pentlandite", "#ffff00"),
+    8: ("sphalerite", "#ee82ee"),
+    9: ("arsenopyrite", "#556b2f"),
+    10: ("hematite", "#a0522d"),
+    11: ("tennantite", "#483d8b"),
+    12: ("covellite", "#008000"),
+}
+
+# Which codes each subset actually contains, verified by scanning its masks
+# rather than taken from the website description.
+SUBSET_CODES = {
+    "S2": [0, 1, 3, 5, 7],              # Norilsk layered ultramafic Ni-Cu-PGE
+    "S1": [0, 1, 2, 4, 6, 8, 11],       # Berezovskoe polymetallic hydrothermal
+}
+
+# Active subset, selected by environment variable so that switching experiments
+# requires no code edit and, critically, so the default is unchanged: every S2
+# result in the report reproduces exactly when KHANYA_SUBSET is unset.
+# Checkpoint directories and metrics filenames all carry the subset name, so an
+# S1 run cannot overwrite an S2 result.
+SUBSET = os.environ.get("KHANYA_SUBSET", "S2").upper()
+if SUBSET not in SUBSET_CODES:
+    raise ValueError(f"KHANYA_SUBSET={SUBSET!r}; expected one of {list(SUBSET_CODES)}")
+
+DATA_DIR = ROOT / "data" / "raw" / "lumenstone" / f"{SUBSET}_v2"
+S2_DIR = DATA_DIR  # backwards-compatible alias; prefer DATA_DIR in new code
+
+CLASS_CODES = SUBSET_CODES[SUBSET]
+CLASS_NAMES = [CODEBOOK[c][0] for c in CLASS_CODES]
+CLASS_COLORS = [CODEBOOK[c][1] for c in CLASS_CODES]
 NUM_CLASSES = len(CLASS_CODES)
-
-# petroscope's own colours, kept so our visualisations are directly comparable
-# to the published LumenStone figures.
-CLASS_COLORS = ["#000000", "#ffa500", "#ff4500", "#a9a9a9", "#ffff00"]
 
 # Base-metal sulphides, in contiguous index space. These carry the PGM payload
 # in the Bushveld analogue and are the classes the advisor cares about.
