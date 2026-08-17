@@ -45,6 +45,70 @@ nominally overlap with REEFPRINT_CLASSES, and not in cumulate-rock context.
 No chromite, no base-metal sulphide, no talc/serpentine. Does not solve the
 data blocker - recorded here so this dead end isn't rediscovered.
 
+## 0b. Dataset search, 2026-08-17 — three new findings
+
+Searched for further masked reflected-light ore microscopy beyond S2. Results in
+priority order.
+
+### (i) LumenStone S1 and S3 — available now, and the best test available
+
+Already accessible from the same host we used for S2, no registration:
+
+| Set | v2 | Classes | Size | Assemblage |
+|---|---|---|---|---|
+| S1 | 64 train / 20 test | **7** | 646 MB | Berezovskoe hydrothermal: sphalerite, pyrite, galena, bornite, tennantite-tetrahedrite, chalcopyrite |
+| S3 | 33 train / 14 test (+XPL rotations) | **9** | 5.2 GB | high-temperature hydrothermal: pyrite, arsenopyrite, covelline, bornite, chalcopyrite, magnetite, hematite |
+
+**Why these matter more than any new dataset.** They test whether our central
+finding generalises: does repairing particle topology beat raising IoU on a
+*different ore genesis* with *more classes*? If the effect holds on S1's seven
+hydrothermal phases and S3's nine, it stops being an S2 artefact and becomes a
+general claim about image-based mineralogy. If it does not hold, we need to know
+that before 1 October rather than after a judge asks.
+
+Requires almost no new code: we already store petroscope's global class
+codebook, and S1/S3 codes come from the same 50-class table. Only the class list
+and directory change. S3 also contains **magnetite and hematite together** -
+directly relevant to our optical argument in report section 3, since that pair is
+exactly what SEM/BSE cannot separate, and it would let us test the claim rather
+than only assert it.
+
+### (ii) USGS mafic-ultramafic thin sections — CC0, right rock type, NO masks
+
+DOI **10.5066/P1SUMMMI**, ver 2.0 (August 2025), ScienceBase item
+65f2321fd34e1403329846c2. Thin sections from hand samples and drill core of
+**mafic to ultramafic rocks**, sampled specifically to define **platinum group
+element, copper, nickel**, gold and Ti-V-Fe resources across US localities.
+Imaged in plane-polarised, cross-polarised **and reflected light** (Keyence
+VHX-7000). Licence **CC0 1.0** - the most permissive we have found.
+
+**No mineral identifications and no pixel masks**, so it cannot train supervised
+segmentation. Its value is different and still real:
+
+- It is the closest public imagery to Bushveld *rock type and commodity* we have
+  located - layered mafic-ultramafic, PGE-Cu-Ni - which is precisely the gap
+  named in report section 8 limitation 2.
+- Different laboratory, different microscope, different preparation. Running our
+  S2-trained model over it is a genuine **cross-laboratory domain-shift test**,
+  which is report section 8 limitation 7 and currently unaddressed. Qualitative,
+  but a judge asking "would this work on our samples?" deserves better than
+  "untested".
+
+Treat as inference-only evaluation material, never as a training set, and never
+report a number from it that implies labels exist.
+
+### (iii) Reflected Light Microscopic Iron ore dataset — low value for us
+
+Mendeley Data `6hp82tsb8g` v2; paper *Data in Brief* (2025),
+DOI 10.1016/j.dib.2025.111540 (Firdaus, Anwar, Mohapatra, Sahoo). 563
+reflected-light images of iron ore from Indian mines, at 10x and 20x, labelled by
+**ore grade** - Blue Dust, Hard Laminated, Lateritic, Soft Laminated.
+
+Right modality, wrong label type: these are whole-image grade classes, not
+mineral phases, and there are no masks. It cannot exercise the segmentation or
+liberation stages, which is where our contribution sits. Recorded so it is not
+re-investigated.
+
 ## 1. LumenStone — primary target, ACCESS OPEN (re-checked 2026-08-14)
 
 Reflected-light images of **polished ore sections** with pixel-level multi-class
