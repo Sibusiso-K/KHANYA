@@ -573,6 +573,51 @@ different optical train, objective, or section preparation. LumenStone V1 — th
 same samples imaged under varying real conditions, built by the dataset authors
 for colour-adaptation research — is the proper test and remains unused.
 
+#### 5.0.6.1 Software colour constancy does not fix this, and the reason is instructive
+
+The obvious remedy is a colour-constancy step. We tested grey-world
+normalisation — the standard baseline, which rescales each channel so their means
+match — applied after the perturbation and before inference.
+
+| Perturbation | Raw | With grey-world |
+|---|---|---|
+| baseline | **0.5448** | **0.1358** |
+| exposure -30% | 0.4427 | 0.0523 |
+| exposure +30% | 0.3017 | 0.2077 |
+| white balance, warm | 0.1772 | 0.1408 |
+| white balance, cool | 0.1531 | 0.1685 |
+| soft focus | 0.5451 | 0.1355 |
+| sensor noise | 0.5441 | 0.1375 |
+
+Source: `reports/robustness_s2_resize_greyworld.json`.
+
+**It achieved invariance and destroyed the measurement.** Every perturbation now
+scores between 0.13 and 0.21, barely varying — so the illumination sensitivity is
+genuinely gone. But the baseline collapsed from 0.5448 to 0.1358. The model is
+now uniformly bad rather than conditionally good.
+
+The mechanism is specific to this domain and is the useful part of the result.
+Grey-world assumes the average of a scene is achromatic. In a polished section
+the average colour is dominated by whichever mineral phase is most abundant, and
+**that abundance is precisely the quantity we are measuring**. Normalising it
+away deletes the signal along with the illuminant. More generally: no
+scene-statistics heuristic can separate illumination colour from mineral colour
+in a modality where scene colour *is* the measurement.
+
+**Therefore the requirement is calibration at capture, not correction after it.**
+The system needs a known reflectance reference in the field of view or in the
+imaging protocol — which is exactly what quantitative reflectance microscopy
+already does, and has done since long before machine learning. This is a
+deployment specification we can state precisely rather than a limitation we have
+to apologise for:
+
+> KHANYA requires reflected-light images captured under calibrated illumination
+> against a known reflectance standard. It does not require a particular
+> microscope, camera, or laboratory.
+
+That is a far stronger position than "works on any photograph", and it is one a
+process mineralogist will recognise as correct.
+
 ### 5.1 Methodological risk: class imbalance
 
 Mineral class frequencies are naturally very unbalanced; some phases occupy a few
