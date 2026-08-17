@@ -510,6 +510,69 @@ uncertainty band: where the liberation estimate falls within the estimator's own
 error margin of a threshold, the honest output is "marginal — verify" rather than
 a confident instruction.
 
+### 5.0.6 Robustness: the model is a colorimeter, not a texture recogniser
+
+Every image in this project came from one laboratory, one microscope (Carl Zeiss
+AxioScope 40) and one camera (Canon Powershot G10). Nothing in the numbers above
+says whether the model survives a different rig, which is the first question that
+matters for deployment. `src/robustness.py` applies controlled photometric
+perturbations to the held-out sections and re-measures IoU with the ground-truth
+masks untouched, so any drop is pure fragility rather than changed mineralogy.
+
+| Perturbation | Mean IoU | Change | Pixel accuracy |
+|---|---|---|---|
+| baseline | 0.5448 | — | 0.879 |
+| soft focus, 1.5 px Gaussian | 0.5451 | **+0.0004** | 0.879 |
+| sensor noise, sigma 8 | 0.5441 | -0.0007 | 0.878 |
+| JPEG quality 40 | 0.5309 | -0.014 | 0.870 |
+| contrast x0.70 | 0.5151 | -0.030 | 0.863 |
+| exposure -30% | 0.4427 | -0.102 | 0.796 |
+| exposure +30% | 0.3017 | -0.243 | 0.413 |
+| white balance, warm | 0.1772 | **-0.368** | 0.263 |
+| white balance, cool | **0.1531** | **-0.392** | 0.317 |
+
+Source: `reports/robustness_s2_resize.json`.
+
+**The model is almost entirely dependent on absolute colour and brightness, and
+close to indifferent to spatial detail.** Blurring, adding sensor noise, or
+compressing to JPEG 40 costs essentially nothing. A 15% white-balance shift costs
+**72% of performance in relative terms**, with pixel accuracy collapsing from
+0.879 to 0.263.
+
+Two conclusions follow, and they point in opposite directions.
+
+**This confirms the optical premise of section 3.** We argued that reflected
+light discriminates minerals on reflectance and colour rather than on
+composition-dependent contrast. The model has evidently learned exactly that: it
+is using photometry, not texture. The argument is no longer an assertion about
+physics, it is a measured property of the trained system.
+
+**It is also the single largest deployment risk in the project.** A different
+illuminant, a different colour-temperature setting, or an operator adjusting a
+camera by eye, and performance falls to a level indistinguishable from noise. Any
+claim that this transfers to another laboratory is unsupported without
+illumination control.
+
+Note the asymmetry between over- and under-exposure: +30% costs more than twice
+what -30% costs, because highlight saturation destroys reflectance information
+irreversibly while underexposure merely compresses it. Practical implication: an
+operator should err toward under-exposing.
+
+**The remedy is domain-standard, which is why this is a manageable limitation
+rather than a fatal one.** Quantitative reflectance microscopy already requires
+calibrated illumination — reflectance is measured against known standards
+precisely because absolute grey level is the quantity of interest. Our
+requirement is therefore the one the discipline already imposes, and the honest
+framing is that the system needs a calibrated illumination reference, not that it
+is unusually brittle.
+
+**Scope of this experiment, stated so it is not overclaimed.** These are
+synthetic perturbations of the same underlying photographs. They probe exposure,
+white balance, focus and sensor response. They do **not** reproduce a genuinely
+different optical train, objective, or section preparation. LumenStone V1 — the
+same samples imaged under varying real conditions, built by the dataset authors
+for colour-adaptation research — is the proper test and remains unused.
+
 ### 5.1 Methodological risk: class imbalance
 
 Mineral class frequencies are naturally very unbalanced; some phases occupy a few

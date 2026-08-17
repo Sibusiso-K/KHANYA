@@ -95,6 +95,26 @@ PERTURBATIONS = {
 }
 
 
+def grey_world(image):
+    """Grey-world colour constancy: rescale each channel so channel means match.
+
+    The classic illumination-invariance baseline. It assumes the average of a
+    scene is achromatic, which is a strong assumption here - a section that is
+    genuinely mostly one coloured phase will be partially neutralised, and that
+    is a real cost, not a free fix.
+
+    Included because the robustness sweep showed white balance is by far the
+    dominant failure mode (-0.39 mean IoU against -0.001 for sensor noise). The
+    question this answers is whether a standard, cheap normalisation recovers
+    that loss, or whether the model needs illumination calibration at capture
+    time - which is what quantitative reflectance microscopy already requires.
+    """
+    array = np.asarray(image).astype(np.float32)
+    means = array.reshape(-1, 3).mean(0)
+    array *= means.mean() / np.clip(means, 1e-6, None)
+    return Image.fromarray(np.clip(array, 0, 255).astype(np.uint8))
+
+
 def truth_labels(stem, size=None):
     image = Image.open(ls.DATA_DIR / "masks" / "test" / f"{stem}.png")
     if size is not None:
@@ -109,6 +129,9 @@ def truth_labels(stem, size=None):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", choices=("resize", "patches"), default="resize")
+    parser.add_argument("--normalise", action="store_true",
+                        help="apply grey-world colour constancy after the "
+                             "perturbation, before inference")
     args = parser.parse_args()
 
     dev = device()
@@ -126,8 +149,11 @@ def main():
             image = Image.open(
                 ls.DATA_DIR / "imgs" / "test" / f"{stem}.jpg"
             ).convert("RGB")
+            shown = perturb(image)
+            if args.normalise:
+                shown = grey_world(shown)
             predicted = model(
-                ls.preprocess(perturb(image)).to(dev)
+                ls.preprocess(shown).to(dev)
             )["out"][0].argmax(0).cpu()
             # Ground truth resized to the network's working size, unperturbed -
             # the mineralogy did not change, only the photograph of it.
@@ -143,10 +169,13 @@ def main():
               f"{'' if name == 'baseline' else f'{drop:+.4f}'}")
 
     config.REPORT_DIR.mkdir(exist_ok=True)
-    out = config.REPORT_DIR / f"robustness_{ls.SUBSET.lower()}_{args.model}.json"
+    suffix = "_greyworld" if args.normalise else ""
+    out = (config.REPORT_DIR
+           / f"robustness_{ls.SUBSET.lower()}_{args.model}{suffix}.json")
     with open(out, "w") as f:
         json.dump({
             "subset": ls.SUBSET, "model": args.model,
+            "grey_world_normalised": args.normalise,
             "class_names": ls.CLASS_NAMES,
             "results": {k: v for k, v in results.items()},
         }, f, indent=2)
