@@ -15,6 +15,61 @@ an accuracy report, and demonstration of **operational feedback integration**.
 
 ---
 
+## 0. What this system actually is — read this first
+
+**It is not an agentic AI system.** There is no LLM, no agent, no reasoning loop
+and nothing generative anywhere in KHANYA. Describing it as "agentic AI" to
+Mintek judges would be inaccurate and would cost us credibility with an audience
+that includes process metallurgists.
+
+It is a **supervised computer-vision pipeline with a deterministic expert-system
+decision layer**. One learned component, three deterministic ones:
+
+| Stage | What it is | Learned? |
+|---|---|---|
+| 1. Segmentation | DeepLabv3+ResNet50 CNN, semantic segmentation, 5 classes | **Yes** - supervised |
+| 2. Modal mineralogy | Pixel counting + mineral-to-role lookup | No - arithmetic |
+| 2.5. Topology repair | Morphological opening, hole filling, watershed | No - classical image processing |
+| 3. Liberation | Connected components + particle composition | No - geometry |
+| 4. Advisor | Threshold rules over metallurgical roles | No - hand-written rules |
+
+Only the CNN learns. Everything downstream is deterministic and inspectable, and
+that is a **feature** for this audience: a plant metallurgist can read
+`src/advisor.py` and see exactly why it said "grind finer". Process control values
+auditability over cleverness, and an LLM in this loop would destroy that property
+while adding nothing the task needs.
+
+One quantity is empirically derived rather than hand-set: the uncertainty band
+half-width (0.089) is the liberation estimator's measured mean absolute error on
+held-out sections. The four advisor thresholds are not learned - one is
+literature-sourced and three are placeholders (section 7.5 of the research
+report).
+
+### What it is trained on
+
+**One dataset: LumenStone S2 v2.** Nothing else.
+
+- 37 train / 6 validation (carved from train) / **12 test, never seen**
+- 5 classes: chalcopyrite, magnetite, pyrrhotite, pentlandite, resin background
+- Norilsk Group - layered ultramafic magmatic Ni-Cu-PGE sulphide
+- 3396x2547 reflected light, pixel-level masks, authors' own split
+- ImageNet-pretrained ResNet50 backbone, fine-tuned on those 37 images
+- CPU only: 12 epochs (resize regime), 8 epochs (patch regime)
+- Best held-out result: **mean IoU 0.5725, pixel accuracy 0.8914**
+
+FeM (binary ore/resin) and MUMDMC2025 (8 specimens) appear in our history but
+**nothing that ships is trained on either**, and no accuracy claim is made from
+them.
+
+**The sentence that matters most: nothing is trained on South African ore.** Not
+one image. The model has never seen Bushveld, UG2, Merensky or Platreef material,
+and four of REEFPRINT's five target phases have no data at all. S2 is defensible
+as an *assemblage* analogue - same sulphide minerals, same intrusion type - and is
+**not** an abundance analogue, since BMS is 62.8% of S2 pixels against under
+1 vol% in UG2.
+
+---
+
 ## 1. The one-paragraph version
 
 We have a working end-to-end pipeline — micrograph in, plant recommendation out —
