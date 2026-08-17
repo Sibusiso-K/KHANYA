@@ -5,6 +5,8 @@ data/raw/
 data/processed/
 checkpoints/
 reports/*.png
+!reports/figures/
+!reports/figures/*.png
 reports/*.csv
 .ipynb_checkpoints/
 seg_train.log

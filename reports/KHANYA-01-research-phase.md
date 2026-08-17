@@ -179,6 +179,64 @@ down by means other than raising IoU. Section 5.0.5 supports this: repairing
 particle topology took the flip rate from 6 sections in 12 to 2, while IoU gains
 alone took it from 6 to 6.
 
+### 4.1 Which benchmarks apply to this problem, and which do not
+
+Worth stating explicitly, because it is a fair question and the intuitive answer
+is wrong.
+
+**The standard computer-vision benchmarks do not apply.** ImageNet, COCO, PASCAL
+VOC, KITTI, Cityscapes, Open Images, ADE20K, YouTube-8M and Visual Genome are all
+**natural-image** benchmarks — photographs of objects, people, street scenes and
+video. Evaluating this model against any of them would produce a number with no
+meaning, for three independent reasons:
+
+1. **Disjoint label spaces.** Our classes are chalcopyrite, pyrrhotite,
+   pentlandite, magnetite and mounting resin. None of them exists in any of those
+   benchmarks, and none of their classes exists in our data. There is nothing to
+   score against.
+2. **Different imaging physics.** A natural photograph records scene radiance
+   under uncontrolled illumination. A reflected-light micrograph records mineral
+   **reflectance** under calibrated illumination at fixed magnification, where
+   absolute grey level and colour are the diagnostic signal. This is why we
+   deliberately apply no colour jitter in augmentation — a transformation that is
+   harmless on Cityscapes destroys the information our task depends on.
+3. **Different failure economics.** Those benchmarks score whether a pixel is
+   labelled correctly. Nothing in them measures whether an error changes a
+   downstream decision, which is the question this project exists to answer.
+
+**One genuine connection.** ImageNet is already in this pipeline: the ResNet50
+backbone is ImageNet-pretrained before fine-tuning on 37 mineral images.
+Low-level features — edges, textures, boundaries — transfer usefully across
+domains, and with a dataset this small that pretraining is doing substantial
+work. So ImageNet is a component, not a yardstick.
+
+**A second, weaker connection.** Our metric protocol — per-class IoU, mean IoU
+and pixel accuracy — comes from the PASCAL VOC and Cityscapes segmentation
+lineage. We inherit the measurement convention while rejecting the datasets, and
+that is the correct relationship.
+
+**The benchmarks that do apply** are the published results on the same imagery:
+
+| Work | Dataset | Result | Comparability to ours |
+|---|---|---|---|
+| PSPNet + ResNet18 | LumenStone **S1+S2** combined | mean IoU 0.88, PA 0.96 | Indicative. Reported jointly across two subsets, so not directly comparable to our S2-only figure |
+| ResUNet (petroscope) | LumenStone **S1 v1** | mean IoU 0.8373 | **Closest available.** Same subset we are now training on, though we use v2 (more images, possibly revised annotations) and carve our own validation set from train |
+| DeepLabv3+ (Filippo et al. 2021) | FeM, binary ore/resin | — | Same architecture and task as our earliest run (our mean IoU 0.872) |
+
+This matters for an honest reading of our position. Until now we had trained only
+on S2, while the strongest published numbers are reported on S1 or on S1+S2
+jointly — so we had **no directly comparable figure at all**, and our 0.5725 was
+being informally compared against 0.88 measured on different data. The S1 run
+now in progress produces the first number that sits alongside the ResUNet 0.8373
+on the same subset. We expect to remain below it, and the reasons are stated in
+section 8: twelve CPU epochs against their full training budget.
+
+**A benchmark that does not exist.** There is no established benchmark for
+*decision quality* from mineralogical images — no dataset pairs micrographs with
+the operating decision a metallurgist would take. That absence is why we
+constructed the recommendation-flip measurement in section 5.0.3 rather than
+adopting one, and it is the gap our contribution sits in.
+
 ## 5. Data
 
 Our primary dataset is **LumenStone S2 v2** — 37 training and 12 test
