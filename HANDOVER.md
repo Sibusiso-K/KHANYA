@@ -17,6 +17,58 @@ Entry format:
 
 ---
 
+## 2026-08-16 — Sibusiso (18)
+
+**Did:** Two things - wrote the report prose, and found that **the demo does not
+currently start.**
+
+**1. Report prose written.** Sections 1, 2, 3, 4, 5, 6, 8 and 10 are now written
+rather than skeleton; the report is ~6,500 words. **They are marked DRAFT at the
+top of the file and must be re-voiced before submission** - Mintek runs explicit
+AI-generation checks and originality is scored, so this is mandatory, not
+cosmetic. There are **8 `[CITE]` markers** for claims still needing a reference,
+and section 10 ends with an explicit list of what is still required. Do not
+submit with any [CITE] marker remaining.
+
+Section 4 states plainly that we are NOT targeting mean IoU 0.88 and do not
+approach it - our 0.5725 came from 12 CPU epochs. What we target instead is the
+recommendation error rate. That framing is deliberate and it is what makes the
+weak IoU defensible rather than embarrassing.
+
+**2. LAUNCH BLOCKER FOUND - the dashboard cannot start.** `import streamlit`
+fails outright: streamlit 1.58.0's gzip middleware imports
+`DEFAULT_EXCLUDED_CONTENT_TYPES` from starlette, which starlette 0.41.3 (what is
+installed) does not export. streamlit's own metadata only asks for
+`starlette>=0.40.0`, so pip resolved a version that then fails at import -
+nothing we did wrong, but it means **the offline demo deliverable is currently
+broken on this machine.** Verified fix: starlette 1.6.0, now pinned as
+`starlette>=1.6` in `requirements.txt`. I verified it in an isolated directory
+rather than upgrading the global package, because other projects on this machine
+may depend on the older starlette.
+
+**This is exactly the failure that ruins a venue demo**, so it needs resolving
+properly and early - the README already prescribes a venv (`python -m venv
+.venv`), and building that venv from `requirements.txt` is the clean fix. Doing
+that also gives us a reproducible environment for the 1 October laptop, which we
+need anyway.
+
+**3. Dashboard updated to match the validated pipeline.** It was still using raw
+connected components and had no uncertainty band, so it would have demonstrated
+liberation numbers uncorrelated with truth. Now uses `refine=True` and surfaces
+the marginal band explicitly, including how far liberation sits from the
+threshold relative to the estimator's own error.
+
+**Changed:** `reports/KHANYA-01-research-phase.md` (sections 1,2,3,4,5,6,8,10),
+`dashboard/app.py` (refined estimator, band display), `requirements.txt`
+(starlette pin).
+**Blocked on:** the venv/starlette fix before the demo can be shown or rehearsed.
+**Next:** (a) build the venv and confirm the dashboard runs end to end offline;
+(b) re-voice the drafted sections and fill the 8 [CITE] markers; (c) energy/cost
+case; (d) your three calls - abstract scope, R6,000 rig, mentor request. 14 days
+to the abstract.
+
+---
+
 ## 2026-08-16 — Sibusiso (17)
 
 **Did:** Final band results, and **a correction you need before writing

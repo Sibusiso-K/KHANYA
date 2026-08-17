@@ -8,4 +8,9 @@ opencv-python  # marker-controlled watershed for particle separation; falls back
 matplotlib
 pandas
 streamlit
+# streamlit declares starlette>=0.40.0 but its gzip middleware imports
+# DEFAULT_EXCLUDED_CONTENT_TYPES, which older starlette does not export - so pip
+# resolves a version that then fails at import. With starlette 0.41.3 the
+# dashboard does not start AT ALL. Verified working with 1.6.0.
+starlette>=1.6
 tqdm

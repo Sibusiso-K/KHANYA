@@ -16,7 +16,7 @@ import streamlit as st
 import torch
 from PIL import Image
 
-from src import modal
+from src import advisor as advisor_module, modal
 from src.advisor import advise
 from src.segmentation import lumenstone as ls
 from src.segmentation.model import build_model, device
@@ -72,7 +72,11 @@ if uploaded:
     left.image(image, caption="Input", use_container_width=True)
     right.image(colourise(labels), caption="Predicted phases", use_container_width=True)
 
-    result = modal.analyse(labels, ls.CLASS_NAMES)
+    # refine=True: raw connected components leave predicted liberation
+    # uncorrelated with truth (+0.128). Repairing topology - speckle removal,
+    # hole filling, watershed separation - takes that to +0.947. The demo must
+    # show the pipeline we actually validated, not the one we superseded.
+    result = modal.analyse(labels, ls.CLASS_NAMES, refine=True)
 
     st.subheader("Modal mineralogy")
     st.caption(
@@ -99,12 +103,31 @@ if uploaded:
 
     recommendation = advise(result, mean_confidence)
     st.subheader("Recommendation")
-    st.metric("Action", recommendation.action)
+
+    marginal = recommendation.action.startswith("Marginal")
+    hedged = marginal or recommendation.action.startswith("Flag")
+    if marginal:
+        st.warning(f"**{recommendation.action}**")
+    elif hedged:
+        st.info(f"**{recommendation.action}**")
+    else:
+        st.metric("Action", recommendation.action)
     st.write(recommendation.reason)
     st.caption(
         f"Model confidence: {recommendation.confidence} "
         f"(mean max-softmax {mean_confidence:.2f})"
     )
+
+    if result.liberation is not None:
+        distance = abs(result.liberation - advisor_module.LOW_LIBERATION)
+        st.caption(
+            f"Liberation sits {distance:.1%} from the "
+            f"{advisor_module.LOW_LIBERATION:.0%} decision threshold; the "
+            f"uncertainty band is +/-{advisor_module.LIBERATION_MARGIN:.1%}, "
+            "which is this estimator's own mean absolute error on held-out "
+            "sections. Inside that band the honest output is 'verify', not an "
+            "instruction."
+        )
 
     with st.expander("Role fractions and caveats"):
         st.write({k: f"{v:.1%}" for k, v in result.role_fractions.items()})

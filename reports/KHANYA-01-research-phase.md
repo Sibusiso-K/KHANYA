@@ -14,18 +14,86 @@ Mintek-SCi Grad Hackathon 2026 — Problem 3
 > Every paragraph here must be our own prose, every claim cited. Do not paste
 > generated text into this document.
 
+> **DRAFT SECTIONS — must be re-voiced before submission.** Sections 1, 2, 3, 4,
+> 6, 8 and 10 were drafted from our own results, decisions and source list, but
+> they have not yet been rewritten in our own voice. Mintek runs explicit
+> AI-generation checks and originality is scored, so treat re-voicing as
+> mandatory, not cosmetic. Claims marked **[CITE]** still need a reference
+> attached; do not submit with any [CITE] marker remaining.
+
 ---
 
 ## 1. Problem statement
 
-*Restate Problem 3 in our own words. Name the three deliverables the brief
-demands: a trained model identifying >= 3 mineral phases, an accuracy report, and
-demonstration of operational feedback integration.*
+Problem 3 asks for real-time mineralogical characterisation from reflected-light
+optical microscopy. Stated in our own terms: given a photomicrograph of a
+polished ore section, identify which mineral phases are present and where, and
+turn that into information a concentrator can act on while the ore is still being
+processed.
+
+The brief sets three deliverables, and we treat them as a floor rather than a
+target:
+
+1. a trained model identifying **at least three mineral phases**;
+2. an **accuracy report** for that model;
+3. a demonstration of **operational feedback integration**.
+
+Our reading is that the third deliverable is where the problem actually lives.
+Segmenting minerals in a polished section is a solved problem in the sense that
+published benchmarks exist and are strong (section 4). What is not solved, and
+what a concentrator would actually pay for, is the step from a labelled image to
+a defensible instruction: grind finer, change reagent dosage, divert this feed, or
+leave the circuit alone. We have therefore built the full chain and, critically,
+measured how much of the segmentation model's error survives into the
+recommendation. That measurement — not the segmentation score — is our central
+contribution, and section 5.0.4 reports a case where improving segmentation
+accuracy improved decisions not at all.
+
+We also read "real-time" as a constraint on cost and turnaround rather than on
+milliseconds. The relevant comparison is not a faster GPU; it is an optical
+microscope and a trained model against an automated mineralogy instrument whose
+capital cost and sample turnaround put it outside routine plant use (section 3).
 
 ## 2. Why this matters to the minerals sector
 
-*The plant-level cost of poor mineralogical information. Milling energy. Recovery
-losses to tailings. Turnaround time of conventional automated mineralogy.*
+Poor mineralogical information is expensive in three distinct ways, and they
+compound.
+
+**Milling energy.** Comminution is the dominant energy consumer in a
+concentrator, and grinding finer than necessary spends that energy for no
+metallurgical return **[CITE — need a figure for comminution as a share of
+concentrator energy]**. The decision of how fine to grind is a liberation
+decision: grind until the valuable phase is sufficiently exposed to be recovered,
+and no further. Without per-feed mineralogical information that decision is made
+on a standing setpoint, which is by construction correct only for the average
+ore. South African reef ores are not uniform — UG2 chromitite grades vary within
+a single stope — so a standing setpoint is wrong in both directions much of the
+time.
+
+**Recovery losses to tailings.** Under-grinding is the opposite failure. A
+valuable grain locked inside a composite particle presents little exposed
+surface, is not collected by the flotation reagent, and reports to tailings.
+Recovery of composite particles falls considerably once surface exposure drops
+below roughly 50%, and further below 25% (911 Metallurgist, "Grinding for
+Liberation and Flotation"). Olympic Dam runs a two-stage grind — P80 75 µm
+followed by a regrind to P80 30 µm — specifically to hit a liberation target
+(AusIMM 2024 Mill Operators' Conference), which shows liberation is treated as a
+real operating lever and not a laboratory abstraction. Metal lost to tailings is
+lost permanently; unlike a grade penalty it cannot be recovered downstream.
+
+**Turnaround time.** Conventional automated mineralogy — QEMSCAN and comparable
+SEM-based systems — produces excellent quantitative mineralogy, but as a
+laboratory service with sample preparation, queueing and reporting in between
+**[CITE — need a turnaround figure]**. By the time the answer arrives the ore
+that generated it has been processed. Information that cannot reach the circuit
+within the residence time of the feed cannot change the outcome for that feed. A
+measurement that is less precise but available immediately can be worth more
+operationally than a precise one that is available next week.
+
+The economic case for this project rests on the third point. We are not proposing
+to beat SEM-based mineralogy on accuracy. We are proposing that a cheap optical
+measurement, delivered fast enough to act on and honest about its own
+uncertainty, changes decisions that a slow precise measurement cannot reach.
 
 ## 3. The optical argument
 
@@ -33,14 +101,61 @@ Core claim: SEM/BSE cannot reliably separate hematite from magnetite because
 their average atomic numbers are near-identical. Reflected-light optical
 microscopy can, on reflectance and colour.
 
-*Develop this into the cost argument: an optical rig plus a trained model against
-a multi-million-rand automated mineralogy instrument.*
+This matters beyond the specific mineral pair, because it establishes that
+optical microscopy is not merely the cheap approximation of electron microscopy —
+there are discriminations it makes *better*. Backscattered-electron contrast is a
+function of mean atomic number, so phases that differ in structure or oxidation
+state but not in composition are poorly separated by it. Reflected light responds
+to different physics: reflectance, colour and anisotropy under polarised light,
+which track crystal structure and bonding rather than atomic mass alone.
+
+The cost argument follows from this. An automated mineralogy instrument is a
+capital purchase in the millions of rand plus a service contract and a trained
+operator **[CITE — need an indicative instrument cost]**. A reflected-light
+microscope with a digital camera is orders of magnitude cheaper, is already
+present in most metallurgical laboratories, and requires the same polished
+section that SEM work already needs. The marginal cost of adding a trained model
+to an existing microscope is close to zero, which means the technique is
+deployable at a scale that instrument-based mineralogy is not — at every plant
+rather than at one central laboratory.
+
+Our own results add a caveat to this argument that we would rather state than have
+a judge find. Reflected light discriminates well between phases that differ in
+reflectance and colour, and poorly between phases that do not. Our model fails
+completely on magnetite, and section 5.0.2 shows why: magnetite is dark and low in
+reflectance, so it is confused with the dark mounting resin rather than with
+another mineral. The optical argument is real but it is not unconditional, and the
+honest form of it names the discriminations optical microscopy cannot make.
 
 ## 4. State of the art
 
-*See DATA-SOURCES.md for the reference list. Cover: DeepLabv3+ opaque/non-opaque
-segmentation (2021), improved YOLOv8n fine-grained segmentation (2025),
-polished-section segmentation and labelling (2025), Res-UNet ensembles.*
+Deep learning on polished-section reflected-light imagery is an established
+research area with a consistent recent direction: encoder-decoder semantic
+segmentation architectures, transferred from general computer vision, applied to
+mineral phase maps.
+
+DeepLabv3+ has been applied to opaque/non-opaque segmentation of iron ore
+sections (Filippo et al., *Minerals Engineering* 170, 2021), which is also the
+source of the FeM dataset we used for our earliest pipeline check. More recent
+work pushes toward finer-grained and instance-level tasks: an improved YOLOv8n
+for fine-grained mineral segmentation (*Minerals Engineering*, 2025) and
+segmentation-and-labelling workflows for polished sections (*Mining, Metallurgy &
+Exploration*, 2025). Res-UNet ensembles have been reported for mineral optical
+microscopy (*Minerals* 14(12), 1281). The Moscow State University group behind the
+LumenStone dataset has published both the dataset and a toolkit, `petroscope`,
+containing their class definitions, a ResUNet baseline and dataset-wide IoU
+metrics.
+
+Two points from that literature shaped our design directly. First, the
+`petroscope` authors state that mineral class imbalance is severe and that loss
+weighting and class weighting do **not** resolve it, and they use patch-based
+probability-map sampling instead. We took this seriously, implemented balanced
+patch sampling, and confirmed both that it helps the classes it can help and that
+it does not rescue a class failing for a different reason (sections 5.0.2, 5.0.4).
+Second, the published benchmarks are all reported as segmentation metrics —
+per-class or mean IoU — and we found no work measuring whether that metric
+predicts the quality of a downstream operating decision. That gap is where we
+positioned our contribution.
 
 Benchmarks we are measured against:
 
@@ -49,12 +164,64 @@ Benchmarks we are measured against:
 | PSPNet + ResNet18 | LumenStone S1+S2 | mean IoU 0.88, PA 0.96 |
 | ResUNet (petroscope) | LumenStone S1v1 | mean IoU 0.8373 |
 
-*State plainly which number we are targeting and why.*
+**Which number we target, stated plainly.** We are not targeting mean IoU 0.88,
+and we do not claim to approach it. Our best whole-section result is mean IoU
+0.5725 on LumenStone S2 (section 5.0.2), achieved with 12 CPU epochs and no GPU.
+The published benchmarks use substantially more compute and the patch-based
+sampling infrastructure their authors developed for the purpose. Claiming
+benchmark parity would be false and trivially checkable.
+
+What we target instead is the decision. Our claim is that the recommendation
+error rate of the full chain — measured as the proportion of held-out sections
+where the advisor's instruction changes between ground-truth and predicted masks —
+is a more honest measure of operational value than IoU, and that it can be driven
+down by means other than raising IoU. Section 5.0.5 supports this: repairing
+particle topology took the flip rate from 6 sections in 12 to 2, while IoU gains
+alone took it from 6 to 6.
 
 ## 5. Data
 
-*Summarise DATA-SOURCES.md. State access status honestly, including that
-LumenStone access is unresolved at time of writing, and what the fallback is.*
+Our primary dataset is **LumenStone S2 v2** — 37 training and 12 test
+reflected-light images of polished ore sections at 3396×2547 px, with
+pixel-level masks for five classes: chalcopyrite, magnetite, pyrrhotite,
+pentlandite, and resin background. The split is the authors' own. Access was
+blocked when we began (the host returned HTTP 500 on 2026-08-04) and cleared on
+2026-08-14; the data now downloads without registration under a usage agreement
+permitting research use with citation.
+
+**Why S2 specifically, and where the analogy stops.** S2 is drawn from the
+Norilsk Group — layered ultramafic intrusions hosting magmatic Ni-Cu-PGE
+sulphide. Pyrrhotite, pentlandite and chalcopyrite are the same base-metal
+sulphide assemblage that carries the PGM payload in Bushveld UG2 and Merensky
+reef ores, and both are layered ultramafic-mafic intrusions rather than the
+hydrothermal or sedimentary settings covered by every other public dataset we
+located. The transfer argument is therefore about ore genesis and mineral
+assemblage, not about convenience.
+
+It is important to state where that analogy fails, because a reviewer will ask.
+Norilsk ore is *massive* sulphide: across S2's training images the base-metal
+sulphides occupy 62.8% of pixels, against under 1 vol% in UG2. **S2 is an
+analogue for the assemblage and its optical appearance, not for its abundance.**
+Any claim we make from S2 transfers as "these phases are separable in reflected
+light at these accuracies", and explicitly not as "we can detect sub-1% BMS in
+UG2". That second claim is a different and harder problem, and our magnetite
+result (section 5.0.2) is direct evidence of how hard rare-phase detection is.
+
+Two secondary datasets were used and are reported for completeness rather than as
+results. **FeM** (Zenodo 5014700, CC-BY-4.0) provided an early pipeline check on
+binary ore/resin segmentation; it has only two classes and does not satisfy the
+≥3 phase requirement. **MUMDMC2025** was used as a development proxy while
+LumenStone was inaccessible; the only publicly obtainable version contains 8
+physical specimens, too few to hold any out for testing, so no accuracy claim is
+made from it.
+
+**No public dataset covering the full REEFPRINT phase set was found.** Four of
+its five target phases — chromite, orthopyroxene, plagioclase, talc/serpentine —
+still have no imagery available to us. We searched specifically for Bushveld, UG2,
+Merensky and Platreef material and found published papers rather than datasets.
+LITHOS-DATASET (211,604 patches, 25 classes) was evaluated and ruled out: it is a
+sedimentary and carbonate petrography dataset, the wrong rock type entirely. Full
+licence status and reasoning for every candidate is recorded in `DATA-SOURCES.md`.
 
 ### 5.0 Baseline run, 2026-08-04 — pipeline check, not an accuracy result
 
@@ -300,8 +467,61 @@ survive questioning. All splits are grouped by specimen.
 
 ## 6. Proposed approach
 
-*Pipeline: image -> segmentation -> phase area fractions -> liberation estimate ->
-plant recommendation. Say where each stage's uncertainty comes from.*
+The pipeline has four stages. Each is a separate source of error, and we treat
+them separately because — as section 5.0.4 shows — reducing error in one does not
+necessarily reduce error at the output.
+
+```
+micrograph (3396x2547, reflected light, polished section)
+   -> SEGMENTATION        DeepLabv3+ResNet50, 5 classes
+   -> MODAL MINERALOGY    area fractions as a proportion of ore
+   -> LIBERATION          particle composition from repaired topology
+   -> RECOMMENDATION      role-based advisor, with uncertainty band
+```
+
+**Stage 1, segmentation.** DeepLabv3+ResNet50, ImageNet-pretrained, five classes.
+Two training regimes were built and kept separate so they remain comparable: a
+resize baseline, and patch-based sampling at native resolution with patch centres
+drawn to balance class exposure. Uncertainty here is per-class and strongly
+non-uniform: pyrrhotite reaches IoU 0.87 while magnetite reaches 0.00.
+
+**Stage 2, modal mineralogy.** Phase area fractions are computed as a proportion
+of **ore** area, excluding mounting resin. Including resin would make every
+reported fraction a function of how densely the section happened to be mounted
+rather than of the ore. Resin coverage is reported separately as a data-quality
+signal, and below 5% ore in the field the advisor declines to recommend rather
+than compute fractions from too few pixels. Uncertainty here is inherited from
+stage 1 and is asymmetric: a phase misassigned to background does not merely
+vanish from the numerator, it shrinks the denominator too.
+
+**Stage 3, liberation.** Grains in a polished section are separated by resin, so
+connected components of non-resin pixels are particles. For each particle we
+measure the fraction that is payload phase; a particle counts as liberated when
+that fraction reaches 50%, and the reported index is the mass-weighted share of
+payload area sitting in liberated particles. Raw connected components proved far
+too brittle for this (section 5.0.4), so the mask is first repaired: morphological
+opening removes speckle, hole filling repairs grains fragmented by interior
+misclassification, and marker-controlled watershed separates touching grains.
+Uncertainty here is **topological** rather than proportional — it does not scale
+smoothly with pixel error, because a single bridging pixel merges two particles
+and changes their measured composition discontinuously.
+
+**Stage 4, recommendation.** The advisor reasons over metallurgical **roles** —
+payload, reject, oxide, gangue, deleterious — rather than mineral names, with the
+mineral-to-role mapping held separately. Changing ore body therefore changes a
+mapping, not the decision logic, which is what allows the same system to serve
+LumenStone S2 today and the REEFPRINT phase set if Bushveld data becomes
+available. Uncertainty here is **threshold brittleness**: near a trip point a
+small measurement error flips the output, so liberation estimates falling within
+the estimator's own measured error of the 50% floor return "marginal — verify"
+rather than a confident instruction.
+
+**Why this decomposition matters.** Our headline methodological finding is that
+stage 1 and stage 3 errors are close to independent. Improving segmentation from
+mean IoU 0.545 to 0.5725 changed the recommendation error rate not at all, while
+repairing stage 3 topology — with no retraining whatsoever — took it from 6
+sections in 12 to 4, and the two together reached 2 in 12. A pipeline of this
+shape cannot be tuned by optimising its first stage alone.
 
 ## 7. Operational feedback layer
 
@@ -386,8 +606,68 @@ and applied to no mineral in any dataset we now use.
 
 ## 8. Limitations
 
-*Named honestly and first. The gap between the datasets' ore bodies and South
-African ores. Single-modality optical. Dataset size.*
+Named first and without hedging. Each of these is a limitation we found
+ourselves, and each is evidenced elsewhere in this report.
+
+**1. The model fails completely on one of its five phases.** Magnetite scores IoU
+0.000 and is never predicted anywhere in the test set — zero pixels against
+33,469 in ground truth. It is absorbed into the resin background 92.3% of the
+time, which is consistent with its low reflectance: it is optically closer to dark
+mounting medium than to the bright sulphides. Native-resolution patch sampling and
+a region-based Dice loss were both tried and neither moved it, because neither
+addresses a reflectance ambiguity. We therefore present this as a **four-phase
+result with a diagnosed fifth-phase failure**, which still meets the brief's
+three-phase floor.
+
+**2. The ore body is an assemblage analogue, not an abundance analogue.** S2 is
+Norilsk massive sulphide at 62.8% BMS by area; UG2 is under 1 vol%. Our results
+support claims about optical separability of this mineral assemblage and do not
+support claims about detecting sub-1% phases in Bushveld ore.
+
+**3. Four of the five REEFPRINT target phases have no data at all.** Chromite,
+orthopyroxene, plagioclase and talc/serpentine were never trained on. The
+role-based advisor is designed so they drop in without changing decision logic,
+but that is an architectural provision, not a result.
+
+**4. Liberation is measured from 2D sections and is an upper bound.** A section
+plane can cut the free-standing rim of a particle whose core is locked, so
+apparent liberation from sections is biased **high** relative to true volumetric
+liberation. Plant practice applies a stereological correction; we do not. The bias
+runs in the safe direction for "grind finer" and in the unsafe direction for
+"continue at setpoint" — which is precisely the recommendation we can least afford
+to get wrong.
+
+**5. The validation set is too small to select on.** Six images, with a
+composition materially different from the test set (45.8% versus 25.0%
+background). Pentlandite scored 0.026 on validation and 0.485 on test, so
+checkpoint selection by best validation mIoU is close to arbitrary. Grouped
+cross-validation over the 37 training sections would be the sound protocol and we
+did not have the compute budget for it.
+
+**6. Three of four advisor thresholds are unsourced placeholders.** Only the 50%
+liberation floor is literature-backed. The payload floor, reject ceiling and
+deleterious ceiling are plausible but not derived from plant economics or assay
+data, and should be presented as configurable plant parameters rather than as
+findings.
+
+**7. Single modality, and a very small dataset.** Reflected light only, no
+cross-polarised or hyperspectral information that might separate magnetite from
+resin. Forty-nine images in total, from one deposit group, imaged on one
+microscope with one camera. Nothing here demonstrates robustness to a different
+laboratory's imaging conditions, and the LumenStone V1 subset — the same samples
+imaged under varying conditions, built precisely for colour-adaptation testing —
+would be the right way to probe that. We did not use it.
+
+**8. Everything was trained on CPU.** Twelve epochs, no GPU, well short of the
+published benchmarks' compute. Our numbers should be read as a lower bound on what
+this architecture achieves on this data, not as its ceiling.
+
+**9. Compute constraints shaped the experiment, not just the results.** Full
+sliding-window inference over 12 native-resolution sections takes over an hour on
+CPU, which limited how many configurations we could evaluate end to end. We
+mitigated this by caching predicted masks so policy changes re-score in seconds,
+but the number of training regimes we could compare was genuinely limited by
+hardware.
 
 ## 9. Open questions
 
@@ -405,4 +685,67 @@ African ores. Single-modality optical. Dataset size.*
 
 ## 10. References
 
-*Full citations. See DATA-SOURCES.md for working links.*
+Working links for all of these are in `DATA-SOURCES.md`. **Citation formatting is
+not yet consistent and several entries need volume, page or accession details
+completed before submission.**
+
+**Datasets**
+
+1. Khvostikov, A., Korshunov, D., Sorokin, D., Krylov, A., Boguslavsky, M.
+   *LumenStone dataset.* Laboratory of Mathematical Methods of Image Processing,
+   Faculty of Computational Mathematics and Cybernetics, and Department of
+   Geochemistry and Economics of Mineral Resources, Faculty of Geology, Lomonosov
+   Moscow State University. Subset S2 v2 (released 2025-06-15), 37 train / 12
+   test, five classes. Accessed 2026-08-14. Used under the stated data usage
+   agreement permitting research use with citation.
+2. Filippo, M. P. et al. *FeM dataset — reflected-light microscopy of itabiritic
+   iron ore with binary ore/resin masks.* Zenodo record 5014700, CC-BY-4.0.
+3. *MUMDMC2025 DataSet.* figshare 29483204 (public sample). Paper: *Scientific
+   Data* (2025), DOI 10.1038/s41597-025-05879-9. Used as a development proxy
+   only; no accuracy claim is made from it.
+4. Ruiz Puentes, P. et al. *LITHOS-DATASET.* Kaggle; companion to "Towards
+   Automated Petrography", NeurIPS 2025 Datasets and Benchmarks, arXiv:2511.00328.
+   CC BY-NC-SA 4.0. **Evaluated and ruled out** — sedimentary/carbonate
+   petrography, wrong rock type.
+
+**Methods and benchmarks**
+
+5. Filippo, M. P. et al. (2021) DeepLabv3+ segmentation of opaque and non-opaque
+   phases in reflected-light microscopy of iron ore. *Minerals Engineering* 170,
+   107007.
+6. Improved YOLOv8n for fine-grained mineral segmentation. *Minerals Engineering*
+   (2025). **[CITE — authors, volume, article number]**
+7. Segmentation and labelling of polished sections. *Mining, Metallurgy &
+   Exploration* (2025), DOI 10.1007/s42461-025-01205-4.
+8. Res-UNet ensemble for mineral optical microscopy. *Minerals* 14(12), 1281,
+   DOI 10.3390/min14121281.
+9. Korshunov, D. et al. From visual diagnostics to deep learning. *Mining Science
+   and Technology*. **[CITE — volume, issue, pages]**
+10. Khvostikov, A. et al. *petroscope* — Python toolkit for microscopic geological
+    image analysis. https://github.com/xubiker/petroscope. Source of the
+    LumenStone class codebook used in our label mapping, the ResUNet baseline, and
+    the statement that class weighting does not resolve mineral class imbalance.
+
+**Metallurgical sources**
+
+11. 911 Metallurgist. *Grinding for Liberation and Flotation.* Source for the
+    liberation floor: composite-particle recovery falls considerably below ~50%
+    surface exposure and further below ~25%.
+12. AusIMM (2024) Mill Operators' Conference — Olympic Dam two-stage grind, P80
+    75 µm then regrind to P80 30 µm, to meet a liberation target. **[CITE — paper
+    title and authors]**
+13. IspatGuru. *The Sintering Process of Iron Ore Fines.* Consulted for goethite
+    behaviour during earlier iron-ore-themed scoping; **no longer cited in the
+    body** and retained here only to record what was reviewed.
+
+**Still required before submission**
+
+- A figure for comminution as a share of concentrator energy consumption
+  (section 2).
+- A turnaround figure for QEMSCAN or comparable SEM-based automated mineralogy
+  (section 2).
+- An indicative capital cost for an automated mineralogy instrument (section 3).
+- Sources, or explicit reclassification as configurable plant parameters, for the
+  payload floor, reject ceiling and deleterious ceiling (section 7.5).
+- Confirmation of how Mintek's terms and IP agreement treat externally licensed
+  datasets used in a submission.
