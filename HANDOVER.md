@@ -17,6 +17,30 @@ Entry format:
 
 ---
 
+## 2026-08-17 — Sibusiso (19)
+
+**Did:** Built the venv and **the demo now runs.** `python -m venv .venv` then
+`pip install -r requirements.txt` inside `KHANYA/`. The starlette pin resolved
+the launch blocker from entry (18) - venv has streamlit 1.61.0, starlette 1.6.0,
+torch 2.13.0+cpu, opencv 5.0.0. Dashboard serves on localhost:8501 and the full
+code path was verified inside the venv: test_04 gives liberation 55%, inside the
+band, returning "Marginal - verify before acting"; test_06 gives 11% and returns
+"Grind finer". **Always run the demo from `.venv`, never global Python** - global
+streamlit still cannot import.
+
+Added a `khanya-advisor` entry to the parent repo's `.claude/launch.json` so the
+dashboard starts from the venv.
+
+**Changed:** `.venv/` (gitignored), `.gitignore`; parent repo
+`.claude/launch.json`.
+**Blocked on:** nothing technical. **The demo deliverable is now working.**
+**Next:** unchanged and now the whole remaining list - re-voice the drafted report
+sections and clear the 8 [CITE] markers, build the energy/cost case, and your
+three calls: abstract scope, R6,000 rig, mentor request. **13 days to the
+abstract.**
+
+---
+
 ## 2026-08-16 — Sibusiso (18)
 
 **Did:** Two things - wrote the report prose, and found that **the demo does not
