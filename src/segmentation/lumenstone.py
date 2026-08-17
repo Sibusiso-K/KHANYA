@@ -48,7 +48,23 @@ CODEBOOK = {
 SUBSET_CODES = {
     "S2": [0, 1, 3, 5, 7],              # Norilsk layered ultramafic Ni-Cu-PGE
     "S1": [0, 1, 2, 4, 6, 8, 11],       # Berezovskoe polymetallic hydrothermal
+    # S3 v1: high-temperature hydrothermal. The website advertises 9 classes;
+    # scanning the masks found ELEVEN codes present, so this list comes from the
+    # data and not the description. Two things to know before reporting S3:
+    #   - magnetite (0.64%) and hematite (0.27%) BOTH occur, which is the pair
+    #     SEM/BSE cannot separate. S3 therefore lets us TEST the optical argument
+    #     in report section 3 instead of asserting it.
+    #   - tennantite is 0.006% of pixels, roughly 6 in every 100,000. It cannot
+    #     reasonably be learned and will drag mean IoU down; report per-class and
+    #     say so rather than quietly dropping the class.
+    "S3": [0, 1, 2, 3, 4, 6, 8, 9, 10, 11, 12],
 }
+
+# S3 uses v1: v2 is 5.2 GB because it adds XPL ROTATIONS of the same sections.
+# Rotations are near-duplicates, so a naive split would leak them across
+# train/test - the exact failure that made our MUMDMC numbers worthless. v1 has
+# no rotations, so an image-level split is legitimate.
+SUBSET_VERSION = {"S1": "v2", "S2": "v2", "S3": "v1"}
 
 # Active subset, selected by environment variable so that switching experiments
 # requires no code edit and, critically, so the default is unchanged: every S2
@@ -59,7 +75,7 @@ SUBSET = os.environ.get("KHANYA_SUBSET", "S2").upper()
 if SUBSET not in SUBSET_CODES:
     raise ValueError(f"KHANYA_SUBSET={SUBSET!r}; expected one of {list(SUBSET_CODES)}")
 
-DATA_DIR = ROOT / "data" / "raw" / "lumenstone" / f"{SUBSET}_v2"
+DATA_DIR = ROOT / "data" / "raw" / "lumenstone" / f"{SUBSET}_{SUBSET_VERSION[SUBSET]}"
 S2_DIR = DATA_DIR  # backwards-compatible alias; prefer DATA_DIR in new code
 
 CLASS_CODES = SUBSET_CODES[SUBSET]

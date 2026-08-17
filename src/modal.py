@@ -84,10 +84,33 @@ S1_ROLES = {
     "tennantite": "deleterious",
 }
 
+# LumenStone S3 - high-temperature hydrothermal ore.
+#
+# Copper sulphides plus Pb-Zn are payload; pyrite is the rejection target as in
+# S1. Arsenopyrite is the decisive call: it is the principal arsenic host and
+# arsenic in concentrate attracts smelter penalties and, increasingly, outright
+# rejection, so it is deleterious rather than merely barren. At 17.5% of S3
+# pixels it is also abundant, which makes it the phase a real advisor for this
+# ore would care most about. Magnetite and hematite are non-sulphide oxides that
+# conventional sulphide flotation does not recover.
+S3_ROLES = {
+    "background": "resin",
+    "chalcopyrite": "payload",
+    "bornite": "payload",
+    "covellite": "payload",
+    "galena": "payload",
+    "sphalerite": "payload",
+    "pyrite": "reject",
+    "arsenopyrite": "deleterious",
+    "tennantite": "deleterious",
+    "magnetite": "oxide",
+    "hematite": "oxide",
+}
+
 # Union of every mineral across the subsets we run, so `analyse` needs no subset
 # argument and a mineral keeps one role wherever it appears. Chalcopyrite is
 # payload in both S1 and S2, which is consistent.
-LUMENSTONE_ROLES = {**S1_ROLES, **S2_ROLES}
+LUMENSTONE_ROLES = {**S1_ROLES, **S3_ROLES, **S2_ROLES}
 
 REEFPRINT_ROLES = {
     "Chromite": "oxide",
