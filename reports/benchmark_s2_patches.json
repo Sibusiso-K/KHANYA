@@ -1,0 +1,36 @@
+{
+  "subset": "S2",
+  "model": "patches",
+  "border_width": 5,
+  "class_names": [
+    "background",
+    "chalcopyrite",
+    "magnetite",
+    "pyrrhotite",
+    "pentlandite"
+  ],
+  "ours": {
+    "iou_per_class": [
+      0.8708902779778616,
+      0.5754969710765927,
+      0.0,
+      0.8694771936576402,
+      0.5468007683291473
+    ],
+    "mean_iou": 0.5725330422082483,
+    "pixel_accuracy": 0.8913571306242792
+  },
+  "ours_void_borders": {
+    "iou_per_class": [
+      0.9290493724159187,
+      0.615085308688273,
+      0.0,
+      0.8929494338189689,
+      0.5801029739069745
+    ],
+    "mean_iou": 0.603437417766027,
+    "pixel_accuracy": 0.91312771745061
+  },
+  "published_resunet_s1v1": null,
+  "published_resunet_s1v1_mean": null
+}
