@@ -17,6 +17,69 @@ Entry format:
 
 ---
 
+## 2026-08-17 — Sibusiso (21)
+
+**Did:** Four things, and **`PITCH.md` is the one to read first** - it is how we
+win, and it drives what you write in the abstract.
+
+**1. The distinguisher, settled.** We do not win on accuracy: mean IoU 0.5725
+against a published 0.8506 on comparable data, trained on a laptop CPU. Any pitch
+competing on model quality puts us mid-pack. We compete one level up: *everyone
+else shows a model, we show the measurement that says whether a model is good
+enough to act on - and we found the accuracy number everyone reports does not
+answer that*. Full positioning, abstract structure, 8-slide plan and
+weakness-framing table in `PITCH.md`.
+
+**2. Benchmark protocol correction - IMPORTANT, and it affects the abstract.**
+Our 0.5725 was being set informally against the published 0.88, and that was
+invalid twice: the published numbers are on S1 or S1+S2 jointly, not S2, AND
+petroscope evaluate with **void borders** (excluding pixels near class
+boundaries, since a hand-drawn boundary is uncertain to a few pixels). They
+publish two columns; we were quoting our stricter number against their table
+without checking which we were reading. Implemented their protocol - on S2 it
+lifts us 0.5725 -> **0.6034**, PA 0.8914 -> 0.9131. **Quote the matching column
+or say which one you are using.** `src/benchmark.py` prints both.
+
+**3. S1 finished and is being evaluated.** All 8 epochs, best val patch mIoU
+0.3651. Whole-section eval running now. The published ResUnet table covers
+**exactly our S1 class set**, so this gives the first true class-by-class
+comparison we have ever had. Early rows show large liberation disagreements, so
+expect S1 decision numbers to be worse than S2 - useful either way, since it
+tells us whether the topology finding generalises or is S2-specific.
+
+**4. Robustness harness added** (`src/robustness.py`), running now. Every image
+we have came from ONE microscope, ONE camera, ONE lab. This perturbs exposure,
+white balance, contrast, focus, sensor noise and JPEG quality on the held-out
+sections and re-measures IoU with masks untouched. It addresses report limitation
+7, which was unaddressed. **It does NOT test a genuinely different optical
+train** - LumenStone V1 (same samples, varying real conditions) is the proper
+test if we get time.
+
+**A correction to head off, because it came up:** the model cannot work on hand
+specimens or phone photographs, and this is physics rather than effort.
+Liberation is the exposure of a grain at a particle surface and modal mineralogy
+is area fraction in a section plane - both exist only at grain scale, tens of
+microns. An image that never resolved individual grains does not contain the
+information. The brief also specifies reflected-light microscopy explicitly, and
+Mintek do quantitative mineralogy on polished sections. Also: our test-set
+performance is **not** overfitting - the 12 sections were never seen in training
+or checkpoint selection. What varying-camera data would probe is **domain
+shift**, which is item 4 above. Do not write "overfitting" in the abstract for
+this; someone will correct it.
+
+**Changed:** new `PITCH.md`, new `src/benchmark.py`, new `src/robustness.py`,
+new `src/inspect_pipeline.py`, `src/segmentation/metrics.py` (void borders),
+`reports/figures/*`, `reports/benchmark_s2_patches.json`.
+**Blocked on:** nothing. Two jobs running (S1 eval, robustness).
+**Next, ranked by effect on winning:** (1) the mentor/QEMSCAN-labelling request
+by 30 Aug - highest leverage, converts our weakest point into a partnership;
+(2) re-voice the drafted report sections, originality is authenticated for
+finalists; (3) build the economic case, our money argument is currently three
+[CITE] markers; (4) rehearse the demo offline. Further modelling is genuinely
+last. **13 days to the abstract.**
+
+---
+
 ## 2026-08-17 — Sibusiso (20)
 
 **Did:** Three things. Downloaded LumenStone S1, researched Mintek properly, and
