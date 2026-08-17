@@ -46,6 +46,19 @@ The mechanism is clean and explains itself in one line: IoU rewards getting grai
 *interiors* right; liberation depends on grain *boundaries*. They are nearly
 independent axes.
 
+**Scope this claim carefully — we tested it on a second dataset and it did not
+reproduce.** On LumenStone S1, topology repair changed the flip rate not at all
+(15/20 either way). The S1 segmentation is much weaker (mean IoU 0.33 against
+0.57, two classes at effectively zero), so we cannot separate "the method does
+not generalise" from "there was no coherent particle structure left to repair".
+Say **"on this dataset, topology mattered more than accuracy"** and describe S1 as
+the open question. Do not claim a general law about image-based mineralogy.
+
+Handled well this is a strength rather than a retreat: we ran the generalisation
+test that nobody asked us to run, reported that it failed, and can name the
+experiment that would settle it. That is more convincing than an unchallenged
+claim, and it is exactly what the originality authentication stage rewards.
+
 ### 3.2 A system that knows when it does not know
 
 When a liberation estimate falls within the estimator's own measured error

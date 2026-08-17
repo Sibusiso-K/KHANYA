@@ -618,6 +618,76 @@ to apologise for:
 That is a far stronger position than "works on any photograph", and it is one a
 process mineralogist will recognise as correct.
 
+### 5.0.7 LumenStone S1: the first true benchmark comparison, and a failed generalisation
+
+S1 is the subset the published ResUnet result is reported on, with exactly our
+seven classes, so this is the first genuinely like-for-like comparison in the
+project. It is not a good one for us.
+
+| Class | % of S1 train | Ours | Ours +void | Published | Published +void | Gap |
+|---|---|---|---|---|---|---|
+| background | 31.06 | 0.5980 | 0.6229 | 0.8326 | 0.8505 | -0.228 |
+| chalcopyrite | 2.97 | **0.0003** | 0.0003 | 0.9191 | 0.9363 | **-0.936** |
+| galena | 7.73 | 0.3505 | 0.3657 | 0.7464 | 0.7630 | -0.397 |
+| bornite | 4.58 | 0.3691 | 0.3843 | 0.8868 | 0.8955 | -0.511 |
+| pyrite | 23.28 | 0.6968 | 0.7209 | 0.9628 | 0.9732 | -0.252 |
+| sphalerite | 26.45 | 0.2845 | 0.2983 | 0.7534 | 0.7653 | -0.467 |
+| tennantite | 3.92 | **0.0075** | 0.0076 | 0.7601 | 0.7706 | -0.763 |
+| **mean** | | **0.3295** | **0.3429** | **0.8373** | **0.8506** | **-0.508** |
+
+Sources: `reports/benchmark_s1_patches.json`; published figures from petroscope's
+repository for ResUnet on LumenStone S1v1.
+
+**We are half a point of mean IoU below the published benchmark on the same
+data.** Two classes collapsed entirely — chalcopyrite at 0.0003 against a
+published 0.9191, and tennantite at 0.0075 against 0.7601 — reproducing the
+magnetite failure mode from S2 on different minerals. Sphalerite is the more
+troubling result: at 26.45% of pixels it is not rare at all, and it still scores
+0.28 against a published 0.75.
+
+**The model is undertrained, and we should say so rather than dress it up.** S1
+carries seven classes against S2's five, on an identical patch budget of 64
+patches per epoch over 8 epochs. The published result comes from a full training
+run. The gap is therefore mostly compute, not method, and this comparison does
+not test our architecture — it tests what our architecture does on a fraction of
+the training it needs.
+
+#### The generalisation test, and its answer
+
+The central claim from section 5.0.5 was that repairing particle topology matters
+more than raising segmentation accuracy. S1 was chosen specifically to test
+whether that holds on a different ore genesis. It did not.
+
+| | Flips | Liberation correlation | MAE | Unsafe |
+|---|---|---|---|---|
+| S2 patch, raw components | 6/12 (50%) | -0.079 | 46.7% | 0 |
+| **S2 patch, refined** | **2/12 (17%)** | **+0.947** | **8.9%** | 1 |
+| S1 patch, raw components | 15/20 (75%) | +0.295 | 29.7% | 1 |
+| **S1 patch, refined** | **15/20 (75%)** | +0.198 | 20.3% | 2 |
+
+On S1, topology repair changed the recommendation error rate **not at all**. Mean
+absolute error on liberation improved (29.7% to 20.3%) but correlation fell
+slightly and unsafe errors rose from one to two.
+
+**What we can and cannot conclude.** There is a confound we cannot resolve with
+the runs we have: the S1 segmentation is far weaker than the S2 segmentation
+(mean IoU 0.33 against 0.57), with two classes at effectively zero. Below some
+quality floor there is no coherent particle structure left for morphological
+repair to recover — you cannot fix the topology of a mask that is mostly wrong.
+So the honest reading is:
+
+- **Confirmed:** on S2, repairing topology transformed decision quality while
+  raising IoU did not.
+- **Not established:** that this holds generally. On S1 it did not reproduce.
+- **Unresolved:** whether that failure is a limit of the method or a consequence
+  of an undertrained segmentation stage. Training S1 to convergence would settle
+  it, and is the single most informative experiment remaining.
+
+The claim in this report is therefore scoped to what was measured: **on this
+dataset, particle topology mattered more than segmentation accuracy.** Any
+broader statement is unsupported until S1 is trained properly, and we would
+rather scope the claim than have it broken under questioning.
+
 ### 5.1 Methodological risk: class imbalance
 
 Mineral class frequencies are naturally very unbalanced; some phases occupy a few

@@ -17,6 +17,75 @@ Entry format:
 
 ---
 
+## 2026-08-17 — Sibusiso (22)
+
+**Did:** S1 and robustness both finished. **Two results that change what we can
+claim — read before writing the abstract.**
+
+**1. The topology finding did NOT generalise to S1.** This is the important one,
+because it is our headline claim.
+
+| | Flips | Liberation corr | MAE | Unsafe |
+|---|---|---|---|---|
+| S2 patch raw | 6/12 (50%) | -0.079 | 46.7% | 0 |
+| **S2 patch refined** | **2/12 (17%)** | **+0.947** | 8.9% | 1 |
+| S1 patch raw | 15/20 (75%) | +0.295 | 29.7% | 1 |
+| **S1 patch refined** | **15/20 (75%)** | +0.198 | 20.3% | 2 |
+
+On S1 topology repair changed the flip rate by nothing. **BUT there is a
+confound we cannot resolve:** the S1 segmentation is far weaker (mean IoU 0.33 vs
+S2's 0.57, chalcopyrite at 0.0003, tennantite 0.0075), and below some quality
+floor there is no coherent particle structure left to repair. So we cannot tell
+"the method does not generalise" from "the mask was too broken to fix".
+
+**What this means for the abstract: scope the claim.** Say *"on this dataset,
+particle topology mattered more than segmentation accuracy"* and name S1 as the
+open question. **Do not claim a general law.** Handled well this is a strength -
+we ran a generalisation test nobody asked for, reported that it failed, and can
+name the experiment that settles it. That is what originality authentication
+rewards. I have scoped the claim in `PITCH.md` and report section 5.0.7.
+
+**2. First true benchmark comparison, and we are well behind.** S1 is the subset
+the published ResUnet result uses, with exactly our seven classes. Ours mean IoU
+**0.3295** (0.3429 void-borders) against published **0.8373** (0.8506). Gap
+-0.508. Two classes collapsed entirely. Sphalerite is the worrying one - 26% of
+pixels, not rare at all, and still only 0.28 against a published 0.75.
+**The S1 model is undertrained**: seven classes on the same 64-patch, 8-epoch
+budget we used for five. The gap is mostly compute, not method. Say that plainly
+rather than dressing it up.
+
+**3. Robustness: the model is a colorimeter.** Blur, sensor noise and JPEG 40
+cost essentially nothing (+0.0004, -0.0007, -0.014). A 15% white-balance shift
+costs **-0.39 mean IoU**, 72% of performance, pixel accuracy 0.879 -> 0.263.
+Overexposure hurts more than underexposure because saturation is irreversible -
+tell an operator to err dark. This CONFIRMS the optical premise (the model uses
+photometry, not texture, exactly as section 3 claims) and is simultaneously our
+largest deployment risk.
+
+**4. Grey-world colour constancy fails, informatively.** It achieved invariance
+and destroyed the measurement - baseline 0.5448 -> 0.1358. Grey-world assumes the
+average scene is achromatic, but in a polished section the average colour is
+dominated by the most abundant phase, which is the quantity we are measuring. **No
+scene-statistics heuristic can work here.** The conclusion is a deployment spec,
+not an apology: *KHANYA requires calibrated illumination against a known
+reflectance standard; it does not require a particular microscope, camera or
+laboratory.* That is what quantitative reflectance microscopy has always
+required.
+
+**Changed:** report sections 5.0.6, 5.0.6.1, 5.0.7; `PITCH.md` (claim scoped);
+`src/robustness.py` (grey-world); new `reports/benchmark_s1_patches.json`,
+`reports/decision_gap_s1_patches*.json`, `reports/robustness_s2_resize*.json`.
+**Blocked on:** nothing.
+**Next:** **train S1 to convergence** - it is now the single most informative
+experiment left, because it decides whether our headline claim generalises or
+was an S2 artefact. Everything else is unchanged and still ahead of it in
+priority: the QEMSCAN-labelling request by 30 Aug, re-voicing the report, and the
+economic case. Also note `LIBERATION_MARGIN` (0.089) was derived from S2 error;
+S1's MAE is 20.3%, so the band is too narrow there and must be re-derived per
+dataset rather than assumed to transfer.
+
+---
+
 ## 2026-08-17 — Sibusiso (21)
 
 **Did:** Four things, and **`PITCH.md` is the one to read first** - it is how we

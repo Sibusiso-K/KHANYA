@@ -1,0 +1,234 @@
+{
+  "model": "patches",
+  "refine": false,
+  "n_sections": 20,
+  "n_recommendation_flips": 15,
+  "flip_rate": 0.75,
+  "severity_counts": {
+    "unsafe": 1,
+    "conservative": 13,
+    "flagged": 1
+  },
+  "rows": [
+    {
+      "id": "test_01",
+      "liberation_truth": 0.5599392380381116,
+      "liberation_predicted": 0.8876021760408909,
+      "payload_truth": 0.4271849056954323,
+      "payload_predicted": 0.27063752569857397,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Adjust reagent dosage - depress reject phase",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_02",
+      "liberation_truth": 0.6251964874417972,
+      "liberation_predicted": 0.4641093880775271,
+      "payload_truth": 0.3182725576557511,
+      "payload_predicted": 0.04794650256602637,
+      "action_truth": "Adjust reagent dosage - depress reject phase",
+      "action_predicted": "Marginal - verify before acting",
+      "flipped": true,
+      "severity": "flagged"
+    },
+    {
+      "id": "test_03",
+      "liberation_truth": 0.9999717475975569,
+      "liberation_predicted": 0.93645813843788,
+      "payload_truth": 0.6183762565958123,
+      "payload_predicted": 0.6986706898892698,
+      "action_truth": "Adjust reagent dosage - raise depressant",
+      "action_predicted": "Continue at current setpoint",
+      "flipped": true,
+      "severity": "unsafe"
+    },
+    {
+      "id": "test_04",
+      "liberation_truth": 0.992463719050378,
+      "liberation_predicted": 0.4037107418149788,
+      "payload_truth": 0.5591043449456461,
+      "payload_predicted": 0.2904589544327745,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Grind finer",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_05",
+      "liberation_truth": 0.9932323890353679,
+      "liberation_predicted": 0.731393346327397,
+      "payload_truth": 0.5253434391933791,
+      "payload_predicted": 0.0832437571488463,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Adjust reagent dosage - depress reject phase",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_06",
+      "liberation_truth": 0.9860729273017365,
+      "liberation_predicted": 0.15870395867142273,
+      "payload_truth": 0.6264838312553414,
+      "payload_predicted": 0.2637100360466881,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Grind finer",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_07",
+      "liberation_truth": 0.29118908051329845,
+      "liberation_predicted": 0.25630307357030135,
+      "payload_truth": 0.2861944567159932,
+      "payload_predicted": 0.1367861373874742,
+      "action_truth": "Grind finer",
+      "action_predicted": "Grind finer",
+      "flipped": false,
+      "severity": "none"
+    },
+    {
+      "id": "test_08",
+      "liberation_truth": 0.7039411863995916,
+      "liberation_predicted": 0.16529041866622537,
+      "payload_truth": 0.47441319420277706,
+      "payload_predicted": 0.2144432054935817,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Grind finer",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_09",
+      "liberation_truth": 0.9245643548289194,
+      "liberation_predicted": 0.9301060143918979,
+      "payload_truth": 0.3420197847979014,
+      "payload_predicted": 0.24006755686272918,
+      "action_truth": "Adjust reagent dosage - depress reject phase",
+      "action_predicted": "Adjust reagent dosage - depress reject phase",
+      "flipped": false,
+      "severity": "none"
+    },
+    {
+      "id": "test_10",
+      "liberation_truth": 0.9221395461668567,
+      "liberation_predicted": 0.7895184472292665,
+      "payload_truth": 0.4569559829507237,
+      "payload_predicted": 0.2535248933915727,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Adjust reagent dosage - depress reject phase",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_11",
+      "liberation_truth": 0.7677009954811994,
+      "liberation_predicted": 0.8351254645088139,
+      "payload_truth": 0.42617435806925513,
+      "payload_predicted": 0.2646434523415506,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Adjust reagent dosage - depress reject phase",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_12",
+      "liberation_truth": 0.1371476031972642,
+      "liberation_predicted": 0.10611433152442032,
+      "payload_truth": 0.2645379033256313,
+      "payload_predicted": 0.24603855322169246,
+      "action_truth": "Grind finer",
+      "action_predicted": "Grind finer",
+      "flipped": false,
+      "severity": "none"
+    },
+    {
+      "id": "test_13",
+      "liberation_truth": 0.9998614291779484,
+      "liberation_predicted": 0.10131245826407684,
+      "payload_truth": 0.6619473271196317,
+      "payload_predicted": 0.18525893804109217,
+      "action_truth": "Adjust reagent dosage - raise depressant",
+      "action_predicted": "Grind finer",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_14",
+      "liberation_truth": 0.8906347115308308,
+      "liberation_predicted": 0.9449322531995684,
+      "payload_truth": 0.251570755008536,
+      "payload_predicted": 0.14727476241687334,
+      "action_truth": "Adjust reagent dosage - depress reject phase",
+      "action_predicted": "Adjust reagent dosage - depress reject phase",
+      "flipped": false,
+      "severity": "none"
+    },
+    {
+      "id": "test_15",
+      "liberation_truth": 0.9998738433509479,
+      "liberation_predicted": 0.004193584208085387,
+      "payload_truth": 0.47641630753719755,
+      "payload_predicted": 0.3336418048772647,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Grind finer",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_16",
+      "liberation_truth": 0.999939602201023,
+      "liberation_predicted": 0.9999919067896352,
+      "payload_truth": 0.9998017407765194,
+      "payload_predicted": 0.9515890959821904,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Continue at current setpoint",
+      "flipped": false,
+      "severity": "none"
+    },
+    {
+      "id": "test_17",
+      "liberation_truth": 0.9982776505385061,
+      "liberation_predicted": 0.9841083116616682,
+      "payload_truth": 0.7982193048002517,
+      "payload_predicted": 0.5246898119936363,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Adjust reagent dosage - raise depressant",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_18",
+      "liberation_truth": 0.984406252204788,
+      "liberation_predicted": 0.975305027689047,
+      "payload_truth": 0.6223370763038294,
+      "payload_predicted": 0.4344279875581543,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Adjust reagent dosage - raise depressant",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_19",
+      "liberation_truth": 1.0,
+      "liberation_predicted": 0.999474321553968,
+      "payload_truth": 0.9948615606896265,
+      "payload_predicted": 0.6073494169940841,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Adjust reagent dosage - raise depressant",
+      "flipped": true,
+      "severity": "conservative"
+    },
+    {
+      "id": "test_20",
+      "liberation_truth": 0.9997585145850836,
+      "liberation_predicted": 0.06456247678455258,
+      "payload_truth": 0.8663011371346826,
+      "payload_predicted": 0.4747859301878162,
+      "action_truth": "Continue at current setpoint",
+      "action_predicted": "Grind finer",
+      "flipped": true,
+      "severity": "conservative"
+    }
+  ]
+}
