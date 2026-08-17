@@ -16,3 +16,4 @@ decision_gap_patches.log
 dg_patch_refined.log
 data/derived/
 dg_band.log
+venv_build.log
