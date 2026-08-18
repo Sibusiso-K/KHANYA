@@ -2,12 +2,12 @@
   "model": "patches",
   "refine": true,
   "n_sections": 12,
-  "n_recommendation_flips": 2,
-  "flip_rate": 0.16666666666666666,
+  "n_recommendation_flips": 6,
+  "flip_rate": 0.5,
   "severity_counts": {
-    "unsafe": 1,
+    "unsafe": 0,
     "conservative": 0,
-    "flagged": 1
+    "flagged": 6
   },
   "rows": [
     {
@@ -39,9 +39,9 @@
       "payload_truth": 0.49962781374022475,
       "payload_predicted": 0.6752839973991356,
       "action_truth": "Continue at current setpoint",
-      "action_predicted": "Continue at current setpoint",
-      "flipped": false,
-      "severity": "none"
+      "action_predicted": "Marginal - verify before acting",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_04",
@@ -50,9 +50,9 @@
       "payload_truth": 0.21005444857413372,
       "payload_predicted": 0.29246263946206974,
       "action_truth": "Grind finer",
-      "action_predicted": "Adjust reagent dosage - depress reject phase",
+      "action_predicted": "Marginal - verify before acting",
       "flipped": true,
-      "severity": "unsafe"
+      "severity": "flagged"
     },
     {
       "id": "test_05",
@@ -72,9 +72,9 @@
       "payload_truth": 0.168221676890874,
       "payload_predicted": 0.40355936106966217,
       "action_truth": "Grind finer",
-      "action_predicted": "Grind finer",
-      "flipped": false,
-      "severity": "none"
+      "action_predicted": "Marginal - verify before acting",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_07",
@@ -94,9 +94,9 @@
       "payload_truth": 0.2510733220345496,
       "payload_predicted": 0.2442964365603603,
       "action_truth": "Adjust reagent dosage - depress reject phase",
-      "action_predicted": "Adjust reagent dosage - depress reject phase",
-      "flipped": false,
-      "severity": "none"
+      "action_predicted": "Marginal - verify before acting",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_09",
@@ -105,9 +105,9 @@
       "payload_truth": 0.698757358457898,
       "payload_predicted": 0.458536500534903,
       "action_truth": "Continue at current setpoint",
-      "action_predicted": "Continue at current setpoint",
-      "flipped": false,
-      "severity": "none"
+      "action_predicted": "Marginal - verify before acting",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_10",

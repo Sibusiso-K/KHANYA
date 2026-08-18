@@ -25,3 +25,4 @@ robustness.log
 robustness_gw.log
 s1_retrain.log
 run_s1_retrain.cmd
+dg_resize_corrected.log
