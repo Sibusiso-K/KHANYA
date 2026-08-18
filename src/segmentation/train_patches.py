@@ -81,8 +81,30 @@ def train(loss_name="ce"):
     optimiser = torch.optim.AdamW(model.parameters(), lr=patches.LR)
 
     checkpoint.parent.mkdir(parents=True, exist_ok=True)
-    best_iou = 0.0
-    for epoch in range(1, patches.EPOCHS + 1):
+
+    # Resume support. Long CPU runs on this machine have repeatedly been killed
+    # when the controlling session exits, losing hours of work because the only
+    # thing written was best.pt - and only on an improvement. last.pt is written
+    # EVERY epoch with the optimiser state, so an interrupted run resumes at the
+    # next epoch instead of restarting from scratch.
+    resume_path = checkpoint.parent / "last.pt"
+    best_iou, start_epoch = 0.0, 1
+    if resume_path.exists():
+        state = torch.load(resume_path, map_location=dev, weights_only=False)
+        same_budget = (
+            state.get("epochs") == patches.EPOCHS
+            and state.get("patches_per_epoch") == patches.PATCHES_PER_EPOCH
+        )
+        if same_budget:
+            model.load_state_dict(state["model"])
+            optimiser.load_state_dict(state["optimiser"])
+            best_iou = state["best_iou"]
+            start_epoch = state["epoch"] + 1
+            print(f"resuming at epoch {start_epoch} (best val mIoU {best_iou:.4f})")
+        else:
+            print("last.pt is from a different budget; starting fresh")
+
+    for epoch in range(start_epoch, patches.EPOCHS + 1):
         train_loss, train_summary = run_epoch(
             model, train_loader, criterion, optimiser, dev, True
         )
@@ -96,6 +118,14 @@ def train(loss_name="ce"):
             best_iou = val_summary["mean_iou"]
             torch.save(model.state_dict(), checkpoint)
             print(f"  saved (val patch mIoU {best_iou:.4f})")
+        torch.save({
+            "model": model.state_dict(),
+            "optimiser": optimiser.state_dict(),
+            "epoch": epoch,
+            "best_iou": best_iou,
+            "epochs": patches.EPOCHS,
+            "patches_per_epoch": patches.PATCHES_PER_EPOCH,
+        }, resume_path)
 
     print(f"best val patch mean IoU: {best_iou:.4f}")
     print("NOTE: val here is balanced patches, so it is NOT comparable to the "

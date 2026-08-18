@@ -24,3 +24,4 @@ s1_eval.log
 robustness.log
 robustness_gw.log
 s1_retrain.log
+run_s1_retrain.cmd
