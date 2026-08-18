@@ -747,6 +747,36 @@ topology repair beats accuracy - it adds a second axis alongside it, and
 argues that multi-field averaging is a candidate improvement of comparable
 value to further model work, at far lower cost.
 
+### 5.0.9 Both models re-scored under the corrected band, and the gap narrows
+
+Section 5.0.8 corrected the liberation band from a fixed +/-8.9% (empirically
+67% coverage on S2) to a split-conformal +/-0.335 (85% coverage, the highest
+level n=12 can support). Both models are now scored under the same, honest
+band, which the earlier comparison in section 5.0.5 was not.
+
+| | Resize + refined | Patch + refined |
+|---|---|---|
+| Flip rate | 7/12 (58%) | 6/12 (50%) |
+| **Unsafe** | **0** | **0** |
+| Conservative | 1 | 0 |
+| Flagged | 6 | 6 |
+
+Source: `reports/decision_gap_refined.json`, `reports/decision_gap_patches_refined.json`.
+
+**Both models reach zero unsafe errors under the corrected band.** The
+apparent quality gap between resize and patch narrows sharply compared to the
+old band's numbers - most of what looked like a segmentation-quality
+difference was partly an artefact of a band too narrow to catch disagreements
+consistently on either model. Patch remains marginally better (fewer total
+flips, no conservative errors), which is consistent with, but a smaller effect
+than, section 5.0.5's finding.
+
+**The claim to make from this table:** whichever segmentation model is
+deployed, a properly calibrated uncertainty band is what prevents the
+expensive error. That is a stronger and more general statement than "our
+model is accurate," and it is one a plant would actually act on - the
+uncertainty mechanism is the safety layer, not the segmentation model alone.
+
 ### 5.1 Methodological risk: class imbalance
 
 Mineral class frequencies are naturally very unbalanced; some phases occupy a few

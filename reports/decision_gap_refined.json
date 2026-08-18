@@ -2,12 +2,12 @@
   "model": "resize",
   "refine": true,
   "n_sections": 12,
-  "n_recommendation_flips": 4,
-  "flip_rate": 0.3333333333333333,
+  "n_recommendation_flips": 7,
+  "flip_rate": 0.5833333333333334,
   "severity_counts": {
     "unsafe": 0,
     "conservative": 1,
-    "flagged": 3
+    "flagged": 6
   },
   "rows": [
     {
@@ -17,9 +17,9 @@
       "payload_truth": 0.9094413311340954,
       "payload_predicted": 0.9993887970764818,
       "action_truth": "Continue at current setpoint",
-      "action_predicted": "Continue at current setpoint",
-      "flipped": false,
-      "severity": "none"
+      "action_predicted": "Marginal - verify before acting",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_02",
@@ -61,9 +61,9 @@
       "payload_truth": 0.1943604936264393,
       "payload_predicted": 0.49631108044692895,
       "action_truth": "Grind finer",
-      "action_predicted": "Grind finer",
-      "flipped": false,
-      "severity": "none"
+      "action_predicted": "Marginal - verify before acting",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_06",
@@ -105,9 +105,9 @@
       "payload_truth": 0.698757358457898,
       "payload_predicted": 0.4518146044452648,
       "action_truth": "Continue at current setpoint",
-      "action_predicted": "Continue at current setpoint",
-      "flipped": false,
-      "severity": "none"
+      "action_predicted": "Marginal - verify before acting",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_10",
