@@ -31,8 +31,12 @@ from src.segmentation.train_lumenstone import CKPT
 # of "dashboard.theme" and silently skip the CSS.
 KHANYA_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
-
+/* No @import here on purpose. "Must run offline" (see module docstring) means
+   no CDN calls of any kind - a Google Fonts @import would hang or silently
+   fail if venue wifi is down, exactly the failure mode this rule exists to
+   prevent. Fall back through the monospace fonts already on any Windows
+   laptop; visually close enough to JetBrains Mono that nothing in the demo
+   depends on the difference. */
 :root {
   --ink: #e8e3d8;
   --dim: #8a8378;
