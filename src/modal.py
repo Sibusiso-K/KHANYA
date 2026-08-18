@@ -308,6 +308,14 @@ def liberation_index(labels, payload_mask, background_index=0,
         return None, 0
 
     ids, counts = np.unique(particles[particles > 0], return_counts=True)
+    if not len(ids):
+        # Payload pixels exist but survived no particle - the morphological
+        # opening can erase a thin or isolated grain entirely. Report "not
+        # measurable" rather than crashing on an empty reduction, which is the
+        # same distinction the advisor draws between an unmeasured field and a
+        # barren one. Reachable from the dashboard on a sparse upload.
+        return None, 0
+
     payload_counts = np.bincount(
         particles[payload_mask & (particles > 0)], minlength=int(ids.max()) + 1
     )

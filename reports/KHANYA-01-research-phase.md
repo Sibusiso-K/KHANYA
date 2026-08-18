@@ -688,6 +688,65 @@ dataset, particle topology mattered more than segmentation accuracy.** Any
 broader statement is unsupported until S1 is trained properly, and we would
 rather scope the claim than have it broken under questioning.
 
+### 5.0.8 Distribution-free uncertainty, and a correction to our own band
+
+The fixed liberation-margin band shipped so far uses the estimator's mean
+absolute error (0.089 on S2) as a symmetric half-width. That is a point
+estimate presented with the shape of a guarantee, and checking it against its
+own data shows the gap: **the fixed +/-0.089 band actually covers only 67% of
+S2 sections and 45% of S1 sections**, not the ~90% a reader would assume from
+the phrase "uncertainty band". `src/conformal.py` replaces it with split
+conformal prediction - the half-width is an empirical quantile of residuals
+rather than their mean, which gives a distribution-free coverage guarantee
+under exchangeability alone, no assumption about the error distribution.
+
+Small-sample honesty matters here: split conformal at level 1-alpha requires
+ceil((n+1)(1-alpha)) <= n, so our n=12 test sections cannot support 90%
+coverage at all - the achievable ceiling is 1 - 1/(n+1) = 92.3%, and n=6 (an
+earlier run) cannot clear 85.7%. We report the achievable level rather than
+quoting a nominal figure the data does not support, using leave-one-out
+(jackknife+) so every section calibrates on the others and is itself
+evaluated.
+
+| Level | Half-width | vs fixed band | Empirical coverage |
+|---|---|---|---|
+| 80% | 0.195 | +0.106 | 83% |
+| 85% | 0.335 | +0.246 | 92% |
+
+Source: `reports/conformal_decision_gap_patches_refined.json`. The honest
+liberation band is roughly **2.2 to 3.8x wider** than what we have been
+shipping. This is a correction to our own number, made before anyone else
+found it, and is now the basis for the advisor's uncertainty band rather than
+the fixed constant.
+
+### 5.0.9 Sampling error: a single field of view may be the real bottleneck
+
+Every liberation number in this project comes from one field of view. Real
+process mineralogy images many fields per section because grain populations
+are not uniform across a polished surface. `src/sampling_error.py` asks how
+much that matters, using **ground-truth masks only** - no model anywhere in
+this measurement - so it isolates sampling noise from model error.
+
+Each held-out section was split into a 3x3 grid and liberation computed
+independently per sub-field with the same refined estimator as the main
+pipeline. `test_04` is representative: whole-section liberation is 0.40, its
+nine sub-fields range from 0.50 to 0.74.
+
+**Mean within-section standard deviation: 0.174.** Our model's own liberation
+error against ground truth is 0.089 (S2) and 0.203 (S1). Sampling noise, from a
+*perfect* model, is comparable to or larger than our actual model error.
+
+Source: `reports/sampling_error_s2.json`.
+
+**Consequence, stated plainly because it changes where effort should go.** For
+liberation specifically, the field-of-view sampling protocol may matter as
+much as segmentation quality. A better network trained on the same
+single-field protocol has a ceiling set by which field happened to be imaged,
+not by network capacity. This does not diminish section 5.0.5's finding that
+topology repair beats accuracy - it adds a second axis alongside it, and
+argues that multi-field averaging is a candidate improvement of comparable
+value to further model work, at far lower cost.
+
 ### 5.1 Methodological risk: class imbalance
 
 Mineral class frequencies are naturally very unbalanced; some phases occupy a few

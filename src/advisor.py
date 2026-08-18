@@ -41,23 +41,30 @@ DELETERIOUS_CEILING = 0.05   # UNSOURCED placeholder
 
 # Uncertainty band around the liberation threshold.
 #
-# Not invented: this is the mean absolute error of our own liberation estimate,
-# measured on the 12 held-out sections with the best model and the refined
-# particle estimator (reports/decision_gap_patches_refined.json - MAE 8.9%,
-# correlation 0.947). Both recommendation errors that survived that
-# configuration straddled the 0.50 floor: truth 40% vs predicted 74%, and truth
-# 32% vs predicted 52%, the latter clearing the threshold by two points.
+# CORRECTED 2026-08-18. This was originally the mean absolute error of the
+# liberation estimate (8.9%) used as a symmetric half-width - a point estimate
+# presented with the shape of a guarantee. Checked against its own data: a
+# fixed +/-8.9% band actually covers only 67% of S2 sections and 45% of S1
+# sections, not the ~90% the word "band" implies. See src/conformal.py and
+# report section 5.0.8 for the full derivation.
 #
-# Within one MAE of a trip point the recommendation is close to a coin toss, so
-# claiming a confident action there is not supportable. Inside the band the
-# advisor reports "marginal - verify" and names both candidate actions, which is
-# the honest output and also the correct operational one: a plant metallurgist
-# can act on "this is borderline, check it" and cannot act on a confident
-# instruction that is wrong half the time.
+# Replaced with a split-conformal half-width: the empirical 85th-percentile
+# absolute residual under leave-one-out calibration on the 12 S2 test sections
+# (reports/conformal_decision_gap_patches_refined.json). 85% rather than 90%
+# because 1 - 1/(n+1) = 92.3% is the highest level n=12 can support at all, and
+# we report the achievable level rather than claim one the data cannot back.
+# This is therefore a genuine distribution-free coverage guarantee under
+# exchangeability, not a dressed-up point estimate.
 #
-# Re-derive this constant whenever the estimator changes. It is a property of
-# the measurement chain, not a preference.
-LIBERATION_MARGIN = 0.089
+# The width nearly quadrupled (0.089 -> 0.335) versus the original constant.
+# That is the correction, not a regression: the old band was overconfident,
+# and a wider honest band that hedges more often is the right trade for a
+# system whose entire differentiator is knowing when not to guess.
+#
+# Re-derive whenever the estimator, dataset, or calibration set size changes -
+# it is a property of the measurement chain, not a tuned preference. Run
+# `python -m src.conformal --run <decision_gap file>` to recompute.
+LIBERATION_MARGIN = 0.335
 
 # Below this, the field is mostly mounting resin and any area fraction computed
 # from it is derived from too few ore pixels to act on.
@@ -132,11 +139,11 @@ def advise(result, mean_confidence: float,
         return Recommendation(
             "Marginal - verify before acting",
             f"Liberation is {result.liberation:.0%}, within the "
-            f"+/-{liberation_margin:.1%} uncertainty band around the "
-            f"{LOW_LIBERATION:.0%} floor. That band is this estimator's own mean "
-            "absolute error on held-out sections, so the true value could sit "
-            "either side of the threshold and the honest answer is that this "
-            "field does not decide. Candidate actions are 'grind finer' if "
+            f"+/-{liberation_margin:.1%} conformal uncertainty band around the "
+            f"{LOW_LIBERATION:.0%} floor (85% empirical coverage, held-out "
+            "sections; see src/conformal.py). The true value could plausibly "
+            "sit on either side of the threshold, so the honest answer is that "
+            "this field does not decide. Candidate actions are 'grind finer' if "
             "liberation is genuinely below the floor, or 'continue at setpoint' "
             "if above. Confirm with an additional field or an assay before "
             "changing the circuit.",

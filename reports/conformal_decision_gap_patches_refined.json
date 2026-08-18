@@ -1,0 +1,26 @@
+{
+  "run": "decision_gap_patches_refined.json",
+  "n_sections": 12,
+  "mae": 0.08913107879307548,
+  "max_residual": 0.3465807323337668,
+  "coverage_ceiling": 0.9230769230769231,
+  "fixed_band": 0.089,
+  "fixed_band_empirical_coverage": 0.6666666666666666,
+  "levels": {
+    "0.80": {
+      "mean_half_width": 0.19545609820083817,
+      "empirical_coverage": 0.8333333333333334,
+      "n_hedged": 1
+    },
+    "0.85": {
+      "mean_half_width": 0.33463661735028327,
+      "empirical_coverage": 0.9166666666666666,
+      "n_hedged": 5
+    },
+    "0.90": {
+      "mean_half_width": 0.33463661735028327,
+      "empirical_coverage": 0.9166666666666666,
+      "n_hedged": 5
+    }
+  }
+}

@@ -61,13 +61,25 @@ claim, and it is exactly what the originality authentication stage rewards.
 
 ### 3.2 A system that knows when it does not know
 
-When a liberation estimate falls within the estimator's own measured error
-(±8.9%) of the decision threshold, the advisor returns **"Marginal — verify
-before acting"** and names both candidate actions instead of guessing.
+When a liberation estimate falls within the decision threshold's uncertainty
+band, the advisor returns **"Marginal — verify before acting"** and names both
+candidate actions instead of guessing.
 
-The band width is not chosen — it is our own mean absolute error on held-out
-sections. On the resize model this takes confidently-wrong recommendations from
-one to zero.
+**Corrected 2026-08-18, and this correction is itself part of the pitch.** The
+band was originally the estimator's mean absolute error (±8.9%), used as a
+symmetric half-width — a point estimate wearing the shape of a guarantee.
+Checked against its own data: that fixed band actually covered only 67% of S2
+sections and 45% of S1 sections, nowhere near what "uncertainty band" implies.
+Replaced with **split conformal prediction** — the empirical 85th-percentile
+residual under leave-one-out calibration, the highest level our n=12 test set
+can support at all (1 − 1/(n+1) = 92.3% is the ceiling; we report the
+achievable level, not a nominal one). The honest band is **±33.5%**, roughly
+4× wider than what we shipped originally.
+
+Say this plainly on stage: *we found our own uncertainty estimate was
+overconfident, checked it, and fixed it before anyone else could find it for
+us.* That is a stronger moment than a clean number would have been — it is
+the originality-authentication story made visible in real time.
 
 For Mintek this converts directly into **triage**: "verify" is exactly the signal
 that should consume QEMSCAN time. Honesty becomes throughput.

@@ -1,0 +1,116 @@
+{
+  "subset": "S2",
+  "grid": 3,
+  "mean_within_section_std": 0.17433579257261125,
+  "median_within_section_std": 0.14743303419161335,
+  "sections": [
+    {
+      "id": "test_01",
+      "whole_section": 0.9125136538372564,
+      "sub_field_mean": 0.8020532314083678,
+      "sub_field_std": 0.17611455071945126,
+      "sub_field_min": 0.49600198638150306,
+      "sub_field_max": 0.9509020950544748,
+      "n_sub_fields": 9
+    },
+    {
+      "id": "test_02",
+      "whole_section": 0.0,
+      "sub_field_mean": 0.0,
+      "sub_field_std": 0.0,
+      "sub_field_min": 0.0,
+      "sub_field_max": 0.0,
+      "n_sub_fields": 5
+    },
+    {
+      "id": "test_03",
+      "whole_section": 0.703650523005893,
+      "sub_field_mean": 0.5148900566219213,
+      "sub_field_std": 0.34566453162415606,
+      "sub_field_min": 0.0,
+      "sub_field_max": 0.8888992410895785,
+      "n_sub_fields": 8
+    },
+    {
+      "id": "test_04",
+      "whole_section": 0.39795878674718715,
+      "sub_field_mean": 0.6058476859339187,
+      "sub_field_std": 0.09438479233030027,
+      "sub_field_min": 0.495547087642896,
+      "sub_field_max": 0.7359439947495078,
+      "n_sub_fields": 5
+    },
+    {
+      "id": "test_05",
+      "whole_section": 0.3212933495912747,
+      "sub_field_mean": 0.4217956651807995,
+      "sub_field_std": 0.25723457202544386,
+      "sub_field_min": 0.0,
+      "sub_field_max": 0.9126988098932006,
+      "n_sub_fields": 9
+    },
+    {
+      "id": "test_06",
+      "whole_section": 0.04013228033587422,
+      "sub_field_mean": 0.39455099931098053,
+      "sub_field_std": 0.2876150164000918,
+      "sub_field_min": 0.0,
+      "sub_field_max": 0.7847310941685556,
+      "n_sub_fields": 9
+    },
+    {
+      "id": "test_07",
+      "whole_section": 0.0,
+      "sub_field_mean": 0.0,
+      "sub_field_std": 0.0,
+      "sub_field_min": 0.0,
+      "sub_field_max": 0.0,
+      "n_sub_fields": 9
+    },
+    {
+      "id": "test_08",
+      "whole_section": 0.8143826832243736,
+      "sub_field_mean": 0.26493755490239657,
+      "sub_field_std": 0.2998274800504327,
+      "sub_field_min": 0.0,
+      "sub_field_max": 0.8548934934542967,
+      "n_sub_fields": 9
+    },
+    {
+      "id": "test_09",
+      "whole_section": 0.786915750514881,
+      "sub_field_mean": 0.6400258508711572,
+      "sub_field_std": 0.3478551357114312,
+      "sub_field_min": 0.0,
+      "sub_field_max": 0.8830665768826673,
+      "n_sub_fields": 9
+    },
+    {
+      "id": "test_10",
+      "whole_section": 0.03167578162045965,
+      "sub_field_mean": 0.1344845548458523,
+      "sub_field_std": 0.11875151766377545,
+      "sub_field_min": 0.0,
+      "sub_field_max": 0.4165909690274563,
+      "n_sub_fields": 9
+    },
+    {
+      "id": "test_11",
+      "whole_section": 0.08530102368977782,
+      "sub_field_mean": 0.09316693629012833,
+      "sub_field_std": 0.095605245774703,
+      "sub_field_min": 0.006465168902537579,
+      "sub_field_max": 0.2613404565322972,
+      "n_sub_fields": 9
+    },
+    {
+      "id": "test_12",
+      "whole_section": 0.0019126703961997434,
+      "sub_field_mean": 0.07327832356883031,
+      "sub_field_std": 0.06897666857154972,
+      "sub_field_min": 0.007654291224686596,
+      "sub_field_max": 0.22722186998843844,
+      "n_sub_fields": 9
+    }
+  ]
+}
