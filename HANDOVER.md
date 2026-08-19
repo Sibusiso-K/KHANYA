@@ -17,6 +17,68 @@ Entry format:
 
 ---
 
+## 2026-08-19 — Sibusiso (24)
+
+**Did:** Picked up where (23) left off - both jobs it left running are now
+resolved, plus one safety fix.
+
+**1. Resize+refined re-scored under the corrected band - done, and it changes
+the model comparison.** `ac3c5c0`. Under the shared +/-0.335 band: resize 7/12
+flips (58%), 0 unsafe, 1 conservative; patch 6/12 flips (50%), 0 unsafe, 0
+conservative. **Both models now reach zero unsafe errors.** The apparent
+quality gap between resize and patch narrows sharply versus the old band's
+numbers - most of what looked like a segmentation-quality difference was
+partly an artefact of a band too narrow to catch disagreements on either
+model consistently. Patch is still marginally better (fewer flips, no
+conservative errors) but it's a smaller effect than section 5.0.5 implied.
+Report section 5.0.9 has the full table and the framing: the claim to make is
+that a calibrated uncertainty band is what prevents the expensive error
+*regardless of which segmentation model is deployed* - stronger than a
+claim about model accuracy alone, and the one to lead with if asked "why not
+just use the better model."
+
+**2. Dashboard had a live offline-safety bug - found and fixed.** `59e7242`.
+The redesign in (23)/`c70344c` pulled JetBrains Mono from
+`fonts.googleapis.com` in the theme CSS, directly contradicting the module's
+own docstring ("must run offline - assume venue wifi fails"). If venue wifi
+drops on demo day, that `@import` hangs or fails silently and styling
+degrades in an untested way at the worst possible time. Removed; falls back
+to the generic `monospace` stack (Consolas on Windows), visually close enough
+that nothing depends on the specific typeface. Zero network references left
+in `dashboard/app.py` - worth a quick grep for `http` in that file after any
+future CSS edit, since this is exactly the kind of thing that's invisible
+until the wifi actually cuts.
+
+**3. S1 retrain had died again (6th time) - resumed cleanly, same as every
+time before.** Found no python process running and `s1_retrain.log` stopped
+mid-epoch-10 at 22:09 last night (session end, not a crash - same pattern as
+before). Relaunched `run_s1_retrain.cmd` detached via `Start-Process
+-WindowStyle Hidden`; it printed `resuming at epoch 10 (best val mIoU
+0.4788)` from `last.pt` and continued. Trend through epoch 9: mIoU climbing
+noisily (0.395 -> 0.479 -> 0.364 -> 0.310 -> 0.460, best-checkpoint logic is
+carrying it since raw epochs bounce a lot) - still below the 8-epoch/64-patch
+run's 0.365 final and well below the published 0.8506 this run exists to
+test against. It's running now; nobody needs to watch it, just don't be
+surprised if it's dead again next session - that's 6 for 6, worth treating as
+the norm for this job rather than a surprise each time.
+
+**Changed:** nothing new this entry beyond confirming/resuming (23)'s
+work - see `ac3c5c0` and `59e7242` for the actual diffs (report section 5.0.9,
+`reports/decision_gap_refined.json`, `dashboard/app.py`).
+**Blocked on:** nothing technical.
+**Next:** (a) S1 retrain to completion, then re-derive `LIBERATION_MARGIN` for
+S1 specifically - still open, unchanged from (23); (b) **STATUS.md is now
+stale** - it still quotes the pre-conformal 0.089 margin and the old
+17%/8.9% patch-only figures (lines ~412, ~428) that (23) already superseded
+and this entry confirms are superseded twice over. Whoever writes the
+abstract should pull numbers from the report (section 5.0.9) or this log, not
+STATUS.md, until someone does a full pass to reconcile it; (c) everything
+from (22)/(23) already ahead of this in priority is still ahead: the
+QEMSCAN-labelling request, re-voicing the report, the economic case. Abstract
+due in single digits of days - check the date before writing it.
+
+---
+
 ## 2026-08-18 — Sibusiso (23)
 
 **Did:** Four things since entry (22) - the conformal fix is the one to read
