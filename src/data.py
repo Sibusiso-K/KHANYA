@@ -4,6 +4,12 @@ The single most important thing in this file: images from one physical specimen
 must never appear in more than one split. Rotations of the same polished section
 are near-duplicates; a random per-image split leaks them across train and test and
 reports an accuracy that will not survive a judge's question.
+
+SUPERSEDED - kept only so the MUMDMC classification numbers this file
+produced (train accuracy 98.3% on 8 specimens, explicitly reported as NOT a
+generalisation estimate - see reports/KHANYA-01-research-phase.md 5.0) stay
+reproducible. The live pipeline is src/segmentation/lumenstone.py and
+src/segmentation/train_lumenstone.py / train_patches.py. Do not build on this.
 """
 import random
 from pathlib import Path

@@ -1,29 +1,66 @@
-# Mintek-SCi Grad Hackathon 2026 — Problem 3
+# KHANYA — Mintek SCi Grad Hackathon 2026, Problem 3
 
-Real-time mineralogical characterisation from reflected-light optical microscopy.
+Real-time mineralogical characterisation from reflected-light optical
+microscopy: micrograph -> segmentation -> modal mineralogy -> liberation ->
+plant recommendation. One learned stage (the CNN); everything downstream is
+deterministic and auditable. Full explanation: [`STATUS.md`](STATUS.md).
 
-**Deliverable floor (from the brief):** trained model identifying **>= 3 mineral phases**,
-accuracy report, and demonstration of **operational feedback integration**.
+**Status: selected.** Abstract due **30 Aug 2026**. Final hacking day **1 Oct**
+(13:00 hard submission cutoff, 10-min pitch), conference 2 Oct. Team: Sibusiso
+Khumalo, Lethabo.
 
-## Pitch
+## Start here
 
-Ore processability advisor: image -> phase identification -> modal mineralogy ->
-plant recommendation (grind finer / adjust dosage / divert feed).
+| Doc | Answers |
+|---|---|
+| [`STATUS.md`](STATUS.md) | What exists, what doesn't, what to build next — the current snapshot |
+| [`HANDOVER.md`](HANDOVER.md) | Session-by-session log. Read the newest entry before pushing; add one after |
+| [`PITCH.md`](PITCH.md) | How this wins: positioning, abstract structure, the 10-minute run of show |
+| [`MINTEK-FIT.md`](MINTEK-FIT.md) | Why this matters to Mintek specifically, and what to ask them for |
+| [`DATA-SOURCES.md`](DATA-SOURCES.md) | Every dataset considered, licence status, why each was kept or ruled out |
+| [`reports/KHANYA-01-research-phase.md`](reports/KHANYA-01-research-phase.md) | The research report — every claim traces to a JSON in `reports/` |
 
-Why optical and not SEM: BSE detectors cannot separate hematite from magnetite
-(near-identical average atomic number). Reflected light can, on reflectance and colour.
+## The headline result
 
-## Layout
+Two segmentation models were compared on 12 held-out sections. The better one
+scored +2.8 points of mean IoU — and produced **zero improvement** in plant
+recommendations. Repairing particle topology, with no retraining, cut
+recommendation errors by two thirds and drove unsafe errors (confidently
+telling the plant to continue while payload is locked) to zero on both models.
+
+**Conclusion: per-class IoU is a poor proxy for whether a system is safe to
+act on.** Full result: report section 5.0.5–5.0.9.
+
+## Repository map
 
 ```
-src/config.py     paths, class list, hyperparameters
-src/data.py       dataset + SPECIMEN-LEVEL splits (never split by image)
-src/model.py      ResNet backbone, swappable
-src/train.py      training loop, checkpoints
-src/evaluate.py   per-class P/R/F1, confusion matrix -> reports/
-src/advisor.py    phase fractions -> plant recommendation
-dashboard/app.py  Streamlit demo (must run offline)
+src/
+  segmentation/
+    lumenstone.py          LumenStone S1/S2/S3 loader, class codebook, subset switch
+    patches.py              native-resolution patch sampling, balanced by class
+    train_lumenstone.py     resize baseline (whole-image, downsampled)
+    train_patches.py        native-resolution training + eval (primary pipeline)
+    losses.py               cross-entropy + soft Dice
+    metrics.py               IoU / pixel accuracy, matches petroscope's protocol
+    model.py, config.py     shared model builder + paths (used by everything above)
+  modal.py                  segmentation mask -> modal mineralogy + liberation
+  advisor.py                measurements -> plant recommendation, uncertainty band
+  conformal.py               distribution-free calibration for the uncertainty band
+  decision_gap.py            does better segmentation buy better decisions? (it doesn't, alone)
+  benchmark.py                scores against the published LumenStone protocol
+  robustness.py               photometric perturbation sweep (lighting, focus, noise)
+  sampling_error.py           liberation variance across sub-fields of one section
+  inspect_pipeline.py         per-section visual debugger, renders reports/figures/
+dashboard/app.py             offline Streamlit demo — segmentation, liberation, verdict
+
+src/{config,data,model,train,evaluate}.py            SUPERSEDED (MUMDMC classification
+src/segmentation/{data,train,evaluate}.py             SUPERSEDED  pipelines) — kept only
+                                                       so cited numbers stay reproducible.
+                                                       See each file's docstring.
 ```
+
+Two datasets, three checkpoints, one live pipeline: `lumenstone.py` +
+`train_patches.py` is what the dashboard and every current number use.
 
 ## Setup
 
@@ -32,52 +69,37 @@ python -m venv .venv && .venv/Scripts/activate
 pip install -r requirements.txt
 ```
 
-Then read `data/README.md` and place the datasets.
+Datasets are gitignored (`data/raw/`) — see `DATA-SOURCES.md` for download
+links and licences. Place LumenStone under `data/raw/lumenstone/{S1,S2,S3}_v*/`.
 
 ```bash
-python -m src.train
-python -m src.evaluate
-streamlit run dashboard/app.py
+python -m src.segmentation.train_patches            # train
+python -m src.segmentation.train_patches --eval      # held-out test metrics
+python -m src.decision_gap --model patches --refine  # decision-layer accuracy
+streamlit run dashboard/app.py                       # offline demo
 ```
+
+`KHANYA_SUBSET=S1` (or `S2`, `S3`) selects the dataset; unset defaults to S2,
+which reproduces every number in the report exactly.
 
 ## Rules we hold ourselves to
 
-- Split by **specimen**, not by image. Same-specimen leakage inflates accuracy and
-  judges in this field will ask.
-- The demo runs **offline** on one laptop. Assume venue wifi fails.
-- Every claim in the report traces to a number in `reports/`.
-- Write our own prose and cite sources — originality is a scored criterion with
-  explicit AI-generation checks.
-
-## Status: SELECTED
-
-Acceptance letter received 2026-08-14 (Boitumelo Lekalakala, Mintek SCI Grad
-Hackathon 2026). Prizes R25,000 / R15,000 / R10,000; strong teams may be
-considered for vacation work at Mintek. AI tools are permitted, but all
-submissions undergo **plagiarism, AI-generation, IP and originality checks**, and
-external sources, data and contributions must be acknowledged — the five finalist
-teams go through explicit originality authentication after the conference.
+- Split by **specimen**, never by image — same-specimen leakage inflates
+  accuracy and judges in this field will ask.
+- The demo runs **offline** on one laptop. No CDN calls anywhere (checked —
+  a font import was found and removed for exactly this reason).
+- Every claim in the report traces to a JSON file in `reports/`.
+- Negative results are kept, not deleted. A retracted number stays in the
+  history with the correction next to it.
+- Write our own prose, cite sources — originality is scored and finalists go
+  through explicit AI-generation authentication.
 
 ## Hard dates
 
 | Date | What |
 |---|---|
-| **30 Aug 2026** | **One-page abstract due** — approach, methods/technologies, expected outcomes/impact |
-| 30 Aug 2026 | Per-member admin due: ID number, T-shirt size, contact details, mentor name + contact — or a clear request for a Mintek mentor |
-| **1 Oct 2026** | **Final hacking day, on site at Mintek.** Physical attendance required. 08:00 teams report and continue development; **13:00 hard submission deadline**; 14:00 presentations begin; **10 minutes per team** to the judging panel |
-| 2 Oct 2026 | Mintek SCI Conference — attendance and registration required for all selected teams. Five finalists announced here |
+| **30 Aug** | One-page abstract; per-member admin (ID, T-shirt size, mentor request) |
+| **1 Oct** | On site at Mintek. 08:00 report, **13:00 hard submission cutoff**, 14:00 presentations, **10 min/team** |
+| 2 Oct | SCI Conference, attendance compulsory. Five finalists announced |
 
-Note the shape of 1 October: it is a working day with a 13:00 cutoff, not a
-presentation day. Anything not finished and submitted by 13:00 does not count,
-and the pitch is 10 minutes.
-
-## Plan to 1 October
-
-| Window | Goal |
-|---|---|
-| to 30 Aug | Abstract submitted. LumenStone S2 downloaded, multi-class segmentation running |
-| Sep wk 1-2 | Real held-out multi-class result (>=3 phases). Modal mineralogy from segmented areas |
-| Sep wk 3 | Operational feedback layer wired to segmented area fractions, not classifier confidences |
-| Sep wk 4 | Validation, failure analysis, energy/cost case, originality + acknowledgement pass |
-| 29 Sep | **Feature freeze.** Offline demo rehearsed end to end on the venue laptop |
-| 1 Oct | On site: refine only. Submit by 13:00 |
+1 October is a working day with a submission deadline, not a presentation day.

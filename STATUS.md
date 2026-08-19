@@ -1,6 +1,6 @@
 # KHANYA / REEFPRINT — where the project actually stands
 
-**As of 2026-08-16.** Single source of truth for what exists, what does not, and
+**As of 2026-08-19.** Single source of truth for what exists, what does not, and
 what to do next. `HANDOVER.md` is the running log; this file is the snapshot.
 
 | | |
@@ -40,10 +40,10 @@ auditability over cleverness, and an LLM in this loop would destroy that propert
 while adding nothing the task needs.
 
 One quantity is empirically derived rather than hand-set: the uncertainty band
-half-width (0.089) is the liberation estimator's measured mean absolute error on
-held-out sections. The four advisor thresholds are not learned - one is
-literature-sourced and three are placeholders (section 7.5 of the research
-report).
+half-width is set by split-conformal calibration on held-out sections (currently
+**0.335**, not a raw mean-error estimate - see section 5e). The four advisor
+thresholds are not learned - one is literature-sourced and three are
+placeholders (section 7.5 of the research report).
 
 ### What it is trained on
 
@@ -487,6 +487,42 @@ plain connected components if absent, so the venue demo cannot die on an import.
 
 ---
 
+### 5e. UPDATE 2026-08-18/19: conformal calibration supersedes 5d entirely
+
+**Section 5d above is superseded. Do not quote its numbers** — kept only as the
+record of what was tried; the corrected figures are below.
+
+The fixed `LIBERATION_MARGIN = 0.089` was checked against its own data and
+found overconfident: it actually covered only **67% of S2 sections and 45% of
+S1 sections**, not the ~90% the word "band" implies. Replaced with **split
+conformal calibration** (`src/conformal.py`) — a distribution-free coverage
+guarantee via leave-one-out residual quantiles, not a point estimate dressed as
+one. With n=12 test sections, 1 - 1/(n+1) = 92.3% is the highest coverage level
+the data can support at all, so 85% is reported as the achievable ceiling
+rather than claiming a level the data cannot back.
+
+**`LIBERATION_MARGIN` is now 0.335, not 0.089.** Both models re-scored under
+the shared, corrected band:
+
+| Config | Flips | Unsafe | Conservative | Flagged |
+|---|---|---|---|---|
+| resize + refined + band | 7/12 (58%) | **0** | 1 | 6 |
+| patch + refined + band | 6/12 (50%) | **0** | 0 | 6 |
+
+Sources: `reports/decision_gap_refined.json`,
+`reports/decision_gap_patches_refined.json`. Full derivation: report section
+5.0.8–5.0.9.
+
+**Both models now reach zero unsafe errors.** The quality gap between resize
+and patch narrows sharply against 5d's numbers — most of what looked like a
+segmentation-quality difference was partly the old band being too narrow to
+catch disagreements consistently on either model. Flip rate roughly doubles
+under the honest band and that is expected, not a regression: the band does
+not remove disagreements, it converts dangerous ones into flagged ones. **The
+claim to lead with:** a properly calibrated uncertainty band is what prevents
+the expensive error, regardless of which segmentation model is deployed — a
+stronger and more general claim than "our model is accurate."
+
 ## 6. Numbers that must never be quoted
 
 - **33% flip rate** — measured at 512x688, where `MIN_PARTICLE_PIXELS` means a
@@ -500,3 +536,8 @@ plain connected components if absent, so the venue demo cannot die on an import.
 - **MUMDMC 98.3%** — train-set fit on 8 specimens. Memorisation, not accuracy.
 - **FeM mIoU 0.872** — real, but a *binary* ore/resin task. It does not meet the
   >=3 phase floor and must not be presented as if it does.
+- **`LIBERATION_MARGIN = 0.089`, and the "17% flip rate" / "8.9% MAE" figures in
+  section 5d** — the fixed band this came from was checked and found to cover
+  only 67% (S2) / 45% (S1) of cases, not ~90%. Superseded by conformal
+  calibration (section 5e): margin is **0.335**, and the correct severity table
+  is the one in 5e, not 5d.

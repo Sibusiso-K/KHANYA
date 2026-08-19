@@ -1,0 +1,6 @@
+# One canonical line ending in the repo regardless of checkout platform, so
+# every commit stops emitting "LF will be replaced by CRLF" noise.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.zip binary

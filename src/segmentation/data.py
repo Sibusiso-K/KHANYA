@@ -1,3 +1,9 @@
+"""SUPERSEDED - kept only so the FeM binary ore/resin result this file
+produced (mean IoU 0.872, reports/segmentation_test_metrics.json) stays
+reproducible. It is a 2-class task and does not meet the brief's >=3 phase
+floor. The live multi-class pipeline is lumenstone.py, train_lumenstone.py and
+train_patches.py in this same directory. Do not build on this.
+"""
 import random
 
 import numpy as np

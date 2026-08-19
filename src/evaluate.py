@@ -1,4 +1,11 @@
-"""Test-set evaluation. Everything the accuracy report claims comes from here."""
+"""Test-set evaluation. Everything the accuracy report claims comes from here.
+
+SUPERSEDED - kept only so the MUMDMC classification numbers this file
+produced (train accuracy 98.3% on 8 specimens, explicitly reported as NOT a
+generalisation estimate - see reports/KHANYA-01-research-phase.md 5.0) stay
+reproducible. The live pipeline is src/segmentation/lumenstone.py and
+src/segmentation/train_lumenstone.py / train_patches.py. Do not build on this.
+"""
 import matplotlib
 matplotlib.use("Agg")
 

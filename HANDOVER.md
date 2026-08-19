@@ -17,6 +17,54 @@ Entry format:
 
 ---
 
+**For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
+
+## 2026-08-19 — Sibusiso (25)
+
+**Did:** Full repo sweep - senior-dev pass, no experiments. Everything below is
+structural/documentation, zero behaviour change.
+
+**1. STATUS.md was genuinely stale, as flagged in (24) - fixed.** It still
+quoted the pre-conformal `LIBERATION_MARGIN = 0.089` and the old patch-only
+"17% flip / 8.9% MAE" table as if current. Added section 5e stating plainly
+that 5d is superseded, with the corrected numbers (margin 0.335, both models
+0 unsafe under the shared band) and extended the "never quote" list in
+section 6 to cover the old figures explicitly.
+
+**2. README.md was describing a dead pipeline.** It documented `src/train.py`
+/ `src/evaluate.py` (the MUMDMC classification pipeline, superseded back in
+week 1) as if live, with zero mention of LumenStone, the decision-gap finding,
+or any doc written since. Rewrote it as a front door: headline result up top,
+a table pointing to STATUS/HANDOVER/PITCH/MINTEK-FIT/DATA-SOURCES, an accurate
+repo map distinguishing live from superseded modules, correct setup commands.
+
+**3. Deleted `dashboard/theme.py`.** Dead since (23)'s CSS-inlining fix
+(`59e7242`) - still tracked in git, referenced only in a comment, imported by
+nothing. Would have misled the next person editing dashboard styling.
+
+**4. Bannered 8 superseded pipeline files** (`src/{config,data,model,train,
+evaluate}.py`, `src/segmentation/{data,train,evaluate}.py`) with what they
+produced, why they're superseded, and where the live pipeline is - merged
+into their existing docstrings, not left as a second floating string literal.
+Not deleted: their numbers (MUMDMC 98.3% train-fit, FeM mIoU 0.872) are cited
+in the report and must stay reproducible. Left `src/segmentation/model.py`
+and `config.py` untouched - confirmed both are genuinely still shared by
+`train_lumenstone.py` and `train_patches.py`, not legacy.
+
+**5. Added `.gitattributes`.** Every commit this whole project has printed
+"LF will be replaced by CRLF" - pure noise, now fixed at the root
+(`* text=auto eol=lf`) instead of tolerated 25 entries running.
+
+**Changed:** README.md (rewrite), STATUS.md (5e + do-not-quote list + date),
+HANDOVER.md (this entry + a STATUS.md pointer at the top), deleted
+dashboard/theme.py, new .gitattributes, docstring banners on 8 legacy files.
+**Blocked on:** nothing.
+**Next:** unchanged - S1 retrain to completion (check `s1_retrain.log`, it has
+died mid-session 6 times now and always resumes clean, do not treat a dead
+process as news), then the QEMSCAN-labelling request, report re-voicing, the
+economic case. Abstract due 30 Aug - check today's date before writing it.
+
+
 ## 2026-08-19 — Sibusiso (24)
 
 **Did:** Picked up where (23) left off - both jobs it left running are now
