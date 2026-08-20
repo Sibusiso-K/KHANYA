@@ -22,6 +22,90 @@ it is a press release.
 
 ---
 
+## 2026-08-20 — session 5 · ADR-0003 the naming, and the guard that goes on someone else's machine
+
+### Attempted
+
+Three things, none of them physics. Settle what the system is *called*, now that it exists under
+two names in two repositories. Get REEFPRINT's history somewhere Sibusiso can read it. And close
+the gap between a warning written in `CONTEXT.md` and a check that actually runs.
+
+### Worked
+
+- **[ADR-0003](04-decisions/0003-one-build-two-names-reefprint-and-khanya.md): one build, two
+  names.** REEFPRINT leads and KHANYA is the same system's other name; both are correct, neither
+  is deprecated. The decision that matters is what it *forecloses*: **no package is renamed and
+  no histories are merged.** Renaming `reefprint.*` 42 days out would cost an import sweep across
+  two repos and blur the two parallel histories that are the rule-8 originality defence, all for
+  a label. *Khanya* is "to shine, to give light" in the Nguni languages, which is a better
+  description of the measurement than REEFPRINT is — that is a reason to keep the name, not a
+  reason to switch to it.
+
+- **REEFPRINT's history pushed to `Sibusiso-K/KHANYA` as the `reefprint` branch, unmerged.**
+  Eleven commits, in one place to read, still separate to authenticate. `git fetch && git
+  checkout reefprint`. JOINT-PLAN §5 names merging two architectures in 43 days as the single
+  biggest risk; a branch is how you share code without taking that risk.
+
+- **The false negative is now blocked in code.**
+  [`Sibusiso-K/KHANYA#2`](https://github.com/Sibusiso-K/KHANYA/pull/2). `src/polarimetry.py`
+  called `stokes_from_rotation_series` on raw arrays — bypassing `RotationSeries`, and therefore
+  bypassing `require_analyser_rotation()`. It now runs `harmonic_signature()` first and refuses
+  the whole run unless the verdict is `SECOND`, returning a report that carries the evidence and
+  names the next step rather than `None` or a null result (rule 5).
+
+  Refused at the run, not the section, deliberately: geometry is a property of the acquisition,
+  so if one S3 v2 section is a stage rotation then all 47 are, and pooling the other 46 into a
+  clean null is the exact failure being prevented.
+
+- **The number that justifies the guard.** Synthetic pyrrhotite-like **stage** series at S3 v2's
+  real layout — 72 frames, 5° steps, `r₁=0.40 r₂=0.354`, contrast *a* ≈ 0.12 — fed to the
+  rotating-analyser inversion: **median anisotropy 1.5e-02**. A strongly anisotropic mineral,
+  reported isotropic, no exception and no NaN. Guard verified both ways at the same layout:
+  analyser series 2nd harmonic at **29.1×** its noise floor and 4th at 0.9× → passes; stage
+  series 2nd at 1.0× and 4th at **65.3×** → refused.
+
+### Did not work
+
+Nothing failed, but one thing was worse than the previous session recorded. `CONTEXT.md` §3 said
+KHANYA imported "a frozen snapshot predating the geometry discriminator". Listing it showed the
+snapshot's `polarim/` directory in full:
+
+```
+~/Desktop/REEFPRINT - Copy/src/reefprint/polarim/
+    __init__.py
+    stokes.py
+```
+
+No `geometry.py`, no `extinction.py`. Not a stale copy of the module set — an inverter with no
+way to check what it was inverting and no fallback for the answer coming back "wrong geometry".
+The resolver now searches `$REEFPRINT_SRC` → live checkout → sibling checkout → that snapshot
+last, and **rejects any candidate missing `polarim/geometry.py` by name**, because a resolver
+that silently falls back to a stale tree reproduces the original bug one layer down.
+
+### Learned
+
+**A warning in a document is not a control.** `CONTEXT.md` already said, in bold, *"do not let
+that experiment run before this one does"* — correct, prominent, and worth nothing at 2am on
+someone else's laptop. The same sentence as a `raise` costs about forty lines and cannot be
+skipped. Where a project rule protects against a *silent* wrong answer, prose is the wrong
+medium: the whole hazard is that nothing prompts you to go and re-read the prose.
+
+Generalises to the other standing rules. Locality splits (rule 2) and the trivial baseline
+(rule 3) are currently prose in the constitution, and both fail silently when ignored.
+
+### Left open
+
+- **N3 itself is untouched by this.** The guard changes what happens when the archive is the
+  wrong geometry; it does not say which geometry S3 v2 is. Still one command on Sibusiso's
+  machine, still the single next action.
+- **The ten-minute storyboard is a draft, not a running order.** Nine beats exist and are being
+  refined. Recorded in `CONTEXT.md` §3 so it does not quietly become the specification —
+  gauntlet blind spot 11, where the person who owns the narrative also owns the architecture.
+- **The dual name now has to be applied consistently** to the abstract, slides and submission:
+  both names on first mention, REEFPRINT alone after. A doc naming only one of them is a defect.
+
+---
+
 ## 2026-08-20 — session 4 · `4d849f7` the bridge, `e8a3273` the fourth-harmonic estimator
 
 ### Attempted

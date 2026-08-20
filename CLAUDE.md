@@ -1,4 +1,4 @@
-# CLAUDE.md — REEFPRINT
+# CLAUDE.md — REEFPRINT, otherwise known as KHANYA
 
 Project constitution. Claude Code reads this at the start of every session. Keep it current; it outranks anything in `docs/`.
 
@@ -9,6 +9,16 @@ Project constitution. Claude Code reads this at the start of every session. Keep
 ---
 
 ## What this is
+
+**One build, two names.** REEFPRINT is the spec, the physics and the measurement half;
+KHANYA is Sibusiso's build — segmentation, modal mineralogy, liberation, conformal
+calibration, the offline dashboard. They are two halves of one system, not two projects.
+Both names are correct and neither is deprecated
+([ADR-0003](docs/04-decisions/0003-one-build-two-names-reefprint-and-khanya.md)): give both
+on first mention in anything external, then REEFPRINT alone. **No code is renamed and no
+histories are merged** — REEFPRINT's history lives on the `reefprint` branch of the KHANYA
+repository, unmerged, because two clean parallel histories are the originality defence
+(rule 8).
 
 **REEFPRINT is a computational ore microscope.** It identifies ore minerals and quantifies their deportment by **multispectral quantitative reflectance plus full linear Stokes polarimetry**, with calibrated uncertainty and an explicit refusal mechanism.
 

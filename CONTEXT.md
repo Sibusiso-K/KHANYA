@@ -8,7 +8,7 @@ is the constitution — *what is true and what the rules are*. This file is the 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
 - **Last updated:** 2026-08-20
-- **Last commit at time of writing:** `19154c5` polarim: decide the rotation geometry from the frames, not from the filename
+- **Last commit at time of writing:** `43778da` Docs: bridge and extinction in the repo map, N3 downgraded from blocker to fork
 - **Days to final:** 42 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 
 ---
@@ -21,7 +21,7 @@ Keep it current. A stale CONTEXT.md is worse than none, because it will be trust
 | 2 | **this file** | Where we are and what to do next. |
 | 3 | [`docs/BUILDLOG.md`](docs/BUILDLOG.md) | What we tried, what worked, what did not, and why. Append-only. |
 | 4 | [`docs/00-STATUS.md`](docs/00-STATUS.md) | Which docs are current vs superseded. `docs/` holds four generations of design and they contradict each other on purpose. |
-| 5 | [`docs/04-decisions/`](docs/04-decisions/) | ADRs. Two so far, both binding. |
+| 5 | [`docs/04-decisions/`](docs/04-decisions/) | ADRs. Three so far, all binding. ADR-0003 is the naming: **REEFPRINT, otherwise known as KHANYA**. |
 | 6 | [`docs/02-gauntlet-findings.md`](docs/02-gauntlet-findings.md) | The adversarial review. **Read before proposing anything** — most good ideas here were already killed for a stated reason. |
 
 Everything else is reference, and `docs/00-STATUS.md` tells you which parts of it are still true.
@@ -106,6 +106,29 @@ Named by the failing placeholder test
 **Still open, and unchanged:** LumenStone has no named licence — informal "free to use in
 research, cite the references", contact `khvostikov@cs.msu.ru`. Downloading is a user decision,
 not an agent one.
+
+### The false negative is now blocked in code, not just warned about
+
+The paragraph above used to end at *"do not let that experiment run before this one does"*,
+which is an instruction a tired person ignores at 2am. It is now a guard.
+[`Sibusiso-K/KHANYA#2`](https://github.com/Sibusiso-K/KHANYA/pull/2) makes
+`src/polarimetry.py` call `harmonic_signature()` before it inverts, and refuse the whole run
+— with the evidence and the next step named — unless the verdict is `SECOND`. It also stops
+that module importing `~/Desktop/REEFPRINT - Copy/src`, a snapshot whose `polarim/` holds
+`stokes.py` and nothing else: no discriminator, no fourth-harmonic fallback.
+
+Measured while writing the guard, on a synthetic pyrrhotite-like **stage** series at S3 v2's
+real layout (72 frames, 5° steps, contrast *a* ≈ 0.12): the unguarded Stokes fit returns
+**median anisotropy 1.5e-02**. A strongly anisotropic mineral, reported isotropic, no error
+raised. That is the number to quote when anyone asks why the geometry check is worth code.
+
+### The ten minutes is drafted, not decided
+
+A nine-beat storyboard exists (0:00–8:45, built around a live demo that **declines** to
+answer at 5:45) and it is a **draft under refinement, not a committed running order**. Do not
+treat it as spec, and do not let it start driving what gets built — gauntlet blind spot 11 is
+exactly this failure, and the person who owns the narrative also owns the architecture.
+The gates in §3 decide what gets built. The talk describes what was built.
 
 ---
 

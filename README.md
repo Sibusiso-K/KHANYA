@@ -1,5 +1,8 @@
 # REEFPRINT
 
+*Otherwise known as **KHANYA** — one build, two names, both correct*
+*([ADR-0003](docs/04-decisions/0003-one-build-two-names-reefprint-and-khanya.md)).*
+
 **A computational ore microscope.** Software that identifies ore minerals and quantifies their
 deportment by multispectral quantitative reflectance plus full linear Stokes polarimetry, with
 calibrated uncertainty and an explicit refusal mechanism.
@@ -90,6 +93,21 @@ src/reefprint/
 
 `experiments/` — numbered, each with its own README and result, including the failures.
 `data/` — DVC-tracked. Raw data is never committed.
+
+## The other half
+
+KHANYA — segmentation, modal mineralogy, liberation, conformal calibration and the offline
+dashboard — lives at [`Sibusiso-K/KHANYA`](https://github.com/Sibusiso-K/KHANYA), which is
+also where this repository's history is mirrored, on the `reefprint` branch:
+
+```bash
+git fetch origin && git checkout reefprint
+```
+
+The two are **not merged**. The seam between them is `reefprint.bridge` — labelled masks in
+from KHANYA, per-mineral anisotropy out, each figure beside its own noise floor. That seam is
+the only sanctioned route between the halves; see
+[ADR-0003](docs/04-decisions/0003-one-build-two-names-reefprint-and-khanya.md).
 
 ## Licence and provenance
 
