@@ -7,9 +7,9 @@ is the constitution — *what is true and what the rules are*. This file is the 
 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
-- **Last updated:** 2026-08-15
-- **Last commit at time of writing:** `9cc509c` ADR-0002: software only, no instrument is built
-- **Days to final:** 47 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
+- **Last updated:** 2026-08-20
+- **Last commit at time of writing:** `19154c5` polarim: decide the rotation geometry from the frames, not from the filename
+- **Days to final:** 42 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 
 ---
 
@@ -47,32 +47,57 @@ and flotation response. It is software, evaluated on public data. **No instrumen
 
 | Week | Gate | State |
 |---|---|---|
-| **1** | Rotation series in, per-pixel Stokes out, pentlandite dark / pyrrhotite lit, on screen | **Leg (a) phantom: PASSED**, 40.4× separation. **Leg (b) real public data: OUTSTANDING** ← *we are here* |
+| **1** | Rotation series in, per-pixel Stokes out, pentlandite dark / pyrrhotite lit, on screen | **Leg (a) phantom: PASSED**, 40.4× separation. **Leg (b) real public data: BLOCKED on finding N3** ← *we are here*. The reader is built; whether the Stokes inversion may legally be run on S3 v2 is now a one-command question that needs the archive. |
 | 2 | Falsification test computed, with CI | not started |
 | 3 | Conformal coverage within band, per held-out locality | not started |
 | 4 | Zero silent failures under degraded input | not started |
 | 5 | End-to-end offline on one laptop | not started |
 | 6 | Backup demo video exists | not started |
 
-**Built and tested:** `reefprint.polarim.stokes` (the inversion), `reefprint.acquire.series`
-(the acquisition boundary), `reefprint.acquire.phantom` (synthetic ground truth),
-`reefprint.viz.anisotropy` (the three-panel figure).
+**Built and tested:** `reefprint.polarim.stokes` (the inversion),
+`reefprint.polarim.geometry` (**which** rotation this is — finding N3),
+`reefprint.acquire.series` (the acquisition boundary), `reefprint.acquire.store`
+(OME-TIFF round-trip), `reefprint.acquire.phantom` (synthetic ground truth, both
+geometries), `reefprint.viz.anisotropy` (the three-panel figure).
 
 **Not built:** `calibrate`, `segment`, `texture`, `heads`, `trust`, `integrate`, and the
-hardware-facing and file-reading halves of `acquire`. Each has failing tests naming exactly what
+hardware-facing half of `acquire` (which, per ADR-0002, has no rig to drive). Each has failing tests naming exactly what
 is missing — **the red test list is the backlog**, deliberately.
 
 ### The single next action
 
-Build the **OME-TIFF rotation-series reader** so a stored public series replays through the same
-`RotationSeries` container the phantom uses, then run the identical inversion on LumenStone S3 v2
-XPL rotations. That closes leg (b) and is the whole of the week-1 gate.
+**Run `experiments/002-s3v2-geometry/run.py` against the real `S3_v2.zip` and settle N3.**
 
-Named by the failing test `tests/test_acquire.py::test_stored_rotation_series_loads_from_ome_tiff`.
+```bash
+uv run python experiments/002-s3v2-geometry/run.py --archive path/to/S3_v2.zip
+```
 
-**Open decision blocking the data half:** LumenStone has no named licence — informal "free to use
-in research, cite the references", contact `khvostikov@cs.msu.ru`. The *code* half is not blocked
-and should be built against a synthetic OME-TIFF round-trip first.
+Everything else in leg (b) is built and waiting on the answer. The reader round-trips OME-TIFF,
+the inversion is tested, the geometry discriminator is tested against both forward models and
+smoke-tested through a synthetic archive of S3 v2's exact layout. What is missing is one fact
+about the dataset:
+
+- **`FOURTH` → N3 confirmed.** Leg (b) needs a fourth-harmonic estimator. The Stokes inversion
+  must not touch this data, and the two must never be conflated in the talk.
+- **`SECOND` → N3 refuted**, which is the better outcome. Leg (b) runs as originally planned.
+- **`NEITHER`/`BOTH` → N3 stays open, leaning toward stage.** Not clearance.
+
+**This machine cannot answer it.** The 5.2 GB archive is on Sibusiso's machine (KHANYA,
+downloaded 2026-08-20); a `find` for it here returns nothing. It is one command on his laptop and
+it gates the week-1 gate, so it is the thing to ask for first.
+
+**It also gates his work, not just ours.** KHANYA's `src/polarimetry.py` feeds all 72 S3 v2 frames
+straight into `stokes_from_rotation_series` for a ten-mineral symmetry test. If those frames are
+stage rotations, that test returns a separation near 1.0 and reads as *"polarimetry does not work
+on real ore"* — a false negative on an estimator bug, against the project's central claim. Do not
+let that experiment run before this one does.
+
+Named by the failing placeholder test
+`tests/test_s3v2_reader.py::test_the_real_s3_v2_archive_has_been_measured`.
+
+**Still open, and unchanged:** LumenStone has no named licence — informal "free to use in
+research, cite the references", contact `khvostikov@cs.msu.ru`. Downloading is a user decision,
+not an agent one.
 
 ---
 
@@ -90,13 +115,13 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **53 passed, 25 deselected**. Anything less is a regression, not a quirk.
+Expect **86 passed, 26 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **25 failed**. These are the backlog, not breakage. Each failure names the module and the
+Expect **26 failed**. These are the backlog, not breakage. Each failure names the module and the
 gate or rule it belongs to. CI runs them in a separate non-blocking job.
 
 ```bash
@@ -108,9 +133,21 @@ Expect a table ending `GATE  pyrrhotite / pentlandite anisotropy = 40.4x` and a 
 
 ---
 
-## 5. The five things that will bite you
+## 5. The six things that will bite you
 
-These are not hypothetical. Four of the five have already happened in this repo.
+These are not hypothetical. Five of the six have already happened in this repo.
+
+0. **A stage rotation inverts to zero anisotropy, silently, and nothing in the filename tells you
+   which rotation you have.** The two geometries are not interchangeable: a rotating analyser
+   modulates at `2θ`, a stage under crossed polars at `4φ`, and a 4φ signal has **no 2θ component
+   at all**. Fit the Stokes model to a stage rotation and it returns `S1 = S2 = 0` for every
+   anisotropic grain — no exception, no NaN, a physically realisable answer, **every anisotropic
+   mineral reported as isotropic**. The only witness is `residual_rms`, sitting at exactly
+   `S0/(2√2)`. Pinned by `test_a_crossed_polars_stage_rotation_inverts_to_zero_anisotropy`.
+   `RotationSeries.geometry` therefore defaults to `UNKNOWN` rather than to the convenient answer,
+   and `require_analyser_rotation()` must be called before any inversion.
+   `reefprint.polarim.geometry.harmonic_signature` decides it from the frames. Open finding **N3**
+   — and it is the one currently blocking the week-1 gate.
 
 1. **The anisotropy noise floor goes as 1/S0.** A truly isotropic phase does not read zero. It
    reads `σ·√(8/n)·√(π/2) / S0` — so at σ = 0.25 R% and n = 36, gangue at R = 4.75% reads DOLP
@@ -191,6 +228,7 @@ rusty met-eng *and* owns the ten-minute narrative, and neither should quietly be
 |---|---|---|
 | **N1** | Pirard 2007 prior art unread. Retighten or defend the novelty claim. | before week 6 |
 | **N2** | 1/S0 noise floor means no fixed anisotropy threshold is defensible. Any discrimination rule must condition on S0 and report an interval. | week 2+ |
+| **N3** | **Is LumenStone S3 v2 a stage rotation or an analyser rotation?** Decidable in one command; the command needs the 5.2 GB archive, which is on Sibusiso's machine. Blocks week-1 leg (b), and blocks KHANYA's ten-mineral symmetry test from producing a false negative. | **now** — ask Sibusiso |
 | **F1** | Chromite-proxy collapse — the falsification test runs regardless and the result is published either way. | week 2 gate |
 | **F2** | Talc/serpentine without SWIR is unproven. If it fails, drop to two properties. | week 2, empirical |
 | **S2** | Plant history was generated under FloatStar closed-loop control. No causal claim from observational plant data. | any use of the Kaggle flotation dataset |

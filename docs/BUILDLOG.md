@@ -22,6 +22,162 @@ it is a press release.
 
 ---
 
+## 2026-08-20 — session 3 · `52711d3` OME-TIFF store, `19154c5` the geometry discriminator
+
+### Attempted
+
+Close week-1 leg (b): read a stored public rotation series through the same `RotationSeries`
+container the phantom uses, and run the identical Stokes inversion on LumenStone S3 v2.
+
+Then, on absorbing Sibusiso's KHANYA repo, stop leg (b) from running into finding N3 — and stop
+his ten-mineral symmetry test from doing the same thing first.
+
+### Worked
+
+- **`reefprint.acquire.store`** round-trips a `RotationSeries` through OME-TIFF via `tifffile`,
+  angles and geometry carried in the OME-XML header rather than in filenames. ADR-0001 holds; no
+  JVM anywhere.
+
+- **`reefprint.polarim.geometry.harmonic_signature` turns N3 from an inference into a
+  measurement.** Joint fit of both harmonics,
+
+  ```
+  I(a) = A0 + A2c cos2a + A2s sin2a + A4c cos4a + A4s sin4a
+  ```
+
+  with each amplitude compared against **its own** noise floor read off the design matrix,
+  `cov = σ²(AᵀA)⁻¹`, times the Rayleigh factor `√(π/2)` for the magnitude of a two-component
+  Gaussian. Joint rather than sequential: on a non-uniform angle set power leaks between the
+  harmonics and a sequential fit hands the leak to whichever was fitted first.
+
+  Evidence it is calibrated rather than decorative: **the losing harmonic reads 1.0× its floor**,
+  not merely "smaller" (`test_the_losing_harmonic_sits_at_its_own_noise_floor`, `snr_4 = 1.0 ±
+  0.6` at 40% noise while `snr_2 > 10`). A floor wrong by a constant factor would still give the
+  right verdict on clean data and fail on noisy data, which is the worst place to find out.
+
+  Four verdicts, two of them refusals. `BOTH` and `NEITHER` map to `RotationGeometry.UNKNOWN`,
+  **never to `ANALYSER`** — the module cannot wave the inversion through by failing to decide.
+
+- **The end-to-end proof**, `test_the_discriminator_catches_what_the_stokes_inversion_silently_
+  misses`: a stage rotation whose frames demonstrably modulate (`ptp > 0` on every anisotropic
+  pixel) inverts to `anisotropy < 1e-9` everywhere, and the same frames are correctly read as
+  `SPECIMEN` by the harmonic signature.
+
+- **`experiments/002-s3v2-geometry/`** settles N3 against the real archive, decoding one frame at
+  a time out of the zip so peak memory is one frame. Smoke-tested through a synthetic archive
+  built to S3 v2's exact layout, JPEG round-trip included: a known stage archive reads back
+  `FOURTH` at snr 16.3, with the 2θ channel at exactly 1.0× its floor.
+
+- **`pillow` promoted from transitive to declared**, with `SBOM.md` and `docs/05-toolchain.md`
+  rows in the same commit (Rule 7). Licence **MIT-CMU**, read from the installed distribution's
+  own `License-Expression` metadata — the SPDX declaration attached to the wheel we actually
+  install, not a guess.
+
+86 passed, 26 deselected. ruff clean.
+
+### Did not work
+
+- **The first claim about 8-bit quantisation was wrong, and it was wrong in the flattering
+  direction.** The smoke run returned `NEITHER` on a synthetic archive that was a pure stage
+  rotation by construction. The story that fit was: crossed-polars intensity goes as
+  bireflectance *squared* on a near-black field, so 8 bits should starve it while the analyser
+  geometry, riding on a bright S0, survives. A sweep appeared to confirm it — stage detected at
+  5% noise raw, undetected at 2% once quantised, analyser untouched. A 3× penalty, asymmetric,
+  and a tidy consequence of the physics already in the constitution.
+
+  It was an artefact of my own conversion. `np.ndarray.astype(np.uint8)` **wraps** negative
+  values rather than clipping them, and
+
+  ```
+  stage frames at 5% noise: min=-0.26787  negatives=1419300 of 3110400 (45.63%)
+  np.array([-1.0]).astype(np.uint8)  ->  [255]
+  ```
+
+  Nearly half of a crossed-polars stack is below zero, because the signal sits on a near-black
+  field and the noise is additive and symmetric. Wrapping that many samples to arbitrary bright
+  values destroys the 4th harmonic — which looks exactly like a quantisation penalty and is not
+  one. With `np.clip(np.round(...), 0, 255)`, what a sensor and a JPEG encoder actually do:
+
+  ```
+  stage, 5% noise:  snr_4 = 6.8 raw   6.9 quantised   -> FOURTH either way
+  ```
+
+  **8-bit conversion costs neither geometry its verdict**, 0–5% noise. The caveat had already
+  been written into `run.py` and a passing test had already been written to support it. Both were
+  wrong, and the test was the more dangerous of the two: it asserted a true-sounding conclusion
+  and passed for a reason that had nothing to do with it.
+
+  Nothing in `src/` casts to an integer type — checked, not assumed — so no shipped code was
+  affected. The trap is now pinned by the clip in `_to_eight_bit` and stated in its docstring.
+
+### Learned — the 2/a advantage, measured
+
+Chasing the quantisation story to ground produced the number it was a bad imitation of. Sweeping
+noise until each geometry stops being detectable:
+
+```
+stage    : last detected at noise_pct 0.05,  missed at 0.08
+analyser : last detected at noise_pct 2.0,   missed at 3.0
+```
+
+**The analyser geometry stays detectable through 38× more noise than the stage geometry.**
+CLAUDE.md predicts the advantage is `2/a` and that it *grows as the anisotropy weakens*; across
+the phantom's anisotropic phases — pyrrhotite `a = 0.12`, chalcopyrite `a = 0.03` — that spans
+16.7× to 66.7×. The measurement lands inside the band.
+
+This is a consistency check, not a derivation: a detection-threshold ratio over a mixed field at a
+declared SNR threshold is a different quantity from a per-grain contrast ratio. But it converts
+the argument for the rotating analyser from a line of algebra into a measured number, and it is
+strongest exactly where the base-metal sulphides live — which is the whole point.
+
+It has a second consequence that matters for reading the real archive: **a `NEITHER` verdict is
+not neutral.** A null is far more likely if the frames are stage rotations than if they are
+analyser rotations, so a null leans toward N3 being *true*. `run.py` says so in its own output
+rather than leaving it to be reasoned out later, and it is explicitly not clearance to invert.
+
+### Learned — the risk arrived from the other repo, not this one
+
+Sibusiso's KHANYA is a separate 46-commit repo that imports `reefprint.polarim.stokes` unchanged
+across a path bridge. His `src/polarimetry.py::sample_section` feeds all 72 S3 v2 frames straight
+into `stokes_from_rotation_series`, bypassing `require_analyser_rotation()` — which was committed
+hours earlier and which he had no way to know about.
+
+If S3 v2 is stage-rotation data, his ten-mineral symmetry test returns a separation ratio near
+1.0 and reads as **"polarimetry does not work on real ore"**: a false negative against the
+project's central claim, produced by an estimator bug, on the one experiment most likely to be
+believed. Two people building carefully against a shared invariant is not enough when the
+invariant is four hours old.
+
+The general form, worth keeping: **an inference that everyone agrees with is still an inference,
+and a shared codebase propagates it faster than it propagates the correction.** N3 had been
+written into `CLAUDE.md` as "almost certainly" and that was sufficient to reason with and
+insufficient to build on. It needed to become a file that answers the question.
+
+Not incidentally: his comment asserting that duplicated rows at θ and θ+180 leave `cond(A)`
+unchanged is **correct** — all singular values scale by √2, and the SNR improves by √2. It was
+checked before being flagged, and not flagged.
+
+### Decided
+
+- N3 is decided **from the frames**, never from filenames, metadata, or the paper's prose.
+  `RotationGeometry` defaults to `UNKNOWN` and refusals map there rather than to `ANALYSER`.
+- Experiment scripts stay in numbered directories and are loaded **by path** in tests
+  (`tests/test_s3v2_reader.py::_load_experiment`). An un-numbered importable copy would drift
+  from the script that is actually run.
+- A mask/frame shape mismatch is **skipped with both shapes named, not raised**. Dying on the
+  first one hides how many there are, which is the number that decides whether it is one bad
+  section or a transposed dataset. This is the failure that killed the first real run.
+
+### Left open
+
+- **N3 itself.** The discriminator is built and tested; it has **not been run on the real
+  archive**. The 5.2 GB `S3_v2.zip` is on Sibusiso's machine — a `find` for it here returns
+  nothing. One command, and it gates the week-1 gate. Pinned by the failing placeholder
+  `tests/test_s3v2_reader.py::test_the_real_s3_v2_archive_has_been_measured`.
+- **How the two repos join.** KHANYA's `JOINT-PLAN.md` §5 warns against rewriting either into the
+  other; the bridge belongs at the mask/series boundary. Not yet designed.
+- LumenStone's licence is still informal and unnamed.
+
 ## 2026-08-15 — session 2 · `9cc509c` ADR-0002, and the documents
 
 ### Attempted
