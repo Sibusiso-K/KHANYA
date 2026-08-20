@@ -25,6 +25,7 @@ from the upstream repository in this project's own records · **BLOCKED** do not
 | `tifffile` | BSD-3-Clause | OK | **Preferred OME-TIFF reader/writer.** See Bio-Formats below. |
 | `imagecodecs` | BSD-3-Clause | VERIFY | `tifffile` compression backend. |
 | `matplotlib` | PSF-derived (BSD-compatible) | OK | |
+| `pillow` | MIT-CMU | OK | JPEG decode for public archives (LumenStone frames are JPEG). Licence read from the installed distribution's own `License-Expression` metadata, 12.3.0, 2026-08-20 — that is the SPDX declaration attached to the wheel we actually install. |
 | `opencv-python` | Apache-2.0 (library) / MIT (wheel packaging) | VERIFY | OpenCV relicensed 4.5.0→Apache-2.0. Confirm the pinned wheel. |
 | `pydantic` | MIT | VERIFY | Config and acquisition-metadata schemas. |
 

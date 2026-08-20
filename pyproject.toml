@@ -16,6 +16,9 @@ dependencies = [
     "tifffile>=2024.8.30",   # OME-TIFF read/write. BSD-3. NOT Bio-Formats — see SBOM.md.
     "imagecodecs>=2024.6.1",
     "matplotlib>=3.9",
+    "pillow>=11.0",          # MIT-CMU. JPEG decode for the public archives; already a
+                             # transitive of matplotlib, now imported directly so it is
+                             # declared directly. SBOM.md.
 ]
 
 [project.optional-dependencies]

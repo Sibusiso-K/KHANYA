@@ -12,4 +12,8 @@ Physics invariants that must hold, and are property-tested rather than assumed:
 - Physical realisability: S0**2 >= S1**2 + S2**2
 - DOLP = sqrt(S1**2 + S2**2) / S0 lies in [0, 1]
 - Rotating the specimen rotates (S1, S2) by 2x the angle and leaves S0 and DOLP unchanged
+
+Which element rotated is not knowable from the frames' filenames, and getting it wrong is
+silent — see :mod:`reefprint.polarim.geometry`, which decides it from the harmonic content
+instead. Finding N3.
 """

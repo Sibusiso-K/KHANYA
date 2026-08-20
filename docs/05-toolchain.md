@@ -53,6 +53,7 @@ Direct runtime dependencies, from `pyproject.toml`:
 | `tifffile` | 2026.7.31 | BSD-3-Clause | **OME-TIFF read/write and OME-XML metadata. ADR-0001.** |
 | `imagecodecs` | 2026.6.26 | BSD-3-Clause | `tifffile`'s compression backend |
 | `matplotlib` | 3.11.1 | PSF-derived, BSD-compatible | the three-panel gate figure. Used via `Figure`, never `pyplot`. |
+| `pillow` | 12.3.0 | MIT-CMU | decodes the JPEG frames in LumenStone S3 v2. Was transitive via matplotlib; promoted to a declared dependency on 2026-08-20 when `experiments/002-s3v2-geometry` began importing it directly. |
 
 Direct dev dependencies:
 
@@ -64,7 +65,7 @@ Direct dev dependencies:
 | `ruff` | 0.16.3 | MIT | lint + format, one tool |
 | `pre-commit` | 4.6.2 | MIT | runs ruff before every commit |
 
-The remaining ~28 are transitive (`pillow`, `fonttools`, `networkx`, `pyyaml`, `virtualenv`, …).
+The remaining ~27 are transitive (`fonttools`, `networkx`, `pyyaml`, `virtualenv`, …).
 Regenerate the full list any time with:
 
 ```bash
