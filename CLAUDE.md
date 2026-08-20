@@ -22,6 +22,23 @@ Hyperspectral reflectance spectroscopy identifies minerals by **molecular absorp
 
 Opaque ore minerals are identified by **quantitative specular reflectance (R%), bireflectance, and anisotropy under crossed polars** — reflected-light ore microscopy, standardised since the 1940s.
 
+### Two rotation geometries, and they are not interchangeable
+
+This is the trap that most threatens the week-1 gate, and it is not a naming quibble.
+
+| Geometry | What turns | Modulation | Recovers |
+|---|---|---|---|
+| **Rotating analyser** | analyser, with polariser and specimen fixed | `I(θ) = (S0 + S1cos2θ + S2sin2θ)/2` — **2nd harmonic** | the full linear Stokes vector. **This is our claim.** |
+| **Stage rotation under crossed polars** | the specimen, with polars fixed and crossed | `I(φ) = \|r₁−r₂\|²(1 − cos4φ)/8` — **4th harmonic** | extinction depth only. The classical observation since the 1940s. |
+
+A 4φ signal has **no 2θ component at all**. Fitting the Stokes model to a stage rotation returns `S1 = S2 = 0` for every anisotropic grain — no exception, no NaN, a perfectly realisable answer, **every anisotropic mineral silently reported as isotropic.** The only witness is `residual_rms`, which sits at exactly `S0/(2√2)`. Proven, not asserted: `test_a_crossed_polars_stage_rotation_inverts_to_zero_anisotropy`.
+
+Hence `RotationSeries.geometry`, which defaults to `UNKNOWN` rather than to the convenient answer, and `require_analyser_rotation()`, which must be called before any Stokes inversion.
+
+**Consequence for the data:** published "XPL rotation sequences" — LumenStone S3 v2, MUMDMC2025 — are almost certainly *stage* rotations, because that is how anisotropy has always been observed. **Verify before building on them** (open finding **N3**). If they are, leg (b) needs a fourth-harmonic estimator, not the Stokes inversion, and the two must never be conflated in the talk.
+
+*Also worth knowing:* extinction depth goes as the **square** of bireflectance contrast `a`, while analyser modulation goes as `a` — so the rotating analyser's advantage is `2/a`, and it **grows as the anisotropy weakens**. That is a real argument for the instrument, and it is strongest exactly where the base-metal sulphides live.
+
 **Polarimetry splits the base-metal sulphides, and that is the whole point:**
 
 | Mineral | Optics | Metallurgy |
