@@ -22,6 +22,111 @@ it is a press release.
 
 ---
 
+## 2026-08-20 — session 7 · rule 1 becomes a type, and provenance is contagious
+
+### Attempted
+
+Session 6's *Learned* named this as the remaining silent-failure rule and said it was the
+hardest, which was right. Rules 2 and 3 have a shape a guard can grab: a split is a pair of
+sets, a metric is a number next to other numbers. Rule 1 has none. **An invented number and a
+measured one are the same 64 bits.** `0.35` is `0.35` whether it came from a calibration run, a
+textbook, a phantom, a plausible guess, or a spec for hardware that was never built. There is no
+malformed state to detect — the number is fine. What is missing is everything *around* it.
+
+So the guard could not be a check on the value, and this is the point the design turned on: it
+had to be a property carried **with** the value, and it had to **propagate through arithmetic on
+its own**. Contamination does not surface where the assumption is written. It surfaces three
+functions downstream, in a variable named something reasonable like `grain_size_um`, at which
+point nobody can tell.
+
+TDD throughout: 30 tests written first, watched fail against `NotImplementedError` stubs, then
+implemented. Nothing failed after implementation this time, which is a weaker signal than
+session 6's disagreement — see *Learned*.
+
+### Worked
+
+- **[`reefprint.quantity`](../src/reefprint/quantity.py).** `Quantity` carries a `Provenance`
+  and a **mandatory non-empty `source`**. Arithmetic keeps the **weakest** input's provenance
+  and accumulates every source, deduplicated and ordered, so a derived number can always say
+  what fed it. Five ranks:
+
+  ```
+  MEASURED  →  CITED  →  STIPULATED  →  ASSUMED  →  DESIGN_TARGET
+    a result    published   true of the    a guess,    hardware that was
+                value      phantom only    labelled    never built
+  ```
+
+- **`STIPULATED` is its own rank and that was deliberate.** Experiment 001's phantom ground
+  truth is exactly true — of the phantom, and of nothing else. Folding it into `MEASURED` would
+  let the week-1 gate's leg (a) quietly read as mineralogy, which is the exact conflation
+  `CLAUDE.md` warns about two lines below the gate table.
+
+- **`require_reportable()` is the boundary**, and `__float__` calls it. `float(q)` is the
+  obvious way around any wrapper, so it is the route that had to be closed. A **flagged
+  assumption passes** — rule 1 permits assumptions, it requires labels, and by the time you hold
+  a `Quantity` it has one. `DESIGN_TARGET` never passes.
+
+- **The number that makes ADR-0002 mechanical instead of a preference.** 47 px × **0.2** µm/px
+  is 9.4 µm. 47 px × **1.6** µm/px is 75.2 µm. Same design target, a **factor of 8** apart. That
+  is not a measurement with wide error bars; it is a figure that could be 9 µm or 75 µm,
+  presented to three significant figures. `test_the_design_target_spans_a_factor_of_eight_so_it_
+  is_not_a_number` asserts the ratio is exactly 8.0 and that **both** ends are refused.
+
+- **Bare floats cannot join in.** `measured(1.0, "um", ...) + 2.0` raises `TypeError`, because
+  the unlabelled literal is precisely the thing rule 1 is about. Units are checked on `+`/`-`
+  and cancel on `×`/`÷` (`px` × `um/px` → `um`), because a scale factor is the usual doorway for
+  an unlabelled number, and `px*um/px` in a caption is how it stays in.
+
+- **30 tests, 186 green overall** (`uv run pytest -m "not placeholder" -q`), ruff and format
+  clean. `CONTEXT.md` §4 updated 156 → 186 in the same commit, which is now the third session
+  running where that number would otherwise have gone stale.
+
+### Did not work
+
+Two things needed fixing rather than accepting:
+
+`_multiply_units` shipped its first draft with a vacuous guard — a loop over
+`((right, left, left), (left, right, right))` testing `other is denominator`, which is
+`True` by construction on both iterations. It gave the right answer for the wrong reason.
+Rewritten to two cases and one condition.
+
+`ruff` caught an en dash in `0.2–1.6 µm/pixel` in the module docstring (RUF002) and an
+unescaped `match="CLAUDE.md 0.2-1.6 um/px"` in the test (RUF043 — the `.` are metacharacters).
+Both are the same class of thing this module exists to stop: a string that looks right and
+means something slightly different.
+
+### Learned
+
+**Nothing failed after implementation, and that is worth noticing rather than celebrating.**
+Session 6's value came from a test disagreeing with the code once both existed — the
+disagreement was where the third summary state came from. Here the tests and the implementation
+agreed immediately, which means either the design was clear before it was written, or the tests
+were not adversarial enough. Honest answer: some of both. The tests that would have caught a
+weak design are the ones asserting *contagion in both directions* and *`float()` cannot escape*,
+and those were written first for exactly that reason. But no test here asked a question the
+design had not already answered.
+
+**The four guards now cover every rule that fails silently.** Rules 1, 2, 3 and the geometry
+hazard. What is left in prose — rules 4 through 9 — fails *loudly* or fails at review: a missing
+CI is visible on the slide, an LLM computing a control value is visible in the code, a
+non-permissive licence is visible in the SBOM. That is the boundary, and it is a reason to stop
+adding guards rather than a reason to keep going.
+
+### Left open
+
+- **N3 is still the single next action.** Seven sessions of guards, none of which touches it.
+  One command on Sibusiso's machine:
+  `uv run python experiments/002-s3v2-geometry/run.py --archive path/to/S3_v2.zip`
+- **Nothing calls `quantity` yet**, same as `split` and `baseline`. The first real caller is
+  `calibrate/` — R% conversion is where cited QDF values meet measured intensities, which is
+  the exact seam this type exists for. Written before its caller, deliberately.
+- **`Quantity` does not vectorise.** It wraps a scalar. Per-pixel Stokes arrays cannot carry
+  provenance this way, and pretending otherwise would be worse than not trying — the array-level
+  answer is provenance on the *array*, not per element, and that is a different design.
+- **The `higher is better` assumption in `TrivialBaselines`** is still documented, not enforced.
+
+---
+
 ## 2026-08-20 — session 6 · rules 2 and 3 stop being prose
 
 ### Attempted

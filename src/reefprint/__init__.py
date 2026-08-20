@@ -9,7 +9,11 @@ they are identified by specular reflectance, bireflectance and anisotropy under 
 Pentlandite is cubic and stays dark through a full analyser rotation; pyrrhotite is anisotropic
 and lights up. That distinction governs PGE deportment.
 
-See ``CLAUDE.md`` for the rules that constrain every module here.
+See ``CLAUDE.md`` for the rules that constrain every module here. Rule 1 — *never invent a
+number* — is the one that applies to every subpackage without exception, so its guard lives
+here at the top level rather than inside any one of them: :mod:`reefprint.quantity`. A
+:class:`~reefprint.quantity.Quantity` cannot be constructed without saying where its number
+came from, and the provenance travels through the arithmetic, weakest input winning.
 """
 
 __version__ = "0.1.0"

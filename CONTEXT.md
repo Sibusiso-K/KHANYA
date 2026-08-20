@@ -8,7 +8,7 @@ is the constitution — *what is true and what the rules are*. This file is the 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
 - **Last updated:** 2026-08-20
-- **Last commit at time of writing:** `cec415a` ADR-0003: one build, two names — REEFPRINT, otherwise known as KHANYA
+- **Last commit at time of writing:** `6e0b647` rules 2 and 3 stop being prose — locality splits and trivial baselines as refusals
 - **Days to final:** 42 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 
 ---
@@ -180,6 +180,40 @@ A baseline may be `NotApplicable`, but only with a stated reason — rule 5's pa
 up. Both inapplicable at once is refused: that is a metric with nothing to compare against,
 which is the state rule 3 exists to forbid.
 
+### Rule 1 is a guard now too, and it is the one that had to be contagious
+
+[`reefprint.quantity`](src/reefprint/quantity.py). The hardest of the four to make structural,
+because there is nothing malformed to detect: an invented number and a measured one are the
+same 64 bits. `0.35` is `0.35` whether it came from a calibration run, a textbook, a phantom,
+a plausible guess, or a spec for hardware that was never built. What is missing is everything
+*around* the number.
+
+So the guard is not a check on the value. `Quantity` carries a `Provenance` and a **mandatory
+non-empty** `source`, and the provenance **propagates through arithmetic, weakest input wins**.
+That is the part that had to be automatic: the contamination surfaces three functions from where
+the assumption was written, in a variable named something reasonable like `grain_size_um`.
+
+```
+MEASURED  →  CITED  →  STIPULATED  →  ASSUMED  →  DESIGN_TARGET
+  a result    published   true of the    a guess,    hardware that was
+              value      phantom only    labelled    never built
+```
+
+`require_reportable()` is the boundary — call it wherever a number stops being an intermediate
+and starts being a claim. `__float__` calls it, so the number cannot leave the type by the one
+obvious route around any wrapper. A flagged assumption **passes**: rule 1 permits assumptions,
+it requires labels, and by the time you hold a `Quantity` it has one.
+
+`DESIGN_TARGET` never passes, and that is ADR-0002 made mechanical rather than a preference.
+The number that makes the case: 47 px × **0.2** µm/px is 9.4 µm; 47 px × **1.6** µm/px is 75.2 µm.
+Same design target, a **factor of 8** apart. A grain size derived from it is not a measurement
+with wide error bars — it is a figure that could be 9 µm or 75 µm, printed to three significant
+figures. `test_the_design_target_spans_a_factor_of_eight_so_it_is_not_a_number` pins it.
+
+Bare floats cannot join in: `measured(1.0, "um", ...) + 2.0` is a `TypeError`, because the bare
+literal is exactly the thing rule 1 is about. Units are checked on `+`/`-` and cancel on `×`/`÷`
+(`px` × `um/px` → `um`), because a scale factor is the usual doorway for an unlabelled number.
+
 ---
 
 ## 4. Verify you are in a good state
@@ -196,7 +230,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **156 passed, 26 deselected**. Anything less is a regression, not a quirk.
+Expect **186 passed, 26 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
@@ -267,7 +301,10 @@ These are not hypothetical. Five of the six have already happened in this repo.
 
 From CLAUDE.md's nine rules, the ones that have already shaped code:
 
-- **Never invent a number.** Flag every assumption in the code, not just the docs.
+- **Never invent a number.** Flag every assumption in the code, not just the docs. `quantity.Quantity`
+  carries a `Provenance` and a mandatory `source`, and arithmetic keeps the **weakest** input's
+  provenance. `require_reportable()` at every boundary; `DESIGN_TARGET` never passes it (ADR-0002 —
+  the 0.2 and 1.6 µm/px ends of that range are a **factor of 8** apart).
 - **Split by locality, never by patch or image.** Patch splits void conformal exchangeability and
   silently invalidate every metric — measured at **126x** in the flattering direction. Use
   `trust.split.split_by_locality()`, or `require_locality_disjoint()` if you built the split by
@@ -334,7 +371,7 @@ docs/BUILDLOG.md     append-only: what was tried, what worked, what did not
 docs/00-STATUS.md    which docs are current vs superseded
 docs/05-toolchain.md every piece of software we install, and what we decided not to
 docs/04-decisions/   ADRs
-src/reefprint/       acquire · bridge · calibrate · polarim · segment · texture · heads · trust · integrate · viz
+src/reefprint/       quantity.py (rule 1) · acquire · bridge · calibrate · polarim · segment · texture · heads · trust · integrate · viz
 tests/               one file per module. Red tests are the backlog, by design.
 experiments/         numbered, each with its own README stating the result AND what it does not show
 data/                DVC-tracked, never committed raw

@@ -74,6 +74,15 @@ Hence `RotationSeries.geometry`, which defaults to `UNKNOWN` rather than to the 
 ## Rules — non-negotiable
 
 1. **Never invent a number.** Flag every assumption as an assumption, in the code and in the docs.
+   **Enforced in code, not here:** `reefprint.quantity.Quantity` carries a `Provenance` and a
+   mandatory non-empty `source`, and the provenance is **contagious** — arithmetic keeps the
+   *weakest* input's provenance and accumulates every source, because contamination surfaces
+   three functions from where the assumption was written. Five ranks, MEASURED → CITED →
+   STIPULATED → ASSUMED → DESIGN_TARGET. `require_reportable()` is the boundary; `__float__`
+   calls it, so the number cannot leave the type unchecked. A flagged assumption passes — rule
+   1 permits assumptions, it requires labels. **DESIGN_TARGET never passes**, which is ADR-0002
+   made mechanical: 47 px × 0.2 µm/px is 9.4 µm and 47 px × 1.6 is 75.2 µm — the same design
+   target, a **factor of 8** apart. That is not a measurement with wide error bars.
 2. **Split by locality, never by patch or image.** Patch-level splits void conformal exchangeability and will silently invalidate every metric. **Enforced in code, not here:** `reefprint.trust.split.split_by_locality()` is the sanctioned constructor and `require_locality_disjoint()` is the backstop for splits built by hand. Measured cost of the leak, on synthetic patches whose only signal is section identity — patch split MAE **0.0017**, honest locality split MAE **0.2119**, a factor of **126**, in the flattering direction. Honest *n* is `LocalitySplit.n_groups`: localities, not sections.
 3. **Report the trivial baseline** (majority class, and metadata-only) alongside every metric. Always. **Enforced in code, not here:** `reefprint.trust.baseline.ScoredMetric` takes `baselines` as a required field with **no default**, so a bare metric is a `TypeError` rather than a slide. Uplift is measured against the *strongest* baseline, never the weakest, and `summary()` distinguishes three states — below the baseline, above it but inside the noise honest *n* resolves, and above it by more than that. A baseline may be `NotApplicable`, but only with a stated reason (rule 5's pattern); both inapplicable at once is refused.
 4. **Every metric carries a confidence interval sized at honest n.** At n≈100, conformal coverage SD is ~3pp — do not claim tighter than the arithmetic allows.
@@ -108,6 +117,7 @@ reefprint/
 │   ├── 05-toolchain.md          every piece of software we install, and what we do not
 │   └── archive/                 v1, v2, UMLILO — historical only
 ├── src/reefprint/
+│   ├── quantity.py              rule 1 as a type: provenance travels with the number.
 │   ├── acquire/                 µManager control, LED sequencing, analyser rotation
 │   ├── bridge/                  masks + series -> per-mineral anisotropy. The only sanctioned route.
 │   ├── calibrate/               reflectance standards, R% conversion, QDF lookup
