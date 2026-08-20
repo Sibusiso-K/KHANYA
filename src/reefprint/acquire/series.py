@@ -144,6 +144,42 @@ class RotationSeries:
         )
         raise ValueError(msg)
 
+    def require_specimen_rotation(self) -> RotationSeries:
+        """Return ``self``, or refuse if these frames are not a crossed-polars stage rotation.
+
+        The exact mirror of :meth:`require_analyser_rotation`, and it exists because the failure
+        is symmetric rather than because symmetry is tidy. A rotating-analyser series carries its
+        power at ``2 theta``; the fourth-harmonic estimator fits ``4 phi``; over a uniform angle
+        set the projection of one onto the other is again zero. Handing an analyser rotation to
+        :func:`reefprint.polarim.extinction.extinction_from_stage_series` therefore returns an
+        extinction amplitude of ~0 for every grain — *the same silent "everything is isotropic"
+        result as N3*, arrived at from the other direction.
+
+        Having built one guard and watched the first real caller walk around it, the second is
+        written at the same time as the estimator rather than after something goes wrong.
+
+        Raises:
+            ValueError: The geometry is :data:`RotationGeometry.ANALYSER` or
+                :data:`RotationGeometry.UNKNOWN`.
+        """
+        if self.geometry is RotationGeometry.SPECIMEN:
+            return self
+        if self.geometry is RotationGeometry.ANALYSER:
+            msg = (
+                f"{self.source!r} was captured by rotating the analyser, which modulates at "
+                f"2*theta. The fourth-harmonic estimator fits 4*phi and would return an "
+                f"extinction amplitude of zero for every anisotropic grain, silently. Invert it "
+                f"with reefprint.polarim.stokes instead — that geometry recovers strictly more."
+            )
+            raise ValueError(msg)
+        msg = (
+            f"{self.source!r} does not record which element rotated, so its harmonic content "
+            f"cannot be assumed. Set geometry=RotationGeometry.SPECIMEN only if the stage turned "
+            f"while the polars stayed fixed and crossed, or let "
+            f"reefprint.polarim.geometry.harmonic_signature decide it from the frames."
+        )
+        raise ValueError(msg)
+
     def rotated_specimen(self, phi_rad: float) -> RotationSeries:
         """The series that would have been captured with the specimen turned by ``phi_rad``.
 
