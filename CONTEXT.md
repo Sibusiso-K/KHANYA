@@ -8,7 +8,7 @@ is the constitution — *what is true and what the rules are*. This file is the 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
 - **Last updated:** 2026-08-20
-- **Last commit at time of writing:** `43778da` Docs: bridge and extinction in the repo map, N3 downgraded from blocker to fork
+- **Last commit at time of writing:** `cec415a` ADR-0003: one build, two names — REEFPRINT, otherwise known as KHANYA
 - **Days to final:** 42 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 
 ---
@@ -130,6 +130,56 @@ treat it as spec, and do not let it start driving what gets built — gauntlet b
 exactly this failure, and the person who owns the narrative also owns the architecture.
 The gates in §3 decide what gets built. The talk describes what was built.
 
+### Rules 2 and 3 are guards now, not paragraphs
+
+Same treatment as the geometry hazard above, and for the same reason: both rules protect
+against a *silent* wrong answer, and prose cannot defend against a failure whose whole nature
+is that nothing prompts you to go and re-read the prose.
+
+**Rule 2 — [`reefprint.trust.split`](src/reefprint/trust/split.py).**
+`split_by_locality()` is the sanctioned constructor; `require_locality_disjoint()` is the
+backstop for the split someone builds by hand in a notebook, which is the route around any
+constructor. It refuses a locality on both sides, a section filed under two localities, mixed
+label provenance, a held-out name that is not in the data (a typo there gives you an empty test
+set and a perfect score), and holding out everything. Unmeasured sections are dropped **and
+counted**, because a skipped section has no pixels and leaving it in inflates the denominator.
+
+The number: on synthetic patches whose only signal is section identity — 192 patches, 24
+sections, 6 localities — a 1-NN model scores **MAE 0.0017** under a shuffled patch split and
+**MAE 0.2119** under the honest locality split. A factor of **126**, in the flattering
+direction, from a model that has learned nothing transferable at all. `test_a_patch_level_split_
+reports_a_far_better_score_than_the_honest_one` pins it.
+
+`LocalitySplit.n_groups` is the honest *n* for rule 4 — localities, not sections. Six sections
+from three localities is n = 3. Quoting n = 6 narrows every CI by √2, and that is arithmetic a
+judge can redo in their head.
+
+**Rule 3 — [`reefprint.trust.baseline`](src/reefprint/trust/baseline.py).**
+`ScoredMetric` takes `baselines` as a required field with **no default**: a metric without its
+trivial baselines is a `TypeError`, not a slide. Uplift is measured against the *strongest*
+baseline, never the weakest — quoting the gap to majority class while metadata-only sits higher
+is the flattering error, and metadata-only is the baseline that most often wins.
+
+`summary()` reports three states, not two: below the baseline, above it but inside the noise
+honest *n* resolves, and above it by more than that. The middle state is the one that matters.
+`0.62` next to a `0.60` baseline reads as a result; at n = 12 the standard error is
+`√(0.62·0.38/12) ≈ 0.14`, so `+0.02` is a seventh of one SE. It is positive, so "does not beat"
+would be false, and it is nothing, so silence would be worse. The line reads:
+
+```
+balanced accuracy = 0.620 (n = 12) · majority class 0.500 · metadata-only 0.600 ·
+uplift +0.020 over the strongest baseline (0.600) is inside the ±0.140 that n = 12 resolves
+```
+
+The SE formula is the one this package already quoted for conformal coverage, not a threshold
+invented here (rule 1). It returns `None` outside [0, 1], because a binomial SE on an RMSE is an
+invented number. `TrivialBaselines` assumes **higher is better** — stated in its docstring as an
+assumption, because an error-like metric ranks its baselines backwards otherwise.
+
+A baseline may be `NotApplicable`, but only with a stated reason — rule 5's pattern, one level
+up. Both inapplicable at once is refused: that is a metric with nothing to compare against,
+which is the state rule 3 exists to forbid.
+
 ---
 
 ## 4. Verify you are in a good state
@@ -146,7 +196,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **86 passed, 26 deselected**. Anything less is a regression, not a quirk.
+Expect **156 passed, 26 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
@@ -219,8 +269,12 @@ From CLAUDE.md's nine rules, the ones that have already shaped code:
 
 - **Never invent a number.** Flag every assumption in the code, not just the docs.
 - **Split by locality, never by patch or image.** Patch splits void conformal exchangeability and
-  silently invalidate every metric.
+  silently invalidate every metric — measured at **126x** in the flattering direction. Use
+  `trust.split.split_by_locality()`, or `require_locality_disjoint()` if you built the split by
+  hand. Honest *n* is `LocalitySplit.n_groups`: localities, not sections.
 - **Report the trivial baseline** — majority class *and* metadata-only — alongside every metric.
+  `trust.baseline.ScoredMetric` will not construct without them. Uplift is measured against the
+  *strongest* baseline, never the weakest.
 - **Every metric carries a CI at honest n.** Coverage SD is `√(0.9·0.1/n)`: ~3.0 pp at n = 100,
   ~6.7 pp at n = 20. Do not claim tighter than the arithmetic allows.
 - **Abstention emits a conservative default with a stated reason, never "unknown."** Abstention

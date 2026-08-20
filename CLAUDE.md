@@ -74,8 +74,8 @@ Hence `RotationSeries.geometry`, which defaults to `UNKNOWN` rather than to the 
 ## Rules — non-negotiable
 
 1. **Never invent a number.** Flag every assumption as an assumption, in the code and in the docs.
-2. **Split by locality, never by patch or image.** Patch-level splits void conformal exchangeability and will silently invalidate every metric.
-3. **Report the trivial baseline** (majority class, and metadata-only) alongside every metric. Always.
+2. **Split by locality, never by patch or image.** Patch-level splits void conformal exchangeability and will silently invalidate every metric. **Enforced in code, not here:** `reefprint.trust.split.split_by_locality()` is the sanctioned constructor and `require_locality_disjoint()` is the backstop for splits built by hand. Measured cost of the leak, on synthetic patches whose only signal is section identity — patch split MAE **0.0017**, honest locality split MAE **0.2119**, a factor of **126**, in the flattering direction. Honest *n* is `LocalitySplit.n_groups`: localities, not sections.
+3. **Report the trivial baseline** (majority class, and metadata-only) alongside every metric. Always. **Enforced in code, not here:** `reefprint.trust.baseline.ScoredMetric` takes `baselines` as a required field with **no default**, so a bare metric is a `TypeError` rather than a slide. Uplift is measured against the *strongest* baseline, never the weakest, and `summary()` distinguishes three states — below the baseline, above it but inside the noise honest *n* resolves, and above it by more than that. A baseline may be `NotApplicable`, but only with a stated reason (rule 5's pattern); both inapplicable at once is refused.
 4. **Every metric carries a confidence interval sized at honest n.** At n≈100, conformal coverage SD is ~3pp — do not claim tighter than the arithmetic allows.
 5. **Abstention emits a conservative default with a stated reason, never "unknown."** Abstention fires at ore transitions, which is when holding the last setpoint is the worst available action.
 6. **No LLM computes a mineralogical or control value.** Agents route, select, orchestrate, explain.
@@ -115,7 +115,8 @@ reefprint/
 │   ├── segment/                 backbone + decoder
 │   ├── texture/                 grain extraction, association matrix
 │   ├── heads/                   entrainment risk · NFG load · oxidation index
-│   ├── trust/                   ensemble, conformal, OOD gate, abstention
+│   ├── trust/                   ensemble, conformal, OOD gate, abstention.
+│   │                         `split.py` = rule 2, `baseline.py` = rule 3, both as refusals.
 │   ├── integrate/               OPC UA, OMF, AASX
 │   └── viz/                     UI
 ├── experiments/                 numbered, each with its own README + result

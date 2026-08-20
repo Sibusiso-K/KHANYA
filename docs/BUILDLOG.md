@@ -22,6 +22,109 @@ it is a press release.
 
 ---
 
+## 2026-08-20 — session 6 · rules 2 and 3 stop being prose
+
+### Attempted
+
+Session 5's *Learned* section named the next job and this is it. Rules 2 (locality splits) and 3
+(trivial baseline) were paragraphs in `CLAUDE.md`. Both fail **silently** when ignored, which is
+the property that makes prose the wrong medium — nothing prompts you to go and re-read a rule
+you have already forgotten. Turn both into refusals, the same way `RotationGeometry` and
+`LabelProvenance` already work.
+
+TDD throughout: 28 tests written first, watched fail with `NotImplementedError` against stubs,
+then implemented. The one test that failed *after* implementation was the interesting one — see
+*Did not work*.
+
+### Worked
+
+- **Rule 2 — [`reefprint.trust.split`](../src/reefprint/trust/split.py).**
+  `split_by_locality()` is the sanctioned constructor; `require_locality_disjoint()` is the
+  backstop for the split someone builds by hand in a notebook, which is the route around any
+  constructor. Refuses: a locality on both sides, a section filed under two localities, mixed
+  label provenance, a held-out name absent from the data, holding out everything, and a
+  single-locality dataset. Unmeasured sections are dropped **and counted** — a skipped section
+  has no pixels, and leaving it in inflates the denominator.
+
+  Typed against a `Grouped` Protocol rather than `SectionMeasurement`, deliberately: the failure
+  happens at the *patch* level, so a guard that only accepts sections is absent exactly when it
+  is needed.
+
+- **The number that justifies it.** 192 synthetic patches, 24 sections, 6 localities, where the
+  only signal in the feature is *which section this patch came from* — nothing transferable to
+  learn. A 1-NN model scores **MAE 0.0017** under a shuffled patch split and **MAE 0.2119**
+  under the honest locality split. **126x**, in the flattering direction, from a model that has
+  learned nothing. `test_a_patch_level_split_reports_a_far_better_score_than_the_honest_one`.
+
+- **Rule 3 — [`reefprint.trust.baseline`](../src/reefprint/trust/baseline.py).**
+  `ScoredMetric` takes `baselines` as a **required field with no default**, so a metric without
+  its trivial baselines is a `TypeError` rather than a slide. Uplift is measured against the
+  *strongest* baseline, never the weakest — quoting the gap to majority class while
+  metadata-only sits higher is the flattering error, and metadata-only is the baseline that most
+  often wins. `NotApplicable(reason)` allows a baseline to be genuinely absent but never
+  silently; both inapplicable at once is refused.
+
+- **31 tests, 156 green overall** (`uv run pytest -m "not placeholder" -q`), ruff and format
+  clean. `CONTEXT.md` §4 was claiming **86 passed** — stale since before session 5, and exactly
+  the kind of number that gets trusted. Now 156.
+
+### Did not work
+
+One test failed after implementation, and it was right to:
+
+```
+test_a_metric_that_does_not_beat_the_baseline_says_so_in_words
+assert "does not beat" in summary.lower()
+E  AssertionError: ... '+0.020 over the strongest baseline (0.600)'
+```
+
+The test asserted that 0.62 against a 0.60 baseline should read as "does not beat". The
+implementation said it beats it by 0.02. **Both were defensible and both were wrong.** +0.02 is
+positive, so "does not beat" is a false statement; and +0.02 at n = 12 is a seventh of one
+standard error, so reporting it as an uplift is worse than false, it is misleading in the exact
+direction the rule exists to prevent.
+
+Fixing the test to match the code would have been the easy move and the wrong one. Instead the
+summary gained a **third state**, which is what the test was reaching for: below the baseline;
+above it but inside the noise honest *n* resolves; above it by more than that.
+
+```
+balanced accuracy = 0.620 (n = 12) · majority class 0.500 · metadata-only 0.600 ·
+uplift +0.020 over the strongest baseline (0.600) is inside the ±0.140 that n = 12 resolves
+```
+
+`√(p(1-p)/n)` is the formula this package already quoted for conformal coverage SD — reused, not
+invented (rule 1). It returns `None` outside [0, 1], because a binomial SE on an RMSE would be an
+invented number. `TrivialBaselines` assumes **higher is better**, which an error-like metric
+violates; stated in the docstring as an assumption rather than silently mis-ranking.
+
+### Learned
+
+**Where two guards meet, the seam is where the dishonest number lives.** Rule 3 says report the
+baseline. Rule 4 says carry a CI at honest n. Each is satisfiable alone by a report that is still
+misleading: a baseline with no sense of scale, or a CI with nothing to compare against. The
+number that survives both is the one worth putting on a slide, and it took a *failing test* to
+find that seam — writing the assertion first is what produced a disagreement sharp enough to
+notice. Tests written afterwards agree with the code by construction.
+
+Two rules down. Rule 1 (never invent a number) is the remaining one that fails silently, and it
+is the hardest to make structural, because an invented number is indistinguishable from a
+measured one at the type level. The nearest available handle is provenance on the value itself —
+the `LabelProvenance` pattern, one level down.
+
+### Left open
+
+- **N3 is still the single next action** and none of this touches it. One command on Sibusiso's
+  machine.
+- **Nothing calls these guards yet.** They are constructors and backstops with no caller until
+  week 2's falsification test, which is the first thing that produces a metric. Guard written
+  before the code that needs it, deliberately — the alternative is writing it afterwards, which
+  is when the flattering split has already been run once.
+- **The `higher is better` assumption in `TrivialBaselines`** is documented, not enforced. If an
+  error-like head arrives (grain-size RMSE), that assumption needs a type, not a docstring.
+
+---
+
 ## 2026-08-20 — session 5 · ADR-0003 the naming, and the guard that goes on someone else's machine
 
 ### Attempted
