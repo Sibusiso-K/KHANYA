@@ -19,6 +19,58 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-08-19 — Sibusiso (26)
+
+**Did:** Read Lethabo's REEFPRINT repo end to end and wrote
+**[`JOINT-PLAN.md`](JOINT-PLAN.md)**. Lethabo - this one is for you, read it
+before the abstract.
+
+**The headline, and it is genuinely a result rather than a framing:** REEFPRINT's
+core claim is that pentlandite is cubic (stays dark through analyser rotation)
+and pyrrhotite is anisotropic (lights up), phantom-validated at 40.4x
+separation. KHANYA's largest mineral-to-mineral error, on held-out data, is
+**pentlandite predicted as pyrrhotite 29.2% of the time** - the worst confusion
+in the whole matrix, diagnosed as exsolution intergrowth. **Lethabo built a
+physical discriminator for exactly the pair my model cannot separate, and
+neither of us knew the other's number.** We arrived at the same mineral pair
+from opposite ends - his from PGE deportment first principles, mine from a
+confusion matrix.
+
+**Second fit:** KHANYA measured that the model is a colorimeter (15% white
+balance shift = -0.39 mIoU). REEFPRINT's `calibrate/` module is precisely that
+fix and is already on his roadmap. I measured the disease, he specced the cure.
+
+**The module map is close to complementary:** 8 of REEFPRINT's 9 modules are
+unbuilt; KHANYA has held-out-validated code for 5 of them (segment, texture,
+trust, heads, viz). REEFPRINT has the one thing better modelling cannot give
+KHANYA - a physical discriminator plus the calibration story.
+
+**Concrete unlock: download LumenStone S3 v2.** REEFPRINT's week-1 leg (b)
+needs a real rotation series. KHANYA already ruled out S3 v2 (5.2 GB) *because*
+its XPL rotations are near-duplicates that leak across segmentation splits -
+but for polarimetry those rotations ARE the measurement. Same file, opposite
+verdict, defensible on both sides.
+
+**The one experiment that decides the joint thesis:** apply REEFPRINT's Stokes
+anisotropy to the same sections and measure whether the 29.2% confusion drops.
+Falsifiable, uses both codebases, and a null result is still publishable (it
+would mean the intergrowth is below optical resolution).
+
+**Also flagged in JOINT-PLAN §5:** merging two architectures in 43 days is
+itself the top risk - bridge at the mask/series boundary, do not refactor either
+repo into the other. And REEFPRINT's `trust/` open finding **N2** (no fixed
+anisotropy threshold is defensible because the noise floor scales as 1/S0) is
+**already solved on our side** - conformal conditions on measured error and
+reports an interval instead of a threshold. It just needs connecting.
+
+**Changed:** new `JOINT-PLAN.md`.
+**Blocked on:** Lethabo - the phase-set reconciliation in JOINT-PLAN §4.2 is a
+decision only you can make (the abstract commits to chromite; neither repo has
+chromite data and none is public - I searched, see DATA-SOURCES.md).
+**Next:** unchanged priority order, now with the joint items folded in - see
+JOINT-PLAN §4. S1 retrain still running (epoch 15, val mIoU 0.551, best yet).
+
+
 ## 2026-08-19 — Sibusiso (25)
 
 **Did:** Full repo sweep - senior-dev pass, no experiments. Everything below is
