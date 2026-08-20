@@ -22,6 +22,119 @@ it is a press release.
 
 ---
 
+## 2026-08-20 — session 4 · `4d849f7` the bridge, `e8a3273` the fourth-harmonic estimator
+
+### Attempted
+
+Two things, both about seams. Design the boundary where KHANYA's labelled masks meet a REEFPRINT
+rotation series, without merging the two codebases. Then remove finding N3 as a *blocker* rather
+than continuing to wait on it — build the estimator that leg (b) needs if the answer comes back
+`FOURTH`, so that either verdict has a route.
+
+### Worked
+
+- **`reefprint.bridge` as a data contract, not a merge.** Sibusiso's own `JOINT-PLAN.md` §5 names
+  merging two architectures as the largest schedule risk in the project, and it is correct. So the
+  contract is *data* — two arrays and four strings. KHANYA can satisfy it by importing the package
+  or by writing an `.npz` and never importing REEFPRINT at all. Labels flow in, measurements flow
+  out, nothing flows back; a one-way boundary can be reasoned about, a two-way one becomes a merge
+  by accident.
+
+  Its real value is that three rules stop being documentation and become structural:
+
+  | Rule | Before | Now |
+  |---|---|---|
+  | N3 | `require_analyser_rotation` on `RotationSeries`, bypassable | called unconditionally on the only path in, and `test_no_keyword_argument_can_disable_the_geometry_check` asserts the signature so no escape hatch can be added quietly |
+  | Rule 2 | locality carried by convention | `LabelledSection.locality` required, never defaulted, error text names Rule 2 |
+  | N2 | floor computed where someone remembered to | `MineralStatistic` carries `noise_floor_median` beside `anisotropy_median` in one frozen record; `median_over_floor` is the comparable number |
+
+  The N2 test is the one worth keeping: `test_the_noise_floor_rises_as_reflectance_falls` puts
+  pentlandite (R = 50) and chromite (R = 13) side by side, both **exactly** cubic, and asserts the
+  *darker* phase reads the **larger** apparent anisotropy. That is the trap, stated as a passing
+  test rather than as a warning in a docstring.
+
+- **Raise-vs-skip, asymmetric on purpose.** Wrong geometry raises: which element rotated is a
+  property of the acquisition protocol, constant across a dataset, and 47 identical skip records
+  inviting someone to pool the zero survivors is worse than one exception naming the cause. Shape
+  and angle-count problems skip, and report *both* shapes — their count is the diagnosis, one bad
+  mask against a transposed archive. That second path is exactly the crash KHANYA's ten-mineral
+  symmetry test is currently dying on.
+
+- **`reefprint.polarim.extinction`.** `I(phi) = A0 + A4c cos4phi + A4s sin4phi`, least-squares per
+  pixel, giving extinction depth `|r1-r2|² = 8·A4` and the extinction azimuth mod 90°. N3 is now a
+  fork in the road rather than a wall.
+
+- **The N3 failure is symmetric, and that was not obvious.** Fitting `4φ` to a rotating-analyser
+  series returns an extinction amplitude of ~0 for every anisotropic grain over a uniform angle
+  set — the same silent "everything is isotropic", arrived at from the other direction. Having
+  built one guard and watched the first real caller walk around it,
+  `RotationSeries.require_specimen_rotation` was written *at the same time as* the estimator, and
+  `test_fitting_the_fourth_harmonic_to_an_analyser_series_is_silently_zero` proves the failure
+  instead of asserting it: pyrrhotite's depth reads `< 1e-9` while the same pixels under the
+  correct inversion read DOLP = 0.12 exactly.
+
+- **`crossing_ratio = dc/amplitude` turned out better than expected.** Working through an analyser
+  uncrossed by `ε`, with `P = (r1+r2)/2` and `Q = (r1−r2)/2`:
+
+  ```
+  amplitude    = Q²/2                       — independent of ε
+  crossing_ratio = 1 + 2 sin²ε (P/Q)²       — exact, not a small-angle expansion
+  azimuth      = φ₀ + ε/2
+  ```
+
+  So leakage does **not** bias the depth. That is the actual argument for fitting the harmonic
+  rather than reading a peak-to-trough range, which absorbs the pedestal in full. And since
+  `P/Q ≈ 2/a`, the leak check gets *sharper* as the anisotropy weakens — half a degree of
+  uncrossing reads 1.04 on pyrrhotite (a = 0.12) and 1.68 on chalcopyrite (a = 0.03). Weak
+  anisotropy is precisely when an operator is tempted to uncross, and that is when this catches
+  them. All three predictions verified at `rel=1e-9` against a forward model written independently
+  from the reflection matrix, so a sign error in one is not shared by the other.
+
+- **The `2/a` advantage pinned at its root.**
+  `test_extinction_depth_is_quadratic_where_analyser_modulation_is_linear`: halve `a` and the
+  extinction depth drops 4×, while DOLP drops 2×. This is what experiment 002's measured 38×
+  noise-survival ratio comes from, and it is why the estimator is a fallback and never a
+  substitute. The talk must not blur the two.
+
+125 passed, 26 deselected. `ruff check .` clean.
+
+### Did not work
+
+- **First draft of `crossing_ratio`'s docstring claimed leakage "biases `extinction_depth` upward".
+  It does not.** Writing the test made that obvious — the fitted `A4` is `Q²/2` regardless of `ε`.
+  The claim was inherited from thinking about a peak-to-trough estimator, which *is* biased, and
+  it survived into prose because nothing had checked it yet. Corrected in place before commit.
+- **A first assertion of `crossing_ratio > 2.0` at half a degree of uncrossing failed at 1.042.**
+  The derivation was exact to `1e-9`; the *magnitude* claim around it was invented. Replaced with
+  the exact formula plus a test of the scaling — which is the more useful property anyway. Rule 1
+  applies to adjectives in docstrings, not only to numbers in code.
+- **`float()` on a `(1, 1)` array is a `TypeError` in NumPy 2.** The single-pixel test forward
+  model returned `(n, 1, 1)`; dropping the spatial dims to `(n,)` matches the existing
+  `_single_pixel` idiom in `test_polarim.py` and every recovered quantity reads as a plain float.
+
+### Learned
+
+**A guard is only as good as the narrowest path it sits on.** `require_analyser_rotation` was
+correct, tested, and bypassed within a week — not maliciously, but because a caller who builds the
+intensity array itself never touches the object carrying the guard. Moving it onto a *mandatory*
+boundary and then asserting the function signature is the difference between a rule and a hope.
+
+The corollary, applied for the first time here: when you find yourself building a second estimator
+that can fail the same way, write its guard in the same commit. Not after the incident.
+
+### Left open
+
+`reefprint.bridge` measures `ANALYSER` series only — a stage archive raises at the boundary rather
+than being routed to `extinction`. That is deliberate for now: the two produce different quantities
+in different units and one measurement type per path is the point of the seam. Once experiment 002
+returns a verdict, the losing branch can be deleted rather than plumbed.
+
+The estimator's `bireflectance_contrast` needs a mean reflectance from outside the geometry, and
+`reefprint.calibrate` does not exist yet. Until it does, any `a` from a stage archive is
+conditional on a number this project cannot supply.
+
+---
+
 ## 2026-08-20 — session 3 · `52711d3` OME-TIFF store, `19154c5` the geometry discriminator
 
 ### Attempted

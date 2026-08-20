@@ -47,7 +47,7 @@ and flotation response. It is software, evaluated on public data. **No instrumen
 
 | Week | Gate | State |
 |---|---|---|
-| **1** | Rotation series in, per-pixel Stokes out, pentlandite dark / pyrrhotite lit, on screen | **Leg (a) phantom: PASSED**, 40.4× separation. **Leg (b) real public data: BLOCKED on finding N3** ← *we are here*. The reader is built; whether the Stokes inversion may legally be run on S3 v2 is now a one-command question that needs the archive. |
+| **1** | Rotation series in, per-pixel Stokes out, pentlandite dark / pyrrhotite lit, on screen | **Leg (a) phantom: PASSED**, 40.4× separation. **Leg (b) real public data: waiting on the archive, no longer blocked by N3** ← *we are here*. Both estimators now exist — Stokes for `ANALYSER`, fourth-harmonic for `SPECIMEN` — so either verdict has a path. What is still missing is the verdict itself, and it needs the archive. |
 | 2 | Falsification test computed, with CI | not started |
 | 3 | Conformal coverage within band, per held-out locality | not started |
 | 4 | Zero silent failures under degraded input | not started |
@@ -55,10 +55,13 @@ and flotation response. It is software, evaluated on public data. **No instrumen
 | 6 | Backup demo video exists | not started |
 
 **Built and tested:** `reefprint.polarim.stokes` (the inversion),
-`reefprint.polarim.geometry` (**which** rotation this is — finding N3),
+`reefprint.polarim.extinction` (the fourth-harmonic estimator — leg (b)'s path if N3 is
+confirmed), `reefprint.polarim.geometry` (**which** rotation this is — finding N3),
 `reefprint.acquire.series` (the acquisition boundary), `reefprint.acquire.store`
 (OME-TIFF round-trip), `reefprint.acquire.phantom` (synthetic ground truth, both
-geometries), `reefprint.viz.anisotropy` (the three-panel figure).
+geometries), `reefprint.bridge` (labelled masks + a rotation series → per-mineral anisotropy
+with its noise floor; the seam KHANYA hands data across), `reefprint.viz.anisotropy` (the
+three-panel figure).
 
 **Not built:** `calibrate`, `segment`, `texture`, `heads`, `trust`, `integrate`, and the
 hardware-facing half of `acquire` (which, per ADR-0002, has no rig to drive). Each has failing tests naming exactly what
@@ -77,10 +80,15 @@ the inversion is tested, the geometry discriminator is tested against both forwa
 smoke-tested through a synthetic archive of S3 v2's exact layout. What is missing is one fact
 about the dataset:
 
-- **`FOURTH` → N3 confirmed.** Leg (b) needs a fourth-harmonic estimator. The Stokes inversion
-  must not touch this data, and the two must never be conflated in the talk.
-- **`SECOND` → N3 refuted**, which is the better outcome. Leg (b) runs as originally planned.
-- **`NEITHER`/`BOTH` → N3 stays open, leaning toward stage.** Not clearance.
+- **`FOURTH` → N3 confirmed.** Leg (b) runs on `reefprint.polarim.extinction` instead. That
+  estimator now exists and is tested, so this is a change of route, not a stop. The Stokes
+  inversion must not touch this data, and the two must never be conflated in the talk.
+- **`SECOND` → N3 refuted**, which is still the better outcome. Leg (b) runs as originally
+  planned, and it recovers three numbers per pixel rather than two.
+- **`NEITHER`/`BOTH` → N3 stays open, leaning toward stage.** Not clearance. Note this verdict
+  is not neutral: experiment 002 measured the analyser geometry surviving **38× more noise**
+  than the stage geometry before its harmonic stops being detectable, so a stage rotation is far
+  likelier than an analyser rotation to fall below both floors.
 
 **This machine cannot answer it.** The 5.2 GB archive is on Sibusiso's machine (KHANYA,
 downloaded 2026-08-20); a `find` for it here returns nothing. It is one command on his laptop and
@@ -249,7 +257,7 @@ docs/BUILDLOG.md     append-only: what was tried, what worked, what did not
 docs/00-STATUS.md    which docs are current vs superseded
 docs/05-toolchain.md every piece of software we install, and what we decided not to
 docs/04-decisions/   ADRs
-src/reefprint/       acquire · calibrate · polarim · segment · texture · heads · trust · integrate · viz
+src/reefprint/       acquire · bridge · calibrate · polarim · segment · texture · heads · trust · integrate · viz
 tests/               one file per module. Red tests are the backlog, by design.
 experiments/         numbered, each with its own README stating the result AND what it does not show
 data/                DVC-tracked, never committed raw

@@ -99,6 +99,7 @@ reefprint/
 │   └── archive/                 v1, v2, UMLILO — historical only
 ├── src/reefprint/
 │   ├── acquire/                 µManager control, LED sequencing, analyser rotation
+│   ├── bridge/                  masks + series -> per-mineral anisotropy. The only sanctioned route.
 │   ├── calibrate/               reflectance standards, R% conversion, QDF lookup
 │   ├── polarim/                 Stokes parameters, bireflectance, anisotropy
 │   ├── segment/                 backbone + decoder
