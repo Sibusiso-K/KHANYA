@@ -36,13 +36,18 @@ It bins by S0 and reports a conformal interval per bin, which is KHANYA's
 existing calibration machinery (src/conformal.py) applied to Lethabo's physics.
 """
 import argparse
+import io
+import json
+import re
 import sys
 import zipfile
 from pathlib import Path
 
 import numpy as np
+from PIL import Image
 
 from .segmentation import config
+from .segmentation.lumenstone import CODEBOOK
 
 # Lethabo's inversion, imported unchanged. Not vendored, not reimplemented - if
 # his Stokes code changes, this experiment changes with it, which is the point.
@@ -74,7 +79,21 @@ SYMMETRY = {
 HEADLINE_PAIR = ("magnetite", "hematite")
 
 S3V2_ZIP = config.ROOT / "data" / "raw" / "lumenstone" / "S3_v2.zip"
-S3V2_DIR = config.ROOT / "data" / "raw" / "lumenstone" / "S3_v2"
+
+# Real layout, found by --inspect (2026-08-20): each section is
+# S3_v2/imgs/{split}/S3_{split}_NN/S3_{split}_NN_rDDD.jpg, 72 frames at 5deg
+# steps over the full 360deg (0..355). Masks are one per section, at
+# S3_v2/masks/{split}/S3_{split}_NN.png, code repeated across R/G/B exactly
+# like v1 (segmentation/lumenstone.py) - verified against real pixel data,
+# not assumed from the v1 convention.
+ROTATION_RE = re.compile(r"_r(\d{3})\.jpg$")
+
+# Bounds decode+fit cost: 47 sections x up to 72 full-res JPEG decodes each is
+# already the dominant cost, so pixels are subsampled per class per section
+# rather than reading all ~8.65M pixels/frame. summarise_by_class only needs
+# distribution shape (median, quartiles), not an exhaustive census.
+MAX_SAMPLES_PER_CLASS = 1200
+MIN_SAMPLES_PER_CLASS = 500  # matches summarise_by_class's own min_pixels floor
 
 
 def inspect_archive(limit=40):
@@ -94,9 +113,12 @@ def inspect_archive(limit=40):
     for top in tops[:limit]:
         count = sum(1 for n in names if n.startswith(top))
         print(f"  {top:60s} {count:5d}")
-    keys = ("rot", "xpl", "ang", "deg", "pol")
-    rotational = [n for n in names if any(k in n.lower() for k in keys)]
-    print(f"\nentries whose path mentions rotation/XPL/angle: {len(rotational)}")
+    # A keyword search ("rot", "xpl", ...) missed this archive's real
+    # convention entirely (filenames end "_r000.jpg".."_r355.jpg", no word
+    # containing those substrings) - found only by listing real filenames.
+    # Matched on the actual pattern now, not a guess at naming.
+    rotational = [n for n in names if ROTATION_RE.search(n)]
+    print(f"\nentries matching the rotation-frame pattern (_rDDD.jpg): {len(rotational)}")
     for name in rotational[:12]:
         print("   ", name)
 
@@ -289,6 +311,193 @@ def demonstrate_n2(sigma=0.25, n_angles=36, n_per_group=4000, alpha=0.10, seed=0
     return {"fixed_threshold": fixed, "bins": bins}
 
 
+# --- The ten-mineral symmetry test on real S3 v2 data -----------------------
+#
+# demonstrate_n2() above is synthetic on purpose - closed-form ground truth so
+# a failure is the estimator's, not the rocks'. This is the real measurement
+# it exists to justify: pool labelled pixels from every S3 v2 section's
+# rotation series and see whether anisotropy actually separates isotropic
+# from anisotropic minerals, magnetite/hematite above all (JOINT-PLAN 3a/4).
+#
+# Train and test sections are pooled as one sample. The train/test leakage
+# warning in segmentation/lumenstone.py ("rotations are near-duplicates, a
+# naive split would leak them") is about MODEL GENERALISATION claims. Nothing
+# here is trained or evaluated out-of-sample - this is a one-shot physics
+# measurement over labelled pixels, so pooling every section is more data, not
+# leakage.
+
+
+def list_sections(names):
+    """(split, section_id) for every section with a ground-truth mask."""
+    out = []
+    for split in ("train", "test"):
+        prefix = f"S3_v2/masks/{split}/"
+        stems = sorted(
+            n[len(prefix):-4] for n in names
+            if n.startswith(prefix) and n.endswith(".png")
+        )
+        out.extend((split, stem) for stem in stems)
+    return out
+
+
+def section_frames(names, split, stem):
+    """[(degrees, zip_path), ...] for one section's rotation series, sorted."""
+    prefix = f"S3_v2/imgs/{split}/{stem}/{stem}_r"
+    frames = []
+    for n in names:
+        if not n.startswith(prefix):
+            continue
+        m = ROTATION_RE.search(n)
+        if m:
+            frames.append((int(m.group(1)), n))
+    frames.sort()
+    return frames
+
+
+def sample_section(archive, names, split, stem, rng):
+    """Sample up to MAX_SAMPLES_PER_CLASS labelled pixels per class from one
+    section and run the Stokes inversion on just those pixels.
+
+    A full section is 3396x2547 x 72 rotation frames - far too large to hold
+    as a stack. Pixel POSITIONS are chosen from the mask alone (cheap), then
+    each of the 72 frames is decoded once, the chosen positions read out of
+    it, and the decoded frame discarded - so peak memory is one frame
+    (~26 MB), never the full rotation stack.
+    """
+    frames = section_frames(names, split, stem)
+    if len(frames) < 3:  # stokes_from_rotation_series' own MIN_ANGLES floor
+        return None
+
+    with archive.open(f"S3_v2/masks/{split}/{stem}.png") as f:
+        mask = np.array(Image.open(io.BytesIO(f.read())))
+    codes = mask[:, :, 0] if mask.ndim == 3 else mask
+
+    positions_by_code = {}
+    for code in np.unique(codes):
+        code = int(code)
+        entry = CODEBOOK.get(code)
+        if entry is None or SYMMETRY.get(entry[0]) in (None, "resin"):
+            continue
+        ys, xs = np.where(codes == code)
+        if ys.size < MIN_SAMPLES_PER_CLASS:
+            continue
+        n = min(MAX_SAMPLES_PER_CLASS, ys.size)
+        pick = rng.choice(ys.size, size=n, replace=False)
+        positions_by_code[code] = (ys[pick], xs[pick])
+
+    if not positions_by_code:
+        return None
+
+    all_ys = np.concatenate([p[0] for p in positions_by_code.values()])
+    all_xs = np.concatenate([p[1] for p in positions_by_code.values()])
+    class_codes = np.concatenate([
+        np.full(p[0].shape, code, dtype=np.int64)
+        for code, p in positions_by_code.items()
+    ])
+
+    degrees = np.array([d for d, _name in frames], dtype=float)
+    # Full 360deg range (72 frames, distinct mod 360 but NOT mod 180, since
+    # cos(2*theta)/sin(2*theta) repeat every 180deg). stokes_from_rotation_series
+    # validates degeneracy via the design matrix's condition number, not exact
+    # duplicates - repeated-but-consistent rows from the 0-180 / 180-360 pairs
+    # improve the least-squares fit's conditioning rather than breaking it, so
+    # all 72 frames are used rather than discarding half.
+    angles_rad = np.deg2rad(degrees)
+    intensities = np.empty((len(frames), all_ys.size), dtype=np.float64)
+    for i, (_deg, name) in enumerate(frames):
+        with archive.open(name) as f:
+            frame = np.array(Image.open(io.BytesIO(f.read())).convert("L"))
+        intensities[i] = frame[all_ys, all_xs]
+
+    from reefprint.polarim.stokes import stokes_from_rotation_series
+    stokes = stokes_from_rotation_series(intensities, angles_rad)
+    return {
+        "anisotropy": np.asarray(stokes.anisotropy).ravel(),
+        "s0": np.asarray(stokes.s0).ravel(),
+        "class_codes": class_codes,
+    }
+
+
+def run_symmetry_test(seed=20260820, verbose=True):
+    """Pool every S3 v2 section into one anisotropy-vs-symmetry measurement.
+
+    Returns a JSON-able report, or None if S3 v2 has not been downloaded.
+    """
+    if not S3V2_ZIP.exists():
+        print(f"not downloaded yet: {S3V2_ZIP}")
+        return None
+
+    rng = np.random.default_rng(seed)
+    aniso_parts, s0_parts, code_parts = [], [], []
+    with zipfile.ZipFile(S3V2_ZIP) as archive:
+        names = [n for n in archive.namelist() if not n.startswith("__MACOSX")]
+        sections = list_sections(names)
+        if verbose:
+            print(f"{len(sections)} sections\n")
+        for i, (split, stem) in enumerate(sections):
+            result = sample_section(archive, names, split, stem, rng)
+            if result is None:
+                if verbose:
+                    print(f"  [{i + 1}/{len(sections)}] {split}/{stem}: skipped "
+                          f"(no rotation series or no labelled pixels)")
+                continue
+            if verbose:
+                print(f"  [{i + 1}/{len(sections)}] {split}/{stem}: "
+                      f"{result['class_codes'].size} pixels")
+            aniso_parts.append(result["anisotropy"])
+            s0_parts.append(result["s0"])
+            code_parts.append(result["class_codes"])
+
+    if not aniso_parts:
+        print("no sections yielded usable pixels")
+        return None
+
+    anisotropy = np.concatenate(aniso_parts)
+    s0 = np.concatenate(s0_parts)
+    codes = np.concatenate(code_parts)
+
+    present = sorted(set(codes.tolist()))
+    class_names = [CODEBOOK[c][0] for c in present]
+    index_of = {c: i for i, c in enumerate(present)}
+    labels = np.array([index_of[c] for c in codes], dtype=np.int64)
+
+    rows = summarise_by_class(anisotropy, s0, labels, class_names)
+    sep = separation(rows)
+
+    symmetry_of = np.array([SYMMETRY.get(CODEBOOK[c][0]) for c in codes])
+    is_isotropic = symmetry_of == "isotropic"
+    is_anisotropic = symmetry_of == "anisotropic"
+    bins = conformal_threshold_by_s0(anisotropy, s0, is_isotropic)
+    flagged = apply_threshold(anisotropy, s0, bins)
+
+    if verbose:
+        print(f"\n{len(codes)} pixels pooled across {len(class_names)} classes")
+        print(f"{'mineral':16s}{'symmetry':12s}{'n':>8s}{'aniso median':>14s}")
+        for r in rows:
+            print(f"{r['mineral']:16s}{r['symmetry']:12s}{r['n_pixels']:>8d}"
+                  f"{r['anisotropy_median']:>14.4f}")
+        if "headline_pair" in sep:
+            hp = sep["headline_pair"]
+            a, b = HEADLINE_PAIR
+            print(f"\nheadline pair {a} vs {b}: "
+                  f"{hp[a]:.4f} vs {hp[b]:.4f}, ratio {hp['ratio']:.2f}x")
+
+    return {
+        "n_sections": len(sections),
+        "n_pixels_sampled": int(codes.size),
+        "per_class": rows,
+        "separation": sep,
+        "conformal_bins": [
+            {**b, "threshold": None if not np.isfinite(b["threshold"]) else b["threshold"]}
+            for b in bins
+        ],
+        "detection_rate_on_known_anisotropic":
+            float(flagged[is_anisotropic].mean()) if is_anisotropic.any() else None,
+        "false_positive_rate_on_known_isotropic":
+            float(flagged[is_isotropic].mean()) if is_isotropic.any() else None,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--inspect", action="store_true",
@@ -306,13 +515,12 @@ def main():
         demonstrate_n2()
         return
 
-    if not S3V2_DIR.exists():
-        print(f"S3 v2 not extracted at {S3V2_DIR}.")
-        print("Run --inspect once the download finishes; the layout should "
-              "drive the reader rather than a guess.")
+    report = run_symmetry_test()
+    if report is None:
         return
-
-    print("Rotation-series reader pending archive inspection.")
+    out_path = config.ROOT / "reports" / "polarimetry_s3.json"
+    out_path.write_text(json.dumps(report, indent=2))
+    print(f"\nwrote {out_path}")
 
 
 if __name__ == "__main__":

@@ -28,3 +28,4 @@ run_s1_retrain.cmd
 dg_resize_corrected.log
 s3v2_download.log
 smoke_polarim.py
+polarimetry_s3.log

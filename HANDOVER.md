@@ -19,6 +19,54 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-08-19 — Sibusiso (28) — session wrap-up
+
+**Did:** Followed on from (27). S3 v2 finished downloading; the ten-mineral
+symmetry test does not run yet.
+
+**1. S3 v2 downloaded, full 5227.2 MB, `data/raw/lumenstone/S3_v2.zip`.**
+`polarimetry.py` reads directly from the zip archive (no extraction step,
+`archive.open(...)` per frame) - confirmed that design is sound: for
+`S3_train_33`, both the mask and its r270 rotation frame are `(2547, 3396)`,
+consistent, no transposition.
+
+**2. Real-data symmetry test crashes - WIP, committed broken rather than
+lost.** `run_symmetry_test()` in `polarimetry.py` samples mask-labelled pixel
+coordinates from one section then indexes the SAME coordinates into every
+rotation frame for that section. It dies with `IndexError: index 2928 is out
+of bounds for axis 1 with size 2547` inside `sample_section`. **This is not
+the global transposition bug it looks like** - the one section I checked by
+hand (S3_train_33) has matching mask/frame shapes, so whatever is failing is
+section-specific: either one particular stem has a mask/frame size mismatch
+that others don't, or a coordinate is being sampled from the wrong section's
+mask/frame pairing. **Next step is not "fix the transpose" - it's print the
+failing stem and compare that ONE section's mask shape against its own frame
+shape before touching anything else.** Traceback in `polarimetry_s3.log`
+(gitignored, still on disk locally).
+
+**3. S1 retrain died again - 7th time, unresumed.** No python process running;
+`s1_retrain.log` stops mid-tqdm-bar at patch 35/64 of what would be epoch 16.
+**Last completed epoch is still 15, val mIoU 0.5508 - best of the run so far**,
+comfortably past the old 8-epoch attempt's 0.365. Resume command is unchanged
+from every prior time this has happened: rerun `run_s1_retrain.cmd` (or the
+detached launch it wraps) and it picks up from `last.pt` automatically. This
+is now the 7th session-death; treat it as the expected shape of a multi-hour
+CPU job on this machine, not a surprise each time.
+
+**Changed:** `src/polarimetry.py` (WIP, broken - see item 2), `.gitignore`
+(dedup'd; added `s3v2_download.log`, `polarimetry_s3.log`).
+**Blocked on:** you, unchanged from (27) - the chromite/phase-set
+reconciliation is still the one decision blocking the 30 Aug abstract.
+**Next session, in order:** (a) resume S1 retrain (dead, see item 3); (b) find
+the failing stem in `sample_section` and compare its own mask/frame shapes -
+do not assume it's the same bug as any prior transposition issue until that
+comparison is done; (c) once the symmetry test runs clean, JOINT-PLAN phase 2
+- the ten-mineral isotropic/anisotropic split, with magnetite-vs-hematite as
+the headline pair; (d) everything from (26)/(27) still ahead of the
+polarimetry work in overall priority - QEMSCAN-labelling ask, report
+re-voicing, economic case - is untouched this session and still outstanding.
+
+
 ## 2026-08-19 — Sibusiso (27)
 
 **Did:** Acted on all three JOINT-PLAN items. **Lethabo: your open finding N2
