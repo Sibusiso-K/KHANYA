@@ -38,6 +38,7 @@ existing calibration machinery (src/conformal.py) applied to Lethabo's physics.
 import argparse
 import io
 import json
+import os
 import re
 import sys
 import zipfile
@@ -51,9 +52,77 @@ from .segmentation.lumenstone import CODEBOOK
 
 # Lethabo's inversion, imported unchanged. Not vendored, not reimplemented - if
 # his Stokes code changes, this experiment changes with it, which is the point.
-REEFPRINT_SRC = Path.home() / "Desktop" / "REEFPRINT - Copy" / "src"
+#
+# WHICH REEFPRINT, AND WHY THE VERSION IS CHECKED. This used to hardcode
+# `~/Desktop/REEFPRINT - Copy/src`, a snapshot taken before REEFPRINT grew its
+# rotation-geometry discriminator (`polarim/geometry.py`, commit 19154c5). That
+# is not cosmetic staleness. A snapshot without the discriminator will happily
+# invert a *stage* rotation with the rotating-analyser model and return
+# S1 = S2 = 0 for every anisotropic grain - no exception, no NaN, a perfectly
+# realisable answer that reads as "anisotropy does not separate these minerals".
+# That false negative is indistinguishable from a real null result, and it would
+# be a null result about the one measurement the project rests on.
+#
+# So the tree is resolved by search, live-checkout first and the old snapshot
+# last, and any candidate lacking the discriminator is rejected by name rather
+# than silently used. Set REEFPRINT_SRC to override.
+REEFPRINT_SRC_CANDIDATES = (
+    Path.home() / "Desktop" / "REEFPRINT" / "src",                  # live checkout
+    Path(__file__).resolve().parents[2] / "REEFPRINT" / "src",      # sibling checkout
+    Path.home() / "Desktop" / "REEFPRINT - Copy" / "src",           # old snapshot, last
+)
+
+#: Present only from REEFPRINT commit 19154c5. Its absence is the tell that a
+#: candidate predates the geometry discriminator.
+GEOMETRY_MODULE = Path("reefprint") / "polarim" / "geometry.py"
+STOKES_MODULE = Path("reefprint") / "polarim" / "stokes.py"
+
+
+def _resolve_reefprint_src():
+    """Locate a REEFPRINT source tree new enough to be safe to import.
+
+    Raises:
+        RuntimeError: nothing found, or everything found predates the geometry
+            discriminator. Both are refusals with a stated reason - never a
+            silent fallback, because the silent fallback is the bug.
+    """
+    override = os.environ.get("REEFPRINT_SRC")
+    candidates = (Path(override),) if override else REEFPRINT_SRC_CANDIDATES
+    found = [c for c in candidates if (c / STOKES_MODULE).exists()]
+    if not found:
+        raise RuntimeError(
+            "no REEFPRINT source tree found. Checked: "
+            + "; ".join(str(c) for c in candidates)
+            + ". Set REEFPRINT_SRC to the repo's src/ directory."
+        )
+    for candidate in found:
+        if (candidate / GEOMETRY_MODULE).exists():
+            return candidate
+    raise RuntimeError(
+        "found REEFPRINT at "
+        + "; ".join(str(c) for c in found)
+        + " but none of them has " + str(GEOMETRY_MODULE) + ", so every one "
+        "predates the rotation-geometry discriminator. Inverting a stage "
+        "rotation with the rotating-analyser model returns S1 = S2 = 0 "
+        "silently, which would read as 'polarimetry does not work on real "
+        "ore'. Pull REEFPRINT to at least 19154c5, or point REEFPRINT_SRC at a "
+        "checkout that has it."
+    )
+
+
+REEFPRINT_SRC = _resolve_reefprint_src()
 if str(REEFPRINT_SRC) not in sys.path:
     sys.path.insert(0, str(REEFPRINT_SRC))
+
+
+class GeometryMismatch(RuntimeError):
+    """The archive's rotation geometry is not the one the Stokes model assumes.
+
+    Raised rather than skipped, and raised out of the whole run rather than one
+    section, because geometry is a property of the acquisition: if one S3 v2
+    section is a stage rotation then all 47 are, and pooling the remaining 46
+    into a null result is precisely the failure being prevented.
+    """
 
 # Crystal symmetry governs whether a mineral modulates under analyser rotation.
 # Cubic phases are optically isotropic and stay dark; everything else lights up.
@@ -409,12 +478,28 @@ def sample_section(archive, names, split, stem, rng):
             frame = np.array(Image.open(io.BytesIO(f.read())).convert("L"))
         intensities[i] = frame[all_ys, all_xs]
 
+    # Which element turned? Ask the frames, not the filename or the paper.
+    # stokes_from_rotation_series fits I = (S0 + S1cos2t + S2sin2t)/2 - pure 2nd
+    # harmonic. A stage rotation under crossed polars is pure 4th harmonic and
+    # carries no 2nd-harmonic component at all, so fitting this model to one
+    # returns S1 = S2 = 0 for every anisotropic grain without raising. LumenStone
+    # does not document which geometry S3 v2 used, and the field's default since
+    # the 1940s is the stage. Refusing here is the difference between reporting
+    # "this archive is the other geometry" and reporting "anisotropy does not
+    # separate these minerals" - REEFPRINT open finding N3.
+    from reefprint.polarim.geometry import HarmonicVerdict, harmonic_signature
+
+    signature = harmonic_signature(intensities, angles_rad)
+    if signature.verdict is not HarmonicVerdict.SECOND:
+        raise GeometryMismatch(f"{split}/{stem}: {signature.explain()}")
+
     from reefprint.polarim.stokes import stokes_from_rotation_series
     stokes = stokes_from_rotation_series(intensities, angles_rad)
     return {
         "anisotropy": np.asarray(stokes.anisotropy).ravel(),
         "s0": np.asarray(stokes.s0).ravel(),
         "class_codes": class_codes,
+        "geometry": signature.explain(),
     }
 
 
@@ -434,19 +519,32 @@ def run_symmetry_test(seed=20260820, verbose=True):
         sections = list_sections(names)
         if verbose:
             print(f"{len(sections)} sections\n")
-        for i, (split, stem) in enumerate(sections):
-            result = sample_section(archive, names, split, stem, rng)
-            if result is None:
+        try:
+            for i, (split, stem) in enumerate(sections):
+                result = sample_section(archive, names, split, stem, rng)
+                if result is None:
+                    if verbose:
+                        print(f"  [{i + 1}/{len(sections)}] {split}/{stem}: skipped "
+                              f"(no rotation series or no labelled pixels)")
+                    continue
                 if verbose:
-                    print(f"  [{i + 1}/{len(sections)}] {split}/{stem}: skipped "
-                          f"(no rotation series or no labelled pixels)")
-                continue
-            if verbose:
-                print(f"  [{i + 1}/{len(sections)}] {split}/{stem}: "
-                      f"{result['class_codes'].size} pixels")
-            aniso_parts.append(result["anisotropy"])
-            s0_parts.append(result["s0"])
-            code_parts.append(result["class_codes"])
+                    print(f"  [{i + 1}/{len(sections)}] {split}/{stem}: "
+                          f"{result['class_codes'].size} pixels")
+                aniso_parts.append(result["anisotropy"])
+                s0_parts.append(result["s0"])
+                code_parts.append(result["class_codes"])
+        except GeometryMismatch as exc:
+            # A refusal carrying its reason, not a None and not a null result.
+            print(f"\nREFUSED: the Stokes inversion does not apply to this archive.")
+            print(f"  {exc}")
+            print("  Leg (b) needs the fourth-harmonic estimator "
+                  "(reefprint.polarim.extinction), not this module.")
+            return {
+                "refused": "rotation geometry is not a rotating analyser",
+                "evidence": str(exc),
+                "n_sections": len(sections),
+                "next_step": "reefprint.polarim.extinction (4th-harmonic estimator)",
+            }
 
     if not aniso_parts:
         print("no sections yielded usable pixels")
