@@ -22,6 +22,130 @@ it is a press release.
 
 ---
 
+## 2026-08-20 — session 9 · the same degenerate SE in `baseline.py`, and it was worse there
+
+### Attempted
+
+Session 8's *Left open* flagged `ScoredMetric.noise_at_honest_n` as carrying the same
+degenerate-Wald defect that had just been fixed in `abstain.py`, and deliberately did not fix
+it in a rule-5 commit. This is that commit. It supersedes that *Left open* item.
+
+Expected a mechanical port of the same three-part repair. It was not one — the same formula
+failed **differently** here, and worse.
+
+### Worked
+
+- **In `abstain.py` the defect was loud; in `baseline.py` it was silent.** `abstain` printed
+  `±0.0%` on the summary line, which is a visibly wrong number. `ScoredMetric` prints no
+  interval at all in that state. What it does instead:
+
+  ```python
+  elif (noise := self.noise_at_honest_n) is not None and self.uplift <= noise:
+  ```
+
+  At a metric of exactly 1.0, `noise` is `0.0`, so the test is `uplift <= 0.0` — **never true
+  for a positive uplift.** The middle verdict, the whole point of rule 3's three-state summary,
+  **could not fire.** Measured before the fix:
+
+  ```
+  balanced accuracy = 1.000 (n = 12) · majority class 0.500 · metadata-only 0.950
+    · +0.050 over the strongest baseline (0.950)
+  ```
+
+  Twelve localities out of twelve, against a metadata-only baseline of 0.95, reported as a
+  clean win. The rule of three puts the 95% lower bound at **0.75 — below the baseline.** The
+  correct reading is "we cannot tell", and it read as a result.
+
+- **The fix, in four parts.** `noise_at_honest_n` returns `None` at exactly 0 and 1 as well as
+  outside [0, 1]. New `bound_at_honest_n` is the rule of three (Hanley & Lippman-Hand 1983),
+  `None` where `3/n >= 1`. New `resolution_at_honest_n` is the single number an uplift has to
+  clear — one SE in the middle, the distance from the point estimate to the bound at the ends,
+  which works out to `3/n` at both. `uplift_exceeds_noise` and `summary()` both go through it.
+
+- **The two `None` reasons had to be told apart, and that is the part worth keeping.**
+  `resolution_at_honest_n` is `None` for two unrelated reasons: *the question does not apply*
+  (an RMSE has no binomial SE) and *the question applies and n cannot answer it* (a proportion
+  pinned at an end with n ≤ 3). The old code had only the first case and fell back to the plain
+  sign of the uplift, which for the second case is the over-claim all over again. Split with
+  `_is_proportion`: not a proportion falls back to the sign as before; a proportion that n
+  cannot resolve returns `False`, because no uplift clears a band spanning the range.
+
+- **The coverage mismatch is stated, not hidden.** One SE is about 68%; the rule of three is
+  95%. So a metric at an end is judged against a wider band than one in the middle. That is
+  written into `resolution_at_honest_n`'s docstring as deliberate and in the conservative
+  direction — the ends are where n tells you least, and a perfect score on twelve localities
+  is the most flattering thing this class can be asked to report.
+
+- **12 tests, 239 green overall**, ruff and format clean. Ten were watched fail first. The
+  other two passed on the first run by design, because they are regression guards rather than
+  RED tests: `test_the_middle_of_the_range_is_untouched_by_the_fix` and
+  `test_a_perfect_score_that_clears_the_bound_still_reads_as_a_win`.
+
+- **Read the output before calling it done**, which is session 8's lesson applied rather than
+  restated. All seven summary shapes printed and checked by eye:
+
+  ```
+  1.000, n=12 vs 0.950 → uplift +0.050 ... is inside the 0.250 that n = 12 resolves
+                          — 95% lower bound 0.750 by the rule of three
+  1.000, n=12 vs 0.500 → +0.500 over the strongest baseline (0.500)
+  1.000, n=3  vs 0.950 → uplift +0.050 ... cannot be resolved at all: n = 3 resolves
+                          nothing at this end of the range
+  0.000, n=12 vs -0.200 → ... is inside the 0.250 that n = 12 resolves
+                          — 95% upper bound 0.250 by the rule of three
+  0.620, n=12 vs 0.600 → ... is inside the ±0.140 that n = 12 resolves
+  0.920, n=40 vs 0.600 → +0.320 over the strongest baseline (0.600)
+  4.200, n=12 vs 9.000 → does not beat the strongest baseline (9.000, uplift -4.800)
+  ```
+
+  The second line is the one worth checking rather than assuming: a perfect score against a
+  weak baseline still reads as a win, correctly, because the 0.750 lower bound is still above
+  the 0.500 baseline. The conclusion survives the pessimistic end, which is exactly what the
+  comparison against `3/n` is asking.
+
+### Did not work
+
+Nothing failed that was not supposed to. The ten RED tests failed for the stated reasons and
+passed after the fix; no existing test needed changing, which is the useful signal here —
+`test_noise_is_not_estimated_for_a_metric_that_is_not_a_proportion` asserts `"resolves" not in
+summary` for an RMSE and still holds, so the new `_is_proportion` split did not disturb the
+case that was already right.
+
+### Learned
+
+**The same bug is not the same bug.** The plan was to port a fix. What actually transferred was
+the *diagnosis* — `sqrt(p(1-p)/n)` is zero at the ends — and not the symptom, the severity, or
+the repair's shape. In `abstain` it printed a wrong number on a line a human reads. Here it
+disabled a branch, and a disabled branch produces no output at all to notice. **The louder
+instance was the less dangerous one**, and it was the one that got found first, because it
+printed something.
+
+**A degenerate value is most dangerous where it is used as a threshold.** Zero as a *reported*
+quantity is a visibly silly interval. Zero as the right-hand side of `uplift <= noise` is a
+comparison that always answers the same way, and there is nothing in the output to say so. Both
+places used the identical expression. Worth checking the other comparisons in this package
+against the same question: not "is this number right" but "what does this comparison do when
+this number degenerates".
+
+### Left open
+
+- **N3 is still the single next action.** Nine sessions of guards, none of which touches it.
+  One command on Sibusiso's machine:
+  `uv run python experiments/002-s3v2-geometry/run.py --archive path/to/S3_v2.zip`
+- **`TrivialBaselines` still assumes higher is better**, documented in its docstring and not
+  enforced. Unchanged by this session, and now the only *stated assumption* left in this
+  module.
+- **The rule-of-three band and the one-SE band are different coverages** (95% against about
+  68%). Documented as deliberate. If a reviewer objects, the answer is to quote a Wilson or
+  Jeffreys interval throughout rather than to widen the middle — but that changes every number
+  the package has already reported, so it is a decision, not a tidy-up.
+- **Rule 4 is still prose.** These two fixes are rule 4 enforced in the two places that happened
+  to compute an interval; nothing yet stops a metric being reported without one. That is the
+  remaining placeholder `test_reported_coverage_interval_matches_honest_n`.
+- **Still no caller** for `split`, `baseline`, `abstain` or `quantity` beyond the rule-1/rule-5
+  seam. Unchanged.
+
+---
+
 ## 2026-08-20 — session 8 · rule 5 becomes a type, and the guard is a missing field
 
 ### Attempted

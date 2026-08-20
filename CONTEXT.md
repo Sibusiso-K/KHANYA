@@ -8,7 +8,7 @@ is the constitution — *what is true and what the rules are*. This file is the 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
 - **Last updated:** 2026-08-20
-- **Last commit at time of writing:** `b70e3ed` rule 1 becomes a type — provenance travels with the number, and it is contagious
+- **Last commit at time of writing:** `ceb8347` rule 5 becomes a type — the guard is a field that is not there
 - **Days to final:** 42 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 
 ---
@@ -180,6 +180,16 @@ A baseline may be `NotApplicable`, but only with a stated reason — rule 5's pa
 up. Both inapplicable at once is refused: that is a metric with nothing to compare against,
 which is the state rule 3 exists to forbid.
 
+**The three states had a fourth failure mode, found while fixing rule 5's version of it.**
+`sqrt(p(1-p)/n)` is exactly zero at p = 0 and p = 1, and in `ScoredMetric` that did not print a
+false `±0.000` — it did something quieter. The middle verdict fires on `uplift <= noise`, and
+`uplift <= 0.0` is never true for a positive uplift, so **at a metric of exactly 1.0 the middle
+state could not fire at all.** Twelve localities out of twelve against a 0.95 baseline read as
+`+0.050 over the strongest baseline`, a clean win, when the rule of three puts the 95% lower
+bound at **0.75 — below the baseline.** Fixed the same way as `abstain`: `None` at the ends,
+the rule of three where it bounds something, and where even that spans the range (n ≤ 3) the
+line says *"resolves nothing"* rather than falling back to the clean-win wording.
+
 ### Rule 1 is a guard now too, and it is the one that had to be contagious
 
 [`reefprint.quantity`](src/reefprint/quantity.py). The hardest of the four to make structural,
@@ -268,7 +278,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **227 passed, 24 deselected**. Anything less is a regression, not a quirk.
+Expect **239 passed, 24 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf

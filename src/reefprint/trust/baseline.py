@@ -23,6 +23,12 @@ dropped, because it is the one that most often wins.
 weakest. Quoting the gap to majority class while metadata-only sits higher is the flattering
 error, and it is flattering by exactly the amount that matters.
 
+Rule 4 rides along, because a metric next to its baselines still needs to say whether the gap
+between them is real. The standard error on a proportion is ``sqrt(p(1-p)/n)``, which is
+**exactly zero at 0 and 1** — so a metric pinned at an end would report the least informative
+observation available as the most precise, and, worse, the "inside the noise" verdict below
+could never fire for it. The rule of three (Hanley & Lippman-Hand 1983) covers those ends.
+
 A baseline may be genuinely inapplicable — a dataset that ships no per-section metadata has no
 metadata-only baseline to compute. That is allowed, through :class:`NotApplicable`, which
 requires a stated reason. The pattern is rule 5's: the escape hatch emits a reason, never
@@ -149,17 +155,70 @@ class ScoredMetric:
         return self.uplift > 0.0
 
     @property
+    def _is_proportion(self) -> bool:
+        """Whether the binomial arithmetic applies to this metric at all.
+
+        A balanced accuracy is a proportion. A grain-size RMSE in microns is not, and neither
+        is an R² that can go negative. The distinction matters twice below: it decides whether
+        a standard error means anything, and it separates *the question does not apply* from
+        *the question applies and n cannot answer it*.
+        """
+        return 0.0 <= self.value <= 1.0
+
+    @property
     def noise_at_honest_n(self) -> float | None:
-        """Standard error on a proportion at honest *n*, or ``None`` if this is not one.
+        """Standard error on a proportion at honest *n*, or ``None`` where it means nothing.
 
         ``sqrt(p(1-p)/n)`` — the same arithmetic this package already quotes for conformal
         coverage SD, applied to the metric itself. Returns ``None`` outside [0, 1] because a
         binomial standard error on an RMSE or an R² is an invented number, and rule 1 forbids
         inventing numbers rather more than it forbids leaving a field empty.
+
+        Also ``None`` **at exactly 0 and 1**, where the formula degenerates to zero and the
+        least informative observation available would claim the most precision. Twelve
+        localities out of twelve is not certainty. :attr:`bound_at_honest_n` covers those ends.
         """
-        if not 0.0 <= self.value <= 1.0:
+        if not self._is_proportion or self.value in (0.0, 1.0):
             return None
         return sqrt(self.value * (1.0 - self.value) / self.n)
+
+    @property
+    def bound_at_honest_n(self) -> float | None:
+        """The rule of three, for the ends where the standard error degenerates.
+
+        Zero events in *n* trials puts the 95% upper bound at ``3/n``; *n* out of *n* puts the
+        95% lower bound at ``1 - 3/n`` (Hanley & Lippman-Hand 1983). A published result, cited
+        so a reader can check it, rather than a threshold chosen here.
+
+        ``None`` away from the ends, where the standard error is the right tool, and ``None``
+        when ``3/n >= 1`` — at n = 3 the bound spans the whole range, which is not a bound.
+        """
+        if self.value not in (0.0, 1.0):
+            return None
+        three_over_n = 3.0 / self.n
+        if three_over_n >= 1.0:
+            return None
+        return three_over_n if self.value == 0.0 else 1.0 - three_over_n
+
+    @property
+    def resolution_at_honest_n(self) -> float | None:
+        """How large an uplift has to be before *n* can tell it from zero.
+
+        One standard error in the middle of the range; the distance from the point estimate to
+        the rule-of-three bound at the ends, which works out to ``3/n`` at both. ``None`` when
+        the question does not apply (not a proportion) or *n* cannot answer it (``3/n >= 1``).
+
+        The two are not the same coverage — one SE is about 68%, the rule of three is 95% — so
+        a metric sitting at an end is judged against a wider band than one in the middle. That
+        asymmetry is deliberate and it runs in the conservative direction: the ends are where
+        *n* tells you least, and a perfect score on twelve localities is the most flattering
+        thing this class can be asked to report.
+        """
+        if (noise := self.noise_at_honest_n) is not None:
+            return noise
+        if (bound := self.bound_at_honest_n) is None:
+            return None
+        return abs(self.value - bound)
 
     @property
     def uplift_exceeds_noise(self) -> bool:
@@ -167,11 +226,15 @@ class ScoredMetric:
 
         The question rule 3 sets up and rule 4 answers. A +0.02 uplift at n = 12 is a seventh
         of one standard error; it is positive, and it is nothing.
+
+        Where *n* resolves nothing — a proportion pinned at an end with ``3/n >= 1`` — this is
+        ``False``, because no uplift can clear a band that spans the range. Where the question
+        does not apply at all, it falls back to the plain sign of the uplift.
         """
-        noise = self.noise_at_honest_n
-        if noise is None:
-            return self.beats_baseline
-        return self.uplift > noise
+        scale = self.resolution_at_honest_n
+        if scale is not None:
+            return self.uplift > scale
+        return False if self._is_proportion else self.beats_baseline
 
     def summary(self) -> str:
         """One line carrying the metric, both baselines, the honest n, and the verdict.
@@ -189,11 +252,10 @@ class ScoredMetric:
                 f"does not beat the strongest baseline "
                 f"({self.strongest_baseline:.3f}, uplift {self.uplift:+.3f})"
             )
-        elif (noise := self.noise_at_honest_n) is not None and self.uplift <= noise:
+        elif not self.uplift_exceeds_noise:
             verdict = (
                 f"uplift {self.uplift:+.3f} over the strongest baseline "
-                f"({self.strongest_baseline:.3f}) is inside the ±{noise:.3f} that "
-                f"n = {self.n} resolves"
+                f"({self.strongest_baseline:.3f}) {self._resolution_clause()}"
             )
         else:
             verdict = (
@@ -203,6 +265,18 @@ class ScoredMetric:
             f"{self.name} = {self.value:.3f} (n = {self.n}) · "
             f"{self.baselines.describe()} · {verdict}"
         )
+
+    def _resolution_clause(self) -> str:
+        """What *n* resolves and where the number came from, as the tail of a verdict."""
+        if (noise := self.noise_at_honest_n) is not None:
+            return f"is inside the ±{noise:.3f} that n = {self.n} resolves"
+        if (bound := self.bound_at_honest_n) is not None:
+            end = "lower" if self.value == 1.0 else "upper"
+            return (
+                f"is inside the {abs(self.value - bound):.3f} that n = {self.n} resolves "
+                f"— 95% {end} bound {bound:.3f} by the rule of three"
+            )
+        return f"cannot be resolved at all: n = {self.n} resolves nothing at this end of the range"
 
 
 def majority_class_rate(labels: Sequence[str]) -> float:

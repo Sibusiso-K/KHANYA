@@ -226,3 +226,140 @@ def test_the_summary_carries_the_honest_n():
 def test_a_metric_with_no_n_is_refused():
     with pytest.raises(ValueError, match="n"):
         ScoredMetric(name="balanced accuracy", value=0.81, n=0, baselines=baselines())
+
+
+# --------------------------------------------------------------------------------------
+# The ends of the range, where the standard error degenerates
+#
+# sqrt(p(1-p)/n) is exactly zero at p = 0 and p = 1. Left alone, the *least* informative
+# observation available claims the *most* precision — and here that does not print a false
+# "+/-0.000", it does something quieter: `uplift <= noise` becomes `uplift <= 0.0`, which is
+# never true for a positive uplift, so the middle verdict can never fire. A perfect score
+# always reads as a clean win, however few localities produced it.
+# --------------------------------------------------------------------------------------
+
+
+def test_a_perfect_score_is_not_reported_as_perfectly_precise():
+    """12 for 12 is not certainty. The Wald SE says it is, so the Wald SE is not used here."""
+    metric = ScoredMetric(name="balanced accuracy", value=1.0, n=12, baselines=baselines())
+
+    assert metric.noise_at_honest_n is None
+
+
+def test_a_zero_score_is_not_reported_as_perfectly_precise():
+    """The same degeneracy at the other end, and the same refusal."""
+    metric = ScoredMetric(name="balanced accuracy", value=0.0, n=12, baselines=baselines())
+
+    assert metric.noise_at_honest_n is None
+
+
+def test_the_rule_of_three_bounds_a_perfect_score():
+    """n for n gives a 95% lower bound of 1 - 3/n (Hanley & Lippman-Hand 1983). Published."""
+    metric = ScoredMetric(name="balanced accuracy", value=1.0, n=12, baselines=baselines())
+
+    assert metric.bound_at_honest_n == pytest.approx(0.75)
+
+
+def test_the_rule_of_three_bounds_a_zero_score():
+    metric = ScoredMetric(name="balanced accuracy", value=0.0, n=12, baselines=baselines())
+
+    assert metric.bound_at_honest_n == pytest.approx(0.25)
+
+
+def test_the_bound_is_refused_where_it_bounds_nothing():
+    """At n = 3, 3/n is 1.0 and the bound spans the whole range. That is not a bound."""
+    metric = ScoredMetric(name="balanced accuracy", value=1.0, n=3, baselines=baselines())
+
+    assert metric.bound_at_honest_n is None
+
+
+def test_the_bound_does_not_apply_away_from_the_ends():
+    """The rule of three is for zero events in n. In between, the standard error is fine."""
+    metric = ScoredMetric(name="balanced accuracy", value=0.62, n=12, baselines=baselines())
+
+    assert metric.bound_at_honest_n is None
+    assert metric.noise_at_honest_n == pytest.approx(0.14, abs=0.01)
+
+
+def test_what_n_resolves_at_the_ends_is_the_distance_to_the_bound():
+    """Both ends land on 3/n: 1.0 down to 0.75, or 0.0 up to 0.25, at n = 12."""
+    perfect = ScoredMetric(name="balanced accuracy", value=1.0, n=12, baselines=baselines())
+    zero = ScoredMetric(name="balanced accuracy", value=0.0, n=12, baselines=baselines())
+
+    assert perfect.resolution_at_honest_n == pytest.approx(0.25)
+    assert zero.resolution_at_honest_n == pytest.approx(0.25)
+
+
+def test_a_perfect_score_over_a_strong_baseline_is_not_a_clean_win():
+    """The defect, as behaviour. 12 localities, all correct, against a 0.95 baseline.
+
+    The uplift is +0.05. The rule of three puts the 95% lower bound at 0.75 — below the
+    baseline. Before the fix this read as a clean win, because uplift <= 0.0 is never true.
+    """
+    metric = ScoredMetric(
+        name="balanced accuracy",
+        value=1.0,
+        n=12,
+        baselines=TrivialBaselines(majority_class=0.50, metadata_only=0.95),
+    )
+
+    assert metric.uplift == pytest.approx(0.05)
+    assert not metric.uplift_exceeds_noise
+    assert "n = 12 resolves" in metric.summary()
+
+
+def test_the_summary_names_the_rule_of_three_where_it_uses_it():
+    """Rule 1: a bound taken from a paper says so, so a reader can check it."""
+    metric = ScoredMetric(
+        name="balanced accuracy",
+        value=1.0,
+        n=12,
+        baselines=TrivialBaselines(majority_class=0.50, metadata_only=0.95),
+    )
+
+    summary = metric.summary()
+
+    assert "rule of three" in summary
+    assert "0.750" in summary
+
+
+def test_a_perfect_score_at_a_tiny_n_says_it_resolves_nothing():
+    """n = 3 cannot bound a perfect score at all, and the line has to say so rather than
+
+    fall back to the clean-win wording, which is what "no bound available" used to mean.
+    """
+    metric = ScoredMetric(
+        name="balanced accuracy",
+        value=1.0,
+        n=3,
+        baselines=TrivialBaselines(majority_class=0.50, metadata_only=0.95),
+    )
+
+    assert "resolves nothing" in metric.summary()
+
+
+def test_a_perfect_score_that_clears_the_bound_still_reads_as_a_win():
+    """The fix must not swallow a real result. 1.0 against 0.50 clears 3/n = 0.25 easily."""
+    metric = ScoredMetric(
+        name="balanced accuracy",
+        value=1.0,
+        n=12,
+        baselines=TrivialBaselines(majority_class=0.50, metadata_only=0.40),
+    )
+
+    assert metric.uplift_exceeds_noise
+    assert "resolves" not in metric.summary()
+
+
+def test_the_middle_of_the_range_is_untouched_by_the_fix():
+    """Regression guard. The ordinary case still quotes the standard error, unchanged."""
+    metric = ScoredMetric(
+        name="balanced accuracy",
+        value=0.62,
+        n=12,
+        baselines=baselines(majority=0.50, metadata=0.60),
+    )
+
+    assert not metric.uplift_exceeds_noise
+    assert "±0.14" in metric.summary()
+    assert "rule of three" not in metric.summary()

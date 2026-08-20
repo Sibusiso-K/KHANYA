@@ -18,6 +18,12 @@ Four rules bite hardest here, and three of them are now code rather than prose:
   sqrt(0.9 * 0.1 / n_cal): about 3.0 pp at n_cal = 100, about 6.7 pp at n_cal = 20. Do not
   claim tighter than the arithmetic allows. Honest n for a locality split is
   :attr:`~reefprint.trust.split.LocalitySplit.n_groups` — localities, not sections.
+  **That formula is zero at p = 0 and p = 1**, so both
+  :attr:`~reefprint.trust.baseline.ScoredMetric.noise_at_honest_n` and
+  :attr:`~reefprint.trust.abstain.AbstentionAudit.noise_during_ore_change` return ``None``
+  there and quote the rule of three (Hanley & Lippman-Hand 1983) instead. Left alone it does
+  not merely print a false ±0.000 — in ``ScoredMetric`` it made the "inside the noise" verdict
+  unreachable, so every perfect score read as a clean win however few localities produced it.
 - **Rule 5** — abstention emits a *conservative default with a stated reason*, never
   "unknown". :mod:`reefprint.trust.abstain`. A refusal is an
   :class:`~reefprint.trust.abstain.Abstention`, which cannot be built without a
