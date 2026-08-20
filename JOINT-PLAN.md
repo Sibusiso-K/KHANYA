@@ -84,6 +84,64 @@ S3 v2 is the dataset that closes Lethabo's week-1 gate, and S3 contains
 magnetite *and* hematite together, which also tests KHANYA's optical-argument
 claim. Download it.
 
+---
+
+## 3a. CORRECTION (2026-08-19, same day): the experiment in section 3 cannot be run
+
+Section 3 above proposed testing whether Stokes anisotropy fixes KHANYA's 29.2%
+pentlandite -> pyrrhotite confusion. **That experiment is impossible with the
+available data, and the error is mine.**
+
+Pentlandite and pyrrhotite are in **S2**, which has no rotation series.
+The XPL rotations are in **S3**, which contains neither mineral. The pair and
+the measurement live in different datasets. Verified against
+`SUBSET_CODES` before any code was written.
+
+### The replacement is stronger, not a consolation
+
+S3's eleven classes split cleanly by crystal symmetry - five isotropic (cubic:
+pyrite, galena, sphalerite, magnetite, tennantite) against five anisotropic
+(covellite, arsenopyrite, hematite, chalcopyrite, bornite). That is a
+ten-mineral test of the general principle rather than a single pair.
+
+And it contains the pair that matters most to us: **magnetite (cubic,
+isotropic) against hematite (trigonal, anisotropic)**. That is precisely the
+pair report section 3 names as the thing SEM/BSE cannot separate and optical
+can - a claim currently *asserted* in our report and never measured. It is also
+KHANYA's total failure case: magnetite scores IoU 0.000 on S2 and is predicted
+as background 92.3% of the time. If anisotropy splits magnetite from hematite,
+it is doing work that no amount of colour-based training achieved.
+
+The joint thesis is unchanged. Only the mineral pair changed, and it changed
+toward the pair our own report already stakes its optical argument on.
+
+## 3b. RESULT: REEFPRINT's open finding N2 is now closed
+
+`src/polarimetry.py --n2`. N2 held that no fixed anisotropy threshold is
+defensible because the noise floor scales as 1/S0, so a rule fitted on bright
+sulphides lights up every dark grain. Measured, using N2's own stated numbers
+(sigma = 0.25 R%, n = 36 angles):
+
+| Population | Median anisotropy | Fixed-threshold FP rate | S0-conditioned FP rate |
+|---|---|---|---|
+| isotropic, bright (R=50%) | 0.0014 | 10.0% | 9.9% |
+| isotropic, **dark** (R=4.75%) | 0.0146 | **98.1%** | **9.9%** |
+| anisotropic (R=20%, m=0.08) | 0.0801 | 100% (detection) | 100% (detection) |
+
+**A fixed threshold flags 98% of dark isotropic pixels as anisotropic.** The
+S0-conditioned conformal bound holds at 10% in every bin by construction, and
+loses nothing in detection sensitivity - genuinely anisotropic pixels are still
+caught 100% of the time.
+
+The 1/S0 law itself is confirmed in passing: bright and dark isotropic
+populations sit at 0.0014 and 0.0146, a ratio of **10.4x**, against an S0 ratio
+of 50/4.75 = **10.5x**. The noise floor scales as predicted.
+
+**This is KHANYA's conformal machinery (`src/conformal.py`) applied to
+REEFPRINT's physics**, and it is the clearest demonstration so far that the two
+halves are worth more joined than separate: Lethabo identified the failure mode
+and had it open as a blocking finding; the fix was already built on this side.
+
 ## 4. Plan, phased
 
 ### Phase 1 — before 30 Aug (abstract)

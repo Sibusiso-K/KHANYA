@@ -19,6 +19,65 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-08-19 — Sibusiso (27)
+
+**Did:** Acted on all three JOINT-PLAN items. **Lethabo: your open finding N2
+is closed, and one of my claims in (26) was wrong.**
+
+**1. CORRECTION to entry (26) - the pentlandite/pyrrhotite experiment cannot be
+run.** Pentlandite and pyrrhotite are in **S2, which has no rotation series**;
+the XPL rotations are in **S3, which contains neither mineral**. The pair and
+the measurement live in different datasets. I should have checked before
+proposing it. JOINT-PLAN section 3a has the correction.
+
+**The replacement is better, not a consolation.** S3 splits five isotropic
+(cubic: pyrite, galena, sphalerite, magnetite, tennantite) against five
+anisotropic (covellite, arsenopyrite, hematite, chalcopyrite, bornite) - a
+ten-mineral test rather than one pair. And it contains **magnetite vs
+hematite**, which is exactly the pair our report section 3 claims BSE cannot
+separate and optical can. That claim is currently *asserted and never
+measured*. Magnetite is also KHANYA's total failure (IoU 0.000). So the
+replacement lands on the pair our own optical argument stakes itself on.
+
+**2. N2 IS CLOSED.** `python -m src.polarimetry --n2`. Using your own stated
+numbers (sigma=0.25 R%, n=36):
+
+| Population | Median aniso | Fixed threshold FP | S0-conditioned FP |
+|---|---|---|---|
+| isotropic, bright R=50% | 0.0014 | 10.0% | 9.9% |
+| isotropic, **dark R=4.75%** | 0.0146 | **98.1%** | **9.9%** |
+| anisotropic R=20%, m=0.08 | 0.0801 | 100% (detect) | 100% (detect) |
+
+A fixed threshold flags **98% of dark isotropic pixels** as anisotropic,
+exactly as you predicted. The S0-binned conformal bound holds at 10% in every
+bin *by construction* and loses no detection sensitivity. Your 1/S0 law is
+confirmed in passing: 0.0146/0.0014 = **10.4x** against an S0 ratio of
+50/4.75 = **10.5x**.
+
+This is KHANYA's `src/conformal.py` machinery pointed at your physics. You had
+N2 open as blocking; the fix was already built over here.
+
+**3. S3 v2 downloading** (5.2 GB, ~45% at time of writing). `src/polarimetry.py
+--inspect` will report the archive layout so the OME-TIFF reader is written
+against the real convention rather than a guess - that is your named single
+next action and the layout should drive it.
+
+**How the bridge works:** `src/polarimetry.py` imports
+`reefprint.polarim.stokes` **unchanged** from your repo via sys.path - not
+vendored, not reimplemented. If your Stokes code changes, this experiment
+changes with it. Smoke-tested: isotropic reads 0.0000, anisotropic reads
+0.4000 on injected modulation, residual at machine precision (1e-14).
+
+**Changed:** new `src/polarimetry.py`, `JOINT-PLAN.md` (sections 3a, 3b),
+`.gitignore`.
+**Blocked on:** you - the phase-set reconciliation (abstract commits to
+chromite; no public chromite data exists) is still the one decision only you
+can make, and it blocks the 30 Aug abstract.
+**Next:** when S3 v2 finishes, `--inspect`, then write the rotation-series
+reader and run the ten-mineral symmetry test. Everything in JOINT-PLAN
+section 4 phase 2.
+
+
 ## 2026-08-19 — Sibusiso (26)
 
 **Did:** Read Lethabo's REEFPRINT repo end to end and wrote
