@@ -22,6 +22,159 @@ it is a press release.
 
 ---
 
+## 2026-08-20 — session 8 · rule 5 becomes a type, and the guard is a missing field
+
+### Attempted
+
+Rule 5, the last of the silently-failing rules: *abstention emits a conservative default with a
+stated reason, never "unknown."* Same treatment as 1, 2 and 3.
+
+Rule 5 is the odd one out, because the failure it guards against is not a bad input. The other
+three refuse something malformed — a leaked split, a bare metric, an unlabelled number. Rule 5's
+failure is a system that does exactly what it was told: it abstains, correctly, at a genuine
+ore transition, and then **holds the last setpoint**, which at a transition is the worst
+available action. Nothing is malformed. Every value is real. The plant runs on the previous
+ore's setpoint for as long as the refusal lasts.
+
+So the guard could not be a validator. It had to be an **absence**.
+
+TDD: 37 tests written first, watched fail against `NotImplementedError` stubs, then implemented.
+Then four more, after the defect below.
+
+### Worked
+
+- **[`reefprint.trust.abstain`](../src/reefprint/trust/abstain.py).** `Abstention` has three
+  fields — `default`, `reason`, `trigger` — and **no slot for a previous value**. Holding the
+  last setpoint is not discouraged, it is unreachable: there is nowhere to put it.
+  `test_an_abstention_cannot_carry_a_previous_value_to_hold` asserts that against
+  `dataclasses.fields`, so re-adding one breaks a test rather than passing review.
+  `value_to_act_on(decision)` takes one argument for the same reason — a signature of
+  `(decision, previous)` is the whole bug, pre-installed.
+
+- **This contradicts the submitted abstract, on purpose.** The abstract says the system
+  "abstains and holds the last-known-good setpoint". `CONTEXT.md` §8 already recorded that as
+  deliberate; it is now enforced rather than recorded.
+  `test_an_abstention_emits_the_conservative_default_not_the_previous_prediction` is that
+  contradiction as a test: steady state reads 0.12, the ore changes, and what reaches the
+  controller is 0.90 rather than the held 0.12.
+
+- **`"unknown"` is rejected by name.** Rule 5 names it specifically, so the guard does too:
+  `unknown`, `n/a`, `na`, `none`, `error`, `tbd`, `?`, `-`, `--`, case- and space-insensitive.
+  A blank reason is also refused. The reason is a required positional field, not an optional
+  string that defaults to something polite.
+
+- **Rule 1 meets rule 5 at the seam.** `ConservativeDefault.quantity` is a `Quantity` and is
+  checked with `require_reportable()`, so a conservative default derived from a design target is
+  refused **at construction**, not on the slide. This is `quantity.py`'s **first real caller** —
+  the "nothing calls these guards yet" item that has been in *Left open* since session 6 is now
+  half closed.
+
+- **"Conservative" has a direction, and only the inversion is machine-checkable.**
+  `ASSUME_HIGH` that emits the low half of its own range is a `ValueError`. The check is against
+  the **midpoint**, which is the weakest possible statement of "on the safe side" — deliberately
+  not a tuned threshold. *How far* along the safe side is domain judgement and is reported, not
+  enforced: pinning defaults to the extreme is how you get operators who switch the system off,
+  and that is a 100% abstention rate that never reports itself.
+
+- **`audit_abstentions()` refuses a run with no ore-change events in it.** The only number left
+  to report would be the aggregate, and quoting the aggregate is precisely blind spot 1's error.
+  A gate that has never been tested through a transition has not been tested.
+
+- **41 tests, 227 green overall** (`uv run pytest -m "not placeholder" -q`), ruff and format
+  clean. The two rule-5 placeholders in `tests/test_trust.py` are built, so they were removed
+  rather than left claiming `NOT BUILT`; deselected drops 26 → 24. `CONTEXT.md` §4 updated
+  186 → 227 in the same commit.
+
+### Did not work
+
+**The 37 tests passed on the first run, and the defect was found by reading the printed line.**
+The summary said:
+
+```
+abstention rate 13.3% overall · 100.0% during ore change (n = 2, ±0.0%) · 0.0% when stable ...
+```
+
+`±0.0%`. The Wald standard error `sqrt(p(1-p)/n)` is **exactly zero at p = 0 and p = 1**, so the
+*least* informative observation available — two transitions, both refused — prints as the *most*
+precise. That is invented precision, rule 4's exact prohibition, inside rule 5's own summary
+line. Small runs land on those extremes constantly; this is not an edge case, it is the common
+case early on.
+
+Fixed with the **rule of three** (Hanley & Lippman-Hand 1983: 0 events in n gives a 95% upper
+bound of 3/n), which is a published result and therefore satisfies rule 1 rather than being a
+threshold chosen here. `noise_during_ore_change` now returns `None` at the extremes instead of
+a false zero, and `bound_during_ore_change` covers them. Where even 3/n bounds nothing — n = 2,
+where 3/n ≥ 1 — the line says *"which resolves nothing"* rather than printing a number:
+
+```
+100.0% during ore change (n = 2, which resolves nothing)
+100.0% during ore change (n = 10, 95% lower bound 70% by the rule of three)
+  0.0% during ore change (n = 10, 95% upper bound 30% by the rule of three)
+ 50.0% during ore change (n = 12, ±14.4%)
+```
+
+Four tests written for it first, watched fail (`4 failed, 37 passed`), then fixed.
+
+**One of those four tests was wrong, and the implementation was right.** It asserted
+`"0.0%" not in summary.split("when stable")[0]`, which caught the *stable* rate of 0.0% — a
+correct number — rather than the conditional interval. Retargeted at the conditional
+parenthetical. Fixing a wrong test, not bending a test to match code.
+
+**A test of my own was internally inconsistent and would have proved nothing.**
+`test_the_inversion_is_refused_in_the_other_direction_too` used `assumed(0.95, "percent", ...)`
+against a 0.0–100.0 percent range. 0.95 already sits in the safe half, so a correct
+implementation would have passed it. Fixed to `95.0` before implementing against it.
+
+**A one-in-five flake in `test_polarim.py`, not caused by this work.** See *Left open*.
+
+### Learned
+
+**Session 7's boundary claim was wrong by one.** It said *"the four guards now cover every rule
+that fails silently — rules 1, 2, 3 and the geometry hazard"* and concluded that was a reason to
+stop. Rule 5 fails silently too, and worse than any of them: the others produce a number that is
+wrong, this one produces a *plant that keeps running on the previous ore's setpoint* while the
+software correctly reports that it has abstained. Nothing in the logs looks wrong. The lesson is
+not that the boundary should have been drawn wider, it is that **"fails loudly" was assessed on
+the software's output rather than on the process's behaviour**, and those are different
+questions.
+
+**Tests do not read output.** All 37 passed and not one of them asked whether the printed
+precision was real, because every assertion was about values and refusals — the things a test
+author naturally thinks to assert. The interval was rendered, not returned, so it lived in the
+one place the suite did not look. Printing the summary and reading it took thirty seconds and
+found a rule-4 violation inside a rule-5 guard. **Read the output of anything that formats a
+number for a human.**
+
+**The strongest guard was the field that is not there.** Rules 1, 2 and 3 are refusals — code
+that runs and raises. Rule 5's core guard executes nothing: `Abstention` simply has no slot for
+a previous value, and `value_to_act_on` has no parameter for one. There is no check to skip and
+no error to catch, which makes it the only one of the four with no route around it at all. Where
+a rule forbids an *action* rather than a *value*, look first for a field to leave out.
+
+### Left open
+
+- **N3 is still the single next action.** Eight sessions of guards, none of which touches it.
+  One command on Sibusiso's machine:
+  `uv run python experiments/002-s3v2-geometry/run.py --archive path/to/S3_v2.zip`
+- **`ScoredMetric.noise_at_honest_n` has the same degenerate-Wald defect** that was just fixed
+  here — it returns exactly 0 at a metric value of 0 or 1. That is rule 3's guard, so changing
+  it is a separate decision and a separate commit, not something to fold into a rule-5 change.
+  Flagged, not fixed.
+- **`tests/test_polarim.py::test_recovery_does_not_require_uniform_angular_sampling` failed once
+  in five full-suite runs** and passes in isolation, over eight random hypothesis seeds, and in
+  four subsequent full-suite runs. The test already skips ill-conditioned draws
+  (`cond(design) > 100.0`), so a failure means angles that **pass** the conditioning gate can
+  still miss `rel=1e-7` — the threshold and the tolerance are not consistent with each other.
+  Not caused by this session's work and not fixed in it. Reproduce with a full-suite run, not a
+  single-file one; the draw appears to depend on global RNG state set by earlier tests.
+- **Rule 5's second clause is built but has no real data behind it.** `audit_abstentions()`
+  computes the conditional rate correctly; nothing yet produces a run of real decisions with
+  real ore-change flags to feed it. That needs the OOD gate, which needs segmentation.
+- **`abstain` has no caller either**, same as `split`, `baseline` and `quantity` before it.
+  The first will be the demo path in `viz/`, which is where a refusal has to be *visible*.
+
+---
+
 ## 2026-08-20 — session 7 · rule 1 becomes a type, and provenance is contagious
 
 ### Attempted

@@ -87,6 +87,7 @@ Hence `RotationSeries.geometry`, which defaults to `UNKNOWN` rather than to the 
 3. **Report the trivial baseline** (majority class, and metadata-only) alongside every metric. Always. **Enforced in code, not here:** `reefprint.trust.baseline.ScoredMetric` takes `baselines` as a required field with **no default**, so a bare metric is a `TypeError` rather than a slide. Uplift is measured against the *strongest* baseline, never the weakest, and `summary()` distinguishes three states — below the baseline, above it but inside the noise honest *n* resolves, and above it by more than that. A baseline may be `NotApplicable`, but only with a stated reason (rule 5's pattern); both inapplicable at once is refused.
 4. **Every metric carries a confidence interval sized at honest n.** At n≈100, conformal coverage SD is ~3pp — do not claim tighter than the arithmetic allows.
 5. **Abstention emits a conservative default with a stated reason, never "unknown."** Abstention fires at ore transitions, which is when holding the last setpoint is the worst available action.
+   **Enforced in code, not here:** a refusal is a `reefprint.trust.abstain.Abstention`, which cannot be constructed without a `ConservativeDefault` **and** a reason, rejects `"unknown"`, `"n/a"`, `"tbd"` and their neighbours by name, and has **no field for the previous value** — so holding the last setpoint is not reachable through the type, it is not merely discouraged. The default is a `Quantity`, so rule 1 is checked at the seam: a conservative default derived from a design target is refused at construction. "Conservative" has a *direction*, and the machine-checkable bug is the **inversion** — `ASSUME_HIGH` emitting the low half of its own range is a `ValueError`; how far along the safe side is domain judgement and is reported, not enforced. `audit_abstentions()` **refuses a run containing no ore-change events**, because the only number left to report would be the aggregate, and quoting the aggregate is exactly blind spot 1's error. Where the conditional rate lands on 0 or 1 — which small runs do constantly — the Wald SE is exactly zero, so the *least* informative observation would print as the *most* precise; the rule of three (Hanley & Lippman-Hand 1983) is printed there instead, or the line says it resolves nothing.
 6. **No LLM computes a mineralogical or control value.** Agents route, select, orchestrate, explain.
 7. **Licences:** permissive only for anything shipped. `timm` (Apache-2.0) not DINOv3 (non-transferable, no patent grant). `asyncua` (LGPL) runs on a general-purpose machine, never a sealed appliance. Hailo is an optional accelerator, never load-bearing. Maintain an SBOM.
 8. **Commit early, commit often, including failures.** Finalists face originality authentication after 2 October. The commit history is the defence.
@@ -126,7 +127,8 @@ reefprint/
 │   ├── texture/                 grain extraction, association matrix
 │   ├── heads/                   entrainment risk · NFG load · oxidation index
 │   ├── trust/                   ensemble, conformal, OOD gate, abstention.
-│   │                         `split.py` = rule 2, `baseline.py` = rule 3, both as refusals.
+│   │                         `split.py` = rule 2, `baseline.py` = rule 3, `abstain.py` =
+│   │                         rule 5. All three are refusals, not warnings.
 │   ├── integrate/               OPC UA, OMF, AASX
 │   └── viz/                     UI
 ├── experiments/                 numbered, each with its own README + result

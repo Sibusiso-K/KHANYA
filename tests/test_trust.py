@@ -1,4 +1,9 @@
-"""Placeholder — reefprint.trust."""
+"""Placeholder — reefprint.trust. What is left of it.
+
+Rule 2 is built: ``test_trust_split.py``. Rule 3: ``test_trust_baseline.py``.
+Rule 5: ``test_trust_abstain.py``. Rules 4 (honest n) and the week-3 and week-4
+gates are still prose, and still fail here on purpose.
+"""
 
 from __future__ import annotations
 
@@ -19,21 +24,6 @@ def test_reported_coverage_interval_matches_honest_n():
     front of a judge.
     """
     pytest.fail("NOT BUILT — trust: coverage interval sizing")
-
-
-def test_abstention_emits_a_conservative_default_with_a_reason():
-    """Rule 5. Never "unknown".
-
-    Blind spot 1: abstention fires exactly when it is least safe, because novel texture triggers
-    the OOD gate and novel texture *is* an ore transition — the moment when holding the last
-    setpoint is the worst available action.
-    """
-    pytest.fail("NOT BUILT — trust: conservative-default abstention")
-
-
-def test_abstention_rate_is_reported_conditioned_on_ore_change_events():
-    """An aggregate abstention rate hides the only conditional that matters."""
-    pytest.fail("NOT BUILT — trust: conditional abstention reporting")
 
 
 def test_no_silent_failure_under_degraded_input():

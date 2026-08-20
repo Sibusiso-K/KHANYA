@@ -8,7 +8,7 @@ is the constitution — *what is true and what the rules are*. This file is the 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
 - **Last updated:** 2026-08-20
-- **Last commit at time of writing:** `6e0b647` rules 2 and 3 stop being prose — locality splits and trivial baselines as refusals
+- **Last commit at time of writing:** `b70e3ed` rule 1 becomes a type — provenance travels with the number, and it is contagious
 - **Days to final:** 42 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 
 ---
@@ -214,6 +214,44 @@ Bare floats cannot join in: `measured(1.0, "um", ...) + 2.0` is a `TypeError`, b
 literal is exactly the thing rule 1 is about. Units are checked on `+`/`-` and cancel on `×`/`÷`
 (`px` × `um/px` → `um`), because a scale factor is the usual doorway for an unlabelled number.
 
+### Rule 5 is a guard now, and the thing it removes is a *field*
+
+[`reefprint.trust.abstain`](src/reefprint/trust/abstain.py). The other three guards refuse bad
+inputs. This one is mostly about what is **not** on the type: `Abstention` has `default`,
+`reason` and `trigger`, and **no slot for the previous value**. Holding the last setpoint is not
+discouraged here, it is unreachable — there is nowhere to put it.
+`test_an_abstention_cannot_carry_a_previous_value_to_hold` asserts that against
+`dataclasses.fields`, so re-adding one breaks a test rather than passing review.
+
+`value_to_act_on(decision)` takes one argument for the same reason. A signature of
+`(decision, previous)` is the whole bug, pre-installed.
+
+Everything else follows from "a refusal still emits a number":
+
+- No `Abstention` without a `ConservativeDefault` **and** a reason, and `"unknown"`, `"n/a"`,
+  `"tbd"`, `"?"` and their neighbours are rejected **by name**, case- and space-insensitively.
+  Rule 5 names `"unknown"` specifically, so the guard does too.
+- The default is a `Quantity`, so **rule 1 meets rule 5 at the seam**. A conservative default
+  derived from a design target is refused at construction. This is `quantity.py`'s first real
+  caller — the "nothing calls these guards yet" item from sessions 6 and 7 is now half closed.
+- "Conservative" has a **direction**, and the mechanically detectable bug is the **inversion**:
+  `ASSUME_HIGH` that emits the low half of its own range is a `ValueError`. *How far* along the
+  safe side is domain judgement and is reported, not enforced — pinning defaults to the extreme
+  is how you get operators who switch the system off, which is a 100% abstention rate that never
+  reports itself.
+- `audit_abstentions()` **refuses a run with no ore-change events in it.** The only number left
+  to report would be the aggregate, and quoting the aggregate is precisely blind spot 1's error.
+  A gate that has never been tested through a transition has not been tested.
+
+One thing here was not found by a test. The 37 tests passed on the first run; the defect turned
+up by *reading the printed line*, which said `100.0% during ore change (n = 2, ±0.0%)`. The Wald
+SE `sqrt(p(1-p)/n)` is exactly zero at p = 0 and p = 1, so the **least** informative observation
+prints as the **most** precise — invented precision, rule 4's exact prohibition, in rule 5's
+own summary. Small runs land on those extremes constantly. Fixed with the **rule of three**
+(Hanley & Lippman-Hand 1983: 0 events in n → 95% upper bound 3/n), which is published and so
+satisfies rule 1; where even that bounds nothing — n = 2, where 3/n ≥ 1 — the line now says
+*"which resolves nothing"* rather than printing a number.
+
 ---
 
 ## 4. Verify you are in a good state
@@ -230,13 +268,13 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **186 passed, 26 deselected**. Anything less is a regression, not a quirk.
+Expect **227 passed, 24 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **26 failed**. These are the backlog, not breakage. Each failure names the module and the
+Expect **24 failed**. These are the backlog, not breakage. Each failure names the module and the
 gate or rule it belongs to. CI runs them in a separate non-blocking job.
 
 ```bash
@@ -317,7 +355,9 @@ From CLAUDE.md's nine rules, the ones that have already shaped code:
 - **Abstention emits a conservative default with a stated reason, never "unknown."** Abstention
   fires at ore transitions, which is exactly when holding the last setpoint is the worst
   available action. (The submitted abstract says "holds the last-known-good setpoint" — that is
-  now contradicted, deliberately. See §8.)
+  now contradicted, deliberately. See §8.) Guard: `trust.abstain.Abstention`, which has **no
+  field for a previous value**, so the abstract's version of this is not reachable through the
+  type. `audit_abstentions()` refuses a run with no ore-change events in it.
 - **No LLM computes a mineralogical or control value.** Agents route, select, orchestrate, explain.
 - **Permissive licences only for anything shipped.** Maintain [`SBOM.md`](SBOM.md) in the *same
   commit* that adds a dependency.
@@ -371,7 +411,7 @@ docs/BUILDLOG.md     append-only: what was tried, what worked, what did not
 docs/00-STATUS.md    which docs are current vs superseded
 docs/05-toolchain.md every piece of software we install, and what we decided not to
 docs/04-decisions/   ADRs
-src/reefprint/       quantity.py (rule 1) · acquire · bridge · calibrate · polarim · segment · texture · heads · trust · integrate · viz
+src/reefprint/       quantity.py (rule 1) · acquire · bridge · calibrate · polarim · segment · texture · heads · trust (rules 2, 3, 5) · integrate · viz
 tests/               one file per module. Red tests are the backlog, by design.
 experiments/         numbered, each with its own README stating the result AND what it does not show
 data/                DVC-tracked, never committed raw
