@@ -32,6 +32,20 @@ Prerequisites you install once, by hand:
 | **uv** | package + venv manager, replaces pip/venv/poetry | MIT / Apache-2.0 | astral.sh/uv |
 | **git** | version control. Rule 8 — the commit history is the originality defence. | GPL-2.0 *(a tool we run, never a dependency we link)* | git-scm.com |
 
+**Known failure: `uv` on Windows can't install its own Python.** On Sibusiso's Windows machine
+(session 11, 2026-08-21), both `uv sync` and `uv python install 3.12` failed reproducibly with
+*"Missing expected target directory for Python minor version link"*, even after a clean cache
+retry (`uv cache clean`). Root cause not confirmed — the error names a junction/symlink target
+`uv` expects and doesn't find, which on Windows is often Developer Mode being off or an AV
+product (Defender included) blocking the link creation, but neither was tested in isolation.
+Workaround used: point `PYTHONPATH` at an existing 3.13 venv from another project on the same
+machine instead of letting `uv` provision one, after confirming the code being run has no
+3.12-only syntax (`ast.parse` on the file in question — cheap, and it would have caught a
+mismatch immediately). **If this recurs:** try enabling Windows Developer Mode
+(`ms-settings:developers`) or temporarily excluding the `uv` cache/install directories from
+Defender before falling back to the `PYTHONPATH` workaround, and update this note with whichever
+one actually fixes it.
+
 Optional, and genuinely optional:
 
 | Tool | Why you might want it | Licence |

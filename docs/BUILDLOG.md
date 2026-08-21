@@ -126,8 +126,12 @@ subset-level positive quietly becomes a headline the full data doesn't support.
 
 The actual command — `--brightness-quantile 0.5` against the real archive — still needs
 Sibusiso's machine; this session built and tested the capability, it did not run it. Update
-`CONTEXT.md` / this file again once it has. `docs/05-toolchain.md`'s `uv`-on-Windows note is
-still outstanding.
+`CONTEXT.md` / this file again once it has.
+
+`docs/05-toolchain.md`'s `uv`-on-Windows note is now written (§1): the failure text, that root
+cause wasn't isolated (Developer Mode vs. Defender, untested), the `PYTHONPATH` workaround used,
+and what to try if it recurs. Nothing here needed an SBOM change — no dependency changed, only
+what to do when the existing one misbehaves on Windows.
 
 ---
 
