@@ -22,6 +22,66 @@ it is a press release.
 
 ---
 
+## 2026-08-21 — session 13 · the week-2 gate gets a statistical core
+
+### Attempted
+
+Build the falsification test's statistics (Rule 9's H0: after controlling for Cr2O3 and pyroxene
+fraction, texture carries no additional predictive signal), TDD, against synthetic data with a
+known ground truth — no real Bushveld geochemistry is in hand yet.
+
+### Worked
+
+- **`reefprint.heads.falsification.evaluate_texture_uplift`**: OLS on a baseline model (Cr2O3 +
+  pyroxene fraction) and a full model (+ texture), Wald test on the texture coefficients using a
+  cluster-robust CR1 covariance (Cameron & Miller 2015, White 1980), clustered by locality — same
+  reasoning as Rule 2's split-by-locality guard: observations sharing a locality share unmodeled
+  geology, so a plain OLS standard error overstates confidence. F-scaled Wald statistic, small
+  cluster finite correction `G/(G-1) * (n-1)/(n-k)`, p-value from `scipy.stats.f.sf`.
+- **`MIN_LOCALITIES_FOR_INFERENCE = 5`** refuses (`ValueError`) below that cluster count, mirroring
+  the project's other declared-threshold guards (`DETECTION_SNR` in `geometry.py`,
+  `LocalitySplit`'s backstop) — Rule 4 as a bound: cluster-robust inference at a handful of
+  clusters is not inference.
+- **Rule 3 satisfied structurally**: the null model (Cr2O3 + pyroxene fraction, no texture) *is*
+  the required trivial baseline, so `FalsificationResult.baseline_r2` is a required, always-present
+  field, not bolted on.
+- **Honest n reported explicitly**: `FalsificationResult.n_localities` vs `n_obs`, same pattern as
+  `LocalitySplit.n_groups`.
+- TDD: `tests/test_heads_falsification.py` written first (`ModuleNotFoundError` on the first run,
+  the correct RED), then the module. 5 real tests green: a true zero texture effect is not
+  rejected, a true nonzero one is, honest n is locality count not row count, too-few-localities
+  refuses rather than printing a fake p-value, baseline/full R² both reported. Full suite: **249
+  passed, 25 deselected** (placeholders). `ruff check` clean, `ruff format` clean after one
+  reformat pass.
+
+### Did not work
+
+- First draft named the public function `test_texture_uplift` — pytest's `test_*` collection
+  pattern picked up the *imported* function itself as a phantom test item in
+  `tests/test_heads_falsification.py`'s namespace, which then errored trying to satisfy its
+  parameters (`target`, `baseline_features`, ...) as fixtures:
+  `tests/test_heads_falsification.py::test_texture_uplift ERROR ... fixture 'target' not found`.
+  Fixed by renaming to `evaluate_texture_uplift` in both the module and the test file. Generalises:
+  never name a public function under test with a `test_` prefix if the test file imports it by
+  name — pytest's collector does not distinguish "imported" from "defined here."
+
+### Learned
+
+Rule 3's "trivial baseline" and the falsification test's H0 null model are the same object here —
+worth naming, because it means Rule 3 needed no separate mechanism for this head, just an honest
+field.
+
+### Left open
+
+- The week-2 gate is not closed: `tests/test_heads_falsification.py::test_the_falsification_test_has_been_run_on_real_bushveld_data`
+  is a placeholder — no public dataset combining assay Cr2O3, pyroxene fraction, a texture
+  feature, and locality labels has been identified, and the CGS National Core Library phone call
+  (§8 open item) is still not made.
+- Not routed through Sbu — this piece is self-contained synthetic-data scaffolding, touches
+  nothing of his prior work, and needs no data or machine he has. No PR comment sent for it.
+
+---
+
 ## 2026-08-21 — session 11 · N3 measured, twice, and the answer is `NEITHER`
 
 ### Attempted

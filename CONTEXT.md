@@ -48,7 +48,7 @@ and flotation response. It is software, evaluated on public data. **No instrumen
 | Week | Gate | State |
 |---|---|---|
 | **1** | Rotation series in, per-pixel Stokes out, pentlandite dark / pyrrhotite lit, on screen | **Leg (a) phantom: PASSED**, 40.4× separation. **Leg (b) real public data: N3 measured, verdict `NEITHER`** ← *we are here*. Sibusiso ran `experiments/002-s3v2-geometry/run.py` against the real `S3_v2.zip` twice, identically: 29 sections, 116,000 pixels, 2nd-harmonic SNR 2.5× its floor, 4th-harmonic SNR 1.1×, threshold 5.0×. Neither harmonic clears detection. Not clearance for the Stokes inversion — see §8 N3 for why this leans stage, not neutral. |
-| 2 | Falsification test computed, with CI | not started |
+| 2 | Falsification test computed, with CI | **Statistical core built and tested** (`reefprint.heads.falsification`, cluster-robust CR1 by locality, honest n = locality count). Proven against synthetic data with a known ground truth — a real texture effect detected, a real absence not manufactured. **Real Bushveld data not yet in hand**: no public dataset combining assay Cr2O3, pyroxene fraction, a texture feature, and locality labels has been identified; CGS phone call still not made (§8). |
 | 3 | Conformal coverage within band, per held-out locality | not started |
 | 4 | Zero silent failures under degraded input | not started |
 | 5 | End-to-end offline on one laptop | not started |
@@ -69,7 +69,14 @@ abstention are no longer backlog. All three needed a second pass in sessions 8�
 shared defect: a comparison or interval that should have been gated on whether *n* could resolve
 it, and silently wasn't. See `docs/BUILDLOG.md` sessions 8, 9, 10.
 
-**Not built:** `calibrate`, `segment`, `texture`, `heads`, `integrate`, and the
+**Also built and tested:** `reefprint.heads.falsification` (the week-2 gate's statistical core —
+cluster-robust CR1 inference on texture uplift, grouped by locality, `MIN_LOCALITIES_FOR_INFERENCE
+= 5` refuses inference below that count per Rule 4, baseline R² reported per Rule 3). Proven only
+against synthetic data so far — see `tests/test_heads_falsification.py`'s placeholder test for
+what real data is still missing.
+
+**Not built:** `calibrate`, `segment`, `texture`, the rest of `heads` (entrainment risk, NFG load,
+oxidation index), `integrate`, and the
 hardware-facing half of `acquire` (which, per ADR-0002, has no rig to drive). Each has failing tests naming exactly what
 is missing — **the red test list is the backlog**, deliberately.
 

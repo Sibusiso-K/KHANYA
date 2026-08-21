@@ -12,4 +12,8 @@ Killed and not to be revived without arguing the objection away: liberation at t
 (gauntlet F4 — recovery is chrome-constrained, so liberation fights the binding constraint),
 grindability to kWh/t (mills run at near-constant power), and T+45 as a hard claim (S1 —
 transport lag is a distribution, not a delay).
+
+`falsification.py` is the week-2 gate (Rule 9): whether texture carries predictive signal beyond
+Cr2O3 and pyroxene fraction, tested with cluster-robust inference grouped by locality (Rule 2).
+Not one of the three heads above — it decides whether texture belongs in them at all.
 """
