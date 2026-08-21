@@ -37,7 +37,13 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from reefprint.polarim.geometry import HarmonicVerdict, harmonic_signature
+from reefprint.polarim.geometry import (
+    DETECTION_SNR,
+    MODULATING_FRACTION,
+    HarmonicSignature,
+    HarmonicVerdict,
+    harmonic_signature,
+)
 
 #: ``S3_v2/imgs/{split}/S3_{split}_NN/S3_{split}_NN_rDDD.jpg`` — 72 frames, 5 degree steps,
 #: full 360. Layout confirmed against the real archive by KHANYA's ``src/polarimetry.py
@@ -159,6 +165,67 @@ def modulation_depth_dn(intensities: np.ndarray) -> float:
     return float(np.median(swing[top]))
 
 
+
+def pool_signatures(
+    signatures: list[HarmonicSignature],
+    *,
+    detection_snr: float = DETECTION_SNR,
+    modulating_fraction: float = MODULATING_FRACTION,
+) -> tuple[float, float, HarmonicVerdict, int, int]:
+    """Combine per-section harmonic signatures into one verdict, without requiring
+    a common frame count across sections.
+
+    THE BUG THIS REPLACES. The original pooling concatenated raw (n_angles, n_pixels)
+    frame arrays across sections before calling harmonic_signature once on the
+    result, which requires every section to share n_angles exactly. The real S3 v2
+    archive does not: usable sections range from 24 to 72 frames. Trimming every
+    section down to the smallest (24) is not neutral - it throws away up to two
+    thirds of the rotation series on the richer sections, for no statistical reason.
+
+    THE FIX. harmonic_signature already reduces the frame axis to two PER-PIXEL
+    numbers: amplitude_2/floor_2 and amplitude_4/floor_4 (see its docstring - these
+    are per-pixel arrays, independent of how many frames a given section's fit used
+    once the fit is done). Frame count differences are therefore already absorbed
+    into each pixel's own floor before pooling needs to happen at all. So: call
+    harmonic_signature once per section at that section's NATIVE frame count and
+    angles (already done in the per-section loop above), then concatenate the
+    resulting per-pixel amplitude/floor arrays across sections, and re-run exactly
+    the same selection-and-median rule harmonic_signature uses internally - top
+    `modulating_fraction` pixels by max(amplitude_2, amplitude_4), median SNR over
+    that selection. Every frame every section actually captured contributes.
+
+    Returns (snr_2, snr_4, verdict, n_pixels_pooled, n_sections_pooled).
+    """
+    amplitude_2 = np.concatenate([sig.amplitude_2.ravel() for sig in signatures])
+    amplitude_4 = np.concatenate([sig.amplitude_4.ravel() for sig in signatures])
+    floor_2 = np.concatenate([sig.floor_2.ravel() for sig in signatures])
+    floor_4 = np.concatenate([sig.floor_4.ravel() for sig in signatures])
+
+    snr_2_map = np.divide(amplitude_2, floor_2, out=np.zeros_like(amplitude_2), where=floor_2 > 0)
+    snr_4_map = np.divide(amplitude_4, floor_4, out=np.zeros_like(amplitude_4), where=floor_4 > 0)
+
+    strength = np.maximum(amplitude_2, amplitude_4)
+    n_pixels = strength.size
+    n_keep = max(1, round(modulating_fraction * n_pixels))
+    selected = np.argpartition(strength, n_pixels - n_keep)[n_pixels - n_keep :]
+
+    snr_2 = float(np.median(snr_2_map[selected]))
+    snr_4 = float(np.median(snr_4_map[selected]))
+
+    has_2 = snr_2 >= detection_snr
+    has_4 = snr_4 >= detection_snr
+    if has_2 and has_4:
+        verdict = HarmonicVerdict.BOTH
+    elif has_2:
+        verdict = HarmonicVerdict.SECOND
+    elif has_4:
+        verdict = HarmonicVerdict.FOURTH
+    else:
+        verdict = HarmonicVerdict.NEITHER
+
+    return snr_2, snr_4, verdict, n_pixels, len(signatures)
+
+
 def main() -> None:
     # The verdict strings carry em-dashes and the Windows console is cp1252 by default.
     if hasattr(sys.stdout, "reconfigure"):
@@ -176,8 +243,8 @@ def main() -> None:
 
     rng = np.random.default_rng(args.seed)
     per_section: list[dict[str, object]] = []
-    pooled: list[np.ndarray] = []
-    pooled_angles: np.ndarray | None = None
+    signatures: list[HarmonicSignature] = []
+    depths: list[float] = []  # per-section modulation depth; see note at pooling
 
     with zipfile.ZipFile(args.archive) as archive:
         names = [n for n in archive.namelist() if not n.startswith("__MACOSX")]
@@ -210,20 +277,26 @@ def main() -> None:
                     "geometry": signature.geometry.name,
                 }
             )
-            pooled.append(intensities)
-            pooled_angles = angles
+            signatures.append(signature)
+            depths.append(modulation_depth_dn(intensities))
 
-    if not pooled:
+    if not signatures:
         raise SystemExit("\nno section yielded a usable rotation series — nothing to conclude")
 
-    combined = np.concatenate(pooled, axis=1)
-    overall = harmonic_signature(combined, pooled_angles)
-    depth_dn = modulation_depth_dn(combined)
 
-    print("\n" + "=" * 78)
-    print(f"POOLED over {len(pooled)} sections, {combined.shape[1]} pixels")
-    print(overall.explain())
-    print(f"Modulation depth, top decile: {depth_dn:.1f} DN of 255.")
+    # Pooled per PIXEL statistics, not per raw frame - see pool_signatures docstring.
+    # This is what lets sections with 24 frames and sections with 72 frames combine
+    # without truncating the richer ones down to the poorest.
+    snr_2, snr_4, verdict, n_pixels, n_pooled = pool_signatures(signatures)
+    frame_counts = sorted({sig.n_angles for sig in signatures})
+
+    print(f"POOLED over {n_pooled} sections, {n_pixels} pixels "
+          f"(native frame counts used per section: {frame_counts})")
+    print(f"2nd harmonic at {snr_2:.1f}x its noise floor, 4th harmonic at {snr_4:.1f}x, "
+          f"threshold {DETECTION_SNR:.1f}x. Verdict: {verdict.value}.")
+    print(f"Modulation depth, top decile, median across sections: "
+          f"{float(np.median(depths)):.1f} DN of 255 (range "
+          f"{min(depths):.1f}-{max(depths):.1f}).")
     print("=" * 78)
 
     verdicts = {row.get("verdict") for row in per_section if "verdict" in row}
@@ -233,14 +306,14 @@ def main() -> None:
             "protocol should be constant across a dataset; a split verdict is itself a finding."
         )
 
-    if overall.verdict is HarmonicVerdict.FOURTH:
+    if verdict is HarmonicVerdict.FOURTH:
         print(
             "\nN3 CONFIRMED. These are stage rotations under crossed polars, not analyser\n"
             "rotations. The linear Stokes inversion must NOT be run on them — it would report\n"
             "every anisotropic mineral as isotropic, silently. Week-1 leg (b) needs a\n"
             "fourth-harmonic estimator, and the two must never be conflated in the talk."
         )
-    elif overall.verdict is HarmonicVerdict.SECOND:
+    elif verdict is HarmonicVerdict.SECOND:
         print(
             "\nN3 REFUTED, and this is the better outcome. The series carry 2nd-harmonic\n"
             "modulation, so the Stokes inversion applies directly and week-1 leg (b) can run\n"
@@ -248,7 +321,7 @@ def main() -> None:
         )
     else:
         print(
-            f"\nNO VERDICT ({overall.verdict.name}). Neither geometry is cleanly supported.\n"
+            f"\nNO VERDICT ({verdict.name}). Neither geometry is cleanly supported.\n"
             "Do not proceed to an inversion on this basis; N3 stays open."
         )
         print(
@@ -268,16 +341,17 @@ def main() -> None:
         "archive": str(args.archive),
         "samples_per_section": args.samples,
         "seed": args.seed,
-        "detection_snr": overall.detection_snr,
-        "modulation_depth_dn": depth_dn,
+        "detection_snr": DETECTION_SNR,
+        "modulation_depth_dn_median": float(np.median(depths)),
+        "modulation_depth_dn_range": [min(depths), max(depths)],
         "pooled": {
-            "n_sections": len(pooled),
-            "n_pixels": int(combined.shape[1]),
-            "n_angles": overall.n_angles,
-            "snr_2": overall.snr_2,
-            "snr_4": overall.snr_4,
-            "verdict": overall.verdict.name,
-            "geometry": overall.geometry.name,
+            "n_sections": n_pooled,
+            "n_pixels": n_pixels,
+            "native_frame_counts": frame_counts,
+            "snr_2": snr_2,
+            "snr_4": snr_4,
+            "verdict": verdict.name,
+            "geometry": verdict.to_geometry().name,
         },
         "per_section": per_section,
     }
