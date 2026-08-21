@@ -19,6 +19,70 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-08-21 — Sibusiso (29)
+
+**Did:** Reviewed the `reefprint` branch end to end, ran experiment 002 against
+the real S3 v2 archive, found and fixed a real bug in it, and got it confirmed
+twice.
+
+**1. Reviewed `reefprint` branch - it is safe, and well-designed.** First look at
+the diff stat (KHANYA files net -9750 lines) looked like a wholesale delete.
+It is not: ADR-0003 states explicitly the branch is **never merged** - two
+independent commit histories on purpose, better evidence under originality
+authentication than one history with a giant replace-everything merge commit.
+`main` is untouched. The `bridge/` module (labels in, measurements out, never
+returns a mask) is a clean one-way seam, better than what I wrote in
+JOINT-PLAN.md - it centralises three project rules at the one interface point
+instead of trusting every future caller.
+
+**2. Ran `experiments/002-s3v2-geometry/run.py` against the real
+`data/raw/lumenstone/S3_v2.zip` - first time, real answer.** Crashed on a
+frame-count mismatch (real sections range 24-72 frames; the pooling
+concatenated raw frames across sections, which needs a common count). Traced
+it properly rather than patching around it: `harmonic_signature` already
+reduces the frame axis to per-pixel amplitude/floor before the mismatch
+matters, so the fix pools those per-pixel arrays (correct, uses every frame
+every section actually captured) instead of truncating every section down to
+the smallest. Opened **PR #3** with the fix, confirmed the archive itself
+(not a bug) skips ~29 of 47 sections - those are single static images with no
+rotation subdirectory, genuinely no acquisition, not a filename-parsing miss
+as I first assumed before checking.
+
+**Real result, twice, identical both times:** 29 sections, 116,000 pixels,
+2nd harmonic 2.5x its noise floor, 4th harmonic 1.1x, threshold 5.0x.
+**Verdict: NEITHER.** Per the script's own physics (4-phi goes as
+bireflectance squared, 2-theta as bireflectance on a bright S0), a null is far
+more consistent with stage rotations buried in noise than analyser rotations
+buried in noise. **N3 stays open, open-but-leaning toward stage rotation. Not
+clearance to run the Stokes inversion on this archive.**
+
+**3. `uv` itself is broken on this Windows machine.** `uv sync` and
+`uv python install 3.12` both fail reproducibly with "Missing expected target
+directory for Python minor version link", even after a full clean of the uv
+python cache directory and a fresh retry. Not a stale-cache issue - second
+attempt failed identically to the first. Ran everything through KHANYA's
+existing Python 3.13 venv via `PYTHONPATH` instead (`geometry.py` has no
+3.12-only syntax, checked with `ast.parse` before relying on it). Flagged on
+the PR in case it hits Lethabo's own machine - might be a Windows
+junction/Defender issue worth a line in `docs/05-toolchain.md`.
+
+**4. S1 retrain has died and resumed 9 times now.** Same pattern every time -
+`last.pt` intact, `run_s1_retrain.cmd` relaunched detached, resumes at the
+next epoch with zero loss. At epoch 17/20, mIoU 0.566 (best checkpoint still
+epoch 15 at 0.610). This is now just the norm for a >2h CPU job on this
+machine, not news each time it happens.
+
+**Changed:** `.gitignore` (N3 log files), and on the `reefprint` branch:
+new branch `fix/pool-signatures-not-raw-frames`, PR #3 open against
+`reefprint` with the pooling fix.
+**Blocked on:** nothing technical.
+**Next:** PR #3 needs your review/merge - it's the fix for the crash you'd
+have hit running week-1 leg (b) yourself. N3's open-but-leaning verdict is a
+real input to whether the abstract can claim the Stokes inversion runs on
+public data at all; worth factoring into the phase-set/scope call already
+open since (26).
+
+
 ## 2026-08-19 — Sibusiso (28) — session wrap-up
 
 **Did:** Followed on from (27). S3 v2 finished downloading; the ten-mineral
