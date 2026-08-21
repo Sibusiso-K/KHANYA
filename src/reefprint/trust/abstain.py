@@ -43,6 +43,8 @@ from dataclasses import dataclass
 from enum import StrEnum
 from math import sqrt
 
+from scipy.stats import fisher_exact
+
 from reefprint.quantity import Quantity, require_reportable
 
 __all__ = [
@@ -311,15 +313,55 @@ class AbstentionAudit:
         return three_over_n if self.rate_during_ore_change == 0.0 else 1.0 - three_over_n
 
     @property
+    def concentration_p_value(self) -> float | None:
+        """One-sided Fisher's exact test: is the conditional rate elevated, not merely different?
+
+        Fisher (1922), on the 2x2 table of abstained/not, during ore change vs stable. Unlike the
+        Wald standard error this module uses elsewhere, this test does not degenerate at p = 0 or
+        p = 1 and does not need a minimum *n* before it can say anything — it is what actually
+        resolves the two-event canonical example below, where :attr:`bound_during_ore_change` can
+        only say the rate on its own "resolves nothing".
+
+        ``None`` when there are no stable frames to compare against (``n_stable == 0``). There is
+        no baseline there, and a p-value against nothing is not a p-value.
+        """
+        if self.n_stable == 0:
+            return None
+        table = [
+            [
+                self.n_abstentions_during_ore_change,
+                self.n_ore_change - self.n_abstentions_during_ore_change,
+            ],
+            [
+                self.n_abstentions_when_stable,
+                self.n_stable - self.n_abstentions_when_stable,
+            ],
+        ]
+        _, p_value = fisher_exact(table, alternative="greater")
+        return float(p_value)
+
+    @property
     def concentrates_at_transitions(self) -> bool:
         """Whether refusals cluster where they are most dangerous. Blind spot 1, as a boolean.
 
-        A plain comparison of the two observed rates. Whether *n* can resolve the difference is
-        a separate question, answered by :attr:`noise_during_ore_change` and printed alongside —
-        the same division of labour as :class:`~reefprint.trust.baseline.ScoredMetric`, where the
-        direction and the resolvability are two statements rather than one.
+        Two conditions, not one: the conditional rate has to be *higher* than the stable rate,
+        and :attr:`concentration_p_value` has to say that gap is not just noise at this *n*. A
+        plain ``rate_during_ore_change > rate_when_stable`` used to be the whole test, and it
+        fired on point estimates alone — an 8-point gap at n = 3 read the same as a genuine gap
+        at n = 50.
         """
-        return self.rate_during_ore_change > self.rate_when_stable
+        p_value = self.concentration_p_value
+        if p_value is None:
+            return False
+        return self.rate_during_ore_change > self.rate_when_stable and p_value < 0.05
+
+    @property
+    def _elevated_but_unresolved(self) -> bool:
+        """Direction is up, but *n* — or the lack of any stable baseline — cannot confirm it."""
+        return (
+            self.rate_during_ore_change > self.rate_when_stable
+            and not self.concentrates_at_transitions
+        )
 
     def summary(self) -> str:
         line = (
@@ -330,10 +372,21 @@ class AbstentionAudit:
         )
         if self.concentrates_at_transitions:
             return (
-                f"{line} — blind spot 1: refusals concentrate at the transitions, which is "
-                "when holding the last setpoint is the worst available action"
+                f"{line} — blind spot 1: refusals concentrate at the transitions "
+                f"(Fisher's exact p = {self.concentration_p_value:.3f}), which is when holding "
+                "the last setpoint is the worst available action"
             )
+        if self._elevated_but_unresolved:
+            return f"{line} — {self._concentration_clause()}"
         return f"{line} — refusals do not concentrate at the transitions"
+
+    def _concentration_clause(self) -> str:
+        if self.n_stable == 0:
+            return "the rate is higher during ore change, but there are no stable frames to compare against"
+        return (
+            f"the rate is higher during ore change, but n cannot tell that from noise "
+            f"(Fisher's exact p = {self.concentration_p_value:.3f})"
+        )
 
     def _conditional_precision(self) -> str:
         """What the conditional rate is actually worth, in words rather than a false interval."""

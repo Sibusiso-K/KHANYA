@@ -22,6 +22,76 @@ it is a press release.
 
 ---
 
+## 2026-08-21 — session 10 · a third instance, and this one had no gate at all
+
+### Attempted
+
+A deliberate sweep of `trust/` for the same defect class session 8 and 9 fixed — a comparison
+that should account for whether *n* can resolve it, and silently doesn't. `split.py` is clean
+(pure set logic, no thresholds). `baseline.py` was already fixed in session 9. `abstain.py`'s
+`AbstentionAudit.concentrates_at_transitions` was not: a bare
+`rate_during_ore_change > rate_when_stable`, comparing two proportions at two different sample
+sizes, with **no resolvability check anywhere** — not degenerate at an edge, ungated everywhere.
+
+### Worked
+
+- **Demonstrated the defect before touching the fix.** 1 abstention out of 3 ore-change events
+  (33.3%) vs 5 out of 20 stable (25.0%) read as `concentrates_at_transitions = True` — "blind
+  spot 1" printed in the summary — despite `noise_during_ore_change` on the same line saying
+  ±27.2%. The 8.3-point gap was inside its own printed standard error.
+- **Considered and rejected the obvious port first.** The instinct was to reuse the
+  single-proportion rule-of-three bound from each side and require the gap to exceed their sum
+  — non-overlapping intervals. Traced it against the project's own canonical demonstration
+  (2/2 abstained during 2 ore-change events, 0/13 stable) before writing anything: at n = 2,
+  `bound_during_ore_change` is already `None` (`3/n >= 1`), so the sum-of-bounds approach would
+  return unresolvable there too — silently flipping the headline "blind spot 1, in numbers"
+  example from `True` to `False`. Too consequential to do by accident; not attempted.
+- **Fisher's exact test instead** (`scipy.stats.fisher_exact`, one-sided `"greater"`). Published
+  (Fisher 1922), exact rather than asymptotic, so it does not degenerate at small *n* or at
+  p = 0/1 the way the Wald SE does. `scipy>=1.14` was already a declared, licensed dependency
+  (BSD-3-Clause) — this is its first live caller in `src/reefprint/`.
+- **The canonical example survives, and now says why.** Fisher's exact on the 2/2-vs-0/13 table
+  gives p ≈ 0.0095 — significant, `concentrates_at_transitions` stays `True`,
+  `test_abstention_concentrated_at_transitions_is_flagged_in_words` passes unmodified. The
+  summary line used to read as a contradiction — "n = 2, which resolves nothing" next to "blind
+  spot 1: refusals concentrate" two clauses later. It now reads `(Fisher's exact p = 0.010)`
+  next to the claim, because the two clauses were always answering different questions (the
+  rate's own precision vs. whether the *comparison* is real) and the line never said so.
+  `resolves_nothing` was never wrong; it just wasn't the test that mattered.
+- **`n_stable == 0` is a real, reachable state.** `audit_abstentions` only refuses
+  `n_ore_change == 0`; an all-transition run passes it, and `rate_when_stable` returns its `0.0`
+  convention rather than a measurement. `concentration_p_value` returns `None` there — no
+  baseline, no p-value — rather than letting the comparison read the manufactured `0.0` as a
+  real stable rate.
+- **`summary()` gets a third state.** Direction down-or-equal (unchanged wording); direction up
+  and significant (`"blind spot 1"` + p-value); direction up but *not* significant or with no
+  baseline at all — a new clause, because `"do not concentrate"` there would overclaim safety
+  exactly where *n* is weakest, which is the same mistake in the other direction.
+- 4 new tests, all watched RED first (`AttributeError: no attribute 'concentration_p_value'`,
+  then a live assertion failure showing `"blind spot 1"` printing on the noise scenario), then
+  GREEN. 243 tests total (was 239), ruff clean. Full suite and every summary shape printed and
+  read by eye — session 8's lesson, applied rather than restated a third time.
+
+### Learned
+
+The pattern from sessions 8 and 9 was "a degenerate value used as a threshold answers the same
+way every time and says nothing about it." This one generalises the pattern one step further:
+the threshold doesn't have to be degenerate to be missing. Two proportions compared directly,
+with no resolvability check *at all*, is the same failure with the edge case removed — it fires
+on point estimates at every *n*, not just at the extremes. Worth asking of any remaining
+comparison in the package: not just "does this degenerate", but "is there a resolvability check
+here in the first place."
+
+### Left open
+
+Nothing new. N3 remains the single next action for the project, unchanged by this session:
+
+```
+uv run python experiments/002-s3v2-geometry/run.py --archive path/to/S3_v2.zip
+```
+
+---
+
 ## 2026-08-20 — session 9 · the same degenerate SE in `baseline.py`, and it was worse there
 
 ### Attempted

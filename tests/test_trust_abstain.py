@@ -378,6 +378,67 @@ def test_abstention_that_does_not_concentrate_is_not_flagged():
     assert not audit.concentrates_at_transitions
 
 
+def test_a_higher_conditional_rate_at_small_n_is_not_flagged_as_concentrating():
+    """A plain rate comparison used to be the whole test, and it fired on point estimates alone.
+
+    1/3 during ore change vs 5/20 stable is a higher rate — and Fisher's exact test on that
+    table (p ≈ 0.62) says it is nowhere near distinguishable from noise. The old code had no
+    way to say that; it just compared 0.333 to 0.250 and called it concentration.
+    """
+    audit = audit_abstentions(
+        _decisions("app" + "aaaaa" + "p" * 15),
+        ore_change=[True, True, True] + [False] * 20,
+    )
+
+    assert audit.rate_during_ore_change > audit.rate_when_stable
+    assert not audit.concentrates_at_transitions
+
+
+def test_the_canonical_concentration_example_is_backed_by_a_real_test():
+    """The two-event example is exactly where the old rate comparison was least trustworthy.
+
+    Fisher's exact test does not degenerate the way the Wald SE does — it resolves this table
+    (p ≈ 0.0095) even though :attr:`bound_during_ore_change` can only say the rate itself
+    "resolves nothing" at n = 2. The comparison and the rate are different questions.
+    """
+    audit = audit_abstentions(
+        _decisions("pppppppaapppppp"),
+        ore_change=[False] * 7 + [True, True] + [False] * 6,
+    )
+
+    assert audit.concentrates_at_transitions
+    assert audit.concentration_p_value is not None
+    assert audit.concentration_p_value < 0.05
+    assert "fisher" in audit.summary().lower()
+
+
+def test_concentration_cannot_be_assessed_with_no_stable_frames():
+    """Every frame was a transition — there is no baseline to compare against, not a 0% one."""
+    audit = audit_abstentions(
+        _decisions("aap"),
+        ore_change=[True, True, True],
+    )
+
+    assert audit.n_stable == 0
+    assert audit.concentration_p_value is None
+    assert not audit.concentrates_at_transitions
+
+
+def test_an_elevated_but_unresolved_rate_is_not_reported_as_either_verdict():
+    """Neither "blind spot 1" (overclaims a real finding) nor "do not concentrate" (overclaims
+    safety) is honest here — the summary has to say the comparison is unresolved.
+    """
+    audit = audit_abstentions(
+        _decisions("app" + "aaaaa" + "p" * 15),
+        ore_change=[True, True, True] + [False] * 20,
+    )
+
+    summary = audit.summary().lower()
+
+    assert "blind spot 1" not in summary
+    assert "do not concentrate" not in summary
+
+
 def test_the_conditional_rate_carries_its_own_honest_n():
     """Rule 4. Honest n for the conditional is the number of ore-change events, not of frames."""
     audit = audit_abstentions(

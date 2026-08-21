@@ -7,8 +7,8 @@ is the constitution — *what is true and what the rules are*. This file is the 
 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
-- **Last updated:** 2026-08-20
-- **Last commit at time of writing:** `ceb8347` rule 5 becomes a type — the guard is a field that is not there
+- **Last updated:** 2026-08-21
+- **Last commit at time of writing:** the Fisher's-exact-test fix to `concentrates_at_transitions` in `abstain.py`
 - **Days to final:** 42 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 
 ---
@@ -63,7 +63,13 @@ geometries), `reefprint.bridge` (labelled masks + a rotation series → per-mine
 with its noise floor; the seam KHANYA hands data across), `reefprint.viz.anisotropy` (the
 three-panel figure).
 
-**Not built:** `calibrate`, `segment`, `texture`, `heads`, `trust`, `integrate`, and the
+**Also built and tested:** `reefprint.trust.split` (rule 2), `reefprint.trust.baseline` (rule 3),
+`reefprint.trust.abstain` (rule 5) — locality splits, trivial baselines, and conservative-default
+abstention are no longer backlog. All three needed a second pass in sessions 8–10 to close a
+shared defect: a comparison or interval that should have been gated on whether *n* could resolve
+it, and silently wasn't. See `docs/BUILDLOG.md` sessions 8, 9, 10.
+
+**Not built:** `calibrate`, `segment`, `texture`, `heads`, `integrate`, and the
 hardware-facing half of `acquire` (which, per ADR-0002, has no rig to drive). Each has failing tests naming exactly what
 is missing — **the red test list is the backlog**, deliberately.
 
@@ -278,7 +284,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **239 passed, 24 deselected**. Anything less is a regression, not a quirk.
+Expect **243 passed, 24 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf

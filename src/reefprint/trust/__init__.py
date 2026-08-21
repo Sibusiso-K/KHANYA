@@ -36,6 +36,18 @@ Four rules bite hardest here, and three of them are now code rather than prose:
   :class:`ValueError`. :func:`~reefprint.trust.abstain.audit_abstentions` refuses a run with
   no ore-change events in it, because the only number it could then report is the aggregate,
   and quoting the aggregate is the error blind spot 1 describes.
+  :attr:`~reefprint.trust.abstain.AbstentionAudit.concentrates_at_transitions` used to be a
+  bare ``rate_during_ore_change > rate_when_stable`` — a comparison of two proportions at two
+  different sample sizes, with no resolvability gate at all, so an 8-point gap at n = 3 read
+  the same as a real one at n = 50. It is now gated on
+  :attr:`~reefprint.trust.abstain.AbstentionAudit.concentration_p_value`, a one-sided Fisher's
+  exact test (Fisher 1922) on the 2x2 table — chosen because, unlike the Wald SE above, it does
+  not degenerate at p = 0 or p = 1 or need a minimum n, so it is what actually resolves the
+  two-event canonical example: p ≈ 0.0095, even though the rate's own rule-of-three bound can
+  only say n = 2 "resolves nothing" about the rate in isolation. Direction and significance are
+  two statements, not one, and :meth:`~reefprint.trust.abstain.AbstentionAudit.summary` now has
+  a third state for "elevated but unresolved" — neither the blind-spot-1 claim nor "does not
+  concentrate" is honest there, since the latter overclaims safety exactly where n is weakest.
 
 Rule 1 is enforced one level up, in :mod:`reefprint.quantity`, because it applies to every
 subpackage rather than to this one. It meets rule 5 at
