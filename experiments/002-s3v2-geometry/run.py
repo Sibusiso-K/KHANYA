@@ -165,7 +165,6 @@ def modulation_depth_dn(intensities: np.ndarray) -> float:
     return float(np.median(swing[top]))
 
 
-
 def pool_signatures(
     signatures: list[HarmonicSignature],
     *,
@@ -283,20 +282,25 @@ def main() -> None:
     if not signatures:
         raise SystemExit("\nno section yielded a usable rotation series — nothing to conclude")
 
-
     # Pooled per PIXEL statistics, not per raw frame - see pool_signatures docstring.
     # This is what lets sections with 24 frames and sections with 72 frames combine
     # without truncating the richer ones down to the poorest.
     snr_2, snr_4, verdict, n_pixels, n_pooled = pool_signatures(signatures)
     frame_counts = sorted({sig.n_angles for sig in signatures})
 
-    print(f"POOLED over {n_pooled} sections, {n_pixels} pixels "
-          f"(native frame counts used per section: {frame_counts})")
-    print(f"2nd harmonic at {snr_2:.1f}x its noise floor, 4th harmonic at {snr_4:.1f}x, "
-          f"threshold {DETECTION_SNR:.1f}x. Verdict: {verdict.value}.")
-    print(f"Modulation depth, top decile, median across sections: "
-          f"{float(np.median(depths)):.1f} DN of 255 (range "
-          f"{min(depths):.1f}-{max(depths):.1f}).")
+    print(
+        f"POOLED over {n_pooled} sections, {n_pixels} pixels "
+        f"(native frame counts used per section: {frame_counts})"
+    )
+    print(
+        f"2nd harmonic at {snr_2:.1f}x its noise floor, 4th harmonic at {snr_4:.1f}x, "
+        f"threshold {DETECTION_SNR:.1f}x. Verdict: {verdict.value}."
+    )
+    print(
+        f"Modulation depth, top decile, median across sections: "
+        f"{float(np.median(depths)):.1f} DN of 255 (range "
+        f"{min(depths):.1f}-{max(depths):.1f})."
+    )
     print("=" * 78)
 
     verdicts = {row.get("verdict") for row in per_section if "verdict" in row}
