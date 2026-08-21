@@ -2,6 +2,16 @@
 
     uv run python experiments/002-s3v2-geometry/run.py --archive path/to/S3_v2.zip
 
+The real archive returned NEITHER twice (2026-08-21): 29 sections, 116,000 pixels, 2nd harmonic
+at 2.5x its noise floor, 4th at 1.1x, threshold 5.0x. Not clearance for the Stokes inversion —
+see CONTEXT.md and docs/BUILDLOG.md session 11 for why a symmetric null leans toward stage here.
+To check whether that null survives on the pixels where an analyser signal would be least
+buried, add ``--brightness-quantile 0.5`` (or any quantile) to restrict pooling to the brightest
+grains by fitted DC before taking the verdict:
+
+    uv run python experiments/002-s3v2-geometry/run.py --archive path/to/S3_v2.zip \
+        --brightness-quantile 0.5
+
 N3 holds that published "XPL rotation sequences" are almost certainly *stage* rotations under
 fixed crossed polars rather than *analyser* rotations. That is an inference from how anisotropy
 has been observed since the 1940s, and the whole of week-1 leg (b) rests on it. This script
@@ -170,9 +180,19 @@ def pool_signatures(
     *,
     detection_snr: float = DETECTION_SNR,
     modulating_fraction: float = MODULATING_FRACTION,
+    brightness_quantile: float | None = None,
 ) -> tuple[float, float, HarmonicVerdict, int, int]:
     """Combine per-section harmonic signatures into one verdict, without requiring
     a common frame count across sections.
+
+    ``brightness_quantile``, if given, restricts pooling to pixels whose fitted DC term
+    (brightness proxy — see ``HarmonicSignature.dc``) is at or above that quantile of the
+    pooled distribution, *before* the modulating-fraction selection below runs. This is the
+    N3 re-run CLAUDE.md's physics section predicts should matter: analyser modulation scales
+    as bireflectance directly, on top of S0, while stage extinction scales as bireflectance
+    squared — so the analyser signal, if it exists at all, is least buried on the brightest
+    grains. Restricting to them is a targeted check of the `NEITHER` verdict, not a new
+    measurement technique; the unrestricted pooled verdict is still what N3 is decided on.
 
     THE BUG THIS REPLACES. The original pooling concatenated raw (n_angles, n_pixels)
     frame arrays across sections before calling harmonic_signature once on the
@@ -199,6 +219,12 @@ def pool_signatures(
     amplitude_4 = np.concatenate([sig.amplitude_4.ravel() for sig in signatures])
     floor_2 = np.concatenate([sig.floor_2.ravel() for sig in signatures])
     floor_4 = np.concatenate([sig.floor_4.ravel() for sig in signatures])
+
+    if brightness_quantile is not None:
+        dc = np.concatenate([sig.dc.ravel() for sig in signatures])
+        bright = dc >= np.quantile(dc, brightness_quantile)
+        amplitude_2, amplitude_4 = amplitude_2[bright], amplitude_4[bright]
+        floor_2, floor_4 = floor_2[bright], floor_4[bright]
 
     snr_2_map = np.divide(amplitude_2, floor_2, out=np.zeros_like(amplitude_2), where=floor_2 > 0)
     snr_4_map = np.divide(amplitude_4, floor_4, out=np.zeros_like(amplitude_4), where=floor_4 > 0)
@@ -235,6 +261,17 @@ def main() -> None:
     parser.add_argument("--sections", type=int, default=DEFAULT_SECTIONS)
     parser.add_argument("--samples", type=int, default=SAMPLES_PER_SECTION)
     parser.add_argument("--seed", type=int, default=20260820)
+    parser.add_argument(
+        "--brightness-quantile",
+        type=float,
+        default=None,
+        help=(
+            "Also report the verdict restricted to pixels at or above this quantile of DC "
+            "(brightness). N3 re-run: analyser modulation should be least buried on the "
+            "brightest grains, so if this flips NEITHER to SECOND, that is evidence for "
+            "an analyser rotation the unrestricted pooling missed. 0.5 is a reasonable start."
+        ),
+    )
     args = parser.parse_args()
 
     if not args.archive.exists():
@@ -303,6 +340,33 @@ def main() -> None:
     )
     print("=" * 78)
 
+    bright_report: dict[str, object] | None = None
+    if args.brightness_quantile is not None:
+        b_snr_2, b_snr_4, b_verdict, b_n_pixels, _ = pool_signatures(
+            signatures, brightness_quantile=args.brightness_quantile
+        )
+        print(
+            f"\nBRIGHTEST {(1.0 - args.brightness_quantile) * 100:.0f}% BY DC "
+            f"({b_n_pixels} of {n_pixels} pixels): 2nd harmonic at {b_snr_2:.1f}x, "
+            f"4th harmonic at {b_snr_4:.1f}x, threshold {DETECTION_SNR:.1f}x. "
+            f"Verdict: {b_verdict.value}."
+        )
+        if b_verdict is HarmonicVerdict.SECOND and verdict is not HarmonicVerdict.SECOND:
+            print(
+                "\nThis is evidence for an analyser rotation the unrestricted pooling missed — "
+                "the 2nd harmonic clears threshold once dim, uninformative pixels are excluded. "
+                "Not a full N3 reversal by itself: report both verdicts, and check whether the "
+                "brightest-grain subset is large enough and representative enough to trust before "
+                "revising the geometry call."
+            )
+        bright_report = {
+            "quantile": args.brightness_quantile,
+            "n_pixels": b_n_pixels,
+            "snr_2": b_snr_2,
+            "snr_4": b_snr_4,
+            "verdict": b_verdict.name,
+        }
+
     verdicts = {row.get("verdict") for row in per_section if "verdict" in row}
     if len(verdicts) > 1:
         print(
@@ -357,6 +421,7 @@ def main() -> None:
             "verdict": verdict.name,
             "geometry": verdict.to_geometry().name,
         },
+        "brightest_subset": bright_report,
         "per_section": per_section,
     }
     out_path = out_dir / "s3v2-geometry.json"

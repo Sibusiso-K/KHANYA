@@ -83,6 +83,54 @@ N3 further. `docs/05-toolchain.md` still needs the `uv`-on-Windows note.
 
 ---
 
+## 2026-08-21 — session 12 · a targeted re-run, not a new dataset
+
+### Attempted
+
+Give N3's `NEITHER` verdict a sharper test, per the strategy written into session 11's entry:
+if an analyser signal exists at all in S3 v2, it should be least buried on the brightest
+grains (2θ modulation scales as bireflectance directly, on a bright S0; 4φ scales as
+bireflectance squared). Built `--brightness-quantile` for
+`experiments/002-s3v2-geometry/run.py` so this is checkable on Sibusiso's machine without a
+new archive.
+
+### Worked
+
+- **TDD'd against a hand-built `HarmonicSignature`, not the real archive** (still not on this
+  machine). `test_pool_signatures_can_restrict_to_the_brightest_pixels` constructs 20 synthetic
+  pixels, dim half at snr_2 = 2 (below `DETECTION_SNR`), bright half at snr_2 = 6 (above it);
+  unrestricted pooling medians to 4 and stays `NEITHER`, restricting to the top half by `dc`
+  isolates the bright group and flips the verdict to `SECOND`. Watched it fail first
+  (`TypeError: unexpected keyword argument 'brightness_quantile'`), then implemented the
+  minimal filter in `pool_signatures` (`experiments/002-s3v2-geometry/run.py`) — quantile the
+  pooled `dc` array, keep pixels at or above it, before the existing modulating-fraction
+  selection runs.  244/244 tests green (243 → 244), ruff clean.
+- **Explicit about what a positive result would and wouldn't mean.** A `SECOND` verdict on the
+  brightest-quantile subset is evidence for an analyser signal the unrestricted pool missed —
+  not an automatic reversal of N3, since it needs the subset to also be large and representative
+  enough to trust. `main()` prints that caveat directly rather than letting a subset flip read
+  as a clean overturn.
+
+### Did not work
+
+N/A — this session added a capability, not a fix; nothing was broken first.
+
+### Learned
+
+A `NEITHER` verdict from pooling *everything* can still hide a real signal that only survives
+on the most favourable pixels. Testing the favourable subset directly is worth doing before
+treating a pooled null as final — but the result has to be reported with its own caveats, or a
+subset-level positive quietly becomes a headline the full data doesn't support.
+
+### Left open
+
+The actual command — `--brightness-quantile 0.5` against the real archive — still needs
+Sibusiso's machine; this session built and tested the capability, it did not run it. Update
+`CONTEXT.md` / this file again once it has. `docs/05-toolchain.md`'s `uv`-on-Windows note is
+still outstanding.
+
+---
+
 ## 2026-08-21 — session 10 · a third instance, and this one had no gate at all
 
 ### Attempted

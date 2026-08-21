@@ -22,7 +22,7 @@ import pytest
 from PIL import Image
 
 from reefprint.acquire.phantom import StageRotation, crossed_polars_stage_series
-from reefprint.polarim.geometry import HarmonicVerdict, harmonic_signature
+from reefprint.polarim.geometry import HarmonicSignature, HarmonicVerdict, harmonic_signature
 
 
 def _load_experiment() -> ModuleType:
@@ -138,6 +138,55 @@ def test_a_section_with_too_few_frames_is_skipped_rather_than_inverted(tmp_path)
         data = read_section(archive, names, "train", "S3_train_01", rng, n_samples=500)
 
     assert "only 4 rotation frames" in data["skipped"]
+
+
+def _flat_signature(*, dc: np.ndarray, snr_2: np.ndarray) -> HarmonicSignature:
+    """A hand-built ``HarmonicSignature`` with a chosen per-pixel brightness and 2nd-harmonic
+    SNR, and no 4th-harmonic content at all — for testing ``pool_signatures`` selection logic
+    in isolation from the fit itself."""
+    n = dc.size
+    return HarmonicSignature(
+        amplitude_2=snr_2.copy(),
+        amplitude_4=np.zeros(n),
+        floor_2=np.ones(n),
+        floor_4=np.ones(n),
+        dc=dc,
+        n_angles=72,
+        verdict=HarmonicVerdict.NEITHER,
+        snr_2=0.0,
+        snr_4=0.0,
+        detection_snr=5.0,
+    )
+
+
+def test_pool_signatures_can_restrict_to_the_brightest_pixels() -> None:
+    """N3's ``NEITHER`` verdict leans on the physics claim that analyser modulation grows as
+    ``2/a`` relative to stage modulation as brightness (S0) rises. ``brightness_quantile``
+    lets that claim be checked directly: restrict pooling to the brightest grains — the ones
+    where the analyser signal, if present, would be least buried — before taking the median.
+
+    Built so the two halves disagree: the dim pixels sit at snr_2 = 2 (below
+    ``DETECTION_SNR``), the bright half at snr_2 = 6 (above it). Pooling everything gives a
+    median of 4 and stays ``NEITHER``; restricting to the top half by ``dc`` isolates the
+    bright group and the verdict flips to ``SECOND``. ``modulating_fraction=1.0`` disables the
+    unrelated modulation-strength selection so only the brightness restriction is on trial.
+    """
+    pool_signatures = _experiment.pool_signatures
+    dc = np.arange(1, 21, dtype=float)
+    snr_2 = np.where(dc <= 10, 2.0, 6.0)
+    signature = _flat_signature(dc=dc, snr_2=snr_2)
+
+    snr_2_all, _, verdict_all, n_all, _ = pool_signatures([signature], modulating_fraction=1.0)
+    assert verdict_all is HarmonicVerdict.NEITHER
+    assert snr_2_all == pytest.approx(4.0)
+    assert n_all == 20
+
+    snr_2_bright, _, verdict_bright, n_bright, _ = pool_signatures(
+        [signature], modulating_fraction=1.0, brightness_quantile=0.5
+    )
+    assert verdict_bright is HarmonicVerdict.SECOND
+    assert snr_2_bright == pytest.approx(6.0)
+    assert n_bright == 10
 
 
 @pytest.mark.placeholder

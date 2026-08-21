@@ -93,7 +93,22 @@ noise would look like." Two independent runs removes "one bad extract" as an exp
    which the physics table at the top of this file already shows separates pentlandite
    (isotropic, no extinction) from pyrrhotite (anisotropic, extincts). **This is the pragmatic
    near-term route to closing week-1 leg (b)**, and it needs no new data.
-2. **Look for a public archive with a *confirmed* rotating-analyser series**, if the talk still
+2. **Run the highest-S0 pixel-selection re-run.** `pool_signatures` now takes
+   `brightness_quantile` (`experiments/002-s3v2-geometry/run.py`, TDD'd against
+   `tests/test_s3v2_reader.py::test_pool_signatures_can_restrict_to_the_brightest_pixels`):
+   restricts pooling to pixels at or above that quantile of fitted DC (brightness) before taking
+   the verdict, so the check runs on the grains where an analyser signal, if real, is least
+   buried. One command on Sibusiso's machine, needs no new data:
+   ```bash
+   uv run python experiments/002-s3v2-geometry/run.py --archive path/to/S3_v2.zip --brightness-quantile 0.5
+   ```
+   If the brightest half clears `DETECTION_SNR` on the 2nd harmonic while the full pool doesn't,
+   that's real evidence for `SECOND` on a subset, worth reporting alongside the pooled `NEITHER`
+   rather than treated as an automatic reversal. If it doesn't clear either, that's a second,
+   more targeted confirmation of stage — the archive's brightest pixels are exactly where an
+   analyser signal has the best odds of surviving, so failing there closes off the most
+   favourable case rather than leaving it unchecked.
+3. **Look for a public archive with a *confirmed* rotating-analyser series**, if the talk still
    wants the three-Stokes-parameter result specifically. Candidates, honestly assessed:
    - **LumenStone S2** (Norilsk, same BMS assemblage) ships masks but — check before assuming —
      may not ship rotation series at all; it was never the rotation dataset, S3 v2 was.
@@ -106,7 +121,7 @@ noise would look like." Two independent runs removes "one bad extract" as an exp
      labelling turned out to be ambiguous about geometry, which is exactly what N3 was checking.
      Searching for a "better archive" on this axis is a low-probability, unbounded-time path —
      don't block week-1 leg (b) on it.
-3. **Report `NEITHER`, leaning stage, as the finding itself**, alongside the leg-(b) result run
+4. **Report `NEITHER`, leaning stage, as the finding itself**, alongside the leg-(b) result run
    on the fourth-harmonic estimator. This is consistent with Rule 9 (falsification is a
    deliverable) and Rule 1 (never invent a number) — the honest story is "we checked which
    geometry this is, the data itself told us, and we routed to the estimator that matches,"
