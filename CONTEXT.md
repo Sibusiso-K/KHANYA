@@ -47,7 +47,7 @@ and flotation response. It is software, evaluated on public data. **No instrumen
 
 | Week | Gate | State |
 |---|---|---|
-| **1** | Rotation series in, per-pixel Stokes out, pentlandite dark / pyrrhotite lit, on screen | **Leg (a) phantom: PASSED**, 40.4× separation. **Leg (b) real public data: waiting on the archive, no longer blocked by N3** ← *we are here*. Both estimators now exist — Stokes for `ANALYSER`, fourth-harmonic for `SPECIMEN` — so either verdict has a path. What is still missing is the verdict itself, and it needs the archive. |
+| **1** | Rotation series in, per-pixel Stokes out, pentlandite dark / pyrrhotite lit, on screen | **Leg (a) phantom: PASSED**, 40.4× separation. **Leg (b) real public data: N3 measured, verdict `NEITHER`** ← *we are here*. Sibusiso ran `experiments/002-s3v2-geometry/run.py` against the real `S3_v2.zip` twice, identically: 29 sections, 116,000 pixels, 2nd-harmonic SNR 2.5× its floor, 4th-harmonic SNR 1.1×, threshold 5.0×. Neither harmonic clears detection. Not clearance for the Stokes inversion — see §8 N3 for why this leans stage, not neutral. |
 | 2 | Falsification test computed, with CI | not started |
 | 3 | Conformal coverage within band, per held-out locality | not started |
 | 4 | Zero silent failures under degraded input | not started |
@@ -75,36 +75,55 @@ is missing — **the red test list is the backlog**, deliberately.
 
 ### The single next action
 
-**Run `experiments/002-s3v2-geometry/run.py` against the real `S3_v2.zip` and settle N3.**
+**N3 came back `NEITHER`, twice, identically — that is not a clean answer, and leg (b) needs
+one before it can run on this archive. Do not run the Stokes inversion on S3 v2 as things
+stand.** Reasoning: extinction depth (stage, 4φ) scales as bireflectance-squared, weaker;
+analyser modulation (2θ) scales as bireflectance directly, on a bright S0, stronger. A geometry
+whose signal is the *weaker* one is more likely to vanish under noise than one whose signal is
+stronger. A symmetric null is therefore asymmetric evidence — it leans stage. `NEITHER` is not
+"we don't know which"; it is "consistent with stage, and not what an analyser rotation buried in
+noise would look like." Two independent runs removes "one bad extract" as an explanation.
 
-```bash
-uv run python experiments/002-s3v2-geometry/run.py --archive path/to/S3_v2.zip
-```
+**What actually fixes this, in order of preference:**
 
-Everything else in leg (b) is built and waiting on the answer. The reader round-trips OME-TIFF,
-the inversion is tested, the geometry discriminator is tested against both forward models and
-smoke-tested through a synthetic archive of S3 v2's exact layout. What is missing is one fact
-about the dataset:
+1. **Run the fourth-harmonic estimator (`reefprint.polarim.extinction`) on S3 v2 instead of
+   forcing the Stokes path.** It is already built and tested (see "Built and tested" above) and
+   its forward model is exactly the signal a stage rotation produces. This is the leg-(b) path
+   that matches the evidence in hand, not a downgrade — it recovers extinction depth per pixel,
+   which the physics table at the top of this file already shows separates pentlandite
+   (isotropic, no extinction) from pyrrhotite (anisotropic, extincts). **This is the pragmatic
+   near-term route to closing week-1 leg (b)**, and it needs no new data.
+2. **Look for a public archive with a *confirmed* rotating-analyser series**, if the talk still
+   wants the three-Stokes-parameter result specifically. Candidates, honestly assessed:
+   - **LumenStone S2** (Norilsk, same BMS assemblage) ships masks but — check before assuming —
+     may not ship rotation series at all; it was never the rotation dataset, S3 v2 was.
+   - **IronOreRLM** — reflected-light images, no stated rotation acquisition; unlikely to help
+     without checking its acquisition protocol directly.
+   - **CGS National Core Library** — real Bushveld material, but access is a phone call away
+     (§8, still open) and there is no evidence yet it contains any analyser-rotation series.
+   - Realistically: **no public archive is known to carry a documented rotating-analyser
+     protocol.** S3 v2 was the candidate because it was labelled a "rotation sequence"; the
+     labelling turned out to be ambiguous about geometry, which is exactly what N3 was checking.
+     Searching for a "better archive" on this axis is a low-probability, unbounded-time path —
+     don't block week-1 leg (b) on it.
+3. **Report `NEITHER`, leaning stage, as the finding itself**, alongside the leg-(b) result run
+   on the fourth-harmonic estimator. This is consistent with Rule 9 (falsification is a
+   deliverable) and Rule 1 (never invent a number) — the honest story is "we checked which
+   geometry this is, the data itself told us, and we routed to the estimator that matches,"
+   which is a stronger claim for the talk than silently assuming the convenient geometry.
 
-- **`FOURTH` → N3 confirmed.** Leg (b) runs on `reefprint.polarim.extinction` instead. That
-  estimator now exists and is tested, so this is a change of route, not a stop. The Stokes
-  inversion must not touch this data, and the two must never be conflated in the talk.
-- **`SECOND` → N3 refuted**, which is still the better outcome. Leg (b) runs as originally
-  planned, and it recovers three numbers per pixel rather than two.
-- **`NEITHER`/`BOTH` → N3 stays open, leaning toward stage.** Not clearance. Note this verdict
-  is not neutral: experiment 002 measured the analyser geometry surviving **38× more noise**
-  than the stage geometry before its harmonic stops being detectable, so a stage rotation is far
-  likelier than an analyser rotation to fall below both floors.
-
-**This machine cannot answer it.** The 5.2 GB archive is on Sibusiso's machine (KHANYA,
-downloaded 2026-08-20); a `find` for it here returns nothing. It is one command on his laptop and
-it gates the week-1 gate, so it is the thing to ask for first.
+**Do not re-run the Stokes inversion on S3 v2** until either a confirmed-analyser dataset shows
+up, or `pool_signatures` is re-run with a materially different pixel selection (e.g. restricting
+to the highest-`S0` grains, where the analyser/stage SNR gap is a factor of `2/a` and widest) and
+clears `DETECTION_SNR` on the 2θ side specifically. Absent that, treat this archive as `SPECIMEN`
+geometry for all downstream work, including KHANYA's ten-mineral symmetry test (see below).
 
 **It also gates his work, not just ours.** KHANYA's `src/polarimetry.py` feeds all 72 S3 v2 frames
 straight into `stokes_from_rotation_series` for a ten-mineral symmetry test. If those frames are
 stage rotations, that test returns a separation near 1.0 and reads as *"polarimetry does not work
-on real ore"* — a false negative on an estimator bug, against the project's central claim. Do not
-let that experiment run before this one does.
+on real ore"* — a false negative on an estimator bug, against the project's central claim. That
+symmetry test should now be re-pointed at `reefprint.polarim.extinction`, not
+`stokes_from_rotation_series`, given the measured `NEITHER` verdict.
 
 Named by the failing placeholder test
 `tests/test_s3v2_reader.py::test_the_real_s3_v2_archive_has_been_measured`.
@@ -406,7 +425,7 @@ rusty met-eng *and* owns the ten-minute narrative, and neither should quietly be
 |---|---|---|
 | **N1** | Pirard 2007 prior art unread. Retighten or defend the novelty claim. | before week 6 |
 | **N2** | 1/S0 noise floor means no fixed anisotropy threshold is defensible. Any discrimination rule must condition on S0 and report an interval. | week 2+ |
-| **N3** | **Is LumenStone S3 v2 a stage rotation or an analyser rotation?** Decidable in one command; the command needs the 5.2 GB archive, which is on Sibusiso's machine. Blocks week-1 leg (b), and blocks KHANYA's ten-mineral symmetry test from producing a false negative. | **now** — ask Sibusiso |
+| **N3** | **Is LumenStone S3 v2 a stage rotation or an analyser rotation?** **Measured, twice, identically: `NEITHER` clears `DETECTION_SNR` (2θ SNR 2.5×, 4θ SNR 1.1×, threshold 5.0×), leaning stage on the physics (extinction scales as bireflectance², weaker; analyser modulation scales as bireflectance, stronger — a symmetric null favours the weaker signal's geometry).** Not closed — open until either a confirmed-analyser archive turns up or a pixel-selection re-run clears the 2θ threshold. Route leg (b) and KHANYA's ten-mineral symmetry test through `reefprint.polarim.extinction`, not the Stokes inversion, until then. | open — route around it, see §3 |
 | **F1** | Chromite-proxy collapse — the falsification test runs regardless and the result is published either way. | week 2 gate |
 | **F2** | Talc/serpentine without SWIR is unproven. If it fails, drop to two properties. | week 2, empirical |
 | **S2** | Plant history was generated under FloatStar closed-loop control. No causal claim from observational plant data. | any use of the Kaggle flotation dataset |

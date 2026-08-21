@@ -22,6 +22,67 @@ it is a press release.
 
 ---
 
+## 2026-08-21 — session 11 · N3 measured, twice, and the answer is `NEITHER`
+
+### Attempted
+
+Merge Sibusiso's fix for `experiments/002-s3v2-geometry/run.py` (PR #3,
+`fix/pool-signatures-not-raw-frames` on the KHANYA repo) and record the real N3 result it
+produced against the actual `S3_v2.zip` archive.
+
+### Worked
+
+- **The pooling bug and its fix, verified before merge.** The original `run.py` concatenated raw
+  `(n_angles, n_pixels)` arrays across sections via `np.concatenate`, which requires every
+  section to share `n_angles`. The real archive's usable sections range 24–72 frames, so it
+  crashed on real data (never hit by the phantom, which is why leg (a) passing didn't catch it).
+  Fix: call `harmonic_signature()` once per section at that section's native frame count — it
+  already reduces the frame axis to two per-pixel arrays before pooling is needed — then
+  concatenate the resulting per-pixel `amplitude_2/floor_2`, `amplitude_4/floor_4` arrays across
+  sections and rerun the same selection-and-median rule `harmonic_signature()` uses internally
+  (top `MODULATING_FRACTION` pixels by `max(amplitude_2, amplitude_4)`, median SNR over that
+  selection). Traced against `src/reefprint/polarim/geometry.py` directly to confirm the pooling
+  logic reuses the identical constants (`DETECTION_SNR`, `MODULATING_FRACTION`) and the identical
+  `argpartition` selection, not an approximation of it. Tested in an isolated `git worktree`:
+  ruff clean, 239/239 tests green. Merged as PR #3 (`gh pr merge 3 --merge`), local `main`
+  fast-forwarded `c1e4b83` → `e3a7632`. Confirmed post-merge: 243/243 tests, ruff clean.
+- **N3, measured on the real archive, twice, identically.** 29 of 47 sections have real rotation
+  data (the other ~18 are single static images — genuinely no acquisition, checked directly, not
+  a filename-parsing artefact). 116,000 pixels pooled. 2nd-harmonic SNR 2.5×, 4th-harmonic SNR
+  1.1×, `DETECTION_SNR` threshold 5.0×. **Verdict: `NEITHER` clears detection.**
+- **`NEITHER` is not neutral.** Extinction depth (stage, 4φ) scales as bireflectance-squared;
+  analyser modulation (2θ) scales as bireflectance directly, on a bright S0 — a real signal
+  advantage that grows as `2/a` (CLAUDE.md, "the physics"). A null on both harmonics is more
+  consistent with a stage rotation buried in noise than an analyser rotation buried in noise,
+  because the analyser signal has to be weaker still, relative to its own floor, to vanish the
+  same way. Combined with experiment 002's separately measured 38× noise-tolerance gap between
+  the two geometries, this leans the open finding toward stage, without closing it.
+
+### Did not work
+
+`uv sync` / `uv python install 3.12` failed reproducibly on Sibusiso's Windows machine
+("Missing expected target directory for Python minor version link"), even after a clean cache
+retry. Worked around with KHANYA's existing 3.13 venv via `PYTHONPATH`, after confirming
+`geometry.py` has no 3.12-only syntax via `ast.parse`. Not yet reproduced here — flagged in case
+it recurs; not yet written up in `docs/05-toolchain.md`.
+
+### Learned
+
+A symmetric non-detection (`NEITHER`) on a two-geometry discrimination is not symmetric evidence
+when the two geometries' signals scale differently with the same physical quantity — the
+asymmetry in *how* each signal degrades is itself informative, and should be stated explicitly
+rather than reported as "inconclusive."
+
+### Left open
+
+N3 stays open (not `SECOND`, not cleanly `FOURTH`). Next action: route week-1 leg (b) through
+`reefprint.polarim.extinction` (already built and tested) rather than forcing the Stokes
+inversion on this archive; re-point KHANYA's ten-mineral symmetry test the same way. See
+`CONTEXT.md` §3 and §8 for the full reasoning and the ordered list of what would actually resolve
+N3 further. `docs/05-toolchain.md` still needs the `uv`-on-Windows note.
+
+---
+
 ## 2026-08-21 — session 10 · a third instance, and this one had no gate at all
 
 ### Attempted
