@@ -19,9 +19,13 @@ Chromite is opaque, R ≈ 13%, no diagnostic VNIR-SWIR features, and 50–75 vol
 **Disposition:** resolved by abandoning spectroscopy for quantitative reflectance + polarimetry — the correct physics for opaque minerals. Talc detection without SWIR remains OPEN (week-2 empirical question; if it fails, drop to two properties).
 
 ### F3 · Nothing was measurable at n = 30–100 — RESOLVED structurally, still bounded
-Conformal coverage SD ≈ √(0.9×0.1/n). At n_cal = 100 that is 3.0 pp — you miss a ±3 pp band a third of the time with a perfect model. At realistic n_cal = 20, SD = 6.7 pp. R² = 0.90 on 15 test specimens carries CI ≈ [0.72, 0.97]; an unseen-R² target of 0.75 has CI ≈ [0.40, 0.91], indistinguishable from r = 0.63.
+Split-conformal coverage is Beta(n+1−l, l) distributed, where l = ⌊(n+1)α⌋ — not binomial. Its SD is **2.96 pp at n_cal = 100** and **6.26 pp at n_cal = 20**. Both are recomputed values; the earlier figures here (3.0 and 6.7 pp) came from the binomial Wald SE √(0.9×0.1/n), which is the wrong distribution and runs 7.2% high at n = 20. Sizing a calibration set from the Wald figure buys less coverage precision than it appears to. R² = 0.90 on 15 test specimens carries CI ≈ [0.72, 0.97] (Fisher z, 95%, r = √R²); an unseen-R² target of 0.75 has CI ≈ [0.40, 0.91]. The two intervals overlap on [0.72, 0.91], which is the point: at n = 15 those two R² values are not distinguishable.
 
 **Disposition:** v3's unit of analysis is the *grain*, not the specimen — thousands per section — which raises effective n by orders of magnitude. **But locality-level splits are still mandatory** and every CI must be sized honestly. Rule 4 in CLAUDE.md exists because of this finding.
+
+> **n_cal = 20 sits outside this finding's own heading** of n = 30–100. It is retained because it is the realistic calibration size once a locality-grouped split is enforced, but it is an extrapolation past the range the finding was framed around, not a point inside it.
+
+> **Rule 4 in CLAUDE.md still carries the binomial form.** This finding cites rule 4 as its justification and rule 4 was written from this finding, so until both are corrected each vouches for the other's error. Rule 4 is a methodology statement in the constitution and the conformal calibration is Sibusiso's half of the build, so **that wording is a decision for Lethabo and Sibusiso, deliberately not changed here.** Corrected 2026-08-23.
 
 ### F4 · Chrome-constrained recovery inverts the economics — RESOLVED by repositioning
 Chrome solubility in smelter slag is ~1.8%; UG2 concentrates already exceed 3%. Plants grind coarse and accept lower PGM recovery to stay under the cap. So the marginal ounce is the dirtiest ounce, priced at the average — and "liberation at target grind P80" fights the binding constraint.
