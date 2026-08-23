@@ -22,6 +22,94 @@ it is a press release.
 
 ---
 
+## 2026-08-23 — session 14 · the abstract, and the domain lead's surname was wrong
+
+### Attempted
+
+Write the Mintek SCi Grad Hackathon abstract (**due 30 August 2026, one page**) and render it to
+PDF. The letter names three required elements — proposed approach, methods or technologies,
+expected outcomes or impact — and states that submissions undergo plagiarism, AI-generation, IP
+and originality checks, and that external sources, data and contributions must be acknowledged.
+
+### Worked
+
+- **`docs/06-abstract.md`** — source of truth for the wording, 662 words of body text, plus
+  working notes that are explicitly *not* part of the submitted page. The notes carry a
+  **provenance table for every number on the page** (claim → source → Rule-1 rank), which is the
+  thing that makes the page defensible under originality authentication rather than merely
+  well-written.
+- **Every number on the page is bounded in the sentence that carries it.** 40.4× is labelled "a
+  phantom result, not an ore result"; the factor-of-126 split leak is labelled "on synthetic
+  data"; the R5 000 rig is "costed as a design; no hardware is built, and no claim here depends on
+  one" (ADR-0002). The 0.2–1.6 µm/pixel figure is **deliberately absent** — it is a design target
+  spanning a factor of eight, and an abstract is exactly where such a number gets read as a spec.
+- **The negative result is on the page, not hidden.** The N3 `NEITHER` verdict on LumenStone S3 v2
+  (29 sections, 116 000 pixels) is stated, along with the decision to route to the fourth-harmonic
+  estimator rather than force the convenient inversion. Rule 9's reasoning generalises past the
+  falsification test: a team that has run something real has negative results to report, and a
+  team that has run nothing does not.
+- **Prior art is cited by name.** Pirard, Lebichot & Krier (2007) is real prior art on
+  polarised-light *imaging* in ore microscopy. Pre-empting a judge who knows it costs one clause;
+  being corrected on stage costs the claim.
+- **`docs/06-abstract.html` + headless Chrome → `docs/06-abstract.pdf`, one page, verified.**
+  Chrome is a tool we run, not a library we link, so **no SBOM or `05-toolchain.md` entry** — the
+  same treatment `docs/05-toolchain.md` already gives git. Page count is checked mechanically:
+  `grep -a -o "/Count [0-9]*" docs/06-abstract.pdf` must print `/Count 1`.
+
+### Did not work
+
+- **First render was two pages**, overflowing by 5.2 mm — about one line. Fixed by trimming size
+  and paragraph gaps, *not* by cutting evidence and not by squeezing leading first (that is what
+  makes a dense page look cramped).
+- **Two typographic defects the page count would never have caught**, both found by rendering the
+  PDF and *looking* at it rather than trusting that it compiled: `~R5 000` broke across a line
+  boundary as `~R5` / `000`, and the author byline wrapped mid-affiliation (`BSc Electrical
+  Engineering,` / `University of the Witwatersrand`). Fixed with `&nbsp;` on the numeral and by
+  making each author a block unit. Both are the class of detail that separates a submitted
+  document from a draft.
+- **Measuring overflow in the browser beat guessing at the trim.** No PDF library is installed
+  (`pypdf`, `pikepdf`, `fitz` all absent) and adding one to count pages would have been an SBOM
+  entry bought for nothing. The screen CSS mirrors the print geometry exactly, so measuring the
+  content box in the same engine that paginates gives the overflow in millimetres directly.
+
+### Learned
+
+**The domain lead's surname in the constitution was wrong, and it was inferred, not told.**
+`CLAUDE.md` recorded **Lethabo Mphukuile**, taken from the git commit identity, with a note to
+correct it if wrong. It is **Lethabo Hoaeane**, confirmed by Lethabo on 2026-08-22. It had already
+propagated to `CONTEXT.md` and to the decider line of **all three ADRs** — the documents whose
+whole purpose is to record who decided what. Corrected in those four files; **the earlier
+entry in this log at "ADR-0001's decider filled in" is left standing, wrong, because this file is
+append-only** — this paragraph is the correction it links to.
+
+The generalisable part: a git commit identity is a *convenience string a person typed once*, not
+a record of their name, and inferring an identity from one and then writing it into governance
+documents is a Rule-1 violation wearing different clothes — a number you did not measure and a
+name you were not told are the same mistake. It survived thirteen sessions because it was
+plausible and nobody was asked.
+
+Related: the abstract header had **"Team Sonar, University of the Witwatersrand"**, inherited from
+`CLAUDE.md`. The team is three people across **three** institutions — Unisa, Wits and TUT. Also
+corrected in `CLAUDE.md`. Institutions are written out in full on the submitted page;
+abbreviations read as internal shorthand.
+
+### Left open
+
+- **Whether Lethabo's credential line should carry "prior metallurgical engineering."** It is
+  real, recorded in `CLAUDE.md`, and on a metallurgy submission it is the most relevant credential
+  on the page — but a credential line on a submitted document should say exactly what the person
+  claims, so it is not a drafting decision. Lethabo's call.
+- **"Team Sonar" is unconfirmed** as the registered team name.
+- **Mentor** — the letter requires a mentor's name and contact details, or an explicit request for
+  a Mintek-assigned mentor. Separate submission item, not part of the page.
+- **Per-member admin** — ID number, T-shirt size, contact details. Conference registration for
+  2 October is required of all selected teams.
+- **Voice pass.** The letter runs AI-generation checks. The ideas and every number are the team's
+  own and the commit history evidences that, but the prose should be read aloud and adjusted by
+  whoever presents, so the abstract and the ten-minute talk sound like the same people.
+
+---
+
 ## 2026-08-21 — session 13 · the week-2 gate gets a statistical core
 
 ### Attempted

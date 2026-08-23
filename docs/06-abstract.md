@@ -8,6 +8,20 @@ sources, data and contributions must be acknowledged.
 **Every number below traces to a run in this repository.** Provenance is noted in the
 working notes at the bottom of this file, which are *not* part of the submitted page.
 
+**This file is the source of truth for the wording.** [`06-abstract.html`](06-abstract.html) is
+the print source — a verbatim copy of the submitted page below, plus print CSS — and
+[`06-abstract.pdf`](06-abstract.pdf) is what gets sent. Edit the markdown first, mirror it into
+the HTML, then regenerate:
+
+```bash
+"/c/Program Files/Google/Chrome/Application/chrome.exe" --headless --disable-gpu --no-pdf-header-footer --print-to-pdf=docs/06-abstract.pdf docs/06-abstract.html
+```
+
+Chrome is a tool we run, not a library we link, so it is not an SBOM entry — the same treatment
+`docs/05-toolchain.md` gives git. **Check the page count every time** (`grep -a -o "/Count [0-9]*"
+docs/06-abstract.pdf` must print `/Count 1`): the brief says one page, the text currently clears
+the bottom margin by about 3 mm, and a two-page "one-pager" is the first thing a reviewer notices.
+
 ---
 
 ## THE SUBMITTED PAGE
@@ -16,9 +30,11 @@ working notes at the bottom of this file, which are *not* part of the submitted 
 
 ### A computational ore microscope: per-pixel Stokes polarimetry for characterisation of UG2 ore
 
-**REEFPRINT** (developed as **KHANYA**) — Team Sonar, University of the Witwatersrand
+**REEFPRINT** (developed as **KHANYA**) — Team Sonar
+**Lethabo Hoaeane**, BCom Business Informatics, University of South Africa · **Sibusiso
+Khumalo**, BSc Electrical Engineering, University of the Witwatersrand · **Ipeleng Modise**, BSc
+Computer Science, Tshwane University of Technology
 Challenge: *Computer Vision for Real-Time Mineralogical Characterisation*
-[TEAM MEMBER NAMES AND DISCIPLINES — see working notes]
 
 **The problem.** PGE recovery from UG2 ore is governed by base-metal sulphide deportment:
 pentlandite is the principal PGE host and floats, pyrrhotite is depressed and carries little PGE,
@@ -117,7 +133,14 @@ would get read as a specification.
 
 ### Open decisions for the team before submission
 
-1. **Team member names, disciplines and institution** — the header placeholder must be filled.
+1. ~~**Team member names, disciplines and institution**~~ — **filled, 2026-08-22**, confirmed by
+   Lethabo. Three members across three institutions; the header no longer claims a single one.
+   Institutions are written out in full on the submitted page (University of South Africa, not
+   Unisa) because it is a formal submission, and abbreviations read as internal shorthand.
+   **Still open:** whether Lethabo's line should also carry "prior metallurgical engineering". It
+   is real, it is recorded in `CLAUDE.md`, and on a metallurgy submission it is the single most
+   relevant credential on the page — but a credential line on a submitted document should say
+   exactly what the person claims, so this is Lethabo's call, not a drafting decision.
 2. **Confirm "Team Sonar"** is the registered team name.
 3. **Mentor** — the letter requires either your mentor's name and contact details, or an explicit
    request for a Mintek-assigned mentor. This is a separate submission item, not part of the page.

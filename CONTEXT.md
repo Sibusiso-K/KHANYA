@@ -7,9 +7,15 @@ is the constitution — *what is true and what the rules are*. This file is the 
 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
-- **Last updated:** 2026-08-21
-- **Last commit at time of writing:** the Fisher's-exact-test fix to `concentrates_at_transitions` in `abstain.py`
-- **Days to final:** 42 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
+- **Last updated:** 2026-08-23
+- **Last commit at time of writing:** the week-2 gate's statistical core (`reefprint.heads.falsification`)
+- **Days to final:** 39 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
+- ⏳ **Nearest deadline: the abstract, 30 August 2026 — 7 days out.** One page. Drafted and
+  rendered: [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
+  [`docs/06-abstract.pdf`](docs/06-abstract.pdf) is what gets sent. **What is not done is not the
+  writing** — it is confirming "Team Sonar" is the registered team name, naming a mentor (or
+  explicitly requesting a Mintek-assigned one), per-member admin (ID number, T-shirt size, contact
+  details), and a read-aloud voice pass. See that file's working notes.
 
 ---
 
@@ -434,7 +440,7 @@ abstention · SBOM · backup video.
 | [0001](docs/04-decisions/0001-ome-tiff-via-tifffile-not-bioformats.md) | OME-TIFF via `tifffile`, **not** Bio-Formats | Bio-Formats is GPL-2.0 and unassignable. No JVM anywhere. Vendor formats (`.czi`, `.nd2`) convert offline by hand if ever needed. |
 | [0002](docs/04-decisions/0002-software-only-no-instrument-is-built.md) | **Software only. No instrument is built.** | Hardware budget R0. The rig is a costed BOM presented as a design — never imply it exists. No claim about µm/pixel, exposure, LED response or achievable R% accuracy may come from measurement. |
 
-**Single technical decision-maker: Lethabo Mphukuile** (Domain lead — Business Informatics /
+**Single technical decision-maker: Lethabo Hoaeane** (Domain lead — Business Informatics /
 prior metallurgical engineering). Breaks all architecture ties; the decision is written up as an
 ADR the same day. Two standing checks on the role are in CLAUDE.md — the same person is the
 rusty met-eng *and* owns the ten-minute narrative, and neither should quietly become the spec.
