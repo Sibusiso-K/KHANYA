@@ -13,9 +13,11 @@ Keep it current. A stale CONTEXT.md is worse than none, because it will be trust
 - ⏳ **Nearest deadline: the abstract, 30 August 2026 — 7 days out.** One page. Drafted and
   rendered: [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
   [`docs/06-abstract.pdf`](docs/06-abstract.pdf) is what gets sent. **What is not done is not the
-  writing** — it is confirming "Team Sonar" is the registered team name, naming a mentor (or
-  explicitly requesting a Mintek-assigned one), per-member admin (ID number, T-shirt size, contact
-  details), and a read-aloud voice pass. See that file's working notes.
+  writing** — it is confirming "Team Sonar" is the registered team name, per-member admin (ID
+  number, T-shirt size, contact details), and a read-aloud voice pass. See that file's working
+  notes. **Mentor: we have none**, so the formal request for a Mintek-assigned one
+  ([`docs/07-mentor-request.pdf`](docs/07-mentor-request.pdf)) goes in the same email — it needs a
+  mobile number filled in, its only placeholder.
 
 ---
 

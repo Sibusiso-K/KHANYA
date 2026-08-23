@@ -1,0 +1,180 @@
+<!doctype html>
+<!--
+  Print source for Team Sonar's formal request for a Mintek-assigned mentor.
+
+  Content is a verbatim copy of the "THE SUBMITTED LETTER" section of
+  docs/07-mentor-request.md, which is the source of truth. Edit the markdown first,
+  then mirror it here.
+
+  Typography deliberately matches docs/06-abstract.html so the two attachments read as
+  one set of documents from one team.
+
+  Regenerate:
+    "/c/Program Files/Google/Chrome/Application/chrome.exe" \
+      --headless --disable-gpu --no-pdf-header-footer \
+      --print-to-pdf=docs/07-mentor-request.pdf docs/07-mentor-request.html
+
+  MUST be one page: grep -a -o "/Count [0-9]*" docs/07-mentor-request.pdf
+-->
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<title>Team Sonar — request for a Mintek-assigned mentor</title>
+<style>
+  @page { size: A4; margin: 18mm 20mm 13mm 20mm; }
+
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    font-family: Cambria, Constantia, Georgia, "Times New Roman", serif;
+    font-size: 10.2pt;
+    line-height: 1.38;
+    color: #14181c;
+    margin: 0;
+    text-align: left;
+    hyphens: none;
+  }
+
+  /* --- letterhead ------------------------------------------------------- */
+  .mark {
+    font-size: 11pt;
+    font-weight: 700;
+    letter-spacing: 1.6pt;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .mark-sub {
+    font-size: 8.4pt;
+    color: #5a6169;
+    letter-spacing: 0.2pt;
+    margin: 1pt 0 0 0;
+  }
+  .rule {
+    border: 0;
+    border-top: 0.6pt solid #b9c0c6;
+    margin: 4.5pt 0 8pt 0;
+  }
+
+  .date { text-align: right; margin: 0 0 9pt 0; }
+
+  .recipient {
+    margin: 0 0 10pt 0;
+    line-height: 1.34;
+  }
+
+  .subject {
+    font-weight: 700;
+    margin: 0 0 9pt 0;
+  }
+
+  p { margin: 0 0 6.5pt 0; }
+
+  ol {
+    margin: 0 0 6.5pt 0;
+    padding-left: 15pt;
+  }
+  li { margin: 0 0 4pt 0; padding-left: 2pt; }
+
+  /* --- sign-off --------------------------------------------------------- */
+  .signoff { margin: 0 0 9mm 0; }    /* room to sign by hand, between the valediction
+                                        and the typed name */
+  .signature { margin: 0; line-height: 1.36; }
+  .signature .role, .signature .contact { color: #33393f; font-size: 9.6pt; }
+  .behalf {
+    margin: 9pt 0 0 0;
+    font-size: 9.6pt;
+    color: #4a5158;
+  }
+
+  /* Screen preview mirrors print geometry exactly, so what is measured here is
+     what Chrome will paginate. */
+  @media screen {
+    body { background: #6b7280; }
+    .sheet {
+      width: 210mm;
+      min-height: 297mm;
+      box-sizing: border-box;
+      padding: 18mm 20mm 13mm 20mm;
+      margin: 12mm auto;
+      background: #fff;
+      box-shadow: 0 2mm 8mm rgba(0,0,0,.35);
+    }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<p class="mark">Team Sonar</p>
+<p class="mark-sub">REEFPRINT (developed as KHANYA) — Mintek SCI Grad Hackathon 2026</p>
+<hr class="rule">
+
+<p class="date">23 August 2026</p>
+
+<p class="recipient">
+  Boitumelo Lekalakala<br>
+  Mintek SCI Grad Hackathon 2026<br>
+  Mintek<br>
+  Private Bag X3015, Randburg 2125
+</p>
+
+<p class="subject">Request for a Mintek-assigned mentor — Team Sonar</p>
+
+<p>Dear Boitumelo Lekalakala,</p>
+
+<p>Your letter of 14 August 2026 asks each team either to supply a mentor’s name and contact
+details or to indicate clearly if a mentor from Mintek is required. <strong>Team Sonar does not
+have a mentor, and we are requesting that Mintek assign one.</strong></p>
+
+<p>We are three students at three institutions: Lethabo Hoaeane (BCom Business Informatics,
+University of South Africa), Sibusiso Khumalo (BSc Electrical Engineering, University of the
+Witwatersrand) and Ipeleng Modise (BSc Computer Science, Tshwane University of Technology). We
+share no campus and no common supervisor, which is why we have no mentor to name.</p>
+
+<p>Our entry, REEFPRINT (developed as KHANYA), addresses the <em>Computer Vision for Real-Time
+Mineralogical Characterisation</em> challenge: automated identification of opaque ore minerals in
+polished sections of UG2 ore, by recovering the full linear Stokes vector at every pixel from a
+rotating-analyser image series. It is software, evaluated on public data; no instrument is
+built.</p>
+
+<p>So that you can match us appropriately, the areas in which mentorship would most improve the
+work, in order of value to us — any one of them would be valuable:</p>
+
+<ol>
+  <li><strong>Reflected-light ore microscopy and process mineralogy</strong> — quantitative
+  reflectance, bireflectance and anisotropy on polished sections. None of us is a practising
+  mineralogist, and several of our load-bearing claims are mineralogical.</li>
+  <li><strong>UG2 and Merensky flotation, and PGE deportment</strong> — to test whether the three
+  operator-facing outputs we have chosen (fine-chromite entrainment risk, naturally-floating-gangue
+  load for depressant dosing, and a stockpile oxidation index) are the ones a concentrator would
+  act on.</li>
+  <li><strong>Automated mineralogy in practice (QEMSCAN, MLA)</strong> — to check our
+  characterisation of what SEM-based automated mineralogy does and does not deliver inside a
+  control loop.</li>
+</ol>
+
+<p>We are not requesting data, samples or laboratory access: we work under a self-imposed rule of
+public sources only, and no proprietary Mintek data is used anywhere in this project. What we are
+asking for is expert review — someone willing to tell us where we are wrong about the mineralogy,
+early enough that it changes what we build.</p>
+
+<p>We appreciate that mentor time is scarce. Two or three short conversations between now and
+1 October would materially improve the work. We will prepare questions in advance, keep to time,
+and fit whatever schedule and format suit the mentor; remote is easiest for us, and we can meet
+outside working hours.</p>
+
+<p>Thank you for the opportunity, and for considering this request.</p>
+
+<p class="signoff">Yours sincerely,</p>
+
+<p class="signature">
+  <strong>Lethabo Hoaeane</strong><br>
+  <span class="role">Team Sonar — technical lead and point of contact</span><br>
+  <span class="contact">lethabomphukuile14@gmail.com · [PHONE NUMBER]</span>
+</p>
+
+<p class="behalf">On behalf of Sibusiso Khumalo and Ipeleng Modise.</p>
+
+</div>
+</body>
+</html>

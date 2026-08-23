@@ -93,6 +93,36 @@ Related: the abstract header had **"Team Sonar, University of the Witwatersrand"
 corrected in `CLAUDE.md`. Institutions are written out in full on the submitted page;
 abbreviations read as internal shorthand.
 
+### Also this session · the mentor request
+
+**We have no mentor.** Item 5 of the Mintek letter: *"If you require a mentor from Mintek, please
+indicate this clearly so that we can assist with the appropriate support."*
+`docs/07-mentor-request.md` → `.html` → `.pdf`, one page, same Chrome pipeline and same
+typography as the abstract so the two attachments read as one set from one team.
+
+The letter's substance is **an ordered list of the expertise we need**, not the request itself.
+"Appropriate support" is a *matching* problem — Mintek cannot assign the right person without
+knowing what is wanted, and a bare "we need a mentor please" spends the opportunity to get a good
+match. The list is ordered, and says which single area matters most rather than asking for
+everything.
+
+Two things the letter does deliberately:
+
+- **Names the gap plainly** — "None of us is a practising mineralogist, and several of our
+  load-bearing claims are mineralogical." This is CLAUDE.md **blind spot 8** turned into an
+  action: *no load-bearing mineralogical claim rests on the domain lead alone; book external calls
+  instead.* A mentor request is the cheapest external check available to us, and naming the gap is
+  precisely what makes the request matchable. The domain lead's prior metallurgical-engineering
+  background is **not** claimed — still Lethabo's call, and the sentence is true without it.
+- **Rules out the obvious objection before it is raised** — "We are not requesting data, samples
+  or laboratory access." True (hard constraint: public sources only), and it removes the most
+  likely reason to hesitate.
+
+First draft ran **46.8 mm** over one page. Cut by tightening prose and folding "any one of these
+would be valuable" into the list introduction — *not* by dropping the expertise list, which is the
+only part Mintek cannot act without. A request for someone's scarce time that runs to two pages is
+arguing against itself.
+
 ### Left open
 
 - **Whether Lethabo's credential line should carry "prior metallurgical engineering."** It is
@@ -100,8 +130,11 @@ abbreviations read as internal shorthand.
   on the page — but a credential line on a submitted document should say exactly what the person
   claims, so it is not a drafting decision. Lethabo's call.
 - **"Team Sonar" is unconfirmed** as the registered team name.
-- **Mentor** — the letter requires a mentor's name and contact details, or an explicit request for
-  a Mintek-assigned mentor. Separate submission item, not part of the page.
+- **Mentor: requested, not yet supplied.** `docs/07-mentor-request.md` is drafted and rendered.
+  **It carries one placeholder — a mobile number — and must not be sent with it in.** The email
+  address on it (`lethabomphukuile14@gmail.com`) carries the *old, wrong* surname; ordinary enough
+  that no reviewer will care, but it sits two lines below the correct name, so use a matching
+  address if one exists.
 - **Per-member admin** — ID number, T-shirt size, contact details. Conference registration for
   2 October is required of all selected teams.
 - **Voice pass.** The letter runs AI-generation checks. The ideas and every number are the team's

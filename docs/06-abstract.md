@@ -142,8 +142,11 @@ would get read as a specification.
    relevant credential on the page — but a credential line on a submitted document should say
    exactly what the person claims, so this is Lethabo's call, not a drafting decision.
 2. **Confirm "Team Sonar"** is the registered team name.
-3. **Mentor** — the letter requires either your mentor's name and contact details, or an explicit
-   request for a Mintek-assigned mentor. This is a separate submission item, not part of the page.
+3. ~~**Mentor**~~ — **drafted, 2026-08-23.** We have no mentor, so the letter's item 5 applies:
+   a formal request for a Mintek-assigned mentor is at
+   [`07-mentor-request.md`](07-mentor-request.md), rendered to
+   [`07-mentor-request.pdf`](07-mentor-request.pdf), to be attached alongside this abstract.
+   **Still needs a mobile number** before it can be sent — it is the only placeholder in it.
 4. **Whether the R5 000 rig belongs on the page at all.** It is stated correctly as a design, but
    it invites the question "so you built nothing". Argument for keeping it: it shows the work is
    deployable and costed. Argument for cutting it: the software result is stronger without a
