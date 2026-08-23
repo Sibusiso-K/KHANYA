@@ -24,7 +24,7 @@ repository, unmerged, because two clean parallel histories are the originality d
 
 **It is software, evaluated on public data. No instrument is built — see [ADR-0002](docs/04-decisions/0002-software-only-no-instrument-is-built.md).** The ~R5,000 rig is a costed design presented as a design. Never imply it exists. The 0.2–1.6 µm/pixel figure is a design target, not a measurement, and nothing may be derived from it.
 
-Built for the Mintek-SCi Grad Hackathon 2026, challenge: *Computer Vision for Real-Time Mineralogical Characterisation*. Team Sonar, University of the Witwatersrand. Final: 1 October 2026, 13:00 submission, 10-minute presentation.
+Built for the Mintek-SCi Grad Hackathon 2026, challenge: *Computer Vision for Real-Time Mineralogical Characterisation*. Team Sonar — three members across three institutions (see §Single technical decision-maker). Final: 1 October 2026, 13:00 submission, 10-minute presentation. **Abstract due 30 August 2026, one page** — `docs/06-abstract.md`.
 
 ## The physics — read this before proposing anything
 
@@ -180,10 +180,16 @@ Federated layer → four of five agents (keep Curator) → adaptive illumination
 
 ## Single technical decision-maker
 
-**Lethabo Mphukuile** — Domain lead (Business Informatics / prior metallurgical engineering).
+**Lethabo Hoaeane** — Domain lead (BCom Business Informatics, Unisa / prior metallurgical
+engineering).
 
-*(Name taken from the git commit identity. Correct the spelling here if it is wrong — it goes
-on every ADR.)*
+*(Confirmed by Lethabo, 2026-08-22. Supersedes "Lethabo Mphukuile", which was inferred from the git
+commit identity and was wrong — it appears in ADRs written before that date and should be corrected
+wherever it is load-bearing.)*
+
+**Team Sonar** is three people across three institutions: Lethabo Hoaeane (BCom Business
+Informatics, Unisa), **Sibusiso Khumalo** (BSc Electrical Engineering, Wits — the KHANYA build),
+**Ipeleng Modise** (BSc Computer Science, TUT).
 
 Breaks all architecture ties. Not a consensus role: when the team splits on a technical
 decision, this is the person who ends it, and the decision is written up as an ADR in

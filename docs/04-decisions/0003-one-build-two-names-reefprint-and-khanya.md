@@ -2,7 +2,7 @@
 
 - **Date:** 2026-08-20
 - **Status:** Accepted
-- **Decider:** Lethabo Mphukuile (single technical decision-maker, CLAUDE.md)
+- **Decider:** Lethabo Hoaeane (single technical decision-maker, CLAUDE.md)
 - **Relates to:** CLAUDE.md rule 8 (commit history is the originality defence); JOINT-PLAN §5
   (two commit histories, named as a risk); the ten-minute narrative
 

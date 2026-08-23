@@ -2,7 +2,7 @@
 
 - **Date:** 2026-08-15
 - **Status:** Accepted
-- **Decider:** Lethabo Mphukuile
+- **Decider:** Lethabo Hoaeane
 - **Relates to:** CLAUDE.md hard constraints · week-1 and week-5 gates · gauntlet **H1/H2** (build risk) · [ADR-0001](0001-ome-tiff-via-tifffile-not-bioformats.md)
 
 ## Context
