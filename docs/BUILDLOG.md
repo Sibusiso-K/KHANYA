@@ -147,6 +147,45 @@ two documents above, all with **no placeholders**.
   five fields per member; a table renders them in a form Mintek can file, and the same details are
   also inline in the email body so nothing depends on an attachment being opened.
 
+### Also this session · the abstract asserted a geometry its own code refuses to name
+
+Picked up from an unmerged branch (`fix-abstract-neither`, `d0ebaff`) produced by a concurrent
+session's assumption-auditor, verified against the source, and applied.
+
+**The claim that was wrong.** The submitted page said the S3 v2 result was "evidence that the
+published 'rotation sequences' are stage rotations, not analyser rotations." It is not.
+`HarmonicVerdict.NEITHER` means *no modulation above the noise floor*, and
+`src/reefprint/polarim/geometry.py:99` maps it to `RotationGeometry.UNKNOWN` on purpose, with the
+reason in the docstring: *"'I cannot tell' and 'it is the convenient one' must not be the same
+value. Rule 1."* Only `SECOND` and `FOURTH` name a geometry.
+
+So the abstract performed, on public data, exactly the substitution the discriminator exists to
+refuse — on the same page that advertises **"acquisition geometry is measured, not assumed"**. A
+judge who reads the code finds the page contradicting the build's most distinctive decision. It
+now reads: *"the geometry of the published 'rotation sequences' is not established by this
+archive, and the Stokes inversion is not licensed to run on it."* Weaker, supported, and
+rhetorically no worse — "we checked, the data would not tell us, and we declined to assume" is
+the same negative-result story, minus the falsifiable overclaim.
+
+**Learned, and it generalises past this sentence.** The overclaim did not come from carelessness;
+it came from `CLAUDE.md` §The physics, which says these archives are *"almost certainly stage
+rotations."* That is a reasonable **prior from domain knowledge**. The abstract attributed it to
+the **discriminator run**. Laundering a prior into a measurement by attribution is Rule 1's
+failure mode with better manners — no number was invented, only its provenance was upgraded.
+The provenance table now carries the reasoning so the next person to tighten this paragraph finds
+out why the wording is careful first.
+
+**Not changed:** `CONTEXT.md` §3 argues `NEITHER` leans stage on SNR grounds (extinction depth
+scales as bireflectance *squared*, so a symmetric null is asymmetric evidence). That argument is
+far more defensible than the abstract's flat assertion was, and it is a methodology call for
+Lethabo and Sibusiso, not a drafting fix. Flagged, left alone.
+
+**Repo hygiene note.** A concurrent session is creating and checking out branches in this working
+tree (`swarm-test`, `fix-abstract-neither`, `fix-conformal-distribution`, `fix-run-geometry`).
+This session's commits landed on whichever branch happened to be checked out and had to be
+fast-forwarded onto `main` before pushing. Check `git branch --show-current` before committing
+here.
+
 ### Left open
 
 - **Whether Lethabo's credential line should carry "prior metallurgical engineering."** It is

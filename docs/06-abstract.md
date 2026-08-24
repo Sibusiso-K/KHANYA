@@ -73,9 +73,10 @@ dependencies.
 **Evidence to date.** The Stokes inversion resolves a 40.4× separation between isotropic and
 anisotropic response on a synthetic phantom with analytic ground truth — a phantom result, not an
 ore result. Applied to public reflected-light data (LumenStone S3 v2; 29 sections, 116 000 pixels),
-our geometry discriminator found neither harmonic above detection threshold — evidence that the
-published "rotation sequences" are stage rotations, not analyser rotations. We report that negative
-finding and route to a fourth-harmonic extinction estimator rather than force the convenient
+our geometry discriminator found neither harmonic above detection threshold — so the geometry of
+the published "rotation sequences" is not established by this archive, and the Stokes inversion is
+not licensed to run on it. We report that negative finding and route to a fourth-harmonic
+extinction estimator rather than force the convenient
 inversion. We have also quantified the evaluation trap this domain invites: on synthetic data whose
 only signal is section identity, patch-level splitting flatters error by a factor of 126 against an
 honest locality-grouped split. All results run under 249 automated tests.
@@ -106,7 +107,7 @@ evidenced in a continuous, timestamped commit history.*
 |---|---|---|
 | Chromite 50–75 vol% of UG2 | `CLAUDE.md` §The physics | CITED |
 | 40.4× isotropic/anisotropic separation | `experiments/001-week1-gate/README.md:36` | MEASURED — **on a synthetic phantom**, and labelled as such on the page |
-| 29 sections, 116 000 pixels, `NEITHER` verdict | Session-11 run of `experiments/002-s3v2-geometry/run.py` on the real `S3_v2.zip`; `docs/BUILDLOG.md` | MEASURED on real public data |
+| 29 sections, 116 000 pixels, `NEITHER` verdict | Session-11 run of `experiments/002-s3v2-geometry/run.py` on the real `S3_v2.zip`; `docs/BUILDLOG.md` | MEASURED on real public data. **The page states this as "geometry not established", never as "stage rotations".** `HarmonicVerdict.NEITHER` maps to `RotationGeometry.UNKNOWN` in `polarim/geometry.py`, deliberately: "'I cannot tell' and 'it is the convenient one' must not be the same value" (Rule 1). NEITHER means no modulation above the noise floor, which is not evidence for either geometry. |
 | MAE 0.0017 vs 0.2119, factor 126 | `reefprint.trust.split` measurement, `CLAUDE.md` rule 2 | MEASURED — **on synthetic patches**; page says "on synthetic data" |
 | 249 automated tests | `uv run pytest -q -m "not placeholder"`, 2026-08-21 | MEASURED |
 | ~R5 000 instrument | BOM only. ADR-0002. Page says "costed and specified as a design; no hardware is built" | DESIGN — never stated as existing |
