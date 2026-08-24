@@ -13,11 +13,12 @@ Keep it current. A stale CONTEXT.md is worse than none, because it will be trust
 - ⏳ **Nearest deadline: the abstract, 30 August 2026 — 7 days out.** One page. Drafted and
   rendered: [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
   [`docs/06-abstract.pdf`](docs/06-abstract.pdf) is what gets sent. **What is not done is not the
-  writing** — it is confirming "Team Sonar" is the registered team name, per-member admin (ID
-  number, T-shirt size, contact details), and a read-aloud voice pass. See that file's working
-  notes. **Mentor: we have none**, so the formal request for a Mintek-assigned one
-  ([`docs/07-mentor-request.pdf`](docs/07-mentor-request.pdf)) goes in the same email — it needs a
-  mobile number filled in, its only placeholder.
+  writing**. **The submission packet is complete and has no placeholders** — abstract, mentor
+  request (we have no mentor, so we are asking Mintek to assign one), team-member details, and
+  the email body are all in `submission/`, which is **gitignored because it carries all three
+  members' SA ID numbers**. Do not move those into `docs/`; git history outlives a repo's
+  visibility setting. What is genuinely still open: confirming "Team Sonar" is the registered
+  team name, conference registration for 2 October, and a read-aloud voice pass on the abstract.
 
 ---
 

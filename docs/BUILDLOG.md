@@ -123,6 +123,30 @@ would be valuable" into the list introduction — *not* by dropping the expertis
 only part Mintek cannot act without. A request for someone's scarce time that runs to two pages is
 arguing against itself.
 
+### Also this session · the submission packet, and a claim that was not true
+
+Team details supplied, so the packet was completed: team-details PDF, the email body, and the
+two documents above, all with **no placeholders**.
+
+- **Three things that were wrong or unsafe, found by finishing rather than by looking for them:**
+  1. **The abstract claimed "a continuous *public* commit history."** The KHANYA repo is
+     **private**. That is a false statement on a document that goes through originality checks —
+     worse than the placeholder we were fixing at the time. Now reads "a continuous, timestamped
+     commit history," which is true today, stays true if the repo is opened later, and is the
+     claim originality authentication actually cares about. Keeping the repo private until after
+     1 October is also the right call competitively, so the wording should not be reverted.
+  2. **SA ID numbers must not enter git.** `submission/` is gitignored and holds all three
+     members' ID numbers and mobile numbers. The repo is private *today*; git history outlives a
+     visibility setting, and the originality defence may yet require opening it. Deleting a file
+     later does not remove it from history.
+  3. **The ID numbers were checked, not trusted.** All three pass the Luhn check digit, are
+     13 digits, carry citizenship digit `0`, and decode to valid dates of birth. Cheap, and a
+     transposed digit would otherwise have reached Mintek. Rule 1's habit applied to someone
+     else's data: verify before it leaves the building.
+- **The team-details document is a document, not a paragraph in an email.** The letter asks for
+  five fields per member; a table renders them in a form Mintek can file, and the same details are
+  also inline in the email body so nothing depends on an attachment being opened.
+
 ### Left open
 
 - **Whether Lethabo's credential line should carry "prior metallurgical engineering."** It is

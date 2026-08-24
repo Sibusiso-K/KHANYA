@@ -65,3 +65,9 @@ desktop.ini
 
 # --- session scratch ---
 .remember/
+
+# --- submission packet: contains all three team members' SA ID numbers and
+#     personal mobile numbers. Never committed. This repo is private today, but
+#     git history outlives a visibility setting and the originality defence may
+#     yet require opening it. Regenerate from docs/ + submission/README-private.md.
+submission/

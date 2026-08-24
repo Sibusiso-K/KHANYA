@@ -73,7 +73,7 @@ Yours sincerely,
 
 **Lethabo Hoaeane**
 Team Sonar — technical lead and point of contact
-Email: lethabomphukuile14@gmail.com · Mobile: [PHONE NUMBER]
+Email: lethabomphukuile14@gmail.com · Mobile: 064 986 8638
 
 On behalf of Sibusiso Khumalo and Ipeleng Modise.
 
@@ -81,10 +81,10 @@ On behalf of Sibusiso Khumalo and Ipeleng Modise.
 
 ## WORKING NOTES — NOT PART OF THE SUBMITTED LETTER
 
-### What must be filled before sending
+### Status: complete, no placeholders
 
-1. **Mobile number.** The only placeholder in the letter. A formal request with a bracketed
-   placeholder in the signature block is worse than no letter.
+1. ~~**Mobile number.**~~ **Filled 2026-08-23** (064 986 8638). The letter is sendable as it
+   stands; the rendered PDF for attaching is `submission/Team-Sonar-mentor-request.pdf`.
 2. **Check the email address.** `lethabomphukuile14@gmail.com` carries the surname *Mphukuile*,
    which we established on 2026-08-22 is not the correct surname (see `docs/BUILDLOG.md`,
    session 14). It is a perfectly ordinary thing for an address to not match a name and no

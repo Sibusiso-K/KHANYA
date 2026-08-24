@@ -94,7 +94,7 @@ resolves; if it cannot be rejected, we will say so publicly and pivot to the oxi
 *Sources: public data only (LumenStone, IronOreRLM), IMA/COM reflectance reference data, and Craig
 & Vaughan (open access, MSA). No proprietary Mintek data is used. AI coding assistants supported
 implementation and drafting; the scientific direction and system design are the team's own,
-evidenced in a continuous public commit history.*
+evidenced in a continuous, timestamped commit history.*
 
 ---
 
@@ -146,7 +146,7 @@ would get read as a specification.
    a formal request for a Mintek-assigned mentor is at
    [`07-mentor-request.md`](07-mentor-request.md), rendered to
    [`07-mentor-request.pdf`](07-mentor-request.pdf), to be attached alongside this abstract.
-   **Still needs a mobile number** before it can be sent — it is the only placeholder in it.
+   **Complete as of 2026-08-23** — no placeholders remain.
 4. **Whether the R5 000 rig belongs on the page at all.** It is stated correctly as a design, but
    it invites the question "so you built nothing". Argument for keeping it: it shows the work is
    deployable and costed. Argument for cutting it: the software result is stronger without a
