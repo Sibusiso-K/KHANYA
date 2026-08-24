@@ -8,8 +8,11 @@ Predictive Inference for Regression").
 
 The two agree closely at n = 100 and diverge at the small n that a
 locality-grouped split actually leaves you with, which is the regime the
-finding is about. The Wald form is optimistic there, so sizing from it buys
-less coverage precision than it promises.
+finding is about. The Wald form is the *larger* of the two, so it errs toward
+caution: it overstates the spread of coverage and oversizes the calibration
+set. It is corrected anyway, because F3's whole argument is that numbers must
+be sized by the right formula, and an error in the safe direction is still an
+error.
 
 These tests pin the numbers now quoted in the document. They are not testing
 `reefprint` code - they are testing that a claim in the design record still
@@ -49,23 +52,24 @@ def test_conformal_coverage_sd_at_n_20_is_6_26_pp() -> None:
     assert conformal_coverage_sd_pp(20) == pytest.approx(6.26, abs=0.005)
 
 
-def test_the_wald_form_is_optimistic_and_worst_where_it_matters() -> None:
+def test_the_wald_form_overstates_spread_and_is_worst_where_it_matters() -> None:
     """The reason the correction is worth making, as a number.
 
-    The Wald SE overstates precision at both sizes, and the error grows as n
-    falls - which is the direction that matters, because the small n is the
-    one an honest locality-grouped split leaves you with.
+    The Wald SE is larger than the exact Beta SD at both sizes, so it errs
+    toward caution rather than toward flattery. The gap grows as n falls -
+    which is the direction that matters, because the small n is the one an
+    honest locality-grouped split leaves you with.
     """
-    error_at_100 = wald_coverage_sd_pp(100) / conformal_coverage_sd_pp(100) - 1.0
-    error_at_20 = wald_coverage_sd_pp(20) / conformal_coverage_sd_pp(20) - 1.0
+    excess_at_100 = wald_coverage_sd_pp(100) / conformal_coverage_sd_pp(100) - 1.0
+    excess_at_20 = wald_coverage_sd_pp(20) / conformal_coverage_sd_pp(20) - 1.0
 
-    assert error_at_100 > 0.0, "Wald should overstate precision at n = 100"
-    assert error_at_20 > 0.0, "Wald should overstate precision at n = 20"
-    assert error_at_20 > error_at_100, (
-        f"the Wald error should worsen as n falls: {error_at_20:.1%} at n = 20 "
-        f"vs {error_at_100:.1%} at n = 100"
+    assert excess_at_100 > 0.0, "Wald should overstate the spread at n = 100"
+    assert excess_at_20 > 0.0, "Wald should overstate the spread at n = 20"
+    assert excess_at_20 > excess_at_100, (
+        f"the Wald excess should grow as n falls: {excess_at_20:.1%} at n = 20 "
+        f"vs {excess_at_100:.1%} at n = 100"
     )
-    assert error_at_20 == pytest.approx(0.072, abs=0.001), (
+    assert excess_at_20 == pytest.approx(0.072, abs=0.001), (
         "F3 quotes the Wald form as running 7.2% high at n = 20"
     )
 
