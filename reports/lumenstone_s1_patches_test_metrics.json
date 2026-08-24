@@ -1,0 +1,25 @@
+{
+  "iou_per_class": [
+    0.7872379978582487,
+    0.8651975183841111,
+    0.6310039725207898,
+    0.8512745112546292,
+    0.8962823736131641,
+    0.6374401525264299,
+    0.3129832229962125
+  ],
+  "mean_iou": 0.7116313927362264,
+  "pixel_accuracy": 0.8592787919273142,
+  "class_names": [
+    "background",
+    "chalcopyrite",
+    "galena",
+    "bornite",
+    "pyrite",
+    "sphalerite",
+    "tennantite"
+  ],
+  "n_test_images": 20,
+  "method": "sliding window, 512px patches at native resolution, whole sections, no downsampling",
+  "loss": "ce"
+}
