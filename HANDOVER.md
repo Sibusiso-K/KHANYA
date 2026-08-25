@@ -19,6 +19,79 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-08-21 — Sibusiso (30)
+
+**Did:** Re-pointed `src/polarimetry.py` at `reefprint.polarim.extinction` per
+Lethabo's instruction in `CONTEXT.md` ("do not run the Stokes inversion on S3
+v2... re-pointed at extinction, not stokes_from_rotation_series"), and ran the
+ten-mineral symmetry test on real S3 v2 data for the first time.
+
+**Set up a live REEFPRINT checkout.** `_resolve_reefprint_src()` (added in the
+geometry-guard PR) looks for `~/Desktop/REEFPRINT/src` first; only `REEFPRINT -
+Copy` existed on this machine and is stale (missing `geometry.py` and
+`extinction.py`). Added a detached git worktree at `~/Desktop/REEFPRINT`
+tracking `origin/reefprint`, so the resolver finds the real, current source
+without vendoring it - matches this module's own "imported unchanged"
+principle. Not committed to KHANYA (it's a worktree, not a copied file).
+
+**Swapped the estimator, kept the geometry guard, inverted which verdict it
+gates on.** The old guard raised unless `harmonic_signature` returned
+`SECOND` (assumed analyser). Since real data reads `NEITHER` (matches N3
+exactly), that guard would have hard-failed every section under the old
+logic. Now it raises only on a clean `SECOND` verdict - which would mean a
+section really is a rotating-analyser series, wrong physics for extinction's
+4th-harmonic model. `anisotropy`/`s0` dict keys kept as-is downstream
+(`summarise_by_class`, `conformal_threshold_by_s0`, etc. all use them as
+relative quantities only, so no other function needed to change) but now
+hold extinction amplitude and `dc`, not Stokes anisotropy and S0 - commented
+at the point of substitution since they are not on the same physical footing
+(no calibrated S0 exists under crossed polars, extinction.py's own docstring
+says so).
+
+**Found and fixed a real, separate data bug on the way: one frame in one
+section has swapped pixel dimensions.** `S3_test_04_r045.jpg` decodes as
+(3396, 2547) against every sibling frame's (2547, 3396) - no EXIF explains
+it, just a bad capture. Was crashing the whole 47-section run at frame-read
+time (`IndexError`, twice, before and after the estimator swap - same bug,
+unrelated to geometry). Fixed by checking each frame's decoded shape against
+the mask's and skipping only that one frame, keeping the other ~71 angles
+for that section - a full run should not depend on every one of ~3,384 JPEGs
+being clean.
+
+**The result is a real, honest null - a second, independent line of evidence
+for the same problem N3 already found, not a contradiction of it.** 47
+sections, 137,113 pixels pooled, 9 of 11 S3 classes represented:
+
+| | median extinction amplitude |
+|---|---|
+| isotropic | 6.024 |
+| anisotropic | 4.880 |
+| **separation ratio** | **0.81** (anisotropic reads LOWER - wrong direction) |
+| magnetite vs hematite (headline pair) | 4.140 vs 4.733, ratio **1.14x** |
+
+For comparison, REEFPRINT's own phantom validated at 40.4x. The S0-bin
+conformal threshold (`conformal_threshold_by_s0`) is doing its job correctly
+- false-positive rate on known-isotropic pixels landed at 9.99%, right on
+its 10% target - but detection rate on known-anisotropic pixels is only
+8.2%, barely above the false-positive floor. The calibration machinery
+works; there is no separating signal in this archive for it to calibrate
+against. Report: `reports/polarimetry_s3.json`.
+
+**Changed:** `src/polarimetry.py` (estimator swap, guard inversion, per-frame
+shape check), new `reports/polarimetry_s3.json`, new (uncommitted) worktree
+at `~/Desktop/REEFPRINT`.
+**Blocked on:** nothing technical - this closes out the immediate re-pointing
+task. Whether to keep chasing a signal in S3 v2 at all (brightest-quantile
+re-run, a confirmed-analyser archive, or reporting the null itself as
+Rule-9-style falsification) is Lethabo's call per his own CONTEXT.md
+priority order, not a KHANYA-side decision.
+**Next:** read Lethabo's `CONTEXT.md` on the `reefprint` branch for his
+current priority order before acting further on this thread - this entry
+answers only "does extinction find symmetry-driven separation in S3 v2,"
+not "what should be reported instead." Abstract due 30 Aug.
+
+---
+
 ## 2026-08-21 — Sibusiso (29)
 
 **Did:** Reviewed the `reefprint` branch end to end, ran experiment 002 against

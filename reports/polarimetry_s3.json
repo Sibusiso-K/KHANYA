@@ -1,0 +1,137 @@
+{
+  "n_sections": 47,
+  "n_pixels_sampled": 137113,
+  "per_class": [
+    {
+      "mineral": "chalcopyrite",
+      "symmetry": "anisotropic",
+      "n_pixels": 23449,
+      "anisotropy_median": 5.02562876110487,
+      "anisotropy_p25": 2.86661999021671,
+      "anisotropy_p75": 7.891187067440062,
+      "s0_median": 66.87500000000001
+    },
+    {
+      "mineral": "galena",
+      "symmetry": "isotropic",
+      "n_pixels": 19200,
+      "anisotropy_median": 6.085045421176229,
+      "anisotropy_p25": 3.0720274804193872,
+      "anisotropy_p75": 9.355256989165674,
+      "s0_median": 71.50000000000001
+    },
+    {
+      "mineral": "magnetite",
+      "symmetry": "isotropic",
+      "n_pixels": 7200,
+      "anisotropy_median": 4.140329062543438,
+      "anisotropy_p25": 2.5055231488712097,
+      "anisotropy_p75": 6.023000700881904,
+      "s0_median": 55.84860718660239
+    },
+    {
+      "mineral": "bornite",
+      "symmetry": "anisotropic",
+      "n_pixels": 1200,
+      "anisotropy_median": 4.48686354199061,
+      "anisotropy_p25": 2.9291383740856514,
+      "anisotropy_p75": 6.240544767342132,
+      "s0_median": 81.33333333333336
+    },
+    {
+      "mineral": "pyrite",
+      "symmetry": "isotropic",
+      "n_pixels": 28149,
+      "anisotropy_median": 6.088377225469703,
+      "anisotropy_p25": 3.468108674447465,
+      "anisotropy_p75": 9.592153038046131,
+      "s0_median": 72.50000000000001
+    },
+    {
+      "mineral": "sphalerite",
+      "symmetry": "isotropic",
+      "n_pixels": 19768,
+      "anisotropy_median": 6.024357605153947,
+      "anisotropy_p25": 3.183321469718523,
+      "anisotropy_p75": 10.126628812744704,
+      "s0_median": 70.04166666666669
+    },
+    {
+      "mineral": "arsenopyrite",
+      "symmetry": "anisotropic",
+      "n_pixels": 31200,
+      "anisotropy_median": 6.345540897422042,
+      "anisotropy_p25": 3.6429154990657437,
+      "anisotropy_p75": 9.726336525584035,
+      "s0_median": 74.75000000000001
+    },
+    {
+      "mineral": "hematite",
+      "symmetry": "anisotropic",
+      "n_pixels": 2400,
+      "anisotropy_median": 4.73349656368142,
+      "anisotropy_p25": 2.9096088094181605,
+      "anisotropy_p75": 6.973095994676616,
+      "s0_median": 59.562499999999986
+    },
+    {
+      "mineral": "tennantite",
+      "symmetry": "isotropic",
+      "n_pixels": 4547,
+      "anisotropy_median": 4.664433989718839,
+      "anisotropy_p25": 2.930917565844834,
+      "anisotropy_p75": 6.9186741161657626,
+      "s0_median": 80.4166666666667
+    }
+  ],
+  "separation": {
+    "isotropic_median": 6.024357605153947,
+    "anisotropic_median": 4.879562662393145,
+    "separation_ratio": 0.8099722795702883,
+    "headline_pair": {
+      "magnetite": 4.140329062543438,
+      "hematite": 4.73349656368142,
+      "ratio": 1.1432657868922125
+    }
+  },
+  "conformal_bins": [
+    {
+      "s0_low": -Infinity,
+      "s0_high": 45.33333333333333,
+      "n_calib": 13144,
+      "threshold": 4.45637209847905
+    },
+    {
+      "s0_low": 45.33333333333333,
+      "s0_high": 61.95833333333336,
+      "n_calib": 13144,
+      "threshold": 9.211901830261196
+    },
+    {
+      "s0_low": 61.95833333333336,
+      "s0_high": 70.71335889285308,
+      "n_calib": 13144,
+      "threshold": 12.349932523432392
+    },
+    {
+      "s0_low": 70.71335889285308,
+      "s0_high": 76.45833333333337,
+      "n_calib": 13124,
+      "threshold": 14.88777462663018
+    },
+    {
+      "s0_low": 76.45833333333337,
+      "s0_high": 81.20833333333336,
+      "n_calib": 13106,
+      "threshold": 14.73751825934219
+    },
+    {
+      "s0_low": 81.20833333333336,
+      "s0_high": Infinity,
+      "n_calib": 13202,
+      "threshold": 14.919459701268593
+    }
+  ],
+  "detection_rate_on_known_anisotropic": 0.08151212896358735,
+  "false_positive_rate_on_known_isotropic": 0.0998934875228241
+}

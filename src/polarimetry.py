@@ -425,7 +425,7 @@ def section_frames(names, split, stem):
 
 def sample_section(archive, names, split, stem, rng):
     """Sample up to MAX_SAMPLES_PER_CLASS labelled pixels per class from one
-    section and run the Stokes inversion on just those pixels.
+    section and run the geometry-appropriate inversion on just those pixels.
 
     A full section is 3396x2547 x 72 rotation frames - far too large to hold
     as a stack. Pixel POSITIONS are chosen from the mask alone (cheap), then
@@ -434,7 +434,7 @@ def sample_section(archive, names, split, stem, rng):
     (~26 MB), never the full rotation stack.
     """
     frames = section_frames(names, split, stem)
-    if len(frames) < 3:  # stokes_from_rotation_series' own MIN_ANGLES floor
+    if len(frames) < 3:  # extinction_from_stage_series' own MIN_ANGLES floor
         return None
 
     with archive.open(f"S3_v2/masks/{split}/{stem}.png") as f:
@@ -464,40 +464,64 @@ def sample_section(archive, names, split, stem, rng):
         for code, p in positions_by_code.items()
     ])
 
-    degrees = np.array([d for d, _name in frames], dtype=float)
-    # Full 360deg range (72 frames, distinct mod 360 but NOT mod 180, since
-    # cos(2*theta)/sin(2*theta) repeat every 180deg). stokes_from_rotation_series
-    # validates degeneracy via the design matrix's condition number, not exact
-    # duplicates - repeated-but-consistent rows from the 0-180 / 180-360 pairs
-    # improve the least-squares fit's conditioning rather than breaking it, so
-    # all 72 frames are used rather than discarding half.
-    angles_rad = np.deg2rad(degrees)
-    intensities = np.empty((len(frames), all_ys.size), dtype=np.float64)
-    for i, (_deg, name) in enumerate(frames):
+    # Full 360deg range (72 frames, 5deg steps) when every frame decodes
+    # clean. extinction_from_stage_series' cos(4*phi)/sin(4*phi) terms repeat
+    # every 90deg, not 180 - so this set is 18 distinct residues mod 90, each
+    # repeated 4x, not 2x as it would be for the (unused, 180-periodic)
+    # Stokes model. It validates degeneracy via the design matrix's condition
+    # number, not exact duplicates - repeated-but-consistent rows improve
+    # conditioning rather than breaking it, so all clean frames are used
+    # rather than discarding any.
+    good_degrees, rows = [], []
+    for deg, name in frames:
         with archive.open(name) as f:
             frame = np.array(Image.open(io.BytesIO(f.read())).convert("L"))
-        intensities[i] = frame[all_ys, all_xs]
+        if frame.shape != codes.shape:
+            # Real, isolated data fault (found: 1 of 72 frames in one S3 v2
+            # section stored portrait instead of landscape, no EXIF tag
+            # explaining it). One bad frame does not need to cost the whole
+            # section - skip it, keep the other ~71 angles, which is still
+            # far above MIN_ANGLES.
+            print(f"    {split}/{stem} {name.rsplit('/', 1)[-1]}: shape "
+                  f"{frame.shape} != mask {codes.shape}, skipping this frame")
+            continue
+        good_degrees.append(deg)
+        rows.append(frame[all_ys, all_xs])
+
+    if len(good_degrees) < 3:
+        return None
+    angles_rad = np.deg2rad(np.array(good_degrees, dtype=float))
+    intensities = np.stack(rows)
 
     # Which element turned? Ask the frames, not the filename or the paper.
-    # stokes_from_rotation_series fits I = (S0 + S1cos2t + S2sin2t)/2 - pure 2nd
-    # harmonic. A stage rotation under crossed polars is pure 4th harmonic and
-    # carries no 2nd-harmonic component at all, so fitting this model to one
-    # returns S1 = S2 = 0 for every anisotropic grain without raising. LumenStone
-    # does not document which geometry S3 v2 used, and the field's default since
-    # the 1940s is the stage. Refusing here is the difference between reporting
-    # "this archive is the other geometry" and reporting "anisotropy does not
-    # separate these minerals" - REEFPRINT open finding N3.
+    # N3 (Lethabo, CONTEXT.md 2026-08-21): two independent runs on this exact
+    # archive both came back NEITHER, leaning stage - "do not run the Stokes
+    # inversion on S3 v2 as things stand... re-pointed at
+    # reefprint.polarim.extinction, not stokes_from_rotation_series." A clean
+    # SECOND verdict would mean this section really is a rotating-analyser
+    # series, which extinction's pure-4th-harmonic model does not fit either -
+    # still raised for the whole run rather than skipped, since geometry is a
+    # property of the acquisition rig: if one section is the other geometry,
+    # all 47 are, and continuing on the rest would silently pool a mismatched
+    # estimator into the result.
     from reefprint.polarim.geometry import HarmonicVerdict, harmonic_signature
 
     signature = harmonic_signature(intensities, angles_rad)
-    if signature.verdict is not HarmonicVerdict.SECOND:
+    if signature.verdict is HarmonicVerdict.SECOND:
         raise GeometryMismatch(f"{split}/{stem}: {signature.explain()}")
 
-    from reefprint.polarim.stokes import stokes_from_rotation_series
-    stokes = stokes_from_rotation_series(intensities, angles_rad)
+    from reefprint.polarim.extinction import extinction_from_stage_series
+    extinction = extinction_from_stage_series(intensities, angles_rad)
     return {
-        "anisotropy": np.asarray(stokes.anisotropy).ravel(),
-        "s0": np.asarray(stokes.s0).ravel(),
+        # Extinction amplitude (~|r1-r2|**2, arbitrary intensity units) stands
+        # in for Stokes anisotropy; dc (fitted mean level, not a calibrated
+        # reflectance - extinction.py's own docstring: "no S0 in the data")
+        # stands in for s0. summarise_by_class/conformal_threshold_by_s0 use
+        # both only as relative, per-class/per-bin quantities, so neither
+        # substitution changes their math - see extinction.py for why the two
+        # are not on the same physical footing as Stokes' S0.
+        "anisotropy": np.asarray(extinction.amplitude).ravel(),
+        "s0": np.asarray(extinction.dc).ravel(),
         "class_codes": class_codes,
         "geometry": signature.explain(),
     }
@@ -535,15 +559,22 @@ def run_symmetry_test(seed=20260820, verbose=True):
                 code_parts.append(result["class_codes"])
         except GeometryMismatch as exc:
             # A refusal carrying its reason, not a None and not a null result.
-            print(f"\nREFUSED: the Stokes inversion does not apply to this archive.")
+            # Reached only on a clean SECOND verdict: this section looks like
+            # a genuine rotating-analyser series, which extinction's pure-4th-
+            # harmonic model does not fit - the opposite surprise from the one
+            # N3 found archive-wide (NEITHER, leaning stage).
+            print("\nREFUSED: the extinction (stage-rotation) model does not "
+                  "apply to this archive.")
             print(f"  {exc}")
-            print("  Leg (b) needs the fourth-harmonic estimator "
-                  "(reefprint.polarim.extinction), not this module.")
+            print("  This section reads as a rotating-analyser series - "
+                  "reefprint.polarim.stokes may be the right estimator here "
+                  "after all; re-check N3 before assuming it applies to "
+                  "every section.")
             return {
-                "refused": "rotation geometry is not a rotating analyser",
+                "refused": "rotation geometry is not a stage rotation",
                 "evidence": str(exc),
                 "n_sections": len(sections),
-                "next_step": "reefprint.polarim.extinction (4th-harmonic estimator)",
+                "next_step": "reefprint.polarim.stokes (2nd-harmonic estimator)",
             }
 
     if not aniso_parts:
