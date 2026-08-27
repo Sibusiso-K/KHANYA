@@ -22,6 +22,81 @@ it is a press release.
 
 ---
 
+## 2026-08-27 — session 16b · widened the texture search; the finding is an absence, checked properly
+
+### Attempted
+
+The user asked to search more broadly for a public dataset pairing texture (images), Cr2O3,
+pyroxene fraction and locality for Bushveld/UG2, and to name a pivot if none exists — on the
+premise that "calling won't help" (CGS). Surveyed six real candidate sources rather than
+speculate.
+
+### Worked — real candidates checked and precisely ruled out
+
+- **GeoMet** (Zenodo 10.5281/zenodo.6336138, CC BY 4.0, Chilean porphyry copper).
+  `drillholes.csv` downloaded and inspected directly: 2,000 rows, X/Y/Z continuous coordinates
+  and 18 elements, **no discrete locality identifier** (would need spatial clustering to
+  construct one — another judgement call) and **no images anywhere in the dataset**
+  (comminution.csv and flotation.csv are physical test indices, not texture).
+- **HIDSAG** (figshare, Nature Sci. Data 2023, CC BY 4.0) — genuinely pairs hyperspectral/RGB
+  images with response variables (modal mineralogy %, recoveries) and has real sample-group
+  structure (MINERAL1's process-line/composite IDs). Checked precisely and ruled out on domain
+  grounds, not data quality: Chilean porphyry copper-molybdenum, not chromite/PGE, and the
+  imagery is hyperspectral reflectance of loose composite samples, not reflected-light rotation
+  series on polished sections — nothing in it maps onto `reefprint.polarim` or `reefprint.bridge`
+  without a domain and instrument substitution the abstract would have to defend on its own
+  terms. Recorded as a possible **out-of-domain pipeline check** (proves the statistical
+  machinery on real non-synthetic data) but not as UG2 evidence, and not built this session —
+  see "Left open."
+- **Two real published studies pair chromite texture directly with chemistry on UG2/Bushveld
+  chromitite** — Kaufmann et al. 2019 (*Economic Geology* 114(3):569–590,
+  doi:10.5382/econgeo.4641, **same Thaba mine as the Bachmann CSV already in
+  `data/bushveld_thaba_chromitite/`**) and Veksler et al. 2018 (*Journal of Petrology*
+  59(6):1193, chromite crystal-size distribution through two UG2 drill profiles). Both
+  paywalled, neither has a public data release found. **The overlap with Bachmann's mine is the
+  useful part**: if either author would share underlying sample-level data on request, it could
+  plausibly join to the boreholes already in hand by locality. This is an email to an academic
+  author, not a call to a public institution — a materially cheaper ask than the CGS item, and
+  authors on 2018–2019 papers are frequently willing.
+- **A University of Pretoria PhD/MSc thesis** (open-access via `repository.up.ac.za`, chapter 6,
+  "Identification of mineralogically and chemically different types of UG2 chromitite") plots
+  **median chromite grain diameter** — an actual texture measurement — against Cr2O3, PGE grades
+  and pentlandite content, across 14 samples in three groups (A1–A5, B1–B4, C1–C5). This is the
+  closest match found to what the falsification test needs, in principle. **Ruled out on two
+  independent grounds, either one sufficient alone:** (1) the numbers exist only as line-chart
+  figures in a scanned PDF — reading precise values off a plotted line is exactly the "infer, not
+  extract" failure the doctrine's first rule forbids, not a defensible data-entry method; (2)
+  even with real numbers, three sample groups is below `MIN_LOCALITIES_FOR_INFERENCE = 5` — the
+  module would refuse to run inference on it by design, correctly.
+
+### Learned
+
+**Real texture-plus-chemistry data for UG2 chromitite exists in the literature, but not as an
+open, machine-readable, adequately-sized public dataset.** That is a different and more precise
+statement than "no dataset was found," and worth keeping precise: the domain has been studied
+this way, by multiple groups, on drill core from named mines — the barrier is publication format
+(figures, not files) and sample count (single-digit to teens per study, because this kind of
+petrographic work is slow), not that nobody has thought to measure both things together.
+
+### Left open, for the domain lead
+
+**No public source clears the bar to run the week-2 gate on real Bushveld chromitite texture, as
+things stand.** Three live options, none decided here:
+
+1. **Email Kaufmann and/or Veksler directly**, naming the overlap with the Bachmann mine already
+   in hand. Cheapest, and the only option that could plausibly deliver real UG2 texture data at
+   all before the final.
+2. **Report the search itself as the week-2 finding, honestly**: real target, locality and half
+   the baseline are in hand (session 16a); texture was sought specifically and does not exist
+   publicly at a usable n; the gate is reported as blocked-on-data rather than run against
+   invented or undersized numbers. Consistent with Rule 9's spirit even though this is a data
+   absence, not a null result — the doctrine's rule 10 (state limitations before anyone asks)
+   applies just as much here.
+3. **Pivot to the oxidation index** per `CLAUDE.md`'s own named fallback — normally triggered by
+   H0 not being rejected, but the practical effect of "the challenger variable cannot be
+   obtained" is the same redirection, for a different and equally honest reason. Worth stating
+   in the talk as a different failure mode from a null result, not folded into one.
+
 ## 2026-08-27 — session 16 · went and found the two datasets the backlog had been waiting on
 
 ### Attempted
