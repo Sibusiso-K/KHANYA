@@ -22,6 +22,34 @@ it is a press release.
 
 ---
 
+## 2026-08-27 — session 16c · the resumed download was silently corrupt
+
+### Attempted
+
+Download `S3_v2.zip` completed per the background task notification. Verified before trusting
+it — Rule 3's habit applied to a file, not a metric.
+
+### Did not work
+
+- **The `-C -` resume corrupted the archive.** First attempt dropped at 1.6/5.23 GB
+  (`curl: (56) Recv failure`, masked earlier by a `| tail` that reported exit 0 — see session
+  16a). Re-resolved a fresh signed href and resumed with `curl -C -`. The result was 6.48 GB,
+  not 5.23 GB, and not a valid zip (`zipfile.BadZipFile`). The fresh href likely didn't honour a
+  byte-range request against the partial local file — curl appears to have appended a full
+  second copy on top of the partial first one rather than truly resuming. **Lesson: don't trust
+  `-C -` against a freshly re-resolved signed URL for this host; verify size and zip integrity
+  before doing anything else with a downloaded archive, every time, not just when something
+  looks wrong.**
+- Deleted the corrupted file and restarted clean (no `-C -`) rather than trying to salvage or
+  re-resume a second time — a corrupt 6.48 GB file is not a checkpoint worth preserving.
+
+### Left open
+
+Clean download restarted, in progress. Verify size (5,227,181,560 bytes exactly) **and**
+`zipfile.testzip()` before running `experiments/002-s3v2-geometry/run.py` against it — both
+checks, not just one; this session showed the size check alone would have caught it, but only
+because the corruption happened to overshoot rather than undershoot the byte count.
+
 ## 2026-08-27 — session 16b · widened the texture search; the finding is an absence, checked properly
 
 ### Attempted
