@@ -22,6 +22,68 @@ it is a press release.
 
 ---
 
+## 2026-08-27 — session 16e · extinction loader built and TDD'd; real archive OOMs on this machine
+
+### Attempted
+
+Session 16d's next action: build the loader wiring the real S3 v2 zip into
+`reefprint.bridge.measure_section_extinction`, which was TDD'd against a synthetic stage series
+but had nothing reading real archive frames into the `RotationSeries`/`LabelledSection` objects
+it needs.
+
+### Worked
+
+- **`experiments/003-s3v2-extinction/run.py`**: `load_section_as_specimen_series()` decodes one
+  section's mask and full rotation-frame stack from the zip, builds a `RotationSeries(geometry=
+  SPECIMEN)` and `LabelledSection`, and hands both to `measure_section_extinction`. Refuses to
+  run without a `--codebook` JSON file rather than deriving mineral names from mask pixel values
+  — that mapping is a mineralogical judgement call KHANYA's `src/polarimetry.py` already makes
+  via `.segmentation.lumenstone.CODEBOOK`, and Rule 6 reserves it for a human, not for this
+  script to guess.
+- **`tests/test_s3v2_extinction_loader.py`**, 4 tests, TDD against a synthetic archive built
+  from the existing stage-rotation phantom (same pattern as `tests/test_s3v2_reader.py`):
+  recovers a full-resolution series and section correctly, reports a shape mismatch and a
+  too-few-frames case as data rather than crashing, and feeds cleanly into
+  `measure_section_extinction` end to end. All pass.
+- **Found and fixed a false claim before it shipped**: the module docstring originally claimed
+  building the frame stack as float32 halves memory versus float64. It doesn't —
+  `RotationSeries.__post_init__` (`reefprint.acquire.series:92`) unconditionally casts to
+  float64 on construction regardless of what's passed in, a test failure caught this before the
+  docstring went uncorrected. Fixed the docstring to state the real cost (~5 GB for a full
+  3396x2547x72 section, not the ~2.5 GB float32 alone would cost) rather than the convenient
+  number.
+
+### Did not work
+
+- **Smoke-tested against the real archive (one section, a throwaway placeholder codebook — no
+  mineralogical claim made) and it OOM'd**: `numpy._core._exceptions._ArrayMemoryError: Unable
+  to allocate 4.58 GiB for an array with shape (71, 2547, 3396)`. This machine has 7.9 GB total
+  physical memory and ~1 GB free at the time of the run (`systeminfo`). The loader's plumbing is
+  correct — proven by 4 passing tests against synthetic data at the real archive's layout — but
+  full-resolution, whole-section-in-memory extinction measurement does not fit on this hardware.
+
+### Learned
+
+The float32-halves-memory claim would have shipped as a plausible-sounding but false statement
+in a module docstring if the test suite hadn't been run before writing it down — worth noting as
+a concrete instance of why Rule 1's discipline extends to code comments, not just reported
+numbers.
+
+### Left open
+
+- **The real memory blocker needs one of three decisions, not a workaround chosen unilaterally
+  here**: (1) run this on a machine with more RAM — Sibusiso's, or a cloud CPU instance; (2)
+  downsample frame resolution before building the stack, which changes measurement precision
+  and should be a stated, documented tradeoff, not a silent default; (3) restructure
+  `measure_section_extinction`'s calling convention to stream over row-chunks instead of
+  requiring a full frame stack in memory — a real change to the sanctioned bridge module,
+  cross-cutting enough to need review before landing.
+- Codebook is still a placeholder (`code_0`, `code_1`, ... from the real mask's actual codes
+  `{0,1,2,6,8,9}` on section `S3_test_01`) — no mineralogical claim has been made on real data
+  yet, deliberately.
+
+---
+
 ## 2026-08-27 — session 16d · N3 measured a third time, on the verified archive, this machine
 
 ### Attempted

@@ -8,7 +8,7 @@ is the constitution — *what is true and what the rules are*. This file is the 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
 - **Last updated:** 2026-08-27
-- **Last commit at time of writing:** N3 measured a third time on the verified real archive; the dolp physical-bound clamp
+- **Last commit at time of writing:** extinction loader built and TDD'd; real archive OOMs on this machine (7.9 GB RAM)
 - **Days to final:** 39 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 - ⏳ **Nearest deadline: the abstract, 30 August 2026 — 7 days out.** One page. Drafted and
   rendered: [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
@@ -104,15 +104,20 @@ a bright S0, stronger. A geometry whose signal is the *weaker* one is more likel
 under noise than one whose signal is stronger. A symmetric null is therefore asymmetric
 evidence — it leans stage.
 
-**What is actually next: build the loader that wires the real S3 v2 zip into
-`reefprint.bridge.measure_section_extinction`.** That function and its guard are TDD'd against a
-synthetic stage series, but nothing yet reads the real archive into the `RotationSeries`/
-`LabelledSection` objects it needs — `experiments/002-s3v2-geometry/run.py`'s scattered
-pixel-sampling proves harmonic strength cheaply, it does not assemble a labelled per-mineral
-measurement. This is a real build, test-first, not a rerun of existing code: a naive
-full-resolution stack per section (3396x2547 x up to 72 angles) is large enough to need the same
-one-frame-at-a-time discipline `run.py` already uses, adapted from harmonic-strength sampling to
-per-mineral extinction-depth statistics. This closes week-1 leg (b) once done.
+**The loader is now built and TDD'd — `experiments/003-s3v2-extinction/run.py`,
+`load_section_as_specimen_series()`, 4 passing tests in `tests/test_s3v2_extinction_loader.py`.**
+It refuses to run without a `--codebook` JSON (Rule 6: mineral-code mapping is KHANYA's
+`.segmentation.lumenstone.CODEBOOK`, not this script's to invent).
+
+**What is actually next: a real memory blocker, needing a team decision, not a workaround
+picked unilaterally.** Smoke-testing the loader against one real section (placeholder codebook,
+no mineralogical claim) OOM'd: `RotationSeries.__post_init__` unconditionally casts frames to
+float64, so a full 3396x2547x72 section needs ~5 GB, and this machine has 7.9 GB total / ~1 GB
+free. Three options, undecided: (1) run on a machine with more RAM (Sibusiso's, or cloud CPU);
+(2) downsample resolution before building the stack — changes measurement precision, must be a
+stated tradeoff, not a silent default; (3) restructure `measure_section_extinction`'s calling
+convention to stream row-chunks instead of requiring a full stack — a real change to the
+sanctioned bridge module, needs review. This closes week-1 leg (b) once resolved.
 
 Also left open, not investigated: the archive now reports **47 sections**, not the 29 prior
 sessions' wording carried from Sibusiso's runs. Doesn't change the verdict — noted in
@@ -361,7 +366,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **274 passed, 24 deselected**. Anything less is a regression, not a quirk.
+Expect **278 passed, 24 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
