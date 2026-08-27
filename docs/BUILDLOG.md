@@ -22,6 +22,56 @@ it is a press release.
 
 ---
 
+## 2026-08-27 — session 16d · N3 measured a third time, on the verified archive, this machine
+
+### Attempted
+
+Session 16c's clean re-download finished and verified (5,227,181,560 bytes, exact match to
+Yandex's declared size; `zipfile.testzip()` clean, 2,385 entries). Ran the placeholder test's own
+instruction: `experiments/002-s3v2-geometry/run.py` against the real archive, for the first time
+independently of Sibusiso's machine.
+
+### Worked
+
+- **Pooled default run** (3 usable of 6 sections read; 3 skipped on shape mismatch or zero
+  frames — same failure mode session 11 already characterised): 2nd harmonic 3.4x its noise
+  floor, 4th harmonic 1.8x, threshold 5.0x. `NEITHER`. Third independent confirmation of N3,
+  now on a verified archive rather than an unverified one.
+- **`--brightness-quantile 0.5` re-run**, the targeted check CONTEXT.md named as the way a
+  `NEITHER` could still flip: restricting to the brightest 50% of pixels by fitted DC moved the
+  2nd harmonic from 3.4x to 4.0x — closer, but still under the 5.0x threshold — while the 4th
+  harmonic stayed flat at 1.8x. Per the script's own printed framing, failing on the *most
+  favourable* subset (where an analyser signal has its best odds of surviving) is a stronger
+  confirmation of stage than the pooled result alone, not a softer one.
+- Archive now reports **47 sections**, not the 29 CONTEXT.md's prior wording carried from
+  Sibusiso's runs — worth noting as a discrepancy, not yet explained (different sampling of
+  `--sections`, or the archive layout itself differs from what was inspected in session 11).
+  Does not change the verdict: still `NEITHER` on every check run so far.
+- Deleted `test_the_real_s3_v2_archive_has_been_measured` per its own docstring instruction —
+  N3 has now been measured against the real archive, three times, independently, all `NEITHER`.
+
+### Did not work / open
+
+- **The extinction-estimator path (leg (b)'s actual route forward) is not built.**
+  `reefprint.bridge.measure_section_extinction` is TDD'd against a synthetic stage series, but
+  nothing yet reads the real S3 v2 zip into the `RotationSeries`/`LabelledSection` objects it
+  needs. `run.py`'s pixel-sampling approach (scattered positions, one frame decoded at a time)
+  proves harmonic strength cheaply; it does not assemble the labelled per-mineral measurement
+  that section-scale mineralogy needs. A naive full-resolution stack is large enough per section
+  (3396x2547 x up to 72 angles) to need the same one-frame-at-a-time discipline `run.py` already
+  uses, adapted to extinction rather than harmonic-strength sampling. Scoped as its own build,
+  test-first, rather than rushed inline.
+
+### Left open
+
+- The extinction-path loader above — next session's actual next action.
+- The 29-vs-47 section-count discrepancy — not investigated this session.
+- N3 itself stays open per doctrine (a `NEITHER` verdict is not a closed question, it is a
+  routed one) but leg (b) is licensed to proceed via the extinction estimator once its loader
+  exists.
+
+---
+
 ## 2026-08-27 — session 16c · the resumed download was silently corrupt
 
 ### Attempted

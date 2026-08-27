@@ -7,8 +7,8 @@ is the constitution — *what is true and what the rules are*. This file is the 
 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
-- **Last updated:** 2026-08-23
-- **Last commit at time of writing:** the week-2 gate's statistical core (`reefprint.heads.falsification`)
+- **Last updated:** 2026-08-27
+- **Last commit at time of writing:** N3 measured a third time on the verified real archive; the dolp physical-bound clamp
 - **Days to final:** 39 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 - ⏳ **Nearest deadline: the abstract, 30 August 2026 — 7 days out.** One page. Drafted and
   rendered: [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
@@ -93,14 +93,30 @@ is missing — **the red test list is the backlog**, deliberately.
 
 ### The single next action
 
-**N3 came back `NEITHER`, twice, identically — that is not a clean answer, and leg (b) needs
-one before it can run on this archive. Do not run the Stokes inversion on S3 v2 as things
-stand.** Reasoning: extinction depth (stage, 4φ) scales as bireflectance-squared, weaker;
-analyser modulation (2θ) scales as bireflectance directly, on a bright S0, stronger. A geometry
-whose signal is the *weaker* one is more likely to vanish under noise than one whose signal is
-stronger. A symmetric null is therefore asymmetric evidence — it leans stage. `NEITHER` is not
-"we don't know which"; it is "consistent with stage, and not what an analyser rotation buried in
-noise would look like." Two independent runs removes "one bad extract" as an explanation.
+**N3 came back `NEITHER` a third time, 2026-08-27, on this machine, on the archive verified
+byte-for-byte against Yandex's declared size — and the brightness-restricted re-run (the
+targeted check that could have flipped it) moved 2θ SNR from 3.4x to 4.0x but still did not
+clear the 5.0x threshold, while 4φ stayed flat at 1.8x.** `test_the_real_s3_v2_archive_has_been_
+measured` is deleted; N3 has now been measured three times, independently, all `NEITHER`. Do
+not run the Stokes inversion on S3 v2. Reasoning unchanged: extinction depth (stage, 4φ) scales
+as bireflectance-squared, weaker; analyser modulation (2θ) scales as bireflectance directly, on
+a bright S0, stronger. A geometry whose signal is the *weaker* one is more likely to vanish
+under noise than one whose signal is stronger. A symmetric null is therefore asymmetric
+evidence — it leans stage.
+
+**What is actually next: build the loader that wires the real S3 v2 zip into
+`reefprint.bridge.measure_section_extinction`.** That function and its guard are TDD'd against a
+synthetic stage series, but nothing yet reads the real archive into the `RotationSeries`/
+`LabelledSection` objects it needs — `experiments/002-s3v2-geometry/run.py`'s scattered
+pixel-sampling proves harmonic strength cheaply, it does not assemble a labelled per-mineral
+measurement. This is a real build, test-first, not a rerun of existing code: a naive
+full-resolution stack per section (3396x2547 x up to 72 angles) is large enough to need the same
+one-frame-at-a-time discipline `run.py` already uses, adapted from harmonic-strength sampling to
+per-mineral extinction-depth statistics. This closes week-1 leg (b) once done.
+
+Also left open, not investigated: the archive now reports **47 sections**, not the 29 prior
+sessions' wording carried from Sibusiso's runs. Doesn't change the verdict — noted in
+`docs/BUILDLOG.md` session 16d as an unexplained discrepancy worth a look.
 
 **What actually fixes this, in order of preference:**
 
@@ -345,13 +361,13 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **274 passed, 25 deselected**. Anything less is a regression, not a quirk.
+Expect **274 passed, 24 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **25 failed**. These are the backlog, not breakage. Each failure names the module and the
+Expect **24 failed**. These are the backlog, not breakage. Each failure names the module and the
 gate or rule it belongs to. CI runs them in a separate non-blocking job.
 
 ```bash

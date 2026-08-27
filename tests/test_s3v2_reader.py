@@ -187,19 +187,3 @@ def test_pool_signatures_can_restrict_to_the_brightest_pixels() -> None:
     assert verdict_bright is HarmonicVerdict.SECOND
     assert snr_2_bright == pytest.approx(6.0)
     assert n_bright == 10
-
-
-@pytest.mark.placeholder
-def test_the_real_s3_v2_archive_has_been_measured() -> None:
-    """N3 is not closed until this runs on the real 5.2 GB archive.
-
-    Everything above tests the reader against a synthetic archive of the correct shape. That
-    proves the code, not the dataset. The verdict on the actual LumenStone S3 v2 frames decides
-    whether week-1 leg (b) can use the Stokes inversion at all, and it is a one-command answer:
-
-        uv run python experiments/002-s3v2-geometry/run.py --archive <path>/S3_v2.zip
-
-    The archive lives on Sibusiso's machine (5227.2 MB, downloaded 2026-08-20). Delete this
-    test and record the result in docs/BUILDLOG.md once it has been run.
-    """
-    pytest.fail("NOT MEASURED — N3 open: run experiments/002-s3v2-geometry/run.py on S3_v2.zip")
