@@ -22,6 +22,102 @@ it is a press release.
 
 ---
 
+## 2026-08-24 — session 15 · leg (b)'s missing half: a sanctioned path onto the extinction estimator
+
+### Attempted
+
+Merged three unmerged branches a concurrent session had left in the working tree (conformal
+coverage's Beta-vs-binomial fix, the week-1 figure's geometry refusal — both described below),
+then picked up CONTEXT.md's own stated single next action for week-1 leg (b): the fourth-harmonic
+extinction estimator (`reefprint.polarim.extinction`) was built and tested, but nothing routed a
+labelled section onto it the way `reefprint.bridge.measure_section` routes one onto the Stokes
+inversion. `measure_section` calls `series.require_analyser_rotation()` unconditionally and
+refuses a stage series (N3's guard); there was no mirror-image guard refusing an *analyser*
+series fed to the extinction fit, which would silently discard its second-harmonic content the
+same way a stage series silently zeroes out under the Stokes fit.
+
+### Worked
+
+- **`reefprint.bridge.extinction.measure_section_extinction`**, TDD'd against
+  `crossed_polars_stage_series` (the stage phantom already built for N3), 9 new tests in
+  `tests/test_bridge_extinction.py`: geometry refusal in both directions (an analyser series is
+  refused with `require_specimen_rotation()`, same as an unknown-geometry series), shape
+  mismatches and thin-angle counts skipped rather than raised (mirroring `measure_section`'s
+  asymmetry between per-section defects and a wrong-geometry archive-wide one), the mineralogical
+  payoff — pentlandite reads extinction depth exactly `0.0` while pyrrhotite extincts, recovered
+  through the *other* geometry's own physics from the same phantom — and a `crossing_ratio`
+  self-test carried per mineral, the extinction path's equivalent of the Stokes path's noise
+  floor.
+- **The module docstring is load-bearing, not decoration.** `extinction.py`'s own docstring
+  already warns that raw extinction depth is not contrast-normalised — crossed polars block the
+  unpolarised pedestal, so there is no `S0` to divide out, and comparing raw depth between two
+  minerals compares their bireflectance *and* brightness at once, "finding N2 in a new costume".
+  `bridge/extinction.py` restates that warning at the point someone will actually call this, and
+  the returned `MineralExtinctionStatistic` is deliberately **not** shaped like `MineralStatistic`
+  — no `s0_median` field exists to invite a normalisation nobody has the data to do honestly.
+  The one claim it is licensed to make — a mineral is exactly dark vs extincts at all — needs no
+  such normalisation, because zero is zero regardless of brightness.
+- Wired into `reefprint.bridge`'s public exports, package docstring updated to describe both
+  guards as one mirrored pair rather than describing only the older one.
+- Two branches from a concurrent session, merged onto `main` after independent verification
+  rather than trusted on the commit message:
+  - **F3: conformal coverage is Beta, not binomial** (`bd4d4a8`, `ed34b10`). Coverage of a
+    split-conformal calibration set of size `n` at miscoverage `alpha` is `Beta(n+1-l, l)`,
+    `l = floor((n+1)*alpha)` — not the binomial Wald SE `sqrt(0.9*0.1/n)` the finding had used.
+    Recomputed myself before merging: `n=100` gives 2.96pp exact vs 3.00pp Wald, `n=20` gives
+    6.26pp vs 6.71pp — Wald is *larger*, meaning the original finding had the error's direction
+    backwards (a second commit on the same branch caught and corrected its own first commit's
+    "buys less precision than it promises," which should have read "overstates the spread").
+    `tests/test_docs_conformal_figures.py` pins the corrected figures and was confirmed RED
+    against the old ones first.
+  - **viz: the week-1 gate figure refuses a geometry it cannot support** (`33bbced`).
+    `anisotropy_figure()` never consulted `series.geometry` and hardcoded panel 3's x-axis label
+    as "analyser angle (degrees)" regardless of what actually rotated — a silent wrong answer on
+    the one figure the week-1 gate is argued from. Now the label follows `series.geometry` and a
+    `SPECIMEN` or `UNKNOWN` series draws a visible refusal on the figure rather than a blank
+    panel (Rule 5's pattern: still renders, cannot be mistaken for a valid result). This branch
+    independently found and flagged the exact same abstract overclaim fixed in session 14
+    (`6b32ef2`) — two separate audits landing on the same finding from different files is
+    corroboration, not coincidence.
+  - Both merged with `--no-ff` after reading the full commit bodies and re-deriving the key
+    numbers rather than taking them on faith. `test_docs_counts_are_current.py` (added by the
+    conformal branch) caught the resulting staleness in CONTEXT.md's pinned test count
+    immediately after each merge — 253→256 after the first, 265→274 after this session's own
+    addition — which is exactly the failure mode that test exists to catch.
+
+### Did not work / friction
+
+- **A concurrent session was creating and checking out branches in this same working tree** while
+  this session was also committing. A commit made mid-session landed on whatever branch happened
+  to be checked out (`fix-run-geometry`) instead of `main`, and had to be fast-forwarded after
+  the fact. `git branch --show-current` before committing, from now on, in a tree anyone else
+  might be touching concurrently.
+
+### Learned
+
+The repo layout comment in `CLAUDE.md` already says `bridge/` is "the only sanctioned route" from
+masks plus frames to a per-mineral number — singular, at the time it was written, because only
+the analyser geometry had a route. Building a second sanctioned route for the second geometry,
+with its own mirrored guard, is not adding a feature so much as finishing the sentence: the
+project's own physics table names two geometries, and only one had a path all the way through the
+seam. The guard that stops the *wrong* geometry from being routed around is worth as much on the
+new path as N3's original guard was on the old one — which is why it was built alongside the
+estimator rather than after something used it wrong, the same reasoning `require_specimen_rotation`
+itself gives for existing at all.
+
+### Left open
+
+- **The real archive still is not on this machine.** Everything above is proven against the
+  synthetic stage phantom. The moment `S3_v2.zip` is available, leg (b) needs: confirm each
+  section's geometry from the frames first (do not assume SPECIMEN from N3's aggregate lean —
+  measure it per section, the same discipline N3 itself insists on), then call
+  `measure_section_extinction` the way `measure_section` is called today.
+- **No script yet drives `measure_section_extinction` over a real archive** the way
+  `experiments/002-s3v2-geometry/run.py` drives the geometry discriminator. Writing one now
+  would be guessing at the archive's exact directory layout beyond what `run.py` already
+  reverse-engineered; better to reuse `run.py`'s section-reading code once the geometry is
+  confirmed, than to duplicate it against untested assumptions.
+
 ## 2026-08-23 — session 14 · the abstract, and the domain lead's surname was wrong
 
 ### Attempted

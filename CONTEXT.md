@@ -69,8 +69,10 @@ confirmed), `reefprint.polarim.geometry` (**which** rotation this is — finding
 `reefprint.acquire.series` (the acquisition boundary), `reefprint.acquire.store`
 (OME-TIFF round-trip), `reefprint.acquire.phantom` (synthetic ground truth, both
 geometries), `reefprint.bridge` (labelled masks + a rotation series → per-mineral anisotropy
-with its noise floor; the seam KHANYA hands data across), `reefprint.viz.anisotropy` (the
-three-panel figure).
+with its noise floor; the seam KHANYA hands data across — **now two mirrored guards**,
+`measure_section` for an analyser series and `measure_section_extinction` for a stage one, each
+unconditionally refusing the other's geometry), `reefprint.viz.anisotropy` (the three-panel
+figure).
 
 **Also built and tested:** `reefprint.trust.split` (rule 2), `reefprint.trust.baseline` (rule 3),
 `reefprint.trust.abstain` (rule 5) — locality splits, trivial baselines, and conservative-default
@@ -103,8 +105,17 @@ noise would look like." Two independent runs removes "one bad extract" as an exp
 **What actually fixes this, in order of preference:**
 
 1. **Run the fourth-harmonic estimator (`reefprint.polarim.extinction`) on S3 v2 instead of
-   forcing the Stokes path.** It is already built and tested (see "Built and tested" above) and
-   its forward model is exactly the signal a stage rotation produces. This is the leg-(b) path
+   forcing the Stokes path.** The estimator itself, and now the sanctioned bridge path onto it
+   — `reefprint.bridge.measure_section_extinction`, mirroring `measure_section` guard for guard,
+   built 2026-08-24 and TDD'd against the stage phantom (`tests/test_bridge_extinction.py`,
+   9 tests) — are both built and tested. **What is still missing is only the real archive**: run
+   `experiments/002-s3v2-geometry/run.py` first to confirm each section's geometry from the
+   frames (`RotationSeries(geometry=RotationGeometry.SPECIMEN, ...)`), then call
+   `measure_section_extinction` per section the way `measure_section` is called today. No new
+   code is needed once someone has `S3_v2.zip` in hand — see the module docstring in
+   `src/reefprint/bridge/extinction.py` for the one thing to get right: raw extinction depth is
+   **not** contrast-normalised and must not be compared between minerals the way DOLP is; the
+   licensed claim is only "extinguishes at all" vs "exactly dark". This is the leg-(b) path
    that matches the evidence in hand, not a downgrade — it recovers extinction depth per pixel,
    which the physics table at the top of this file already shows separates pentlandite
    (isotropic, no extinction) from pyrrhotite (anisotropic, extincts). **This is the pragmatic
@@ -334,7 +345,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **265 passed, 25 deselected**. Anything less is a regression, not a quirk.
+Expect **274 passed, 25 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf

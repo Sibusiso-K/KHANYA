@@ -18,11 +18,22 @@ about; a two-way one becomes a merge by accident.
 seam, so they are enforced here rather than left to whoever calls next:
 
 * The rotation geometry is checked on every measurement, with no flag to skip it (finding N3).
+  Two mirrored guards, not one: ``measure_section`` requires an analyser series and refuses a
+  stage series; ``measure_section_extinction`` requires a stage series and refuses an analyser
+  series. Whichever geometry a real archive turns out to be, the wrong estimator cannot run on
+  it by accident either way.
 * Locality is a required field, because Rule 2 forbids splitting by section.
 * Every reported anisotropy carries the noise floor it sits on, because Rule 1 plus finding N2
-  make a bare median meaningless.
+  make a bare median meaningless. The extinction path's equivalent is
+  ``crossing_ratio_median`` — see ``bridge/extinction.py`` for why raw extinction depth is not
+  the same kind of number as DOLP and must not be compared between minerals the way DOLP is.
 """
 
+from reefprint.bridge.extinction import (
+    MineralExtinctionStatistic,
+    SectionExtinctionMeasurement,
+    measure_section_extinction,
+)
 from reefprint.bridge.measure import (
     MIN_PIXELS_PER_MINERAL,
     MineralStatistic,
@@ -41,10 +52,13 @@ __all__ = [
     "MIN_PIXELS_PER_MINERAL",
     "LabelProvenance",
     "LabelledSection",
+    "MineralExtinctionStatistic",
     "MineralStatistic",
     "PixelSelection",
+    "SectionExtinctionMeasurement",
     "SectionMeasurement",
     "group_by_locality",
     "measure_section",
+    "measure_section_extinction",
     "select_pixels",
 ]
