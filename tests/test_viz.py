@@ -8,10 +8,14 @@ survive a projector and ten minutes.
 
 from __future__ import annotations
 
+import dataclasses
+
 import numpy as np
 import pytest
 
+import reefprint.viz.anisotropy as anisotropy_module
 from reefprint.acquire.phantom import synthetic_rotation_series
+from reefprint.acquire.series import RotationGeometry
 from reefprint.polarim.stokes import stokes_from_rotation_series
 from reefprint.viz.anisotropy import DISPLAY_ANISOTROPY_CEILING, anisotropy_figure
 
@@ -105,6 +109,100 @@ def test_the_figure_says_so_when_it_has_no_labels_rather_than_drawing_an_empty_a
 
     assert not figure.axes[TRACE_PANEL].lines
     assert figure.axes[TRACE_PANEL].texts, "an empty panel must explain itself"
+
+
+@pytest.mark.parametrize(
+    ("geometry", "expected_label"),
+    [
+        (RotationGeometry.ANALYSER, "analyser angle (degrees)"),
+        (RotationGeometry.SPECIMEN, "stage/specimen angle (degrees)"),
+        (RotationGeometry.UNKNOWN, "rotation angle (degrees) — geometry not recorded"),
+    ],
+)
+def test_panel_3_x_axis_label_follows_series_geometry(geometry, expected_label):
+    """The axis is "analyser angle" only when an analyser actually turned.
+
+    Hardcoding it regardless of ``series.geometry`` is the defect this figure had: a SPECIMEN
+    series would render with a label asserting a claim the data does not support.
+    """
+    phantom = synthetic_rotation_series(n_angles=6, shape=(16, 16))
+    stokes = stokes_from_rotation_series(phantom.series.frames, phantom.series.angles_rad)
+    series = dataclasses.replace(phantom.series, geometry=geometry)
+
+    figure = anisotropy_figure(series, stokes)
+
+    assert figure.axes[TRACE_PANEL].get_xlabel() == expected_label
+
+
+def test_an_analyser_series_renders_with_no_refusal(gate):
+    """ANALYSER is the geometry this figure's whole argument is about. No refusal is owed."""
+    _, _, figure = gate
+    assert len(figure.texts) == 1, "only the suptitle, no geometry refusal"
+
+
+@pytest.mark.parametrize("geometry", [RotationGeometry.SPECIMEN, RotationGeometry.UNKNOWN])
+def test_a_non_analyser_series_still_renders_but_refuses_visibly(geometry):
+    """Rule 5: the figure still renders, but a judge cannot mistake it for a valid result.
+
+    A SPECIMEN series inverted with the 2-theta Stokes model returns zero anisotropy for every
+    anisotropic grain, silently, unless something on the figure says so. This is that something.
+    """
+    phantom = synthetic_rotation_series(n_angles=6, shape=(16, 16))
+    stokes = stokes_from_rotation_series(phantom.series.frames, phantom.series.angles_rad)
+    series = dataclasses.replace(phantom.series, geometry=geometry)
+
+    figure = anisotropy_figure(series, stokes)
+
+    assert len(figure.texts) == 2, "suptitle plus a visible geometry refusal"
+    refusal_text = figure.texts[-1].get_text()
+    assert geometry.name in refusal_text or "not established" in refusal_text
+    # The three panels still render — this is a refusal on top of the figure, not a blank one.
+    assert figure.axes[REFLECTANCE_PANEL].images
+    assert figure.axes[ANISOTROPY_PANEL].images
+
+
+@pytest.mark.parametrize("geometry", [RotationGeometry.SPECIMEN, RotationGeometry.UNKNOWN])
+def test_the_refusal_does_not_sit_on_top_of_the_panels_it_is_warning_about(geometry):
+    """Present is not the same as visible.
+
+    The first version of this drew the refusal at figure-centre, over the two image panels.
+    That occludes the pixels a reader is trying to judge, and a screenshot cropped to one
+    panel loses the warning entirely — reintroducing the silent-wrong-result failure inside
+    the fix for it. The refusal belongs clear of the panels, so pin that rather than trusting
+    it to stay put.
+    """
+    phantom = synthetic_rotation_series(n_angles=6, shape=(16, 16))
+    stokes = stokes_from_rotation_series(phantom.series.frames, phantom.series.angles_rad)
+    series = dataclasses.replace(phantom.series, geometry=geometry)
+
+    figure = anisotropy_figure(series, stokes)
+    _, refusal_y = figure.texts[-1].get_position()
+
+    panel_tops = [figure.axes[panel].get_position().y1 for panel in (0, 1, 2)]
+    assert refusal_y > max(panel_tops), (
+        f"refusal at y={refusal_y} overlaps panels topping out at {max(panel_tops)}"
+    )
+
+
+def test_an_unmapped_geometry_names_the_gap_rather_than_raising(monkeypatch):
+    """A RotationGeometry member added later must not make the figure crash or lie.
+
+    A bare dict subscript would raise KeyError from inside a rendering call, and silently
+    borrowing another geometry's label would be worse. The axis says it does not recognise
+    the geometry, which is the honest answer and the one Rule 1 asks for.
+    """
+    phantom = synthetic_rotation_series(n_angles=6, shape=(16, 16))
+    stokes = stokes_from_rotation_series(phantom.series.frames, phantom.series.angles_rad)
+    series = dataclasses.replace(phantom.series, geometry=RotationGeometry.UNKNOWN)
+
+    monkeypatch.delitem(anisotropy_module._AXIS_LABEL_BY_GEOMETRY, RotationGeometry.UNKNOWN)
+
+    figure = anisotropy_figure(series, stokes)
+
+    assert (
+        figure.axes[TRACE_PANEL].get_xlabel()
+        == "rotation angle (degrees) — geometry not recognised"
+    )
 
 
 # ----------------------------------------------------------------------------------------------
