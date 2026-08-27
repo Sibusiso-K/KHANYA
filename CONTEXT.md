@@ -334,13 +334,13 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **249 passed, 25 deselected**. Anything less is a regression, not a quirk.
+Expect **256 passed, 25 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **24 failed**. These are the backlog, not breakage. Each failure names the module and the
+Expect **25 failed**. These are the backlog, not breakage. Each failure names the module and the
 gate or rule it belongs to. CI runs them in a separate non-blocking job.
 
 ```bash
