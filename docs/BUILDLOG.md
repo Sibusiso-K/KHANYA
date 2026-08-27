@@ -22,6 +22,94 @@ it is a press release.
 
 ---
 
+## 2026-08-27 — session 16 · went and found the two datasets the backlog had been waiting on
+
+### Attempted
+
+Two open items had sat as "not yet found" for multiple sessions: the real `S3_v2.zip` (week-1
+leg (b), N3), and any public dataset combining Cr2O3, pyroxene fraction, texture and locality
+(week-2 falsification test). Both were treated as things to keep waiting for. Went and searched
+instead.
+
+### Worked
+
+- **Found and started downloading the real LumenStone S3 v2 archive.** The project page
+  (`imaging.cs.msu.ru/en/research/geology/lumenstone`) names the actual host: a Yandex Disk
+  share, `https://disk.360.yandex.ru/d/1ItlsInqs3iiow`. Resolved to a direct download href via
+  Yandex's public API (`cloud-api.yandex.net/v1/disk/public/resources/download`), which also
+  confirmed the file identity independently of anything in this repo: `filename=S3_v2.zip`,
+  `fsize=5227181560` — 5.23 GB, matching the figure `experiments/002-s3v2-geometry/run.py`'s own
+  docstring already carried from session 11. Download started in the background to
+  `data/lumenstone/S3_v2.zip` (gitignored, `data/**`). **In progress at time of writing** — the
+  next session (or a wakeup later this one) runs `experiments/002-s3v2-geometry/run.py --archive
+  data/lumenstone/S3_v2.zip` the moment it completes, which finally lets this machine reproduce
+  N3 rather than take Sibusiso's two runs on faith. Licence: "free to use in your own research,
+  cite the references" per the project page — same informal terms already recorded in
+  `docs/05-toolchain.md`, nothing new to add there.
+- **Found real Bushveld geochemistry.** `data.mendeley.com/datasets/dc8jcnbcvk` (Bachmann 2019,
+  CC BY 4.0, DOI `10.17632/dc8jcnbcvk.1`, accompanying a *Journal of African Earth Sciences*
+  paper on chromitite classification) — 1,205 borehole assay rows: Cr2O3 and five other major
+  oxides, six PGE grades by ICP, stratigraphic seam (LG1–MG4), and 317 distinct `BH_ID`.
+  Downloaded to `data/bushveld_thaba_chromitite/` (gitignored), with `SOURCE.md` recording
+  citation obligations, the exact fetch method (Mendeley's public files API, not the SPA page —
+  the page itself doesn't render a fetchable file list), and a column-by-column mapping against
+  `evaluate_texture_uplift`'s four required arguments.
+- **That mapping is the actual finding, and it is not "week 2 is unblocked."** The CSV supplies
+  `target` (real PGE grades — not a proxy) and `localities` (317 boreholes, comfortably above
+  `MIN_LOCALITIES_FOR_INFERENCE = 5`) cleanly. It supplies half of `baseline_features`: Cr2O3
+  direct, but no pyroxene-fraction column — `SiO2_%`/`Al2O3_%`/`CaO_%` could support a
+  chemistry-based silicate-fraction proxy, but computing one is a normative-mineralogy judgement
+  call and Rule 6 forbids an LLM from making it, so it is flagged (CONTEXT.md T2) rather than
+  derived. **It supplies no texture feature at all**, and the reason matters: this is bulk assay
+  chemistry over depth intervals, with no polished-section imagery tied to those same intervals.
+  Nothing in the file could become a texture feature by any amount of processing — the data that
+  would answer the falsification test's actual question does not exist in this dataset, full
+  stop.
+- **Reframed the CGS item, because it was quietly promising more than it delivers.**
+  `CONTEXT.md` had carried "CGS phone call still open" as if placing the call were the remaining
+  step. It is not: even a granted CGS core request hands over physical core, not
+  texture-ready images tied to specific assay depths, and `reefprint.segment` — the piece that
+  would turn core photographs into a texture feature — is not built. Recorded as its own item
+  (CONTEXT.md T1) so "we called CGS" cannot later be misread as "texture is solved."
+
+### Did not work / friction
+
+- **The Mendeley Data page itself does not render a file list to a plain fetch** — the dataset
+  page is a client-rendered SPA and the description text alone doesn't name the file or give a
+  URL. The public files API (`data.mendeley.com/public-api/datasets/<id>/files`) does, in one
+  request, with a signed download URL. Worth remembering for any future Mendeley dataset: don't
+  read the page, hit the API.
+- **The Yandex Disk share link is not itself a download URL.** `disk.360.yandex.ru/d/...` returns
+  an HTML viewer; the actual bytes come from Yandex's public resource-download API given that
+  share URL as a `public_key` query parameter, which returns a time-limited signed `href`.
+
+### Learned
+
+Two "still open" items had accumulated sessions of being treated as blocked-on-someone-else
+(Sibusiso's machine, a phone call to CGS) when both were actually blocked on nobody having spent
+twenty minutes searching. That is worth naming plainly rather than filing under a generic
+lesson: "not yet found" and "not findable" are different states, and CONTEXT.md's own wording
+("almost certainly", "no evidence yet") had drifted toward describing the second when the honest
+status was the first for both.
+
+The Bushveld CSV also demonstrates the useful failure mode of *bringing back a real dataset that
+still doesn't close the gate*. Rule 9's discipline — falsification is a deliverable, report the
+result either way — has a document-hygiene analogue: finding real data that partially answers a
+question is worth recording precisely, in a table naming exactly which required input it does
+and does not supply, rather than either overselling it as unblocking or leaving it undocumented
+because it didn't finish the job.
+
+### Left open
+
+- **LumenStone download in progress**; run `experiments/002-s3v2-geometry/run.py` the moment it
+  completes and record whatever verdict comes back, `NEITHER` included, per Rule 9.
+- **T1, T2 above** — texture remains genuinely absent, and a pyroxene-fraction proxy needs a
+  domain decision before the week-2 gate can run on real data at all, even with the archive.
+- **Neither dataset has yet been wired into `reefprint.heads.falsification` or
+  `reefprint.bridge`.** Deliberately not built this session: gluing a loader onto a test that is
+  still missing one of its four required inputs would produce code with nothing real to run
+  against, which is scope for its own sake rather than progress.
+
 ## 2026-08-24 — session 15 · leg (b)'s missing half: a sanctioned path onto the extinction estimator
 
 ### Attempted
