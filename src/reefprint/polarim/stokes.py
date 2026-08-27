@@ -81,12 +81,13 @@ class StokesImage:
         Zero where ``s0`` is zero: an unilluminated pixel has no polarisation state to report,
         and 0/0 must not become a NaN that propagates silently into a mineral map.
         """
-        return np.divide(
+        raw = np.divide(
             self.linear_magnitude,
             self.s0,
             out=np.zeros_like(self.s0),
             where=self.s0 > 0,
         )
+        return np.clip(raw, 0.0, 1.0)
 
     @property
     def anisotropy(self) -> FloatArray:
