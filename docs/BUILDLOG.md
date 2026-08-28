@@ -22,6 +22,61 @@ it is a press release.
 
 ---
 
+## 2026-08-28 — session 16f · Kaggle clears the memory blocker; loader proven on 12 real sections
+
+### Attempted
+
+Session 16e's blocker: the extinction loader is TDD'd correct, but a real section's frame stack
+needs ~5 GB once `RotationSeries` constructs it, and this machine has 7.9 GB total / ~1 GB free.
+Three options were on the table, undecided. Used the user's Kaggle account (30 h/week GPU quota,
+though this needed only CPU RAM) instead of picking one unilaterally.
+
+### Worked
+
+- **Uploaded `S3_v2.zip` as a private Kaggle dataset** (`lethabomh14/lumenstone-s3-v2-reefprint`,
+  confirmed with the user first since this is redistributing a third party's informally-licensed
+  data to another service, not just a local download). Kaggle auto-extracts an uploaded zip into
+  individual files rather than keeping it as one archive — the loader's `zipfile.ZipFile`
+  interface had to be duck-typed against a real directory (`_DirArchive`, kernel-side only, not
+  committed to the repo) rather than assumed to still be a zip.
+- **Uploaded the repo's `src/` and `experiments/002`–`003` as a second, small private dataset**
+  (`lethabomh14/reefprint-code`) so a Kaggle kernel could import `reefprint` without a full git
+  clone.
+- **Two path-discovery bugs, found and fixed via the kernel's own error logs**: v1 assumed
+  `/kaggle/input/<dataset-id>` directly; the real mount nests one level deeper,
+  `/kaggle/input/datasets/<owner>/<dataset-id>/...`. Fixed with a recursive, fragment-matching
+  directory search instead of a guessed exact path — the kind of defensive lookup this project's
+  loaders already use elsewhere (never assume a name resolves the way it "should").
+- **Kernel version 3 completed clean**: 12 sections attempted, 9 measured successfully at full
+  3396x2547 resolution (`S3_test_01/02/03/07/12/13/14`, `S3_train_01/02/03/04/05`), 3 skipped for
+  "only 0 rotation frames" (matching Sibusiso's earlier finding that ~29 of 47 sections are
+  static images with no rotation acquisition at all). The `(71, 2547, 3396)` float64 array that
+  OOM'd locally — the literal failing case from session 16e — loaded and measured without
+  incident on Kaggle's RAM.
+- **A genuine new archive defect, caught rather than hidden**: `S3_test_04` skipped with
+  `"frame S3_test_04_r045.jpg shape (3396, 2547) != mask shape (2547, 3396)"` — one frame in that
+  section's rotation series is transposed relative to its own mask. The loader's "report, don't
+  raise, on a shape mismatch" design (built and tested in session 16e against synthetic
+  mismatches) worked correctly on a real, previously-unseen failure mode on the first real run
+  that reached it.
+- Codebook used was the same explicit placeholder as the local smoke test
+  (`code_0`, `code_1`, ...) — the printed per-code extinction-depth numbers are a plumbing
+  result, not a mineralogical one. No claim is made about which code is which mineral.
+
+### Did not work / left open
+
+- **The real codebook is still Sibusiso's to supply.** This run proves the pipeline works end to
+  end on real data at real resolution; it does not yet produce week-1 leg (b)'s actual claim
+  (pentlandite dark / pyrrhotite extincting), which needs KHANYA's real
+  `.segmentation.lumenstone.CODEBOOK` substituted for the placeholder.
+- `S3_test_04`'s transposed frame is worth a look — is it one corrupted file in the archive, or
+  a systematic issue with the r045 frame across sections? Not investigated this session.
+- The Kaggle dataset and kernel are left in place (private) for reuse rather than torn down —
+  re-running with a real codebook once available is a `kaggle kernels push` away, not a
+  re-upload.
+
+---
+
 ## 2026-08-27 — session 16e · extinction loader built and TDD'd; real archive OOMs on this machine
 
 ### Attempted

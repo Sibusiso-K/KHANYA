@@ -7,8 +7,8 @@ is the constitution — *what is true and what the rules are*. This file is the 
 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
-- **Last updated:** 2026-08-27
-- **Last commit at time of writing:** extinction loader built and TDD'd; real archive OOMs on this machine (7.9 GB RAM)
+- **Last updated:** 2026-08-28
+- **Last commit at time of writing:** extinction loader proven on 12 real full-resolution sections via Kaggle; local-machine memory blocker resolved
 - **Days to final:** 39 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 - ⏳ **Nearest deadline: the abstract, 30 August 2026 — 7 days out.** One page. Drafted and
   rendered: [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
@@ -104,20 +104,25 @@ a bright S0, stronger. A geometry whose signal is the *weaker* one is more likel
 under noise than one whose signal is stronger. A symmetric null is therefore asymmetric
 evidence — it leans stage.
 
-**The loader is now built and TDD'd — `experiments/003-s3v2-extinction/run.py`,
-`load_section_as_specimen_series()`, 4 passing tests in `tests/test_s3v2_extinction_loader.py`.**
-It refuses to run without a `--codebook` JSON (Rule 6: mineral-code mapping is KHANYA's
-`.segmentation.lumenstone.CODEBOOK`, not this script's to invent).
+**The loader is built, TDD'd, and now proven on 12 real full-resolution sections.**
+`experiments/003-s3v2-extinction/run.py::load_section_as_specimen_series`, 4 passing tests in
+`tests/test_s3v2_extinction_loader.py`, and — session 16f, 2026-08-28 — a Kaggle kernel run
+(user's account, private dataset + kernel, both left in place for reuse) that loaded and
+measured 9 of 12 attempted real sections at full 3396x2547 resolution, including the exact
+`(71, 2547, 3396)` float64 array that OOM'd on the local machine. The memory blocker is
+resolved: Kaggle's RAM handles it, no downsampling or bridge-module restructure was needed.
 
-**What is actually next: a real memory blocker, needing a team decision, not a workaround
-picked unilaterally.** Smoke-testing the loader against one real section (placeholder codebook,
-no mineralogical claim) OOM'd: `RotationSeries.__post_init__` unconditionally casts frames to
-float64, so a full 3396x2547x72 section needs ~5 GB, and this machine has 7.9 GB total / ~1 GB
-free. Three options, undecided: (1) run on a machine with more RAM (Sibusiso's, or cloud CPU);
-(2) downsample resolution before building the stack — changes measurement precision, must be a
-stated tradeoff, not a silent default; (3) restructure `measure_section_extinction`'s calling
-convention to stream row-chunks instead of requiring a full stack — a real change to the
-sanctioned bridge module, needs review. This closes week-1 leg (b) once resolved.
+**What is actually next: substitute the real codebook and get an actual mineralogical result.**
+The Kaggle run used an explicit placeholder codebook (`code_0`, `code_1`, ...) — Rule 6 still
+applies, and the real per-mineral extinction-depth claim (pentlandite dark / pyrrhotite
+extincting) needs KHANYA's real `.segmentation.lumenstone.CODEBOOK` substituted in. Re-running
+is one `kaggle kernels push` once that mapping is available — the dataset and kernel are already
+set up.
+
+**One new real finding to flag, not yet investigated:** `S3_test_04` was skipped —
+`"frame S3_test_04_r045.jpg shape (3396, 2547) != mask shape (2547, 3396)"`, a transposed frame
+in a real section's rotation series. Not a loader bug (the "report, don't raise" design caught
+it correctly); worth checking whether this is one corrupted file or a systematic issue.
 
 Also left open, not investigated: the archive now reports **47 sections**, not the 29 prior
 sessions' wording carried from Sibusiso's runs. Doesn't change the verdict — noted in
