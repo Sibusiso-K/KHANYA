@@ -491,7 +491,7 @@ rusty met-eng *and* owns the ten-minute narrative, and neither should quietly be
 
 | # | Open item | Owner / when |
 |---|---|---|
-| **N1** | Pirard 2007 prior art unread. Retighten or defend the novelty claim. | before week 6 |
+| **N1** | Pirard 2007 prior art — full paper still unread (paywalled, both ScienceDirect and an academia.edu mirror blocked direct fetch), but 2026-08-28 the abstract (via search indexing, not a verified literal quote) narrowed the risk: plane-polarised static grain-boundary imaging + grey-level intercept stereology, no analyser rotation, no per-pixel Stokes recovery — further from our claim than assumed. See CLAUDE.md's prior-art note. Full text still needed before week 6, lower urgency than previously. | before week 6 |
 | **N2** | 1/S0 noise floor means no fixed anisotropy threshold is defensible. Any discrimination rule must condition on S0 and report an interval. | week 2+ |
 | **N3** | **Is LumenStone S3 v2 a stage rotation or an analyser rotation?** **Measured, twice, identically: `NEITHER` clears `DETECTION_SNR` (2θ SNR 2.5×, 4θ SNR 1.1×, threshold 5.0×), leaning stage on the physics (extinction scales as bireflectance², weaker; analyser modulation scales as bireflectance, stronger — a symmetric null favours the weaker signal's geometry).** Not closed — open until either a confirmed-analyser archive turns up or a pixel-selection re-run clears the 2θ threshold. Route leg (b) and KHANYA's ten-mineral symmetry test through `reefprint.polarim.extinction`, not the Stokes inversion, until then. | open — route around it, see §3 |
 | **F1** | Chromite-proxy collapse — the falsification test runs regardless and the result is published either way. | week 2 gate |
