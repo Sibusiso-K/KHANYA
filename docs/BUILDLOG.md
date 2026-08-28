@@ -69,11 +69,18 @@ though this needed only CPU RAM) instead of picking one unilaterally.
   end on real data at real resolution; it does not yet produce week-1 leg (b)'s actual claim
   (pentlandite dark / pyrrhotite extincting), which needs KHANYA's real
   `.segmentation.lumenstone.CODEBOOK` substituted for the placeholder.
-- `S3_test_04`'s transposed frame is worth a look — is it one corrupted file in the archive, or
-  a systematic issue with the r045 frame across sections? Not investigated this session.
 - The Kaggle dataset and kernel are left in place (private) for reuse rather than torn down —
   re-running with a real codebook once available is a `kaggle kernels push` away, not a
   re-upload.
+
+### Follow-up, same day: `S3_test_04`'s transposed frame is isolated, not systematic
+
+Scanned every frame in every section against its own mask's shape (1,195 frames, all 47
+sections, decoded from the local verified archive). **Exactly one mismatch**:
+`('S3_test_04', 45, (3396, 2547), (2547, 3396))` — the same one the Kaggle run already caught.
+Nothing else in the archive has this defect. One corrupted/transposed file, not a systematic
+acquisition or packaging issue. No action needed beyond what the loader already does (skip and
+report); not worth a bug report to LumenStone's maintainers for one file in 1,195.
 
 ---
 
