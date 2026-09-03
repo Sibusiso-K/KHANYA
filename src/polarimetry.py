@@ -144,7 +144,8 @@ SYMMETRY = {
 
 # The pair the optical argument in report section 3 rests on: both iron oxides,
 # near-identical mean atomic number so BSE cannot split them, opposite symmetry
-# so polarimetry should.
+# so polarimetry should. No ratio is computed between them any more (see
+# run_symmetry_test) - look both up by name in its per-mineral table.
 HEADLINE_PAIR = ("magnetite", "hematite")
 
 S3V2_ZIP = config.ROOT / "data" / "raw" / "lumenstone" / "S3_v2.zip"
@@ -199,59 +200,6 @@ def noise_floor(sigma, n_angles, s0):
     is why a fixed threshold silently becomes a brightness classifier.
     """
     return sigma * np.sqrt(8.0 / n_angles) * np.sqrt(np.pi / 2.0) / np.maximum(s0, 1e-9)
-
-
-def summarise_by_class(anisotropy, s0, labels, class_names, min_pixels=500):
-    """Anisotropy distribution per mineral, with the S0 each was measured at.
-
-    Reports median rather than mean: anisotropy is bounded in [0, 1] and its
-    per-class distribution is skewed, so a mean is pulled by the tail from grain
-    boundaries where two phases share a pixel.
-    """
-    rows = []
-    for index, name in enumerate(class_names):
-        if SYMMETRY.get(name) == "resin":
-            continue
-        mask = labels == index
-        count = int(mask.sum())
-        if count < min_pixels:
-            continue
-        values = anisotropy[mask]
-        rows.append({
-            "mineral": name,
-            "symmetry": SYMMETRY.get(name, "unknown"),
-            "n_pixels": count,
-            "anisotropy_median": float(np.median(values)),
-            "anisotropy_p25": float(np.percentile(values, 25)),
-            "anisotropy_p75": float(np.percentile(values, 75)),
-            "s0_median": float(np.median(s0[mask])),
-        })
-    return rows
-
-
-def separation(rows):
-    """Isotropic vs anisotropic separation, and the headline oxide pair.
-
-    Reported as a ratio of medians, matching how REEFPRINT states its phantom
-    result (40.4x), so the two numbers are directly comparable.
-    """
-    iso = [r["anisotropy_median"] for r in rows if r["symmetry"] == "isotropic"]
-    ani = [r["anisotropy_median"] for r in rows if r["symmetry"] == "anisotropic"]
-    out = {}
-    if iso and ani:
-        out["isotropic_median"] = float(np.median(iso))
-        out["anisotropic_median"] = float(np.median(ani))
-        out["separation_ratio"] = float(np.median(ani) / max(np.median(iso), 1e-9))
-    by_name = {r["mineral"]: r for r in rows}
-    first, second = HEADLINE_PAIR
-    if first in by_name and second in by_name:
-        out["headline_pair"] = {
-            first: by_name[first]["anisotropy_median"],
-            second: by_name[second]["anisotropy_median"],
-            "ratio": float(by_name[second]["anisotropy_median"]
-                           / max(by_name[first]["anisotropy_median"], 1e-9)),
-        }
-    return out
 
 
 # --- N2: the S0-conditioned conformal threshold -----------------------------
@@ -512,18 +460,54 @@ def sample_section(archive, names, split, stem, rng):
 
     from reefprint.polarim.extinction import extinction_from_stage_series
     extinction = extinction_from_stage_series(intensities, angles_rad)
+
+    # Sanctioned per-mineral statistics, not a reimplementation. bridge/
+    # extinction.py's own docstring is explicit: raw extinction depth is not
+    # contrast-normalised, so medians must not be RATIOED between minerals -
+    # only "extinguishes at all" vs "stays exactly dark" is licensed. Calling
+    # the real function (rather than reimplementing its per-mineral masking)
+    # means that constraint lives in the type, not in a comment someone has
+    # to keep re-reading. frames/labels are reshaped to a thin (1, n) "image"
+    # - the fit is per-pixel independent (see extinction_from_stage_series'
+    # own flatten-then-lstsq body), so this is mathematically identical to a
+    # true (height, width) grid and keeps memory to the sampled pixels only,
+    # never the full section.
+    from reefprint.acquire.series import RotationGeometry, RotationSeries
+    from reefprint.bridge.extinction import measure_section_extinction
+    from reefprint.bridge.section import LabelledSection, LabelProvenance
+
+    section = LabelledSection(
+        labels=class_codes.reshape(1, -1),
+        codebook={c: CODEBOOK[c][0] for c in np.unique(class_codes)},
+        section_id=stem,
+        # LumenStone S3 publishes a genesis ("high-temperature hydrothermal")
+        # but no named deposit/locality (DATA-SOURCES.md) - stated as such
+        # rather than inventing a place name Rule 2 splits would treat as real.
+        locality="LumenStone S3 (no named deposit in the source)",
+        provenance=LabelProvenance.GROUND_TRUTH,
+    )
+    series = RotationSeries(
+        frames=intensities.reshape(len(good_degrees), 1, -1),
+        angles_rad=angles_rad,
+        source=f"S3_v2.zip:{split}/{stem}",
+        geometry=RotationGeometry.SPECIMEN,
+        units="8-bit grayscale (PIL 'L' conversion of the JPEG frame)",
+    )
+    measurement = measure_section_extinction(section, series)
+
     return {
-        # Extinction amplitude (~|r1-r2|**2, arbitrary intensity units) stands
-        # in for Stokes anisotropy; dc (fitted mean level, not a calibrated
-        # reflectance - extinction.py's own docstring: "no S0 in the data")
-        # stands in for s0. summarise_by_class/conformal_threshold_by_s0 use
-        # both only as relative, per-class/per-bin quantities, so neither
-        # substitution changes their math - see extinction.py for why the two
-        # are not on the same physical footing as Stokes' S0.
+        # Raw per-pixel amplitude/dc, kept for the S0-binned conformal
+        # detection step below - a WITHIN-brightness-bin comparison against
+        # the isotropic population, not a between-mineral ratio, so it is not
+        # the comparison the docstring above forbids.
         "anisotropy": np.asarray(extinction.amplitude).ravel(),
         "s0": np.asarray(extinction.dc).ravel(),
         "class_codes": class_codes,
         "geometry": signature.explain(),
+        # Sanctioned per-mineral medians for reporting - see run_symmetry_test
+        # for how these are pooled across sections without ever dividing one
+        # mineral's number by another's.
+        "per_mineral": measurement.per_mineral,
     }
 
 
@@ -538,6 +522,7 @@ def run_symmetry_test(seed=20260820, verbose=True):
 
     rng = np.random.default_rng(seed)
     aniso_parts, s0_parts, code_parts = [], [], []
+    per_mineral_by_name = {}  # name -> [(n_pixels, extinction_depth_median), ...]
     with zipfile.ZipFile(S3V2_ZIP) as archive:
         names = [n for n in archive.namelist() if not n.startswith("__MACOSX")]
         sections = list_sections(names)
@@ -557,6 +542,10 @@ def run_symmetry_test(seed=20260820, verbose=True):
                 aniso_parts.append(result["anisotropy"])
                 s0_parts.append(result["s0"])
                 code_parts.append(result["class_codes"])
+                for stat in result["per_mineral"]:
+                    per_mineral_by_name.setdefault(stat.mineral, []).append(
+                        (stat.n_pixels, stat.extinction_depth_median)
+                    )
         except GeometryMismatch as exc:
             # A refusal carrying its reason, not a None and not a null result.
             # Reached only on a clean SECOND verdict: this section looks like
@@ -587,43 +576,82 @@ def run_symmetry_test(seed=20260820, verbose=True):
 
     present = sorted(set(codes.tolist()))
     class_names = [CODEBOOK[c][0] for c in present]
-    index_of = {c: i for i, c in enumerate(present)}
-    labels = np.array([index_of[c] for c in codes], dtype=np.int64)
 
-    rows = summarise_by_class(anisotropy, s0, labels, class_names)
-    sep = separation(rows)
+    # Pooled across sections by a pixel-count-weighted median of each
+    # section's own median - not a pooled-raw-pixel median. Raw pixels within
+    # one section's grain are spatially correlated, not independent draws, so
+    # pooling at SECTION granularity (weighted by how many pixels backed each
+    # section's number) is the more honest unit of replication, matching this
+    # project's "the honest n" standard elsewhere (trust.split, rule 4).
+    # bridge/extinction.py's own docstring is why there is no ratio or
+    # "separation" field here at all: raw extinction depth is not contrast-
+    # normalised, so one mineral's number must never be divided by another's.
+    # The licensed comparison is only "far from zero" vs "indistinguishable
+    # from zero", which the conformal detection rate below actually measures.
+    def _weighted_median(pairs):
+        weights = np.array([w for w, _ in pairs], dtype=float)
+        values = np.array([v for _, v in pairs], dtype=float)
+        order = np.argsort(values)
+        weights, values = weights[order], values[order]
+        cum = np.cumsum(weights)
+        cutoff = cum[-1] / 2.0
+        return float(values[np.searchsorted(cum, cutoff)])
+
+    per_mineral_rows = []
+    for name in class_names:
+        if SYMMETRY.get(name) in (None, "resin"):
+            continue
+        pairs = per_mineral_by_name.get(name)
+        if not pairs:
+            continue
+        per_mineral_rows.append({
+            "mineral": name,
+            "symmetry": SYMMETRY.get(name, "unknown"),
+            "n_sections": len(pairs),
+            "n_pixels": int(sum(w for w, _ in pairs)),
+            "extinction_depth_median": _weighted_median(pairs),
+        })
 
     symmetry_of = np.array([SYMMETRY.get(CODEBOOK[c][0]) for c in codes])
     is_isotropic = symmetry_of == "isotropic"
     is_anisotropic = symmetry_of == "anisotropic"
     bins = conformal_threshold_by_s0(anisotropy, s0, is_isotropic)
     flagged = apply_threshold(anisotropy, s0, bins)
+    detection_rate = float(flagged[is_anisotropic].mean()) if is_anisotropic.any() else None
+    false_positive_rate = float(flagged[is_isotropic].mean()) if is_isotropic.any() else None
 
     if verbose:
         print(f"\n{len(codes)} pixels pooled across {len(class_names)} classes")
-        print(f"{'mineral':16s}{'symmetry':12s}{'n':>8s}{'aniso median':>14s}")
-        for r in rows:
-            print(f"{r['mineral']:16s}{r['symmetry']:12s}{r['n_pixels']:>8d}"
-                  f"{r['anisotropy_median']:>14.4f}")
-        if "headline_pair" in sep:
-            hp = sep["headline_pair"]
-            a, b = HEADLINE_PAIR
-            print(f"\nheadline pair {a} vs {b}: "
-                  f"{hp[a]:.4f} vs {hp[b]:.4f}, ratio {hp['ratio']:.2f}x")
+        print("Extinction depth medians below are NOT comparable between minerals")
+        print("(bridge/extinction.py: not contrast-normalised) - reported for the")
+        print("record, not as a separation claim.")
+        print(f"{'mineral':16s}{'symmetry':12s}{'n_pixels':>10s}{'depth median':>14s}")
+        for r in per_mineral_rows:
+            print(f"{r['mineral']:16s}{r['symmetry']:12s}{r['n_pixels']:>10d}"
+                  f"{r['extinction_depth_median']:>14.4f}")
+        print(f"\nLICENSED finding: S0-binned conformal detection rate - "
+              f"{detection_rate:.1%} of known-anisotropic pixels flagged vs "
+              f"{false_positive_rate:.1%} of known-isotropic pixels (calibration "
+              f"target 10%). This, not the table above, is the claim the physics "
+              f"supports.")
 
     return {
         "n_sections": len(sections),
         "n_pixels_sampled": int(codes.size),
-        "per_class": rows,
-        "separation": sep,
+        "per_mineral": per_mineral_rows,
+        "per_mineral_note": (
+            "extinction_depth_median is not contrast-normalised and must not be "
+            "compared or ratioed between minerals (bridge/extinction.py); reported "
+            "per-mineral for the record only. The licensed cross-mineral claim is "
+            "detection_rate_on_known_anisotropic vs "
+            "false_positive_rate_on_known_isotropic below."
+        ),
         "conformal_bins": [
             {**b, "threshold": None if not np.isfinite(b["threshold"]) else b["threshold"]}
             for b in bins
         ],
-        "detection_rate_on_known_anisotropic":
-            float(flagged[is_anisotropic].mean()) if is_anisotropic.any() else None,
-        "false_positive_rate_on_known_isotropic":
-            float(flagged[is_isotropic].mean()) if is_isotropic.any() else None,
+        "detection_rate_on_known_anisotropic": detection_rate,
+        "false_positive_rate_on_known_isotropic": false_positive_rate,
     }
 
 

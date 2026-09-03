@@ -19,6 +19,69 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-03 — Sibusiso (31)
+
+**Did:** Corrected entry (30)'s own mistake, caught by reading Lethabo's work
+from the intervening week rather than by anyone reviewing mine.
+
+**(30) was methodologically wrong, not just superseded.** It compared
+extinction-depth magnitudes across minerals as a ratio (median isotropic vs
+median anisotropic, and a magnetite/hematite "headline pair" ratio).
+Lethabo built `reefprint.bridge.measure_section_extinction` on 2026-08-24
+specifically to prevent this: its docstring states plainly that raw
+extinction depth is not contrast-normalised, so one mineral's number must
+never be divided by another's - the only licensed claim is "extinguishes at
+all" vs "stays exactly dark". (30)'s "separation ratio 0.81" and "headline
+pair 1.14x" were both this exact mistake. Not caught before commit because
+nothing in the code enforced it at the time - now something does.
+
+**Fix: call the sanctioned function instead of reimplementing its logic.**
+`sample_section` now builds real `LabelledSection`/`RotationSeries` objects
+(reshaped to a thin (1, n) pseudo-image so peak memory stays at the sampled
+pixels, never the full section - the fit is per-pixel independent, so this
+is mathematically identical to a true grid) and calls
+`measure_section_extinction` for the per-mineral statistics, rather than
+masking and reducing by hand. Removed `summarise_by_class`/`separation`
+(now dead - nothing else called them) since the ratio they computed was
+exactly the forbidden comparison.
+
+**`run_symmetry_test` now reports two different things and does not conflate
+them:** a per-mineral extinction-depth table (kept for the record, printed
+with an explicit "not comparable between minerals" warning), and the
+S0-binned conformal detection rate (the actual licensed cross-mineral
+claim, already being computed correctly since (30) - it just wasn't the
+headline before).
+
+**Re-ran on all 47 sections. Same conclusion as (30), now on solid ground:**
+8.2% of known-anisotropic pixels flagged vs **10.0%** of known-isotropic
+(calibration target 10%) - detection is at or below the false-positive
+floor. There is no separating signal in this archive via extinction, full
+stop, and this time the number that says so is one the physics actually
+licenses. Per-mineral depth medians (not comparable to each other, kept for
+the record): chalcopyrite 44.5, galena 54.0, magnetite 36.2, bornite 35.9,
+pyrite 53.1, sphalerite 58.0, arsenopyrite 55.8, hematite 31.4, tennantite
+41.6 - notice these don't even separate by eye, which is exactly why a
+ratio between any two of them was never a safe thing to report.
+
+**The build plan, for whoever reads this next:** Lethabo's Week 1-6 gate
+table (`CONTEXT.md` on the `reefprint` branch - same repo, `git fetch` +
+`git log origin/reefprint`) is the actual plan. Week 1 is closed. Week 2 is
+blocked on a domain-lead call (`texture_features` is structurally missing
+from every public UG2/Bushveld source, not administratively missing - see
+`CONTEXT.md` §8 item T1). Weeks 3-6 (conformal coverage per locality,
+degraded-input robustness, offline end-to-end, demo video) are not started.
+Handed Week 3 to a parallel Codex session working the `reefprint` branch;
+this entry's fix is the last KHANYA-side loose end from before that split.
+
+**Changed:** `src/polarimetry.py` (sample_section rewritten around
+`measure_section_extinction`, `summarise_by_class`/`separation` removed),
+`reports/polarimetry_s3.json` (regenerated, corrected fields).
+**Blocked on:** nothing technical on KHANYA's side.
+**Next:** whatever Codex reports back from Week 3. Week 2's texture_features
+decision is still open and still not a KHANYA-side call.
+
+---
+
 ## 2026-08-21 — Sibusiso (30)
 
 **Did:** Re-pointed `src/polarimetry.py` at `reefprint.polarim.extinction` per

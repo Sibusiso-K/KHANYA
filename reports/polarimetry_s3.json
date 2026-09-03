@@ -1,99 +1,72 @@
 {
   "n_sections": 47,
   "n_pixels_sampled": 137113,
-  "per_class": [
+  "per_mineral": [
     {
       "mineral": "chalcopyrite",
       "symmetry": "anisotropic",
+      "n_sections": 20,
       "n_pixels": 23449,
-      "anisotropy_median": 5.02562876110487,
-      "anisotropy_p25": 2.86661999021671,
-      "anisotropy_p75": 7.891187067440062,
-      "s0_median": 66.87500000000001
+      "extinction_depth_median": 44.462218387175284
     },
     {
       "mineral": "galena",
       "symmetry": "isotropic",
+      "n_sections": 16,
       "n_pixels": 19200,
-      "anisotropy_median": 6.085045421176229,
-      "anisotropy_p25": 3.0720274804193872,
-      "anisotropy_p75": 9.355256989165674,
-      "s0_median": 71.50000000000001
+      "extinction_depth_median": 53.97864795276358
     },
     {
       "mineral": "magnetite",
       "symmetry": "isotropic",
+      "n_sections": 6,
       "n_pixels": 7200,
-      "anisotropy_median": 4.140329062543438,
-      "anisotropy_p25": 2.5055231488712097,
-      "anisotropy_p75": 6.023000700881904,
-      "s0_median": 55.84860718660239
+      "extinction_depth_median": 36.19085212837316
     },
     {
       "mineral": "bornite",
       "symmetry": "anisotropic",
+      "n_sections": 1,
       "n_pixels": 1200,
-      "anisotropy_median": 4.48686354199061,
-      "anisotropy_p25": 2.9291383740856514,
-      "anisotropy_p75": 6.240544767342132,
-      "s0_median": 81.33333333333336
+      "extinction_depth_median": 35.89490833592488
     },
     {
       "mineral": "pyrite",
       "symmetry": "isotropic",
+      "n_sections": 24,
       "n_pixels": 28149,
-      "anisotropy_median": 6.088377225469703,
-      "anisotropy_p25": 3.468108674447465,
-      "anisotropy_p75": 9.592153038046131,
-      "s0_median": 72.50000000000001
+      "extinction_depth_median": 53.120408298297015
     },
     {
       "mineral": "sphalerite",
       "symmetry": "isotropic",
+      "n_sections": 17,
       "n_pixels": 19768,
-      "anisotropy_median": 6.024357605153947,
-      "anisotropy_p25": 3.183321469718523,
-      "anisotropy_p75": 10.126628812744704,
-      "s0_median": 70.04166666666669
+      "extinction_depth_median": 57.95781054659059
     },
     {
       "mineral": "arsenopyrite",
       "symmetry": "anisotropic",
+      "n_sections": 26,
       "n_pixels": 31200,
-      "anisotropy_median": 6.345540897422042,
-      "anisotropy_p25": 3.6429154990657437,
-      "anisotropy_p75": 9.726336525584035,
-      "s0_median": 74.75000000000001
+      "extinction_depth_median": 55.83882181415008
     },
     {
       "mineral": "hematite",
       "symmetry": "anisotropic",
+      "n_sections": 2,
       "n_pixels": 2400,
-      "anisotropy_median": 4.73349656368142,
-      "anisotropy_p25": 2.9096088094181605,
-      "anisotropy_p75": 6.973095994676616,
-      "s0_median": 59.562499999999986
+      "extinction_depth_median": 31.416885717017173
     },
     {
       "mineral": "tennantite",
       "symmetry": "isotropic",
+      "n_sections": 4,
       "n_pixels": 4547,
-      "anisotropy_median": 4.664433989718839,
-      "anisotropy_p25": 2.930917565844834,
-      "anisotropy_p75": 6.9186741161657626,
-      "s0_median": 80.4166666666667
+      "extinction_depth_median": 41.587925512310576
     }
   ],
-  "separation": {
-    "isotropic_median": 6.024357605153947,
-    "anisotropic_median": 4.879562662393145,
-    "separation_ratio": 0.8099722795702883,
-    "headline_pair": {
-      "magnetite": 4.140329062543438,
-      "hematite": 4.73349656368142,
-      "ratio": 1.1432657868922125
-    }
-  },
+  "per_mineral_note": "extinction_depth_median is not contrast-normalised and must not be compared or ratioed between minerals (bridge/extinction.py); reported per-mineral for the record only. The licensed cross-mineral claim is detection_rate_on_known_anisotropic vs false_positive_rate_on_known_isotropic below.",
   "conformal_bins": [
     {
       "s0_low": -Infinity,
