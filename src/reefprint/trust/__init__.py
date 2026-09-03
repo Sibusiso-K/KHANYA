@@ -14,10 +14,11 @@ Four rules bite hardest here, and three of them are now code rather than prose:
   :mod:`reefprint.trust.baseline`. :class:`~reefprint.trust.baseline.ScoredMetric` takes
   ``baselines`` as a required field with no default, so a bare metric is a :class:`TypeError`
   rather than a slide. Uplift is measured against the *strongest* baseline, never the weakest.
-- **Rule 4** — every metric carries a CI sized at honest n. Conformal coverage SD is
-  sqrt(0.9 * 0.1 / n_cal): about 3.0 pp at n_cal = 100, about 6.7 pp at n_cal = 20. Do not
-  claim tighter than the arithmetic allows. Honest n for a locality split is
-  :attr:`~reefprint.trust.split.LocalitySplit.n_groups` — localities, not sections.
+- **Rule 4** — every metric carries a CI sized at honest n. The exact finite-sample Beta law for
+  split-conformal coverage is implemented in :mod:`reefprint.trust.conformal`; its audit reports
+  every held-out locality separately. The calibration ``n`` is the number of independent
+  localities, never the number of pixels or patches. At n = 100 its standard deviation is about
+  2.96 pp; at n = 20 it is about 6.26 pp. Do not claim tighter than the arithmetic allows.
   **That formula is zero at p = 0 and p = 1**, so both
   :attr:`~reefprint.trust.baseline.ScoredMetric.noise_at_honest_n` and
   :attr:`~reefprint.trust.abstain.AbstentionAudit.noise_during_ore_change` return ``None``

@@ -22,6 +22,42 @@ it is a press release.
 
 ---
 
+## 2026-09-03 — session 17 · Week 3 locality-held-out conformal coverage
+
+### Attempted
+
+Implement the next gate from the Sept 3 handoff: exact split-conformal coverage bands and a
+per-held-out-locality audit on `reefprint`, without touching the unmerged `main` branch.
+
+### Worked
+
+- Added `reefprint.trust.conformal`. `coverage_band()` uses the finite-sample
+  `Beta(n + 1 - l, l)` law, with `l = floor((n + 1) * alpha)`, rather than the stale Wald
+  approximation. The resulting standard deviations are 2.96 percentage points at calibration
+  n = 100 and 6.26 points at n = 20.
+- Added `audit_coverage_by_locality()`, which refuses overlapping calibration/test localities,
+  refuses a section assigned to two localities, and reports each held-out locality independently.
+  Its honest calibration n counts independent localities, never pixels or patches.
+- Replaced the two Week 3 red tests with synthetic tests covering per-locality reporting,
+  locality-specific gate failure, Beta-band sizing, pixel-count inflation, and split leakage;
+  the Week 4 degraded-input test remains explicitly marked as placeholder.
+- Updated `CONTEXT.md` and the trust package documentation to reflect the Sept 3 handoff and the
+  corrected Week 3 state. The branch's docs were stale (last updated Aug 28 and still naming the
+  Week 1 codebook run); that Week 1 action remains assigned to `main`.
+
+### Did not work / limitation
+
+- This host has neither `uv` nor a Python executable, so the documented `uv sync` and pytest
+  commands could not run locally. The implementation is constrained to the already-declared
+  NumPy/SciPy stack and the tests are committed for execution in the project's normal environment.
+
+### Left open
+
+- Run the audit against the real 12-section Kaggle prediction output once `main` supplies the
+  prediction sets. Week 4 remains the next unstarted gate after that run.
+
+---
+
 ## 2026-08-28 — session 16f · Kaggle clears the memory blocker; loader proven on 12 real sections
 
 ### Attempted

@@ -7,9 +7,9 @@ is the constitution — *what is true and what the rules are*. This file is the 
 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
-- **Last updated:** 2026-08-28
-- **Last commit at time of writing:** extinction loader proven on 12 real full-resolution sections via Kaggle; local-machine memory blocker resolved
-- **Days to final:** 39 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
+- **Last updated:** 2026-09-03
+- **Last commit at time of writing:** Week 3 locality-held-out conformal coverage audit implemented on `reefprint`
+- **Days to final:** 28 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 - ⏳ **Nearest deadline: the abstract, 30 August 2026 — 7 days out.** One page. Drafted and
   rendered: [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
   [`docs/06-abstract.pdf`](docs/06-abstract.pdf) is what gets sent. **What is not done is not the
@@ -58,7 +58,7 @@ and flotation response. It is software, evaluated on public data. **No instrumen
 |---|---|---|
 | **1** | Rotation series in, per-pixel Stokes out, pentlandite dark / pyrrhotite lit, on screen | **Leg (a) phantom: PASSED**, 40.4× separation. **Leg (b) real public data: N3 measured, verdict `NEITHER`** ← *we are here*. Sibusiso ran `experiments/002-s3v2-geometry/run.py` against the real `S3_v2.zip` twice, identically: 29 sections, 116,000 pixels, 2nd-harmonic SNR 2.5× its floor, 4th-harmonic SNR 1.1×, threshold 5.0×. Neither harmonic clears detection. Not clearance for the Stokes inversion — see §8 N3 for why this leans stage, not neutral. |
 | 2 | Falsification test computed, with CI | **Statistical core built and tested** (`reefprint.heads.falsification`, cluster-robust CR1 by locality, honest n = locality count). Proven against synthetic data with a known ground truth — a real texture effect detected, a real absence not manufactured. **Real Bushveld geochemistry now in hand for 3 of 4 required inputs** — `data/bushveld_thaba_chromitite/` (Bachmann 2019, Mendeley, CC BY 4.0, cited): 1,205 assay rows give `target` (real PGE grades), `Cr2O3_%` (half of `baseline_features`), and 317-borehole `localities`, all real, none synthetic. **`texture_features` is still the missing piece, and it is structurally missing, not administratively** — see §8. |
-| 3 | Conformal coverage within band, per held-out locality | not started |
+| 3 | Conformal coverage within band, per held-out locality | **implemented and tested** (`reefprint.trust.conformal`; Week 3 gate harness) |
 | 4 | Zero silent failures under degraded input | not started |
 | 5 | End-to-end offline on one laptop | not started |
 | 6 | Backup demo video exists | not started |
@@ -92,6 +92,14 @@ hardware-facing half of `acquire` (which, per ADR-0002, has no rig to drive). Ea
 is missing — **the red test list is the backlog**, deliberately.
 
 ### The single next action
+
+**Week 3 implementation is complete on `reefprint`.** `reefprint.trust.conformal` computes the
+exact split-conformal Beta coverage band and audits every held-out locality separately, with
+locality-disjoint calibration/test guards. The remaining Week 3 action is to run this audit
+against the 12-section Kaggle prediction output supplied by `main`. Week 1's real-codebook /
+extinction rerun belongs to `main` per the Sept 3 handoff and is not repeated on this branch.
+
+The Week 1 routing notes below are historical context, not this branch's next action.
 
 **N3 came back `NEITHER` a third time, 2026-08-27, on this machine, on the archive verified
 byte-for-byte against Yandex's declared size — and the brightness-restricted re-run (the
@@ -128,7 +136,7 @@ Also left open, not investigated: the archive now reports **47 sections**, not t
 sessions' wording carried from Sibusiso's runs. Doesn't change the verdict — noted in
 `docs/BUILDLOG.md` session 16d as an unexplained discrepancy worth a look.
 
-**What actually fixes this, in order of preference:**
+**Historical Week 1 routing options (owned by `main`, not this branch):**
 
 1. **Run the fourth-harmonic estimator (`reefprint.polarim.extinction`) on S3 v2 instead of
    forcing the Stokes path.** The estimator itself, and now the sanctioned bridge path onto it
@@ -371,13 +379,13 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **278 passed, 24 deselected**. Anything less is a regression, not a quirk.
+Expect **283 passed, 22 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **24 failed**. These are the backlog, not breakage. Each failure names the module and the
+Expect **22 failed**. These are the backlog, not breakage. Each failure names the module and the
 gate or rule it belongs to. CI runs them in a separate non-blocking job.
 
 ```bash
