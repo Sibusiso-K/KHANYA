@@ -19,6 +19,86 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-03 — Sibusiso (32)
+
+**Did:** Two things - verified Codex's first `reefprint`-branch commit (a
+parallel session, split off to work Week 3 while I fixed (31)'s bug), and
+closed Week 2 with a new pivot after the first two candidates both turned
+out structurally unavailable.
+
+**1. Codex's Week 3 (`52a9a42`, "Build Week 3 locality conformal coverage
+audit") is real, with one genuine bug - verified by actually running the
+suite, which Codex's host couldn't.** Codex flagged its own limitation
+honestly: "this host has neither Python nor uv," so it could only run
+`git diff --check`, not the tests. Installed the missing deps
+(scipy/scikit-image/tifffile/imagecodecs/matplotlib/pillow/pytest/
+hypothesis) into KHANYA's venv and ran REEFPRINT's suite via
+`PYTHONPATH=src` against the actual pulled commit (first attempt used a
+stale worktree checkout - fetch alone doesn't update a worktree, had to
+`git checkout --detach origin/reefprint` too). Result: 282 passed, 23
+failed - 22 of those are the untouched "NOT BUILT" placeholders for weeks
+4-6 and other unbuilt modules, exactly as expected. **One real failure:**
+`test_a_locality_outside_the_band_fails_the_gate_even_if_the_pool_would_pass`.
+A locality with perfect held-out coverage (20/20) gets marked outside the
+conformal band, because `CoverageBand` is built purely from
+calibration-set uncertainty (`Beta(19,2)`, genuinely tight near 1.0 - not
+a bug in the Beta math itself) while `LocalityCoverage.within_band`
+compares it directly against a raw empirical proportion from a *held-out*
+sample, which carries its own binomial sampling noise the band doesn't
+account for. That's either a bad test fixture (n=20 held-out is too small
+to safely hit exactly 20/20 without tripping this) or a real gap in
+`within_band` (needs a predictive interval combining both noise sources,
+not just calibration noise) - a statistical design call, not something I
+patched blindly on someone else's branch. Flagged back rather than fixed.
+
+**2. Week 2, pivoted twice more before landing.** Picked up from where I
+left off in the last session: `texture_features` (T1) and a genuine
+oxidation index (checked this session - the Bushveld CSV reports iron as
+one lumped `FeO_%` column, no `Fe2O3_%` split, so Fe3+/Fe2+ cannot be
+recovered from XRF majors, same structural absence as T1's, not
+administrative) are both dead ends. **Landed on Cr#/Mg#** - the standard
+chromite-petrology cation ratios (Barnes & Roeder 2001, J. Petrology
+42(12):2279-2302), used as published, not a new normative-mineralogy
+formula (Rule 6 is about the latter). Downloaded the real Bachmann 2019
+CSV myself (it was gitignored and not actually present in any worktree,
+despite CONTEXT.md describing it as "in hand" - fetched via Mendeley's
+public files API, `data.mendeley.com/datasets/dc8jcnbcvk`, 157,067 bytes,
+verified against the reported size). New `src/chromite_pge_falsification.py`
+- KHANYA-side glue that imports `reefprint.heads.falsification` unchanged
+(same pattern as `polarimetry.py`'s bridge), computes Cr#/Mg# from
+Cr2O3/Al2O3/MgO/FeO by standard molar-mass cation ratios, sums 4E PGE
+(Pt+Pd+Rh+Au - the standard Bushveld payable-metal convention, not a
+mineralogy calculation) as `target`, and runs `evaluate_texture_uplift`
+with Cr2O3 alone as the (honestly reduced - pyroxene fraction still
+unavailable) baseline.
+
+**Result: H0 REJECTED.** 1112 of 1205 rows kept (`Filter=='1'`, inferred as
+"passes QC" from its 1193/1205 near-unanimous value - not read from the
+paper's methods, stated as an assumption), 305 boreholes (honest n, well
+above `MIN_LOCALITIES_FOR_INFERENCE=5`). Delta R^2 = 0.0279 (0.1119 ->
+0.1398), p = 0.0002. Chromite composition adds real, statistically
+significant signal to PGE grade beyond Cr2O3 alone, cluster-robust by
+locality. **Caveat worth carrying into the talk:** the effect size is
+small in absolute terms (2.8 points of R^2) even though it's a strong
+p-value at this n, and Cr# is arithmetically derived from Cr2O3 (one of
+the two terms in its own ratio), so some of the "added" signal may not be
+fully independent of the baseline - report the number honestly with that
+caveat, don't oversell delta R^2 alone as if it were the whole finding.
+Report: `reports/chromite_pge_falsification.json`.
+
+**Changed:** new `src/chromite_pge_falsification.py`, new
+`reports/chromite_pge_falsification.json`, `data/raw/bushveld_thaba_chromitite/`
+(gitignored, not committed - re-run `python -m src.chromite_pge_falsification`
+after downloading the CSV per that module's docstring).
+**Blocked on:** nothing technical for this entry's own scope. The Week-3
+bug above is Codex's/Lethabo's to resolve on `reefprint`.
+**Next:** relay the coverage-band bug to whoever owns `reefprint` next.
+Weeks 4-6 still not started. Week 2's result should get folded into
+whatever document tracks findings for the talk - not done as part of this
+entry, since that's a presentation-content decision, not a code one.
+
+---
+
 ## 2026-09-03 — Sibusiso (31)
 
 **Did:** Corrected entry (30)'s own mistake, caught by reading Lethabo's work

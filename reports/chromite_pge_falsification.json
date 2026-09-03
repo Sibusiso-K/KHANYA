@@ -1,0 +1,19 @@
+{
+  "n_obs": 1112,
+  "n_localities": 305,
+  "baseline_r2": 0.11193237858997018,
+  "full_r2": 0.13980320644998467,
+  "delta_r2": 0.02787082786001449,
+  "wald_statistic": 8.868161111823017,
+  "p_value": 0.00018062196419940484,
+  "rejects_h0": true,
+  "target": "4E PGE (Pt+Pd+Rh+Au), ppm",
+  "baseline_features": [
+    "Cr2O3_%"
+  ],
+  "challenger_features": [
+    "Cr# (Barnes & Roeder 2001)",
+    "Mg# (Barnes & Roeder 2001)"
+  ],
+  "source": "Bachmann et al. 2019, doi:10.1016/j.apgeochem.2019.02.009; CSV data.mendeley.com/datasets/dc8jcnbcvk, CC BY 4.0, DOI 10.17632/dc8jcnbcvk.1"
+}
