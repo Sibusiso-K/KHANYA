@@ -6,11 +6,20 @@ Full path, end to end: micrograph -> segmentation -> modal mineralogy ->
 liberation by particle composition -> operational recommendation. Every number
 shown is measured from the predicted mask. Nothing here is a slider.
 
-Styling: dashboard/theme.py. Deliberately not Streamlit's default look - a
-lab-instrument aesthetic (dark, monospace, amber) rather than the generic
+Runs the PATCHES model (train_patches.py) via sliding-window inference at
+native resolution, not the resize baseline - report section 5.0.9: patches
+scores 6/12 flips with 0 conservative errors against resize's 7/12 with 1,
+under the same corrected band. The demo must run the pipeline the report calls
+primary, not the one it calls a baseline (entry 33 - this used to load the
+resize checkpoint; a mismatch nobody had reason to notice until the demo
+itself was audited).
+
+Styling: inlined into this file, not a separate theme.py (removed entry 25) -
+a lab-instrument aesthetic (dark, monospace, amber) rather than the generic
 purple-gradient SaaS template, since this is scientific instrumentation, not a
 product demo.
 """
+import io
 import sys
 from pathlib import Path
 
@@ -24,8 +33,11 @@ from PIL import Image
 from src import advisor as advisor_module, modal
 from src.advisor import advise
 from src.segmentation import lumenstone as ls
+from src.segmentation import patches as patch_module
 from src.segmentation.model import build_model, device
-from src.segmentation.train_lumenstone import CKPT
+from src.segmentation.train_patches import checkpoint_for
+
+CKPT = checkpoint_for("ce")
 # Inlined rather than imported: Streamlit adds the script's OWN
 # directory to sys.path, which can shadow a proper package import
 # of "dashboard.theme" and silently skip the CSS.
@@ -141,6 +153,27 @@ def load_model():
     return model, dev
 
 
+@st.cache_data(show_spinner=False)
+def predict(image_bytes):
+    """Sliding-window inference, cached on the exact uploaded bytes.
+
+    Native-resolution tiling on a CPU-only laptop measured at ~155s for one
+    3396x2547 section (entry 33) - real, and too slow to sit through silently
+    on stage. The fix is caching, not weaker inference: tiling parameters stay
+    exactly what decision_gap.py validated (same checkpoint_for('ce'), same
+    PATCH/overlap), so a cached result is identical to a fresh one, just not
+    recomputed. A rehearsed demo run once beforehand on the same laptop is
+    then instant during the actual talk; a genuinely new image (the live-
+    refusal beat) still pays the real cost, honestly, with the spinner below
+    naming it rather than hiding it.
+    """
+    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    model, dev = load_model()
+    with torch.no_grad():
+        labels, mean_confidence = patch_module.sliding_window_predict(model, image, dev)
+    return image, labels, mean_confidence
+
+
 def colourise(labels):
     rgb = np.zeros(labels.shape + (3,), dtype=np.uint8)
     for index, hex_colour in enumerate(ls.CLASS_COLORS):
@@ -178,7 +211,7 @@ st.markdown(
 
 if not CKPT.exists():
     st.error(
-        f"No trained model at {CKPT}. Run: python -m src.segmentation.train_lumenstone"
+        f"No trained model at {CKPT}. Run: python -m src.segmentation.train_patches"
     )
     st.stop()
 
@@ -188,15 +221,12 @@ uploaded = st.file_uploader(
 )
 
 if uploaded:
-    image = Image.open(uploaded).convert("RGB")
-    model, dev = load_model()
-
-    x = ls.preprocess(image).to(dev)
-    with torch.no_grad():
-        logits = model(x)["out"][0]
-        probabilities = logits.softmax(0)
-        labels = probabilities.argmax(0).cpu().numpy()
-        mean_confidence = probabilities.max(0).values.mean().item()
+    image_bytes = uploaded.getvalue()
+    with st.spinner(
+        "Tiling and predicting at native resolution - ~2-3 min on a CPU-only "
+        "laptop for a section this size, first time only (cached after)."
+    ):
+        image, labels, mean_confidence = predict(image_bytes)
 
     left, right = st.columns(2)
     with left:

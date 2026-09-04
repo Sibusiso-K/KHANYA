@@ -19,6 +19,80 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-04 — Sibusiso (34)
+
+**Did:** ENDGAME §4 W3 - the offline demo. Found and fixed a real bug in it:
+**the dashboard was loading the wrong model.**
+
+**1. The dashboard ran the resize baseline, not the patches model.** Traced
+through `dashboard/app.py` while starting W3 and found
+`from src.segmentation.train_lumenstone import CKPT` - the RESIZE checkpoint.
+But report §5.0.9 and the README's own repo map call `train_patches.py` "the
+primary pipeline": patches scores 6/12 flips with 0 conservative errors,
+resize scores 7/12 with 1, under the same corrected band. **The flagship demo
+was quietly running the pipeline the project's own report calls secondary.**
+Nobody had reason to notice - the dashboard renders fine either way; only a
+side-by-side against the report numbers would show it, and nobody had done
+that since the redesign in `c70344c`.
+
+**2. Fixed by wiring in the code that was already validated for this.**
+`decision_gap.py`'s patches numbers were never produced by a naive
+resize-and-forward-pass - they come from
+`patches.sliding_window_predict()`, tiling the full section at native
+resolution and stitching overlapping logits. That function already existed
+and was already the honest evaluation path; the dashboard just wasn't using
+it. Swapped `CKPT` to `train_patches.checkpoint_for('ce')` and replaced the
+inline forward pass with `sliding_window_predict`, so demo-time inference is
+now provably the same code path as the numbers in the report - not a
+reimplementation that could quietly drift from it.
+
+**3. That surfaced a second, real problem: 155 seconds for one section.**
+Measured directly (not guessed) by running the exact dashboard pipeline
+against a real held-out test image
+(`data/raw/lumenstone/S2_v2/imgs/test/test_01.jpg`, 3396x2547, 48 tiles at
+512px/64px-overlap) end to end: 155.4s inference, sane output (liberation
+95%, 181 particles, "Continue at current setpoint"). **2.5 minutes of silence
+does not survive a 10-minute talk.** Fixed the right way, given the dashboard's
+own `preprocess()` docstring exists specifically to keep demo-time and
+eval-time inference from drifting apart: **cached, not weakened.** New
+`predict()`, `@st.cache_data` keyed on the uploaded bytes, same
+`checkpoint_for('ce')` / same tiling parameters as `decision_gap.py` either
+way - a cached result is identical to a fresh one, just not recomputed. A
+rehearsed image is instant on repeat (including during the actual talk, if
+run once beforehand on the presentation laptop); a genuinely new image still
+pays the real 155s, honestly, with the spinner naming the number rather than
+hiding it.
+
+**Scope note for whoever plans beat 6 (the live refusal, ENDGAME §5).** This
+155s cost is specific to THIS dashboard's segmentation-based refusals ("no
+payload detected", "insufficient ore") - they all require running the CNN
+first. The geometry-discriminator refusal on the `reefprint` side
+(`harmonic_signature`) is a different, much faster computation with no CNN in
+the loop at all. If beat 6 is built around segmentation refusals, it needs a
+pre-rehearsed (cached) image; if built around the geometry discriminator, this
+latency does not apply to it. Worth deciding which, not assuming.
+
+**4. Verified two ways.** Direct script call of the exact dashboard code path
+(above - the real timing number came from this). Separately, launched the
+actual Streamlit app in a browser and confirmed it boots clean, no server
+errors, correct checkpoint, file uploader renders - could not drive an actual
+file-picker dialog from this sandboxed browser (OS-level, not page DOM), so
+the upload-through-the-UI path itself needs a human pass before it is called
+fully rehearsed. `pytest tests/` and the offline-network grep both still pass
+after the change - neither touches `dashboard/`'s import graph in a way either
+would catch, so both were re-run rather than assumed.
+
+**Changed:** `dashboard/app.py` (checkpoint swap, sliding-window inference,
+result caching, updated module docstring and error message).
+**Blocked on:** a human rehearsal pass through the actual file-picker upload
+flow - not verifiable from here.
+**Next:** ENDGAME §4. W3 is materially further along but not "done" per the
+definition in §8 (needs the three-times-through rehearsal, including a fresh,
+uncached image, to confirm the 155s spinner reads fine live and doesn't feel
+broken). W6 (quantified impact) is still open and mine to draft.
+
+---
+
 ## 2026-09-03 — Sibusiso (33)
 
 **Did:** Strategy session, not experiments. Researched the actual competition,
