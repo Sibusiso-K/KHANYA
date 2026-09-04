@@ -61,7 +61,7 @@ and flotation response. It is software, evaluated on public data. **No instrumen
 | 3 | Conformal coverage within band, per held-out locality | **implemented and tested** (`reefprint.trust.conformal`; Week 3 gate harness) |
 | 4 | Zero silent failures under degraded input | **implemented and tested** (`reefprint.trust.quality`; explicit refusal for each named degradation) |
 | 5 | End-to-end offline on one laptop | **reefprint viz scene and refusal path implemented and tested**; paired end-to-end run remains |
-| 6 | Backup demo video exists | not started |
+| 6 | Backup demo video exists | **generator implemented** (`experiments/004-backup-video`); paired host must materialise the GIF |
 
 **Built and tested:** `reefprint.polarim.stokes` (the inversion),
 `reefprint.polarim.extinction` (the fourth-harmonic estimator — leg (b)'s path if N3 is
@@ -93,6 +93,8 @@ is missing — **the red test list is the backlog**, deliberately.
 
 ### The single next action
 
+**Week 6's backup-video generator is now implemented.** Run
+`uv run python experiments/004-backup-video/run.py` on the paired host to materialise the GIF.
 **Week 5's reefprint visualization seam is now implemented.** `reefprint.viz.demo.offline_demo`
 builds a deterministic local rotation-series scene, and `reefprint.viz.decision.decision_figure`
 puts the refusal, conservative default, and reason on screen. The paired host must still run the

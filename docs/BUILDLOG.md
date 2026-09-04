@@ -22,6 +22,29 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 23 · Week 6 backup-video generator
+
+### Attempted
+
+Produce the backup recording from the verified offline demo without introducing ffmpeg, a network
+call, or a second source of truth for the talk.
+
+### Worked
+
+- Added `experiments/004-backup-video/run.py`, which renders the deterministic `offline_demo()`
+  gate and refusal screens into a two-screen animated GIF using the already-declared Pillow
+  dependency.
+- Added an experiment README with the exact one-laptop command and the reason GIF is intentional.
+
+### Did not work
+
+This host has no Python/uv runtime, so the GIF could not be materialised here. The output directory
+is ignored as regenerable experiment output; the paired host must run the generator.
+
+### Left open
+
+Run the generator on the paired host and retain the resulting GIF with the submission/demo media.
+
 ## 2026-09-04 — session 22 · Week 5 colorbar axis count correction
 
 ### Attempted
