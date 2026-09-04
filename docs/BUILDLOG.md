@@ -45,6 +45,31 @@ is ignored as regenerable experiment output; the paired host must run the genera
 
 Run the generator on the paired host and retain the resulting GIF with the submission/demo media.
 
+## 2026-09-04 — session 25 · calibration boundary implemented
+
+### Attempted
+
+Close the three `reefprint.calibrate` placeholders using the test docstrings as the contract:
+counts-to-R%, cited QDF anchors, and dark/flat correction before conversion.
+
+### Worked
+
+- Added `ReflectanceStandard` with finite-count and positive-signal guards and per-wavelength R%
+  conversion.
+- Added `correct_counts` with broadcast-shape, finite-value, and positive-flat-field checks.
+- Added cited QDF anchors for chromite (13%) and gangue/resin (4.75%), plus real assertions for all
+  three former placeholders.
+
+### Did not work
+
+This host has no Python/uv runtime, so the calibration tests were not run locally. The paired host
+should verify the updated suite count: **293 passed, 16 deselected**.
+
+### Left open
+
+No broader mineral database was invented; only the two values named by the test/docstring are
+recorded. Remaining red placeholders are still subject to their own scope review.
+
 ## 2026-09-04 — session 24 · W8 status narrative refresh
 
 ### Attempted

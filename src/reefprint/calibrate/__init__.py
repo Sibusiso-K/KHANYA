@@ -5,4 +5,6 @@ looks published values up in the IMA/COM Quantitative Data File.
 
 The QDF is the teacher. Every R% this project reports must be traceable to a standard and a
 wavelength, never to a model's opinion (CLAUDE.md Rule 1 and Rule 6).
+
+The implementation lives in :mod:`reefprint.calibrate.reflectance`.
 """
