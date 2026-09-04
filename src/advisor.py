@@ -190,3 +190,33 @@ def advise(result, mean_confidence: float,
         f"across {result.n_particles} particles, no phase over its threshold.",
         confidence,
     )
+
+
+# --- Presentation state -----------------------------------------------------
+#
+# The dashboard renders three verdict colours, and this decides which. It lives
+# here rather than in the dashboard because it is a statement about the
+# decision layer's own severity, not about styling, and because the invariant
+# below is worth a test rather than an eyeball.
+
+#: Recommendations on which the advisor is declining to decide. Everything here
+#: renders amber; nothing else may. A confident continue is green and a
+#: confident grind is red - both are decisions, and neither may borrow the
+#: colour that means "do not act on this yet". Keeping the rule in one place is
+#: what makes "amber on stage always means the same thing" checkable.
+ABSTAINING_PREFIXES = ("Marginal", "Flag", "No recommendation")
+
+
+def verdict_state(action: str) -> tuple[str, str]:
+    """(css class, state label) for a recommendation's action string.
+
+    The css class is "" for a confident continue, "grind" for a confident
+    intervention, and "hold" for every case where the system is abstaining.
+    """
+    if action.startswith("Marginal"):
+        return "hold", "verdict state: marginal, verify before acting"
+    if action.startswith(("Flag", "No recommendation")):
+        return "hold", "verdict state: measurement declined"
+    if action.startswith("Grind"):
+        return "grind", "verdict state: confident intervention"
+    return "", "verdict state: within specification"
