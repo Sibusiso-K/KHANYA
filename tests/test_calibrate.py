@@ -31,4 +31,4 @@ def test_dark_and_flat_field_correction_precede_reflectance():
     corrected = correct_counts(
         np.array([[110.0, 210.0]]), dark_counts=10.0, flat_field=np.array([[1.0, 2.0]])
     )
-    assert corrected == pytest.approx([[100.0, 100.0]])
+    assert corrected == pytest.approx(np.array([[100.0, 100.0]]))
