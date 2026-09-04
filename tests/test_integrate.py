@@ -1,8 +1,10 @@
-"""Placeholder — reefprint.integrate. Everything here is on the kill list."""
+"""Integration scope: optional transport stays out; advisory provenance is recorded."""
 
 from __future__ import annotations
 
 import pytest
+
+from reefprint.integrate.advisory import AdvisoryRecord
 
 pytestmark = pytest.mark.placeholder
 
@@ -19,4 +21,11 @@ def test_advisory_influenced_flag_is_logged_on_every_record():
     The flag has to exist from the first record or month-three drift is uninterpretable. It
     costs nothing now and cannot be added retrospectively.
     """
-    pytest.fail("NOT BUILT — integrate: advisory-influenced flag")
+    record = AdvisoryRecord(
+        values={"fine_chromite_risk": 0.4}, advisory_influenced=False, source="offline demo"
+    )
+    payload = record.as_dict()
+    assert payload["advisory_influenced"] is False
+    assert "advisory_influenced" in payload
+    with pytest.raises(TypeError, match="bool"):
+        AdvisoryRecord(values={}, advisory_influenced=0, source="bad fixture")

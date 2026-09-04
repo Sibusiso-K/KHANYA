@@ -6,4 +6,6 @@ LGPLv3 anti-tivoisation makes such a deliverable unassignable (gauntlet S3, SBOM
 
 Positioning, per gauntlet S6 and the "MINE" findings: Mintek owns MillStar and FloatStar. This
 is an advisory that replaces a *laboratory turnaround*, not a controller that replaces theirs.
+
+The dependency-free record boundary is :class:`reefprint.integrate.advisory.AdvisoryRecord`.
 """

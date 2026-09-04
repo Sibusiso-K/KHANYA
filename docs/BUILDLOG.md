@@ -22,6 +22,30 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 31 · advisory provenance record boundary
+
+### Attempted
+
+Close the one remaining data-independent integration placeholder: the endogeneity flag that must
+be present on every advisory record from the first observation.
+
+### Worked
+
+- Added dependency-free `AdvisoryRecord` with an explicit boolean
+  `advisory_influenced` field and stable dictionary serialisation.
+- Replaced the flag placeholder with real assertions; expected suite is now **301 passed,
+  8 deselected**.
+
+### Did not work
+
+The OPC-UA transport placeholder remains red. `asyncua` is optional LGPL-3.0 integration and the
+project has no sealed appliance or controller to ship under ADR-0002/gauntlet S3.
+
+### Left open
+
+The paired host should verify the updated count; remaining reds are the public-data/domain gates or
+the explicitly excluded transport.
+
 ## 2026-09-04 — session 30 · texture mechanics implemented
 
 ### Attempted
