@@ -19,6 +19,9 @@ Four rules bite hardest here, and three of them are now code rather than prose:
   every held-out locality separately. The calibration ``n`` is the number of independent
   localities, never the number of pixels or patches. At n = 100 its standard deviation is about
   2.96 pp; at n = 20 it is about 6.26 pp. Do not claim tighter than the arithmetic allows.
+- **Week 4** — :mod:`reefprint.trust.quality` gates defocus, glare, polish defects, exposure, and
+  empty fields. Thresholds are supplied with a calibration source, and every failure is a named
+  refusal rather than a confident downstream prediction.
   **That formula is zero at p = 0 and p = 1**, so both
   :attr:`~reefprint.trust.baseline.ScoredMetric.noise_at_honest_n` and
   :attr:`~reefprint.trust.abstain.AbstentionAudit.noise_during_ore_change` return ``None``

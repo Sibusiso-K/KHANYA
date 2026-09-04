@@ -22,6 +22,31 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 19 · Week 4 degraded-input quality gate
+
+### Attempted
+
+Build the Week 4 gate from `ENDGAME.md`: defocus, glare, poor polish, wrong exposure, and empty
+field must never flow into a confident prediction.
+
+### Worked
+
+- Added `reefprint.trust.quality` with explicit `InputQualityMetrics`, calibration-sourced
+  `QualityThresholds`, and a `QualityAssessment` that is either usable or a named refusal.
+- Each required degradation is detected independently; multiple failures are retained together,
+  and missing/non-finite/out-of-domain metadata becomes `MALFORMED_INPUT` rather than a pass.
+- Added tests for a clean input, all five degraded cases, multi-failure reporting, and missing
+  metadata. Week 4 is now implemented on this branch; no prediction value is produced by the
+  quality gate itself.
+
+### Left open
+
+- The paired host must run the full suite and confirm both W1 and W2. Thresholds in the tests are
+  explicitly synthetic calibration values and must be replaced by field calibration before any
+  demo claim.
+
+---
+
 ## 2026-09-04 — session 18 · Week 3 predictive-band correction
 
 ### Attempted

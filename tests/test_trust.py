@@ -7,6 +7,12 @@ from dataclasses import dataclass
 import pytest
 
 from reefprint.trust.conformal import audit_coverage_by_locality, coverage_band
+from reefprint.trust.quality import (
+    InputQualityMetrics,
+    QualityIssue,
+    QualityThresholds,
+    assess_input_quality,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -96,7 +102,74 @@ def test_overlapping_calibration_and_test_locality_is_refused():
         audit_coverage_by_locality(calibration, held_out, covered=(True,) * 3)
 
 
-@pytest.mark.placeholder
+def thresholds() -> QualityThresholds:
+    return QualityThresholds(
+        min_sharpness=0.5,
+        max_glare_fraction=0.1,
+        max_polish_defect_fraction=0.2,
+        min_exposure=0.2,
+        max_exposure=0.8,
+        min_foreground_fraction=0.1,
+        source="synthetic calibration fixture; replace with field calibration",
+    )
+
+
+def good_metrics() -> InputQualityMetrics:
+    return InputQualityMetrics(
+        sharpness=0.8,
+        glare_fraction=0.02,
+        polish_defect_fraction=0.05,
+        exposure=0.5,
+        foreground_fraction=0.7,
+    )
+
+
+def test_good_input_passes_the_quality_gate():
+    assessment = assess_input_quality(good_metrics(), thresholds())
+
+    assert assessment.usable
+    assert assessment.refusal_reason is None
+
+
 def test_no_silent_failure_under_degraded_input():
-    """**Week-4 gate.** Every degraded input must produce a result or stated refusal."""
-    pytest.fail("NOT BUILT — trust: degraded-input behaviour, week-4 gate")
+    """**Week-4 gate.** Every degraded input yields a result or a stated refusal."""
+    degraded = {
+        QualityIssue.DEFOCUS: InputQualityMetrics(0.1, 0.02, 0.05, 0.5, 0.7),
+        QualityIssue.GLARE: InputQualityMetrics(0.8, 0.4, 0.05, 0.5, 0.7),
+        QualityIssue.POOR_POLISH: InputQualityMetrics(0.8, 0.02, 0.4, 0.5, 0.7),
+        QualityIssue.WRONG_EXPOSURE: InputQualityMetrics(0.8, 0.02, 0.05, 0.95, 0.7),
+        QualityIssue.EMPTY_FIELD: InputQualityMetrics(0.8, 0.02, 0.05, 0.5, 0.0),
+    }
+
+    for expected_issue, metrics in degraded.items():
+        assessment = assess_input_quality(metrics, thresholds())
+        assert assessment.refused
+        assert expected_issue in assessment.issues
+        assert assessment.refusal_reason
+
+
+def test_multiple_quality_failures_are_not_hidden_by_the_first_one():
+    assessment = assess_input_quality(
+        InputQualityMetrics(0.1, 0.4, 0.4, 0.95, 0.0),
+        thresholds(),
+    )
+
+    assert set(assessment.issues) == {
+        QualityIssue.DEFOCUS,
+        QualityIssue.GLARE,
+        QualityIssue.POOR_POLISH,
+        QualityIssue.WRONG_EXPOSURE,
+        QualityIssue.EMPTY_FIELD,
+    }
+    assert "defocus" in assessment.explain()
+    assert "empty field" in assessment.explain()
+
+
+def test_missing_or_invalid_quality_metadata_is_a_refusal():
+    assessment = assess_input_quality(
+        InputQualityMetrics(None, 0.02, 0.05, 0.5, 0.7),
+        thresholds(),
+    )
+
+    assert assessment.issues == (QualityIssue.MALFORMED_INPUT,)
+    assert assessment.refusal_reason
