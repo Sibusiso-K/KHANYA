@@ -58,6 +58,25 @@ def load_rows():
         return list(csv.DictReader(f, delimiter=";"))
 
 
+def cation_ratios(cr2o3, feo, mgo, al2o3):
+    """Cr# = Cr/(Cr+Al) and Mg# = Mg/(Mg+Fe2+), as cation (mole) ratios.
+
+    Barnes & Roeder 2001 (see module docstring). Both oxides in each ratio
+    carry the same cation count per formula unit (Cr2O3/Al2O3: 2 each;
+    MgO/FeO: 1 each), so that factor cancels and oxide moles are used
+    directly.
+
+    Kept as a pure function of four wt% arrays so the arithmetic can be
+    checked against hand-worked values without a CSV on disk - it is the one
+    piece of domain calculation in this module, and the one worth pinning.
+    """
+    cr_moles = cr2o3 / MOLAR_MASS["Cr2O3"]
+    al_moles = al2o3 / MOLAR_MASS["Al2O3"]
+    mg_moles = mgo / MOLAR_MASS["MgO"]
+    fe_moles = feo / MOLAR_MASS["FeO"]
+    return cr_moles / (cr_moles + al_moles), mg_moles / (mg_moles + fe_moles)
+
+
 def build_arrays(rows):
     """Filter, clean, and compute Cr#/Mg# from the raw CSV rows.
 
@@ -73,15 +92,7 @@ def build_arrays(rows):
         return np.array([float(r[name]) for r in kept], dtype=float)
 
     cr2o3, feo, mgo, al2o3 = col("Cr2O3_%"), col("FeO_%"), col("MgO_%"), col("Al2O3_%")
-
-    # Cr# = Cr/(Cr+Al), Mg# = Mg/(Mg+Fe2+), as cation (mole) ratios - Barnes &
-    # Roeder 2001 (see module docstring). Both oxides in each ratio carry the
-    # same cation count per formula unit (Cr2O3/Al2O3: 2 each; MgO/FeO: 1
-    # each), so that factor cancels and oxide moles are used directly.
-    cr_number = (cr2o3 / MOLAR_MASS["Cr2O3"]) / (
-        cr2o3 / MOLAR_MASS["Cr2O3"] + al2o3 / MOLAR_MASS["Al2O3"])
-    mg_number = (mgo / MOLAR_MASS["MgO"]) / (
-        mgo / MOLAR_MASS["MgO"] + feo / MOLAR_MASS["FeO"])
+    cr_number, mg_number = cation_ratios(cr2o3, feo, mgo, al2o3)
 
     # 4E PGE (Pt+Pd+Rh+Au) - the standard Bushveld payable-metal convention,
     # not a normative-mineralogy calculation: just which assayed elements are

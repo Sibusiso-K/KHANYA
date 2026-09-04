@@ -1,35 +1,25 @@
+# Python
 .venv/
 __pycache__/
 *.pyc
+.ipynb_checkpoints/
+
+# Run logs. Were listed one filename at a time until 2026-09-03; a pattern
+# does the same job and stops the list drifting behind the code.
+logs/
+*.log
+
+# Data. Never committed raw - see DATA-SOURCES.md for provenance and how to
+# re-fetch each archive.
 data/raw/
 data/processed/
+data/derived/
+
+# Model weights. Large, regenerable from the training scripts.
 checkpoints/
+
+# Generated report artefacts, except the figures actually cited in the report.
 reports/*.png
 !reports/figures/
 !reports/figures/*.png
 reports/*.csv
-.ipynb_checkpoints/
-seg_train.log
-lumenstone_train.log
-patches_train.log
-patches_eval.log
-dice_train.log
-decision_gap_patches.log
-dg_patch_refined.log
-data/derived/
-dg_band.log
-venv_build.log
-s1_train.log
-s1_eval.log
-robustness.log
-robustness_gw.log
-s1_retrain.log
-run_s1_retrain.cmd
-dg_resize_corrected.log
-s3v2_download.log
-smoke_polarim.py
-polarimetry_s3.log
-n3_result.log
-n3_result_fixed.log
-n3_result_full.log
-s1_wholesection_eval.log

@@ -1,0 +1,52 @@
+name: CI
+
+# KHANYA (`main`). The REEFPRINT half runs its own workflow on the `reefprint`
+# branch - the two histories are deliberately unmerged (ADR-0003), so they each
+# carry their own CI rather than sharing one.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        # CPU-only torch. The GPU wheels are ~2 GB and nothing in the test
+        # suite needs CUDA; the training scripts are not run in CI.
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Tests
+        # Does not touch data/raw/ or checkpoints/ - both are gitignored and
+        # absent here, so anything needing them must be skipped, not silently
+        # passed. See tests/ for what is covered and what deliberately is not.
+        run: pytest tests/ -q
+
+      - name: The demo must not reach the network
+        # Regression guard for the Google Fonts CDN import found in the
+        # dashboard (entry 24). "Runs offline" is a claim we make on stage with
+        # the venue wifi off, so it is checked here rather than remembered.
+        run: |
+          if grep -rnE "https?://" dashboard/ --include=*.py; then
+            echo "::error::dashboard/ contains a network reference; the demo must run offline"
+            exit 1
+          fi
+          echo "no network references in dashboard/"

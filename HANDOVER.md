@@ -19,6 +19,97 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-03 — Sibusiso (33)
+
+**Did:** Strategy session, not experiments. Researched the actual competition,
+scored ourselves against the real rubric, wrote the plan of record, and closed
+the biggest scoring gap on this branch. **Read [`ENDGAME.md`](ENDGAME.md)
+before doing any more build work** - it now supersedes `PITCH.md` §7.
+
+**1. Researched Mintek properly. Three findings change what we build.**
+- **Mintek made UG2 chromitite commercially viable - it nearly doubled South
+  Africa's accessible PGM reserve base.** We are pitching a UG2/PGM story to
+  the institution that created the UG2 industry. Relevance is free; overclaims
+  are fatal. Our Rule-1 discipline is the price of entry in that room, not
+  pedantry.
+- **The official judging criteria are Innovation, Feasibility, Impact,
+  Technical Execution, Presentation Clarity** (Mintek-SCi Grad Hackathon FAQ).
+  Five named criteria, so the ten minutes should be built to hit five things,
+  not to tell a story that happens to touch them.
+- **Winners are announced only after Mintek's Office of Technology Transfer
+  completes an IP assessment on the top-ranked entries, and creators receive
+  invention credits.** ADR-0003's two clean parallel commit histories are
+  directly responsive to this. Do not blur them now. Also: a technical person
+  from MOTT *will* read this repo, which is why §7 of ENDGAME treats the repo
+  itself as a deliverable.
+- Context, not action: 2025's winner (UJ's *H2Optimise*, tailings-water reuse)
+  was domain engineering with AI as the multiplier, not an ML project in a
+  mining costume. Judges praised "relevance to actual industry needs". 2025's
+  theme was "Status Quo is Boring".
+
+**2. Scored ourselves honestly. Impact is our weakest criterion and Technical
+Execution was split.** Innovation and Feasibility are strong. Presentation
+Clarity is unproven (the ten minutes is drafted, not decided). The asymmetry
+that mattered: REEFPRINT had 282 tests + CI; **KHANYA `main` had zero tests and
+no CI.** One half of one project looked professional and the other looked like
+research scripts.
+
+**3. The reframe, and it is the most useful thing in this entry.** Our
+distinctive asset is that we keep finding and reporting nulls (N3 `NEITHER`, no
+extinction separation, no public texture data, no computable oxidation index).
+That is better science than most entries will contain - and a judge scoring
+*Impact* hears four sentences beginning "we checked and it didn't work". **Do
+not hide the nulls; make them the evidence for a positive product claim:** we
+built the part of an automated mineralogy system that knows when its own answer
+is untrustworthy, and proved it by turning it on ourselves and letting it
+refuse four times. ENDGAME §3 has the mapping from each null to what it proves,
+and the two numbers that carry it (the 1.5e-02 false-isotropic reading; the
+Bushveld p = 0.0002).
+
+**4. Built the test suite `main` never had: 46 tests, all passing, no dataset
+required.** `tests/test_conformal.py` (the order statistic, the refusal when n
+cannot support the level, empirical coverage), `tests/test_advisor.py` (every
+refusal branch, the symmetry of the liberation band, the 0.85 confidence
+threshold, the zero-margin ground-truth path), `tests/test_modal.py` (including
+a **regression test for the entry-23 sparse-upload crash** that was reachable
+from the dashboard), `tests/test_bridge.py` (Cr#/Mg# against hand-worked
+values, scale invariance, and the S3 v2 archive parsing whose real convention a
+keyword search originally missed entirely). Added `.github/workflows/ci.yml`
+mirroring REEFPRINT's, **including a guard that fails the build if `dashboard/`
+ever contains a network reference again** - "runs offline" is a claim we make
+on stage with the wifi off, so it is now checked rather than remembered.
+
+**5. Extracted `cation_ratios()` out of `build_arrays()`** in
+`chromite_pge_falsification.py` so the one piece of domain arithmetic is a pure,
+testable function. Verified the refactor is result-preserving: still delta R^2 =
+0.0279, p = 0.0002, 1112 rows over 305 boreholes, byte-identical conclusion.
+
+**6. Repo cleanup, deliberately surgical.** 17 stray `.log` files and two loose
+scripts left the root (`logs/`, `scripts/`, both gitignored/tidied); the
+`.gitignore` had accreted 20 individually-named log files and is now four
+patterns. Deleted `smoke_polarim.py` - 12 lines, untracked, and it hardcoded the
+stale `REEFPRINT - Copy` path that the geometry guard exists to stop anyone
+importing. **README now names REEFPRINT.** It previously never mentioned it,
+which ADR-0003 explicitly classes as a defect ("a doc that says only 'KHANYA'
+and never 'REEFPRINT' is now a defect, and so is the reverse"). *Not* done, on
+purpose: no package rename, no moving `DATA-SOURCES.md` / `HANDOVER.md` /
+`STATUS.md`. `DATA-SOURCES.md` alone is referenced from nine files including
+runtime error strings, and HANDOVER is the live coordination channel with a
+second agent writing to it. Churning paths this close in, for cosmetics, is how
+you break something you cannot see.
+
+**Changed:** new `ENDGAME.md`, new `tests/` (4 files, 46 tests), new
+`.github/workflows/ci.yml`, new `scripts/`, `README.md` (REEFPRINT naming,
+headline results, repo map, seam instructions), `.gitignore` (patterns),
+`src/chromite_pge_falsification.py` (`cation_ratios` extracted).
+**Blocked on:** nothing on this branch.
+**Next:** ENDGAME §4 workstreams. W1 (the Week-3 coverage-band bug) and W2
+(Week 4, degraded input) are Codex's on `reefprint`; W3 (the offline demo) is
+joint and is the single highest-value artefact left; W6 (quantified impact) is
+mine to draft and needs Sibusiso/Lethabo to sign off the economics.
+
+---
+
 ## 2026-09-03 — Sibusiso (32)
 
 **Did:** Two things - verified Codex's first `reefprint`-branch commit (a
