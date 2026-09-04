@@ -167,13 +167,20 @@ The storyboard is drafted, not decided. Lock the running order, assign who
 speaks, and rehearse against a stopwatch. Structure it to hit the rubric
 explicitly — see §5. **Owner: both, human decision.**
 
-### W6 — Impact, quantified and bounded *(fixes the weakest criterion)*
-Write the QEMSCAN-triage argument as a number with its assumptions exposed:
-what a QEMSCAN session costs, what fraction of samples are worth spending it
-on, what our triage changes about that fraction, and the honest error bar. Use
-`MINTEK-FIT.md` §3.1 as the base. **This is the criterion we score lowest on and
-the cheapest one to move.** **Owner: Claude drafts, Sibusiso/Lethabo sign off
-the economics.**
+### W6 — Impact, quantified and bounded *(fixes the weakest criterion)* — DRAFTED
+`MINTEK-FIT.md` §3.1 now has the number: on the 12 held-out S2 sections, the
+validated patches pipeline gives a confident answer (Continue/Grind finer) for
+6 and flags 6 for verification — 50%, 95% CI [21%, 79%] at this n, stated as
+an interval, not a point estimate. Anchored to a real, dated, cited QEMSCAN
+price ($1,500/sample, SRC Advanced Microanalysis Centre, Apr 2017 — an
+order-of-magnitude anchor, not a current or Mintek-specific quote) and a real
+turnaround citation (ALS Global: not overnight, workload-dependent, 1-week
+*expedited* option at a surcharge). Explicitly states what is NOT shown: no
+validation yet that our "verify" flags agree with what QEMSCAN or a human
+mineralogist would flag. **Owner: Claude drafted; needs Sibusiso/Lethabo to
+sign off the economics before it goes on a slide** — the interval and the
+caveats are as important as the 50%, and a domain read on whether $1,500/2017
+is a fair anchor for what Mintek would actually compare against.
 
 ### W7 — Week 6: backup demo video *(insurance, cheap)*
 Record the working demo. If the laptop dies on stage, the talk survives.
@@ -190,7 +197,7 @@ Each beat should be traceable to a criterion the judges are scoring.
 
 | Beat | Content | Scores |
 |---|---|---|
-| 1 | The scarce instrument problem: QEMSCAN/SEM is the bottleneck; optical is everywhere | Impact |
+| 1 | The scarce instrument problem, quantified: ~50% of sections (95% CI [21%,79%], n=12) get a confident optical answer with no QEMSCAN queue or fee; the rest are correctly flagged (`MINTEK-FIT.md` §3.1) | Impact |
 | 2 | The physics reflectance cannot reach: crystal symmetry under polarised light | Innovation |
 | 3 | What we built, one sentence + the architecture | Technical Execution |
 | 4 | The positive result: Bushveld chromitite, p = 0.0002, with its caveat stated by us | Impact |

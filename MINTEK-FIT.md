@@ -61,6 +61,61 @@ signal that should trigger instrument time.
 This turns our **honesty into throughput**. A system that knows when it does not
 know is a triage system; a system that always answers confidently is not.
 
+**Quantified** (added 2026-09-04 — ENDGAME §4 W6, Impact is our lowest-scored
+judging criterion and the cheapest to move with a real number instead of an
+adjective).
+
+On the 12 held-out S2 test sections — patches model, topology-refined, the
+validated pipeline (report §5.0.9) — the deployed recommendation is:
+
+| Recommendation | Sections |
+|---|---|
+| Continue / Grind finer (confident, actionable) | 6 of 12 |
+| Marginal — verify before acting (triage signal) | **6 of 12** |
+
+Source: `reports/decision_gap_patches_refined.json`. **Honest bound on that
+50%:** at n=12 the 95% Clopper-Pearson interval is [21%, 79%] — wide, because
+12 held-out sections is a small sample. State the interval on stage if asked,
+not the point estimate alone.
+
+**What that would mean, if QEMSCAN carried every sample today.** One lab's
+published price list (Saskatchewan Research Council, Advanced Microanalysis
+Centre, April 2017 — see Sources) lists $1,500/sample for the QEMSCAN service
+closest to what our advisor measures: *"modal mineralogy; customizable
+liberation criteria, mineral associations and predicted recovery."* Sample
+prep ($800 crush/grind/sieve + $150 block mount) is common to both optical and
+SEM workflows and is not part of the comparison — the $1,500 is the analysis
+step our routing would avoid for the confidently-answered half. ALS Global's
+own mineralogy FAQ states turnaround is "not an overnight assay service,"
+workload-dependent, with a 1-week *expedited* option available "with the
+requisite communication/organisation. Surcharges may apply" — implying
+standard turnaround already exceeds a week before anyone pays to jump the
+queue.
+
+**The claim, stated at the precision the evidence supports:** on this
+held-out set, roughly half of sections got a confident answer from a
+reflected-light microscope in seconds, with no queue and no per-sample fee;
+the other half were correctly flagged for the instrument that should see
+them. That is a **triage mechanism with a measured operating point**, not
+"AI makes QEMSCAN faster" — and it is honest about being measured on S2
+(Norilsk BMS analogue), at n=12, not on UG2 or at Mintek's own prices.
+
+**What we have not shown, and must say if asked:** we have not validated that
+our "verify" flags agree with what a human mineralogist or QEMSCAN itself
+would flag as uncertain — that would need real QEMSCAN results run against
+the same sections, which we do not have (DATA-SOURCES.md §1). The claim is
+that the *mechanism* — abstain near a calibrated threshold — is the right
+shape for triage, evidenced by it costing zero unsafe and zero conservative
+errors under the corrected band. It is not yet a claim that our specific 50%
+is the economically optimal cut.
+
+Sources for the numbers above:
+- Saskatchewan Research Council, Advanced Microanalysis Centre, QEMSCAN®
+  Analysis price list, April 2017:
+  https://www.src.sk.ca/sites/default/files/files/resource/QEMSCAN_Apr17.pdf
+- ALS Global, Mineralogy (metallurgy and mineral processing), turnaround-time
+  FAQ: https://www.alsglobal.com/en/metallurgy-and-mineral-processing/mineralogy
+
 ### 3.2 Plant-side deployment — where QEMSCAN cannot go
 
 Mintek's clients are concentrators. Those plants cannot each host a QEMSCAN, and
@@ -175,6 +230,11 @@ estimation. Say so plainly.
   https://www.africanmining.co.za/2026/05/25/expanding-africas-footprint-through-science-and-partnerships/
 - QEMSCAN capability description, UCT Centre for Minerals Research:
   https://ebe.uct.ac.za/minerals-research/research-areas-process-mineralogy/qemscan
+- Saskatchewan Research Council, Advanced Microanalysis Centre, QEMSCAN®
+  Analysis price list (§3.1 quantified triage argument), April 2017:
+  https://www.src.sk.ca/sites/default/files/files/resource/QEMSCAN_Apr17.pdf
+- ALS Global, Mineralogy turnaround-time FAQ (§3.1):
+  https://www.alsglobal.com/en/metallurgy-and-mineral-processing/mineralogy
 
 **Searched and not found:** any open-access image dataset of Bushveld, UG2,
 Merensky or Platreef material suitable for supervised segmentation. Published

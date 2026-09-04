@@ -19,6 +19,71 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-04 — Sibusiso (35)
+
+**Did:** Two verification passes on Codex's `reefprint` work, then ENDGAME §4
+W6 - quantified the Impact argument, our lowest-scored judging criterion.
+
+**1. Verified W1 (`8229353`) and W2 (`923f77b`).** Both real. Ran the suite
+myself since Codex's host still has no Python: the Week-3 coverage-band bug I
+flagged last session is fixed (the 20/20-locality case now passes - Codex
+used a Beta-Binomial predictive interval, which is the right fix: it accounts
+for the held-out sample's own binomial noise on top of calibration
+uncertainty, exactly the gap I'd named without prescribing the fix). Week 4's
+degraded-input gate is genuinely built, not a placeholder - defocus, glare,
+poor polish, wrong exposure, empty field, malformed metadata all produce a
+stated refusal.
+
+**2. Caught a small, real drift in the same handoff.** `8184277` claimed "286
+passed, 21 deselected"; running `pytest tests/ -m "not placeholder"` here
+collected 288/21 - a self-referential miscount (the new doc-count test's own
+passing tests weren't folded into the hand-counted total). Reported it back
+precisely rather than fixing it myself on someone else's branch. Codex fixed
+it in `28587ef`; re-verified: **288 passed, 21 deselected, zero failures.**
+`reefprint` is genuinely green now, not just claimed green - W1 through W3 are
+all solid.
+
+**3. W6 - the Impact number.** `MINTEK-FIT.md` §3.1 had the qualitative
+QEMSCAN-triage argument since August but no number. Would not invent one -
+same Rule 1 this whole project runs on. Found two real, dated, citable
+sources instead: Saskatchewan Research Council's Advanced Microanalysis
+Centre publishes a QEMSCAN price list (April 2017) with $1,500/sample for
+*"modal mineralogy; customizable liberation criteria, mineral associations
+and predicted recovery"* - closely matching what our advisor measures; ALS
+Global's own mineralogy FAQ states turnaround is not overnight, is
+workload-dependent, and a 1-week *expedited* slot costs a surcharge, implying
+standard turnaround already exceeds a week.
+
+**Then paired that with our own real, already-validated number**, not a new
+experiment: `reports/decision_gap_patches_refined.json`, the patches+refined
+pipeline (report §5.0.9), 12 held-out S2 sections. Predicted recommendations:
+6 confident (Continue/Grind finer), 6 "Marginal - verify before acting." That
+is the QEMSCAN-triage fraction, directly measured, not estimated - **50%,
+95% Clopper-Pearson CI [21%, 79%] at n=12**, stated as an interval because n=12
+genuinely does not support more precision than that.
+
+**Stated plainly what this is not.** We have not shown that our "verify"
+flags agree with what a human mineralogist or QEMSCAN itself would flag - that
+needs real QEMSCAN results run against the same sections, which we do not
+have. The claim is that the mechanism (abstain near a calibrated threshold)
+is the right shape for triage, evidenced by zero unsafe and zero conservative
+errors under the corrected band - not that 50% is proven to be the
+economically optimal cut, and not that the $1,500/2017 anchor is Mintek's own
+cost.
+
+**Changed:** `MINTEK-FIT.md` §3.1 (quantified argument + two new sources,
+also added to the master Sources list), `ENDGAME.md` (W6 marked drafted, beat
+1 in the talk table points at the new number).
+**Blocked on:** Sibusiso/Lethabo need to sign off the economics before this
+goes on a slide - the interval and the "not yet shown" caveat are as load-
+bearing as the 50% itself, and whether $1,500/2017 is a fair anchor for what
+Mintek would actually compare against is a domain call, not mine.
+**Next:** ENDGAME §4. W4 (repo as a finished artefact, §7/§8) and W5 (decide
+and rehearse the ten minutes) are the remaining open workstreams; W7 (backup
+video) should happen the moment W3's rehearsal pass is done.
+
+---
+
 ## 2026-09-04 — Sibusiso (34)
 
 **Did:** ENDGAME §4 W3 - the offline demo. Found and fixed a real bug in it:
