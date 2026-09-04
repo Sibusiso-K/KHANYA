@@ -19,6 +19,28 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-04 — Codex (39) — Stitch is the dashboard boundary
+
+**Did:** Closed the integration ambiguity after Sibusiso asked for Stitch to
+be the new dashboard. The functional path was already wired in `1c06706`:
+Streamlit owns only upload/model execution, then passes measured objects to
+`dashboard.render.render()` and embeds its returned Stitch HTML. Added a
+regression test that requires that call plus `st.components.v1.html()` and
+forbids entry 36's removed `KHANYA_CSS` approximation from returning.
+
+**Changed:** `tests/test_render.py`, `README.md` (repo map now names the
+offline Stitch renderer rather than describing the dashboard as generic
+Streamlit).
+**Blocked on:** this host still has no Python, Streamlit, checkpoint, or
+LumenStone test images, so the visual upload pass remains paired-host work.
+The source-level offline-network guard passes.
+**Next:** run the full tests and upload `test_01.jpg` on the Python-equipped
+host. If the page displayed after upload is not the Stitch bento layout, kill
+and restart Streamlit before diagnosing it; imported-module hot reload has
+already served stale dashboard code twice (entries 23 and 36).
+
+---
+
 ## 2026-09-04 — Codex (38) — renderer wired; paired-host visual pass pending
 
 **Did:** Completed entry 37's code path in two small commits. `1c06706`
