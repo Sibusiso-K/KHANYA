@@ -22,6 +22,35 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 21 · Week 5 offline viz and W8 artefact audit
+
+### Attempted
+
+Close the two `reefprint`-side Week 5 visualization placeholders and perform the surgical W8
+front-door audit without moving paths or merging the two ADR-0003 histories.
+
+### Worked
+
+- Added `reefprint.viz.demo.offline_demo`, a deterministic synthetic rotation-series scene that
+  constructs the Stokes/analyser gate entirely from local code.
+- Added `reefprint.viz.decision.decision_figure`, which renders `SYSTEM REFUSED TO ANSWER`, the
+  conservative default emitted, and the stated reason as figure text.
+- Replaced both `tests/test_viz.py` placeholders with assertions, including a socket guard proving
+  the demo does not open a network connection.
+- Audited the repository: no stray tracked artefacts or stale non-historical cross-references were
+  found. README now states the `main`/`reefprint` roles, names KHANYA, and records the deliberate
+  non-merge under ADR-0003.
+
+### Did not work
+
+This host has no Python/uv runtime, so the suite was not run locally. The paired host must verify
+the updated expectation of **290 passed, 19 deselected**.
+
+### Left open
+
+The paired combined offline run against `main`'s dashboard remains the final Week 5 integration
+check; Week 6 and the remaining backlog are unchanged.
+
 ## 2026-09-04 — session 20 · suite-count documentation correction
 
 ### Attempted

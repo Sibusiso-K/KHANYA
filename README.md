@@ -88,7 +88,7 @@ src/reefprint/
 ├── heads/        entrainment risk · NFG load · oxidation index
 ├── trust/        ensemble, conformal, OOD gate, abstention
 ├── integrate/    OPC UA, OMF, AASX
-└── viz/          UI
+└── viz/          UI, deterministic offline demo, visible refusal renderer
 ```
 
 `experiments/` — numbered, each with its own README and result, including the failures.
@@ -96,13 +96,12 @@ src/reefprint/
 
 ## The other half
 
-KHANYA — segmentation, modal mineralogy, liberation, conformal calibration and the offline
-dashboard — lives at [`Sibusiso-K/KHANYA`](https://github.com/Sibusiso-K/KHANYA), which is
-also where this repository's history is mirrored, on the `reefprint` branch:
+**KHANYA** is the same build's segmentation, modal-mineralogy, liberation, conformal-calibration,
+and offline-dashboard half. It lives in this repository's `main` branch; this `reefprint` branch
+carries REEFPRINT's acquisition, polarimetry, trust, bridge, and visualization half. The public
+repository is [`Sibusiso-K/KHANYA`](https://github.com/Sibusiso-K/KHANYA).
 
-```bash
-git fetch origin && git checkout reefprint
-```
+The histories intentionally remain unmerged under ADR-0003 for originality and IP assessment.
 
 The two are **not merged**. The seam between them is `reefprint.bridge` — labelled masks in
 from KHANYA, per-mineral anisotropy out, each figure beside its own noise floor. That seam is
