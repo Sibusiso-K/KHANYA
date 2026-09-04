@@ -22,6 +22,29 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 30 · texture mechanics implemented
+
+### Attempted
+
+Close the data-independent `texture` placeholders while preserving the Week-2 domain-data gate.
+
+### Worked
+
+- Added connected-component grain extraction with explicit integer-map and connectivity guards.
+- Added symmetric, row-normalised 4-neighbour mineral-association statistics.
+- Replaced the two mechanics placeholders with real assertions; the expected split is **300 passed,
+  9 deselected**.
+
+### Did not work
+
+The falsification test remains a placeholder because no public texture-plus-chemistry dataset with
+locality labels exists; no synthetic result was promoted to a real-data claim.
+
+### Left open
+
+The paired host should verify the updated count. The remaining red list is now domain/data or
+explicitly out of scope under the project ADRs.
+
 ## 2026-09-04 — session 29 · calibration assertion API correction
 
 ### Attempted
