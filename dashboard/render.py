@@ -67,6 +67,13 @@ def _colourise_png_b64(labels):
     return base64.b64encode(buf.getvalue()).decode("ascii")
 
 
+def _image_png_b64(image):
+    """Original uploaded micrograph as an inline PNG for the component iframe."""
+    buf = io.BytesIO()
+    image.save(buf, format="PNG")
+    return base64.b64encode(buf.getvalue()).decode("ascii")
+
+
 def _candidates(result, recommendation):
     """The two candidate actions for a marginal verdict, equally weighted.
 
@@ -147,6 +154,7 @@ def render(image, labels, mean_confidence, result, recommendation):
         confidence_label="high" if mean_confidence >= 0.85 else "verify manually",
         ore_area_fraction=result.ore_area_fraction,
         n_particles=result.n_particles,
+        input_micrograph_b64=_image_png_b64(image),
         predicted_phases_b64=_colourise_png_b64(labels),
         phases=phases,
         recommendation=recommendation,
