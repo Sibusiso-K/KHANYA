@@ -22,6 +22,27 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 33 · documentation count correction
+
+### Attempted
+
+Apply the paired-host count from the `HeadEstimate` verification and close the two self-referential
+documentation checks.
+
+### Worked
+
+`CONTEXT.md` §4 now quotes **301 passed, 8 deselected** and **8 placeholder failures**. The paired
+report's 299 passed included the two count tests failing against the stale 302/7 quote; once the
+quote matches, those two tests are expected to pass.
+
+### Did not work
+
+No code was changed; this was the same documentation-count feedback loop encountered earlier.
+
+### Left open
+
+The paired host should rerun `pytest -m "not placeholder"` and confirm both doc-count guards pass.
+
 ## 2026-09-04 — session 32 · interval-bearing head output contract
 
 ### Attempted
