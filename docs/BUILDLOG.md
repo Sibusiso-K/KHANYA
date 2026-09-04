@@ -22,6 +22,31 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 32 · interval-bearing head output contract
+
+### Attempted
+
+Close the data-independent `heads` placeholder requiring every emitted prediction to carry a
+confidence interval.
+
+### Worked
+
+- Added `HeadEstimate`, requiring reportable estimate/lower/upper quantities, common units,
+  confidence in (0, 1), and an estimate inside its interval.
+- Replaced that one placeholder with real assertions; the three domain heads remain explicitly
+  marked red because their formulas/data are not defensible yet.
+- The expected non-placeholder suite is now **302 passed, 7 deselected**.
+
+### Did not work
+
+No domain head was fabricated from guessed coefficients; the interval contract is infrastructure,
+not evidence that entrainment, NFG, or oxidation has been measured.
+
+### Left open
+
+The paired host should verify the updated count. A quick palette review of `reefprint.viz` follows;
+any styling change will remain cosmetic and isolated from the dashboard branch.
+
 ## 2026-09-04 — session 31 · advisory provenance record boundary
 
 ### Attempted
