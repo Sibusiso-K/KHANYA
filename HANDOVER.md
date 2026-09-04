@@ -19,6 +19,32 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-04 — Codex (41) — Stitch dashboard boots without the model stack
+
+**Did:** Fixed the reason the local dashboard link was refusing to run on this
+host. The pre-upload Stitch shell no longer imports PyTorch, torchvision, or
+the segmentation model before it can render. Those heavyweight imports are
+now deferred until an image is uploaded, and the missing validated checkpoint
+is reported explicitly at that boundary instead of killing the whole app.
+
+Installed the lightweight local Streamlit/Jinja runtime, launched the app on
+port 8501, received HTTP 200, and visually verified the actual Stitch waiting
+screen plus the native upload bridge in the in-app browser. The renderer suite
+passes (7 tests), including a new contract that prevents heavyweight model
+imports from returning to module scope. The dashboard Python offline-network
+guard finds no URL references.
+
+**Changed:** `dashboard/app.py`, `dashboard/render.py`,
+`tests/test_render.py`.
+**Blocked on:** uploaded-image inference still needs the gitignored validated
+checkpoint at `checkpoints/lumenstone_s2_patches/best.pt`; it is not present on
+this host. The Stitch dashboard itself is live without it.
+**Next:** provide/copy the validated checkpoint to that exact path, then run
+the three real-image verdict checks from entry 37. Do not substitute or
+fabricate a checkpoint merely to make the upload path appear functional.
+
+---
+
 ## 2026-09-04 — Codex (40) — Stitch now owns the whole visible dashboard
 
 **Did:** Corrected the integration boundary after Sibusiso pointed out that

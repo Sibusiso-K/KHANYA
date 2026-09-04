@@ -11,6 +11,7 @@ never regenerated at demo time.
 """
 import base64
 import io
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -20,7 +21,6 @@ from PIL import Image
 
 from src import advisor as advisor_module
 from src.advisor import verdict_state
-from src.segmentation import lumenstone as ls
 
 TEMPLATE_DIR = Path(__file__).resolve().parent / "templates"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -70,13 +70,15 @@ def render_landing():
     template = _env.get_template("landing.html.jinja")
     return template.render(
         **_base_context(),
-        subset_label=f"LumenStone {ls.SUBSET}",
+        subset_label=f"LumenStone {os.environ.get('KHANYA_SUBSET', 'S2').upper()}",
     )
 
 
 def _colourise_png_b64(labels):
     """Predicted-phase mask as a base64 PNG, embedded inline - no server-side
     static file needed for a per-request image, and no network fetch either."""
+    from src.segmentation import lumenstone as ls
+
     rgb = np.zeros(labels.shape + (3,), dtype=np.uint8)
     for index, hex_colour in enumerate(ls.CLASS_COLORS):
         h = hex_colour.lstrip("#")
@@ -140,6 +142,8 @@ _VERDICT_CSS = {
 
 def render(image, labels, mean_confidence, result, recommendation):
     """Render the dashboard for one measured field. Returns an HTML string."""
+    from src.segmentation import lumenstone as ls
+
     css_class, state_label = verdict_state(recommendation.action)
     css = _VERDICT_CSS[css_class]
 

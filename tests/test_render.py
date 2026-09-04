@@ -4,6 +4,7 @@ These test the two failure modes a visual inspection could easily miss: a
 missing vendored asset must say how to repair the build, and only a genuinely
 marginal verdict may offer the two equally weighted candidate actions.
 """
+import ast
 from pathlib import Path
 
 import pytest
@@ -22,6 +23,23 @@ def test_dashboard_app_embeds_the_stitch_renderer():
     assert "render.render_landing()" in app_source
     assert "st.components.v1.html(" in app_source
     assert "KHANYA_CSS" not in app_source
+
+
+def test_dashboard_can_show_stitch_before_the_model_stack_is_loaded():
+    """A missing checkpoint must not prevent the landing dashboard booting."""
+    app_path = Path(__file__).resolve().parents[1] / "dashboard" / "app.py"
+    tree = ast.parse(app_path.read_text(encoding="utf-8"))
+    top_level_imports = {
+        alias.name
+        for node in tree.body
+        if isinstance(node, (ast.Import, ast.ImportFrom))
+        for alias in node.names
+    }
+
+    assert "torch" not in top_level_imports
+    assert "modal" not in top_level_imports
+    assert "model" not in top_level_imports
+    assert "patches" not in top_level_imports
 
 
 def test_pre_upload_state_is_stitch_rendered_without_fabricated_claims():

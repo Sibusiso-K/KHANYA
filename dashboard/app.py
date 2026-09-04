@@ -6,25 +6,21 @@ Streamlit-native; the result is the offline, inlined Stitch port rendered by
 with linked assets: a venue laptop may have no network access.
 """
 import io
+import os
 import sys
 from pathlib import Path
 
 import streamlit as st
-import torch
 from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from dashboard import render
-from src import modal
-from src.advisor import advise
-from src.segmentation import lumenstone as ls
-from src.segmentation import patches as patch_module
-from src.segmentation.model import build_model, device
-from src.segmentation.train_patches import checkpoint_for
+from src.segmentation import config
 
 
-CKPT = checkpoint_for("ce")
+SUBSET = os.environ.get("KHANYA_SUBSET", "S2").upper()
+CKPT = config.ROOT / "checkpoints" / f"lumenstone_{SUBSET.lower()}_patches" / "best.pt"
 RESULT_FRAME_HEIGHT = 1500
 LANDING_FRAME_HEIGHT = 330
 
@@ -67,6 +63,11 @@ st.markdown(UPLOAD_BRIDGE_CSS, unsafe_allow_html=True)
 
 @st.cache_resource
 def load_model():
+    import torch
+
+    from src.segmentation import lumenstone as ls
+    from src.segmentation.model import build_model, device
+
     dev = device()
     model = build_model(num_classes=ls.NUM_CLASSES, pretrained=False).to(dev)
     model.load_state_dict(torch.load(CKPT, map_location=dev))
@@ -77,16 +78,16 @@ def load_model():
 @st.cache_data(show_spinner=False)
 def predict(image_bytes):
     """Run the validated native-resolution path, caching only identical bytes."""
+    import torch
+
+    from src.segmentation import patches as patch_module
+
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     model, dev = load_model()
     with torch.no_grad():
         labels, mean_confidence = patch_module.sliding_window_predict(model, image, dev)
     return image, labels, mean_confidence
 
-
-if not CKPT.exists():
-    st.error(f"No trained model at {CKPT}. Run: python -m src.segmentation.train_patches")
-    st.stop()
 
 landing_slot = st.empty()
 uploaded = st.file_uploader(
@@ -101,6 +102,17 @@ if uploaded is None:
         )
 else:
     landing_slot.empty()
+    if not CKPT.exists():
+        st.error(
+            f"No trained model at {CKPT}. Copy the validated checkpoint to that "
+            "path before analysing an image."
+        )
+        st.stop()
+
+    from src import modal
+    from src.advisor import advise
+    from src.segmentation import lumenstone as ls
+
     image_bytes = uploaded.getvalue()
     with st.spinner(
         "Tiling and predicting at native resolution — about 2–3 minutes on a "
