@@ -19,6 +19,37 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-04 — Codex (38) — renderer wired; paired-host visual pass pending
+
+**Did:** Completed entry 37's code path in two small commits. `1c06706`
+replaced entry 36's Streamlit/CSS-token result panels with
+`render.render(...)` embedded through `st.components.v1.html(...,
+height=1500, scrolling=True)`. The upload and the validated native-resolution
+prediction path remain Streamlit-native; the resulting report is now the real
+offline Stitch HTML, including its inlined CSS and vendored base64 fonts.
+
+`691f54f` made the pending presentation choice: show the original uploaded
+micrograph beside the predicted phase mask. This makes the measured-mask claim
+auditable and avoids labelling a coloured prediction as a raw micrograph. It
+does not add any computed metric or synthetic overlay. The same commit adds
+`tests/test_render.py`: a missing static asset must identify the build repair
+step, and `_candidates()` returns two equal-weight actions only for a marginal
+verdict (zero for confident and refusal verdicts).
+
+**Changed:** `dashboard/app.py`, `dashboard/render.py`,
+`dashboard/templates/khanya.html.jinja`, `tests/test_render.py`.
+**Blocked on:** this host has no Python/Streamlit and no untracked LumenStone
+test image, so it cannot perform entry 37's real upload / visual pass or run
+pytest. `git diff --check` passes and the CI-equivalent Python-only offline
+guard finds no `https?://` reference under `dashboard/`.
+**Next:** paired host: restart Streamlit, upload `test_01.jpg`, then exercise
+`test_04`, `test_06`, and `test_09` to confirm all three say Marginal and show
+two candidates. Run `pytest tests/` plus the CI guard. Check the 1500px iframe
+height on the presentation display; it deliberately scrolls if the viewport is
+short rather than clipping the report.
+
+---
+
 ## 2026-09-04 — Sibusiso (37) — IN PROGRESS, picking up mid-task
 
 **Did:** Sibusiso decided entry 36's CSS-token restyle wasn't enough - he
