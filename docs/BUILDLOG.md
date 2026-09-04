@@ -22,6 +22,26 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 22 · Week 5 colorbar axis count correction
+
+### Attempted
+
+Correct the offline-demo test's figure-size assertion after paired-host verification.
+
+### Worked
+
+`anisotropy_figure` has three content panels and two image colorbars, so its honest figure axes
+count is **5**, not 3. The test now asserts that documented count and explains the two additional
+axes inline; the figure implementation remains unchanged.
+
+### Did not work
+
+The paired run reported 289 passed, 19 deselected, and this one failure before the correction.
+
+### Left open
+
+The paired host should rerun the non-placeholder suite to confirm 290 passed, 19 deselected.
+
 ## 2026-09-04 — session 21 · Week 5 offline viz and W8 artefact audit
 
 ### Attempted

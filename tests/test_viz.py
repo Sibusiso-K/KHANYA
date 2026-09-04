@@ -223,7 +223,8 @@ def test_demo_runs_fully_offline(monkeypatch):
     monkeypatch.setattr(socket, "socket", network_is_forbidden)
     demo = offline_demo()
 
-    assert len(demo.gate.axes) == 3
+    # Three content panels plus one colorbar axis for each image panel.
+    assert len(demo.gate.axes) == 5
     assert demo.gate.axes[ANISOTROPY_PANEL].images
     assert "SYSTEM REFUSED TO ANSWER" in "\n".join(
         text.get_text() for text in demo.refusal.texts
