@@ -22,6 +22,27 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 29 · calibration assertion API correction
+
+### Attempted
+
+Apply the paired-host failure report for the dark/flat calibration test.
+
+### Worked
+
+Changed the expected value from a nested Python list passed to `pytest.approx` to a 2-D NumPy
+array, which `pytest.approx` supports. `correct_counts` itself was unchanged; the bug was solely
+in the test assertion.
+
+### Did not work
+
+The paired run was 297 passed, 11 deselected with this single assertion error before the fix.
+
+### Left open
+
+The paired host should rerun to confirm the calibration correction returns the suite to zero real
+failures.
+
 ## 2026-09-04 — session 28 · acquisition provenance guards
 
 ### Attempted
