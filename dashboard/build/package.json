@@ -1,0 +1,8 @@
+{
+  "name": "khanya-dashboard-build",
+  "private": true,
+  "description": "Build-time only. Compiles a static, offline CSS bundle from templates/khanya.html.jinja - never installed or run on the demo laptop. See dashboard/README-BUILD.md.",
+  "devDependencies": {
+    "tailwindcss": "^3.4.13"
+  }
+}

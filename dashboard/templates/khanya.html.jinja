@@ -1,0 +1,244 @@
+<!--
+REEFPRINT :: KHANYA dashboard, real port of the Stitch design.
+
+Structurally faithful to the exported HTML (reefprint_khanya_mintek_metallurgical_advisor):
+same header/nav, hero metric strip, two-column micrograph + mineralogy layout, the
+three-state verdict card, the refusal panel. What changed and why:
+
+- Every number is a Jinja variable fed from the real pipeline (src/modal.py,
+  src/advisor.py) - none of the mockup's placeholder values (P80, Ni recovery,
+  chromite locking %, per-grain compositions) survive, because this project's
+  whole discipline is that a number on screen is either measured or it says so.
+- Fabricated institutional claims are gone per Sibusiso's explicit instruction:
+  no "MINTEK SOUTH AFRICA" branding, no "ISO/IEC 17025 ACCREDITED", no
+  "Dr. K. Vance", no audit-trail stamp, no "DISPATCH TO FLOTATION DCS" button
+  (implies a live plant connection this prototype does not have).
+- The mineral phase list loops over whatever the active LumenStone subset
+  actually contains (ls.CLASS_NAMES), not a fixed Merensky/UG2 mineral set -
+  the mockup hardcoded Pentlandite/Chalcopyrite/Pyrrhotite/Chromite, which is
+  only correct for S3, and this demo runs on S2.
+- The 4-tier liberation classification (hi-middlings/lo-middlings/locked) is
+  cut: the pipeline measures one liberation number, not those tiers, so
+  showing them would be exactly the fabrication problem the rest of this
+  project has been correcting all session.
+- The three-state verdict switcher keeps its structure but not its function:
+  the mockup let a viewer click between all three states freely, which is
+  fine for a design demo and wrong for an instrument reading - it now shows
+  the ONE state the advisor actually computed, with the other two dimmed for
+  context rather than clickable.
+-->
+<!--
+Everything below is inlined - compiled Tailwind CSS in a <style> tag, fonts as
+base64 data URIs - rather than linked as separate files. This renders inside a
+Streamlit component iframe (srcdoc), which has no stable base path for
+relative URLs to resolve against; inlining sidesteps that entirely instead of
+depending on how Streamlit happens to serve static files this version.
+-->
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<style>{{ tailwind_css }}</style>
+<style>
+@font-face { font-family:'Plus Jakarta Sans'; src:url('data:font/ttf;base64,{{ font_sans_b64 }}') format('truetype'); font-weight:300 700; font-display:swap; }
+@font-face { font-family:'JetBrains Mono'; src:url('data:font/ttf;base64,{{ font_mono_regular_b64 }}') format('truetype'); font-weight:400; font-display:swap; }
+@font-face { font-family:'JetBrains Mono'; src:url('data:font/ttf;base64,{{ font_mono_bold_b64 }}') format('truetype'); font-weight:700; font-display:swap; }
+body { background:#00131D; color:#E3EAEB; font-family:'Plus Jakarta Sans',sans-serif; overflow-x:hidden; }
+.reticle-grid { background-image:
+  linear-gradient(to right, rgba(30,62,75,0.25) 1px, transparent 1px),
+  linear-gradient(to bottom, rgba(30,62,75,0.25) 1px, transparent 1px);
+  background-size:40px 40px; }
+</style>
+</head>
+<body class="min-h-screen bg-background antialiased selection:bg-primary selection:text-white">
+
+<header class="w-full bg-[#00131D]/90 border-b border-outline/70">
+  <div class="h-14 px-6 md:px-8 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <div class="flex items-center gap-2.5 shrink-0">
+        <div class="h-8 px-2 bg-primary flex items-center justify-center rounded-[3px] shadow-[0_0_15px_rgba(210,45,32,0.4)]">
+          <span class="font-mono text-[11px] font-black tracking-widest text-white">MINTEK-SCI</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="font-sans text-[15px] font-bold tracking-[0.22em] text-on-surface uppercase">REEFPRINT :: KHANYA</span>
+          <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-surface-container border border-outline text-teal-accent font-semibold tracking-wider">prototype</span>
+        </div>
+      </div>
+      <div class="h-4 w-[1px] bg-outline hidden sm:block"></div>
+      <div class="hidden lg:flex items-center gap-2 text-[11px] font-mono tracking-[0.18em] text-on-surface-variant uppercase">
+        <span class="text-teal-accent">{{ subset_label }}</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 shrink-0">
+      <div class="hidden md:flex flex-col text-right">
+        <span class="font-mono text-[11px] font-semibold text-on-surface tracking-wider">Sibusiso Khumalo &amp; Lethabo Mphukuile</span>
+        <span class="font-mono text-[9px] uppercase tracking-[0.2em] text-on-surface-variant">Mintek-SCi Grad Hackathon 2026</span>
+      </div>
+    </div>
+  </div>
+  <div class="h-10 px-6 md:px-8 bg-surface-container-lowest/80 border-t border-outline/40 flex items-center justify-between text-[11px]">
+    <nav class="flex items-center gap-1 overflow-x-auto">
+      <a class="h-10 px-4 flex items-center gap-2 border-b-2 border-primary text-on-surface font-semibold tracking-[0.16em] uppercase" href="#">
+        <span class="">Ore Processability Advisor</span>
+      </a>
+    </nav>
+    <div class="hidden xl:flex items-center gap-4 text-on-surface-variant font-mono text-[10px] tracking-widest">
+      <span class="text-success font-semibold">CONFORMAL CALIBRATION: ACTIVE</span>
+    </div>
+  </div>
+</header>
+
+<main class="w-full max-w-[1720px] mx-auto px-4 md:px-8 py-6 flex flex-col gap-6">
+
+  <!-- Hero metric strip: real measured quantities only -->
+  <section class="w-full rounded-lg bg-surface border border-outline shadow-elevation-1 p-5 md:p-6 animate-fade-up" style="animation-delay:50ms">
+    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-[10px] tracking-[0.25em] text-primary uppercase font-bold">SAMPLE</span>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-on-surface font-sans">{{ sample_title }}</h1>
+        <p class="text-xs text-on-surface-variant max-w-2xl leading-relaxed">{{ sample_caption }}</p>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-2 border-y sm:border-y-0 sm:border-l border-outline xl:pl-6">
+        <div class="flex flex-col">
+          <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">LIBERATION</span>
+          <div class="flex items-baseline gap-1 mt-1">
+            <span class="text-3xl md:text-4xl font-bold font-mono text-on-surface tracking-tight">{{ liberation_display }}</span>
+            <span class="font-mono text-xs text-on-surface-variant">%</span>
+          </div>
+          <span class="font-mono text-[9px] text-teal-accent mt-0.5">floor: {{ liberation_floor_pct }}%</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">MODEL CONFIDENCE</span>
+          <div class="flex items-baseline gap-1 mt-1">
+            <span class="text-3xl md:text-4xl font-bold font-mono text-on-surface tracking-tight">{{ "%.0f"|format(confidence*100) }}</span>
+            <span class="font-mono text-xs text-on-surface-variant">%</span>
+          </div>
+          <span class="font-mono text-[9px] text-teal-accent mt-0.5">{{ confidence_label }}</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">ORE IN FIELD</span>
+          <div class="flex items-baseline gap-1 mt-1">
+            <span class="text-3xl md:text-4xl font-bold font-mono text-on-surface tracking-tight">{{ "%.0f"|format(ore_area_fraction*100) }}</span>
+            <span class="font-mono text-xs text-on-surface-variant">%</span>
+          </div>
+          <span class="font-mono text-[9px] text-on-surface-variant mt-0.5">of field of view</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">PARTICLES</span>
+          <div class="flex items-baseline gap-1 mt-1">
+            <span class="text-3xl md:text-4xl font-bold font-mono text-on-surface tracking-tight">{{ n_particles }}</span>
+          </div>
+          <span class="font-mono text-[9px] text-on-surface-variant mt-0.5">post topology repair</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <!-- Left: micrograph -->
+    <div class="lg:col-span-7 flex flex-col gap-6">
+      <div class="rounded-lg bg-surface border border-outline shadow-elevation-2 p-5 md:p-6 flex flex-col gap-4 animate-fade-up" style="animation-delay:100ms">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-outline">
+          <div class="flex items-center gap-2.5">
+            <div class="w-2.5 h-2.5 rounded-full bg-teal-accent"></div>
+            <span class="font-mono text-xs font-bold tracking-[0.2em] uppercase text-on-surface">REFLECTED-LIGHT MICROGRAPH</span>
+          </div>
+        </div>
+        <div class="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-surface-container-lowest border border-outline/90">
+          <img alt="Predicted mineral phases" class="w-full h-full object-contain" src="data:image/png;base64,{{ predicted_phases_b64 }}">
+          <div class="absolute inset-0 reticle-grid pointer-events-none opacity-30"></div>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-1 text-on-surface-variant font-mono text-[11px]">
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-1.5">
+              <span class="text-on-surface-variant uppercase text-[10px]">SUBSET:</span>
+              <span class="text-on-surface font-bold bg-surface-container px-2 py-0.5 rounded border border-outline">{{ subset_label }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: modal mineralogy + verdict + refusal -->
+    <div class="lg:col-span-5 flex flex-col gap-6">
+      <div class="rounded-lg bg-surface border border-outline shadow-elevation-1 p-5 md:p-6 flex flex-col gap-3 animate-fade-up" style="animation-delay:200ms">
+        <div class="flex items-center justify-between pb-2 border-b border-outline">
+          <span class="font-mono text-xs font-bold tracking-[0.2em] uppercase text-on-surface">MODAL MINERALOGY</span>
+          <span class="font-mono text-[10px] text-on-surface-variant">% of ore area, resin excluded</span>
+        </div>
+        <div class="flex flex-col gap-2 font-mono text-xs">
+          {% for phase in phases %}
+          <div class="p-2.5 rounded bg-surface-container border border-outline/60 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full" style="background:{{ phase.colour }}"></span>
+              <span class="font-bold text-on-surface capitalize">{{ phase.name }}</span>
+            </div>
+            <span class="font-bold text-on-surface text-sm">{{ "%.1f"|format(phase.fraction*100) }}%</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Verdict: the one state the advisor actually computed -->
+      <div class="rounded-lg bg-surface border border-outline shadow-elevation-2 p-5 md:p-6 flex flex-col gap-4 animate-fade-up" style="animation-delay:250ms">
+        <div class="flex items-center justify-between pb-2 border-b border-outline">
+          <span class="font-mono text-xs font-bold tracking-[0.2em] uppercase text-on-surface">RECOMMENDATION</span>
+        </div>
+        <div class="rounded-lg p-5 border {{ verdict_border_class }} {{ verdict_bg_class }} {{ verdict_glow_class }}">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-3 h-3 rounded-full {{ verdict_dot_class }}"></span>
+            <span class="font-mono text-[10px] font-black uppercase tracking-[0.25em] px-2.5 py-0.5 rounded {{ verdict_pill_class }}">{{ verdict_state_label }}</span>
+          </div>
+          <h2 class="text-lg md:text-xl font-bold font-sans text-on-surface tracking-tight leading-snug">{{ recommendation.action }}</h2>
+          <p class="text-xs font-sans text-on-surface-variant mt-2 leading-relaxed">{{ recommendation.reason }}</p>
+        </div>
+
+        {% if candidates %}
+        <div class="flex flex-col sm:flex-row gap-3">
+          {% for c in candidates %}
+          <div class="flex-1 border border-outline bg-surface-container p-3.5 rounded">
+            <span class="font-mono text-[10px] uppercase tracking-wider text-warning font-semibold">{{ c.condition }}</span>
+            <div class="text-sm font-bold text-on-surface mt-1">{{ c.action }}</div>
+            <div class="text-[11px] text-on-surface-variant mt-1.5 leading-relaxed">{{ c.gate }}</div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if band_visible %}
+        <div class="p-3 rounded bg-surface-container-lowest border border-outline flex flex-col gap-2">
+          <div class="flex justify-between items-center font-mono text-[10px]">
+            <span class="text-on-surface tracking-wider">LIBERATION VS. DECISION THRESHOLD</span>
+          </div>
+          <div class="relative h-2.5 rounded bg-surface-container-high border border-outline-dim">
+            <div class="absolute top-0 bottom-0 rounded bg-warning/25" style="left:{{ band_lo_pct }}%; width:{{ band_width_pct }}%"></div>
+            <div class="absolute -top-1 w-px h-[18px] bg-on-surface-variant" style="left:{{ liberation_floor_pct }}%"></div>
+            <div class="absolute -top-1 w-0.5 h-[18px] bg-on-surface" style="left:{{ liberation_pct }}%"></div>
+          </div>
+          <div class="flex justify-between font-mono text-[9px] text-on-surface-variant">
+            <span>0%</span><span>{{ liberation_floor_pct }}% floor</span><span>100%</span>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if is_refusal %}
+      <!-- Refusal: same visual weight as a real result, never a blank panel -->
+      <div class="rounded-lg bg-surface border-2 border-warning/60 shadow-elevation-2 p-5 md:p-6 flex flex-col gap-3 animate-fade-up" style="animation-delay:300ms">
+        <div class="flex items-center justify-between pb-2 border-b border-outline">
+          <span class="font-mono text-xs font-bold tracking-[0.2em] uppercase text-on-surface">MEASUREMENT DECLINED</span>
+          <span class="font-mono text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-warning-container text-warning border border-warning/60">refusal</span>
+        </div>
+        <p class="text-xs font-sans text-on-surface leading-relaxed">{{ recommendation.reason }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+<footer class="w-full border-t border-outline/60 bg-surface-container-lowest/90 mt-4 py-4 px-6 md:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-on-surface-variant font-mono text-[10px]">
+  <span>REEFPRINT :: KHANYA - prototype, not deployed on a live circuit</span>
+  <span>{{ generated_at }}</span>
+</footer>
+
+</body></html>

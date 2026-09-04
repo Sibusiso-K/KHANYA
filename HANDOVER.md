@@ -19,6 +19,103 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-04 — Sibusiso (37) — IN PROGRESS, picking up mid-task
+
+**Did:** Sibusiso decided entry 36's CSS-token restyle wasn't enough - he
+wants the actual Stitch-designed HTML driving the dashboard, not a
+Streamlit-widget approximation of its palette. This is that build, and it
+is genuinely unfinished. Read this whole entry before touching
+`dashboard/`.
+
+**Architecture, and why it isn't a Streamlit-native rebuild.** Streamlit's
+own layout primitives can't reproduce the Stitch design's exact structure
+(12-column bento grid, layered elevation cards, the 3-state verdict
+switcher). The approach: render the real ported HTML via Jinja2
+(`dashboard/render.py` + `dashboard/templates/khanya.html.jinja`) and
+embed it with `st.components.v1.html()`. Tailwind is compiled to a static
+CSS file **once, at dev time** (`dashboard/build/`, Node/npm, gitignored
+`node_modules/`) - never a runtime dependency, never touches the demo
+laptop's "must run offline" guarantee. Fonts (Plus Jakarta Sans, JetBrains
+Mono, both SIL OFL) vendored as `.ttf` under `dashboard/static/fonts/`.
+Both the compiled CSS and the fonts are inlined into the rendered HTML
+(base64 for fonts, raw `<style>` for CSS) rather than linked, because a
+Streamlit component renders inside an iframe `srcdoc` with no stable base
+path for relative URLs to resolve against.
+
+**What is real and done:**
+- `dashboard/templates/khanya.html.jinja` - structurally faithful port of
+  the exported `reefprint_khanya_mintek_metallurgical_advisor/code.html`
+  (header/nav, hero metric strip, micrograph panel, modal mineralogy,
+  the 3-state verdict card, conditional refusal panel). Read its own
+  header comment for the full list of what was cut and why.
+- **Every fabricated claim stripped**, per Sibusiso's explicit
+  instruction after I flagged them: no "MINTEK SOUTH AFRICA" branding, no
+  "ISO/IEC 17025 ACCREDITED", no "Dr. K. Vance" operator, no audit-trail
+  stamp, no "DISPATCH TO FLOTATION DCS" button (implies a live plant
+  connection that does not exist), no fabricated per-grain tooltips, no
+  fabricated P80/Ni-recovery/chromite-locking metrics the pipeline does
+  not compute. The mineral phase list loops over `ls.CLASS_NAMES` - the
+  real active subset's classes - not the mockup's hardcoded UG2 minerals.
+- The 4-tier liberation classification (hi-middlings/lo-middlings/locked)
+  is cut entirely rather than faked: the pipeline measures one liberation
+  number, not those tiers.
+- `dashboard/render.py` - maps real `ModalResult`/`Recommendation`
+  objects to template variables. `verdict_state()` (entry 36, already
+  tested) drives which of the three verdict colours renders; candidate
+  actions for the marginal case are built here, mirroring
+  `conformal.action_set()`'s logic in the dashboard's own words.
+- Tailwind compiled clean: 13KB static CSS, zero runtime network
+  references. Fonts downloaded and verified (Plus Jakarta Sans 94KB,
+  JetBrains Mono Regular/Bold ~112KB each).
+- `dashboard/build/README.md` documents the regenerate-CSS step for
+  whoever touches the template next.
+
+**What is NOT done - this is the actual handoff, not just a status note:**
+1. `dashboard/app.py` still has NOT been rewired to call
+   `render.render(...)` and embed it via
+   `st.components.v1.html(html, height=..., scrolling=True)`. It is
+   currently still running entry 36's CSS-token version. This is the
+   next, immediate step.
+2. **Not yet run once, end to end.** Nothing in this entry has been
+   verified against a real image - no syntax error has even been ruled
+   out beyond `ast.parse`. Do this before anything else: wire `app.py`,
+   run `streamlit run dashboard/app.py`, upload
+   `data/raw/lumenstone/S2_v2/imgs/test/test_01.jpg` (confirmed-clean
+   pipeline run, entry 36), and actually look at the rendered page.
+3. **All three verdict states need checking**, not just the confident
+   one - `test_04`, `test_06`, `test_09` from that same folder landed in
+   "Marginal" in the validated decision-gap run (entry 24/`report
+   §5.0.9`) and will exercise the candidate-actions panel and the
+   amber styling for real.
+4. The predicted-phase image is currently the ONLY view shown (the
+   template dropped the mockup's fake AI-overlay/raw toggle since we
+   only have one real predicted mask) - worth a look at whether showing
+   the raw input image alongside it (like entry 36's two-column layout)
+   reads better than the mask alone.
+5. No new tests cover `render.py` yet. At minimum: does it raise cleanly
+   if the static assets are missing (the `_read_text`/`_read_b64` guards
+   have a stated error message but are unexercised); does the marginal
+   case actually produce two candidates and the confident/refusal cases
+   produce zero.
+6. `tests/` and the CI offline-network guard have NOT been re-run since
+   this work started. Do that before considering this finished - the
+   guard specifically checks `dashboard/` for `https?://`, and this
+   entry's fonts/CSS work was designed to pass it, but it has not
+   actually been checked.
+
+**Changed:** new `dashboard/render.py`, new
+`dashboard/templates/khanya.html.jinja`, new `dashboard/static/`
+(`tailwind.css`, `fonts/*.ttf`), new `dashboard/build/` (Tailwind compile
+step, `node_modules/` gitignored, not committed).
+**Blocked on:** nothing technical - this is genuinely mid-task, paused on
+explicit instruction to push and hand off, not stuck.
+**Next:** items 1-6 above, in that order. Whoever picks this up should
+run the dashboard and actually look at it before writing a single new
+line - `app.py` is the only file standing between this and something
+real.
+
+---
+
 ## 2026-09-04 — Sibusiso (36)
 
 **Did:** Restyled the dashboard to the REEFPRINT :: KHANYA Mintek design
