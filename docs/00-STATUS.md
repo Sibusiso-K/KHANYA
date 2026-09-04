@@ -25,7 +25,7 @@ CLAUDE.md  >  docs/01-design-v3.md  >  docs/02-gauntlet-findings.md  >  everythi
 | [`01-design-v3.md`](01-design-v3.md) | **The current design** for everything except the instrument. Computational ore microscope: quantitative reflectance + full linear Stokes polarimetry. Its 0.2–1.6 µm/px is now a *design target*, not something that will be measured — see ADR-0002 below. |
 | [`02-gauntlet-findings.md`](02-gauntlet-findings.md) | Adversarial review findings and dispositions. **Why the design is what it is.** Read before proposing anything. |
 | [`tools/gauntlet.md`](tools/gauntlet.md) | The adversarial review prompt. Re-run at week 3 and week 6 with real code attached. |
-| `04-decisions/` | One ADR per significant decision. **[0001](04-decisions/0001-ome-tiff-via-tifffile-not-bioformats.md)** OME-TIFF via `tifffile`, not Bio-Formats. **[0002](04-decisions/0002-software-only-no-instrument-is-built.md)** Software only — no instrument is built. |
+| `04-decisions/` | One ADR per significant decision. **[0001](04-decisions/0001-ome-tiff-via-tifffile-not-bioformats.md)** OME-TIFF via `tifffile`, not Bio-Formats. **[0002](04-decisions/0002-software-only-no-instrument-is-built.md)** Software only — no instrument is built. **[0003](04-decisions/0003-one-build-two-names-reefprint-and-khanya.md)** REEFPRINT, otherwise known as KHANYA; histories stay unmerged. |
 
 > **ADR-0002 overrides the hardware content of every document in this folder, including
 > `01-design-v3.md`.** Where a doc describes building, calibrating, or measuring on a rig, read it
@@ -124,11 +124,11 @@ that **adaptive illumination is a leakage channel** (freeze the schedule for all
 
 | Week | Gate — binary, on evidence |
 |---|---|
-| **1** | **Rotation series in, per-pixel Stokes out, pentlandite dark while pyrrhotite lights up, on screen** ← current. Leg (a) synthetic phantom — **passed**, 40.4× separation, `experiments/001-week1-gate/`. Leg (b) the same inversion on a public reflected-light rotation series (LumenStone S3 v2 XPL rotations) — **outstanding**. |
-| 2 | Falsification test computed, with CI |
-| 3 | Conformal coverage within band, per held-out locality |
-| 4 | Zero silent failures under degraded input |
-| 5 | End-to-end offline on one laptop |
-| 6 | Backup demo video exists |
+| **1** | Rotation series in, per-pixel Stokes out, pentlandite dark while pyrrhotite lights up, on screen — **phantom passed; real S3 v2 measured `NEITHER` and routed away from Stokes**. |
+| 2 | Falsification test computed, with CI — **statistical core built; texture features remain a domain-lead block** |
+| 3 | Conformal coverage within band, per held-out locality — **implemented and tested** |
+| 4 | Zero silent failures under degraded input — **implemented and tested** |
+| 5 | End-to-end offline on one laptop — **implemented, tested, and paired-host verified** |
+| 6 | Backup demo video exists — **paired-host verified two-screen GIF generated from the offline demo** |
 
 Final: 1 October 2026, 13:00 submission, 10-minute presentation, Mintek Randburg.

@@ -8,7 +8,7 @@ is the constitution — *what is true and what the rules are*. This file is the 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
 - **Last updated:** 2026-09-04
-- **Last commit at time of writing:** Week 5 offline viz demo and visible refusal path implemented on `reefprint`
+- **Last commit at time of writing:** Week 6 backup demo video generator implemented on `reefprint`; paired host materialised and verified the GIF
 - **Days to final:** 27 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 - **Abstract deadline: 30 August 2026 — submitted and complete.** Drafted and rendered:
   [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
@@ -60,8 +60,8 @@ and flotation response. It is software, evaluated on public data. **No instrumen
 | 2 | Falsification test computed, with CI | **Statistical core built and tested** (`reefprint.heads.falsification`, cluster-robust CR1 by locality, honest n = locality count). Proven against synthetic data with a known ground truth — a real texture effect detected, a real absence not manufactured. **Real Bushveld geochemistry now in hand for 3 of 4 required inputs** — `data/bushveld_thaba_chromitite/` (Bachmann 2019, Mendeley, CC BY 4.0, cited): 1,205 assay rows give `target` (real PGE grades), `Cr2O3_%` (half of `baseline_features`), and 317-borehole `localities`, all real, none synthetic. **`texture_features` is still the missing piece, and it is structurally missing, not administratively** — see §8. |
 | 3 | Conformal coverage within band, per held-out locality | **implemented and tested** (`reefprint.trust.conformal`; Week 3 gate harness) |
 | 4 | Zero silent failures under degraded input | **implemented and tested** (`reefprint.trust.quality`; explicit refusal for each named degradation) |
-| 5 | End-to-end offline on one laptop | **reefprint viz scene and refusal path implemented and tested**; paired end-to-end run remains |
-| 6 | Backup demo video exists | **generator implemented** (`experiments/004-backup-video`); paired host must materialise the GIF |
+| 5 | End-to-end offline on one laptop | **implemented, tested, and verified** (`reefprint.viz.demo` + visible refusal path) |
+| 6 | Backup demo video exists | **green** — paired host generated and verified the two-screen GIF from `experiments/004-backup-video` |
 
 **Built and tested:** `reefprint.polarim.stokes` (the inversion),
 `reefprint.polarim.extinction` (the fourth-harmonic estimator — leg (b)'s path if N3 is
@@ -93,12 +93,11 @@ is missing — **the red test list is the backlog**, deliberately.
 
 ### The single next action
 
-**Week 6's backup-video generator is now implemented.** Run
-`uv run python experiments/004-backup-video/run.py` on the paired host to materialise the GIF.
-**Week 5's reefprint visualization seam is now implemented.** `reefprint.viz.demo.offline_demo`
-builds a deterministic local rotation-series scene, and `reefprint.viz.decision.decision_figure`
-puts the refusal, conservative default, and reason on screen. The paired host must still run the
-combined offline demo against `main`'s dashboard. **Week 3 implementation is complete on
+**Weeks 1–6 are green or closed with a documented reason.** The paired host ran the full
+offline-demo path and materialised `output/reefprint-backup-demo.gif`. The next action on this
+branch is to audit the remaining red placeholder docstrings and select one in-scope module; the
+hardware-facing acquisition half remains intentionally out of scope under ADR-0002, and Week 2's
+missing `texture_features` remains a domain-lead decision. **Week 3 implementation is complete on
 `reefprint`.** `reefprint.trust.conformal` computes the
 exact split-conformal Beta coverage band, combines held-out count noise with a Beta-Binomial
 predictive interval, and audits every held-out locality separately, with locality-disjoint

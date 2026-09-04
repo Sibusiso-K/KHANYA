@@ -45,6 +45,29 @@ is ignored as regenerable experiment output; the paired host must run the genera
 
 Run the generator on the paired host and retain the resulting GIF with the submission/demo media.
 
+## 2026-09-04 — session 24 · W8 status narrative refresh
+
+### Attempted
+
+Re-read the artefact front door after Weeks 5–6 closed, checking that a stranger sees the current
+gate status rather than an old Week-1/Week-5 snapshot.
+
+### Worked
+
+- Updated `CONTEXT.md` to record the paired-host verification of the offline demo and the materialised
+  backup GIF, and to make the next action the remaining-placeholder scope audit.
+- Updated `docs/00-STATUS.md`'s current gate table and added ADR-0003 to its current-decision index.
+- Left historical findings, archive documents, and deliberate red placeholders unchanged.
+
+### Did not work
+
+No code or path restructuring was needed; this was documentation drift, not an implementation gap.
+
+### Left open
+
+Choose the next red placeholder only after reading its own docstring and checking it against ADR-0002
+and the Week 2 domain-lead block.
+
 ## 2026-09-04 — session 22 · Week 5 colorbar axis count correction
 
 ### Attempted
