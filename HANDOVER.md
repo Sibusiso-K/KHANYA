@@ -19,6 +19,48 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-04 — Sibusiso (36)
+
+**Did:** Restyled the dashboard to the REEFPRINT :: KHANYA Mintek design
+(`922ae88`) and hit the same class of bug entry 23 already documented once.
+
+**Ported the Stitch export by hand, not dropped in.** The exported `.zip`
+loads Tailwind and four Google font families from CDNs - unusable given
+"must run offline". Real Mintek palette (verified against mintek.co.za's
+own CSS variables) transcribed to CSS custom properties, zero network
+references, CI's guard still passes. Stripped fabricated institutional
+claims the mockup shipped with - "MINTEK SOUTH AFRICA" branding,
+"ISO/IEC 17025 ACCREDITED", a fabricated "Dr. K. Vance" operator, a signed
+audit trail - on Sibusiso's explicit instruction after I flagged them.
+Moved the amber-reservation rule into `advisor.verdict_state()`, pinned by
+`tests/test_verdict_state.py`: amber renders on exactly the two abstaining
+states, nothing else.
+
+**Regression, same shape as entry 23's font-caching bug: a server left
+running from before the edit threw `ImportError: cannot import name
+'verdict_state'` even though the function genuinely exists and imports
+fine from a fresh interpreter.** Streamlit's hot-reload does not reliably
+pick up changes to *imported* modules, only the main script file - a
+stale `sys.modules['src.advisor']` from the earlier session survived the
+page reload. Fix was the same as last time: kill and restart the server
+process, not just reload the page. **Operational note for the actual demo
+laptop:** after any `git pull` that touches `src/` or `dashboard/`, restart
+the Streamlit process before assuming the code is wrong if something looks
+unchanged - this is now the second time hot-reload alone has hidden a real
+edit.
+
+**Changed:** `dashboard/app.py` (full CSS/masthead/verdict restyle),
+`src/advisor.py` (`verdict_state()` + `ABSTAINING_PREFIXES`), new
+`tests/test_verdict_state.py`.
+**Blocked on:** nothing technical.
+**Next:** the file-upload flow itself is unverified end to end against the
+new styling - browser automation can't drive a real `<input type=file>`
+picker, so a human still needs to run one real image through the restyled
+dashboard before rehearsal. Everything else (52 tests, CSS, offline guard,
+no-fabricated-claims audit) is verified.
+
+---
+
 ## 2026-09-04 — Sibusiso (35)
 
 **Did:** Two verification passes on Codex's `reefprint` work, then ENDGAME §4
