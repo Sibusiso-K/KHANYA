@@ -22,6 +22,31 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 27 · heads scope decision
+
+### Attempted
+
+Review each remaining `tests/test_heads.py` docstring for an implementable contract, without
+manufacturing mineralogical numbers where the project has no data or validated mapping.
+
+### Worked
+
+- Confirmed the interval requirement is already structural in `reefprint.trust`: predictions carry
+  reportable quantities, and conformal coverage supplies the interval/audit layer.
+- Confirmed the three domain heads remain legitimately open: no specified Cr₂O₃-to-entrainment
+  model, SWIR-free talc/serpentine detector, or measured oxidation reference exists in this
+  repository. Their placeholders stay red with the reason visible in their docstrings.
+
+### Did not work
+
+Building any of those three outputs from guessed coefficients would violate Rule 1 and turn the
+Week 2 `texture_features` domain-lead block into an invented result.
+
+### Left open
+
+The remaining in-scope code backlog is now limited to data-independent utilities; acquisition and
+integration placeholders still require their own ADR-0002/kill-list scope checks.
+
 ## 2026-09-04 — session 26 · segmentation scope guards implemented
 
 ### Attempted

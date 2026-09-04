@@ -86,8 +86,8 @@ cluster-robust CR1 inference on texture uplift, grouped by locality, `MIN_LOCALI
 against synthetic data so far — see `tests/test_heads_falsification.py`'s placeholder test for
 what real data is still missing.
 
-**Not built:** `texture`, the rest of `heads` (entrainment risk, NFG load,
-oxidation index), `integrate`, and the
+**Not built:** `texture`, `heads`' three domain outputs (entrainment risk, NFG load, oxidation
+index), `integrate`, and the
 hardware-facing half of `acquire` (which, per ADR-0002, has no rig to drive). Each has failing tests naming exactly what
 is missing — **the red test list is the backlog**, deliberately.
 
