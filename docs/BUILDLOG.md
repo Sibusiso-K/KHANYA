@@ -22,6 +22,21 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 20 · suite-count documentation correction
+
+### Attempted
+
+Apply the paired host's verified pytest count to `CONTEXT.md` §4.
+
+### Worked
+
+- Updated the expected non-placeholder suite count from 286 to **288 passed, 21 deselected**.
+  The extra passing test is the live documentation-count guard itself; the paired host confirmed
+  this is the number that makes `test_context_quotes_the_real_passing_and_deselected_counts`
+  green.
+
+---
+
 ## 2026-09-04 — session 19 · Week 4 degraded-input quality gate
 
 ### Attempted

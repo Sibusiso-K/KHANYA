@@ -380,7 +380,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **286 passed, 21 deselected**. Anything less is a regression, not a quirk.
+Expect **288 passed, 21 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
