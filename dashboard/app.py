@@ -26,13 +26,43 @@ from src.segmentation.train_patches import checkpoint_for
 
 CKPT = checkpoint_for("ce")
 RESULT_FRAME_HEIGHT = 1500
+LANDING_FRAME_HEIGHT = 330
+
+# Streamlit remains the upload/model bridge, but it must not look like a
+# second dashboard wrapped around the actual Stitch interface. These rules
+# remove its chrome and make the one native control visually recede into the
+# same offline palette. All result layout still comes from the Jinja template.
+UPLOAD_BRIDGE_CSS = """
+<style>
+[data-testid="stAppViewContainer"], [data-testid="stMain"] {
+  background: #00131D;
+}
+[data-testid="stHeader"], footer, #MainMenu { display: none; }
+.block-container { max-width: 1760px; padding: 0.75rem 1rem 2rem; }
+[data-testid="stFileUploader"] {
+  max-width: 1720px; margin: 0.85rem auto 1.1rem;
+  color: #E3EAEB; font-family: "Segoe UI", sans-serif;
+}
+[data-testid="stFileUploader"] label p {
+  color: #8CA6AE; font-family: Consolas, monospace;
+  font-size: 0.76rem; font-weight: 700; letter-spacing: 0.12em;
+}
+[data-testid="stFileUploaderDropzone"] {
+  background: #071C27; border: 1px dashed #194D5C; border-radius: 0.5rem;
+}
+[data-testid="stFileUploaderDropzone"] span,
+[data-testid="stFileUploaderDropzone"] small { color: #8CA6AE; }
+[data-testid="stFileUploaderDropzone"] button {
+  background: #D22D20; border: 1px solid #D22D20; color: white;
+  border-radius: 0.25rem; font-weight: 700;
+}
+[data-testid="stSpinner"] { color: #FFB539; }
+iframe[title="st.iframe"] { background: #00131D; }
+</style>
+"""
 
 st.set_page_config(page_title="KHANYA — ore processability advisor", layout="wide")
-st.title("REEFPRINT :: KHANYA")
-st.caption(
-    "Prototype — upload a reflected-light micrograph to measure modal mineralogy, "
-    "liberation, and an advisory recommendation."
-)
+st.markdown(UPLOAD_BRIDGE_CSS, unsafe_allow_html=True)
 
 
 @st.cache_resource
@@ -58,12 +88,19 @@ if not CKPT.exists():
     st.error(f"No trained model at {CKPT}. Run: python -m src.segmentation.train_patches")
     st.stop()
 
+landing_slot = st.empty()
 uploaded = st.file_uploader(
     "REFLECTED-LIGHT MICROGRAPH OF A POLISHED SECTION",
     type=["jpg", "jpeg", "png", "tif", "tiff"],
 )
 
-if uploaded:
+if uploaded is None:
+    with landing_slot.container():
+        st.components.v1.html(
+            render.render_landing(), height=LANDING_FRAME_HEIGHT, scrolling=False
+        )
+else:
+    landing_slot.empty()
     image_bytes = uploaded.getvalue()
     with st.spinner(
         "Tiling and predicting at native resolution — about 2–3 minutes on a "

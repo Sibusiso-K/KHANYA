@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8">
+<style>{{ tailwind_css }}</style>
+<style>
+@font-face { font-family:'Plus Jakarta Sans'; src:url('data:font/ttf;base64,{{ font_sans_b64 }}') format('truetype'); font-weight:300 700; font-display:swap; }
+@font-face { font-family:'JetBrains Mono'; src:url('data:font/ttf;base64,{{ font_mono_regular_b64 }}') format('truetype'); font-weight:400; font-display:swap; }
+@font-face { font-family:'JetBrains Mono'; src:url('data:font/ttf;base64,{{ font_mono_bold_b64 }}') format('truetype'); font-weight:700; font-display:swap; }
+html, body { margin:0; background:#00131D; color:#E3EAEB; font-family:'Plus Jakarta Sans',sans-serif; overflow:hidden; }
+.landing-grid { background-image:linear-gradient(to right,rgba(30,62,75,.2) 1px,transparent 1px),linear-gradient(to bottom,rgba(30,62,75,.2) 1px,transparent 1px); background-size:40px 40px; }
+</style>
+</head>
+<body class="bg-background antialiased">
+<header class="w-full bg-[#00131D]/90 border-b border-outline/70">
+  <div class="h-14 px-6 md:px-8 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-2.5">
+      <div class="h-8 px-2 bg-primary flex items-center justify-center rounded-[3px] shadow-[0_0_15px_rgba(210,45,32,0.4)]">
+        <span class="font-mono text-[11px] font-black tracking-widest text-white">MINTEK-SCI</span>
+      </div>
+      <span class="font-sans text-[15px] font-bold tracking-[0.22em] text-on-surface uppercase">REEFPRINT :: KHANYA</span>
+      <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-surface-container border border-outline text-teal-accent font-semibold tracking-wider">prototype</span>
+    </div>
+    <span class="hidden md:flex font-mono text-[10px] tracking-widest text-teal-accent uppercase">{{ subset_label }} · offline</span>
+  </div>
+</header>
+<main class="landing-grid px-4 md:px-8 py-6">
+  <section class="max-w-[1720px] mx-auto rounded-lg bg-surface border border-outline shadow-elevation-2 p-5 md:p-6 animate-fade-up">
+    <div class="flex flex-col gap-3">
+      <span class="font-mono text-[10px] tracking-[0.25em] text-primary uppercase font-bold">Ore processability advisor</span>
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-on-surface">Awaiting a reflected-light micrograph</h1>
+      <p class="text-sm text-on-surface-variant max-w-2xl leading-relaxed">Choose a polished-section image below. KHANYA will run the validated native-resolution segmentation path, measure modal mineralogy and liberation, then show a recommendation or a visible refusal.</p>
+      <div class="flex flex-wrap gap-3 font-mono text-[10px] tracking-wider text-on-surface-variant uppercase">
+        <span class="px-2.5 py-0.5 rounded border border-outline bg-surface-container">No sliders</span>
+        <span class="px-2.5 py-0.5 rounded border border-outline bg-surface-container">No network required</span>
+        <span class="px-2.5 py-0.5 rounded border border-outline bg-surface-container">Measured values only</span>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

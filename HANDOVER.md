@@ -19,6 +19,33 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-04 — Codex (40) — Stitch now owns the whole visible dashboard
+
+**Did:** Corrected the integration boundary after Sibusiso pointed out that
+entry 38 still showed a generic Streamlit title/upload shell until inference
+finished. Added a real Stitch-rendered waiting state using the same compiled
+Tailwind bundle and vendored base64 fonts as the result dashboard. Removed the
+native Streamlit title/caption/header/footer and themed the one control that
+must remain native—the file uploader—as a narrow bridge to the Python model.
+
+After upload, the waiting state is removed and the existing full Stitch result
+renderer takes over. Streamlit still owns execution and caching; it no longer
+pretends to be the dashboard. No inference, modal-mineralogy, conformal, or
+advisor logic changed. Tests now pin both the pre-upload and post-upload Stitch
+paths and ensure the waiting state does not reintroduce the fabricated claims
+cut in entry 37.
+
+**Changed:** `dashboard/app.py`, `dashboard/render.py`, new
+`dashboard/templates/landing.html.jinja`, `tests/test_render.py`, `README.md`.
+**Blocked on:** visual and pytest verification still require the paired host
+with Python, Streamlit, the checkpoint, and LumenStone images. Source checks
+and the offline-network guard pass here.
+**Next:** restart Streamlit—not merely browser-refresh it—and confirm the first
+screen is the dark Stitch waiting card above the uploader, then upload
+`test_01.jpg` and confirm it is replaced by the full bento result dashboard.
+
+---
+
 ## 2026-09-04 — Codex (39) — Stitch is the dashboard boundary
 
 **Did:** Closed the integration ambiguity after Sibusiso asked for Stitch to

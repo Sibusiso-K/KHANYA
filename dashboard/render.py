@@ -55,6 +55,25 @@ _FONT_MONO_REGULAR_B64 = _read_b64("fonts/JetBrainsMono-Regular.ttf")
 _FONT_MONO_BOLD_B64 = _read_b64("fonts/JetBrainsMono-Bold.ttf")
 
 
+def _base_context():
+    """Assets shared by every Stitch-rendered dashboard state."""
+    return {
+        "tailwind_css": _TAILWIND_CSS,
+        "font_sans_b64": _FONT_SANS_B64,
+        "font_mono_regular_b64": _FONT_MONO_REGULAR_B64,
+        "font_mono_bold_b64": _FONT_MONO_BOLD_B64,
+    }
+
+
+def render_landing():
+    """Render the pre-upload dashboard state from the same Stitch assets."""
+    template = _env.get_template("landing.html.jinja")
+    return template.render(
+        **_base_context(),
+        subset_label=f"LumenStone {ls.SUBSET}",
+    )
+
+
 def _colourise_png_b64(labels):
     """Predicted-phase mask as a base64 PNG, embedded inline - no server-side
     static file needed for a per-request image, and no network fetch either."""
@@ -137,10 +156,7 @@ def render(image, labels, mean_confidence, result, recommendation):
 
     template = _env.get_template("khanya.html.jinja")
     return template.render(
-        tailwind_css=_TAILWIND_CSS,
-        font_sans_b64=_FONT_SANS_B64,
-        font_mono_regular_b64=_FONT_MONO_REGULAR_B64,
-        font_mono_bold_b64=_FONT_MONO_BOLD_B64,
+        **_base_context(),
         subset_label=f"LumenStone {ls.SUBSET}",
         sample_title="Uploaded polished section",
         sample_caption=(

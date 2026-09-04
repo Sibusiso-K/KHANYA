@@ -83,8 +83,8 @@ src/
                                 rotation series with our masks as labels
   chromite_pge_falsification.py  Cr#/Mg# vs PGE grade on real Bushveld assays, through
                                 reefprint.heads.falsification (week-2 gate)
-dashboard/                   offline Stitch HTML dashboard embedded by Streamlit — real
-                             segmentation, liberation, verdict; no runtime network assets
+dashboard/                   offline Stitch HTML dashboard before and after upload;
+                             Streamlit only bridges the file to the real pipeline
 scripts/                     run helpers (detached training launches)
 logs/                        run logs, gitignored
 reports/                     every number in the report, as JSON
