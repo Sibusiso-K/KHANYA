@@ -16,7 +16,13 @@ from reefprint.acquire.phantom import (
     crossed_polars_stage_series,
     synthetic_rotation_series,
 )
-from reefprint.acquire.series import RotationGeometry, RotationSeries, RotationSeriesSource
+from reefprint.acquire.series import (
+    RotationGeometry,
+    RotationSeries,
+    RotationSeriesSource,
+    require_calibration_provenance,
+    require_frozen_illumination,
+)
 from reefprint.acquire.store import read_rotation_series, write_rotation_series
 from reefprint.polarim.stokes import stokes_from_rotation_series
 
@@ -136,7 +142,6 @@ def test_the_phantom_records_a_frozen_illumination_schedule():
 # ----------------------------------------------------------------------------------------------
 
 
-@pytest.mark.placeholder
 def test_illumination_schedule_is_frozen_for_training_capture():
     """Gauntlet blind spot 6: adaptive illumination is a leakage channel.
 
@@ -144,10 +149,11 @@ def test_illumination_schedule_is_frozen_for_training_capture():
     capture flagged as training data must carry a frozen, recorded schedule — and something
     has to *refuse* the capture when it does not. That refusal does not exist yet.
     """
-    pytest.fail("NOT BUILT — acquire: frozen illumination schedule enforced on training capture")
+    with pytest.raises(ValueError, match="frozen"):
+        require_frozen_illumination({}, training=True)
+    require_frozen_illumination({"illumination_schedule": "frozen: 550 nm, 10 ms"})
 
 
-@pytest.mark.placeholder
 def test_acquisition_metadata_records_instrument_provenance():
     """Every capture carries instrument, reflectance standard, wavelength and exposure.
 
@@ -155,7 +161,16 @@ def test_acquisition_metadata_records_instrument_provenance():
     carries ``source``, ``units`` and free-form metadata; the required-field schema that makes
     an R% claim checkable belongs to reefprint.calibrate and is not written.
     """
-    pytest.fail("NOT BUILT — acquire: required acquisition-provenance schema")
+    metadata = {
+        "instrument": "synthetic camera",
+        "reflectance_standard": "white tile R=100%",
+        "wavelength_nm": 550,
+        "exposure": "10 ms",
+    }
+    require_calibration_provenance(metadata)
+    incomplete = {key: value for key, value in metadata.items() if key != "wavelength_nm"}
+    with pytest.raises(ValueError, match="wavelength_nm"):
+        require_calibration_provenance(incomplete)
 
 
 @pytest.mark.placeholder

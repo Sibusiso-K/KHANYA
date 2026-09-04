@@ -19,10 +19,37 @@ if TYPE_CHECKING:
 
     FloatArray = npt.NDArray[np.floating]
 
-__all__ = ["RotationGeometry", "RotationSeries", "RotationSeriesSource"]
+__all__ = [
+    "RotationGeometry",
+    "RotationSeries",
+    "RotationSeriesSource",
+    "require_calibration_provenance",
+    "require_frozen_illumination",
+]
 
 #: (angle, y, x). A 2-D array here is a single frame, which is not a series.
 _FRAME_NDIM = 3
+
+
+def require_frozen_illumination(metadata: dict[str, object], *, training: bool = True) -> None:
+    """Refuse training metadata that does not record a frozen illumination schedule."""
+    if training and "frozen" not in str(metadata.get("illumination_schedule", "")).lower():
+        raise ValueError(
+            "training capture must record a frozen illumination_schedule; adaptive illumination "
+            "is a label-leakage channel (gauntlet blind spot 6)"
+        )
+
+
+def require_calibration_provenance(metadata: dict[str, object]) -> None:
+    """Require fields needed before an R% claim can be reported."""
+    required = ("instrument", "reflectance_standard", "wavelength_nm", "exposure")
+    missing = [key for key in required if metadata.get(key) in (None, "")]
+    if missing:
+        raise ValueError(
+            "capture is missing calibration provenance: "
+            + ", ".join(missing)
+            + "; an R% claim without these fields is not traceable"
+        )
 
 
 class RotationGeometry(StrEnum):

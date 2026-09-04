@@ -22,6 +22,32 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 28 · acquisition provenance guards
+
+### Attempted
+
+Review the remaining acquisition placeholders against ADR-0002 and implement only the
+data-independent provenance contracts.
+
+### Worked
+
+- Added `require_frozen_illumination` to refuse training captures without an explicitly frozen
+  schedule, closing the blind-spot-6 guard.
+- Added `require_calibration_provenance` for instrument, standard, wavelength, and exposure fields,
+  so an R% claim cannot pass with incomplete acquisition state.
+- Replaced those two placeholders with real tests; the expected split is **298 passed,
+  11 deselected**.
+
+### Did not work
+
+The public real-ore Week-1 placeholder remains red: its docstring requires a licensed analyser-
+rotation dataset that is not present. No hardware driver or unlabeled archive was forced in.
+
+### Left open
+
+The paired host should verify the updated count. The real-data gate remains a domain/data
+availability decision, not a code gap.
+
 ## 2026-09-04 — session 27 · heads scope decision
 
 ### Attempted
