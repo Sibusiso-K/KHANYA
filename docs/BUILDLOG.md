@@ -22,6 +22,32 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 26 · segmentation scope guards implemented
+
+### Attempted
+
+Close the three `reefprint.segment` placeholders according to their docstrings without pulling
+optional ML weights into the base suite.
+
+### Worked
+
+- Bound segmentation's locality-split and trivial-baseline requirements to the existing tested
+  `reefprint.trust` guards.
+- Added the explicit `timm`/Apache-2.0 backbone declaration and refusal for the blocked DINOv3
+  alternative.
+- Replaced all three placeholders with assertions; the expected non-placeholder suite is now
+  **296 passed, 13 deselected**.
+
+### Did not work
+
+This host has no Python/uv runtime, so the segment tests were not run locally. The paired host must
+verify the updated count and the existing trust guard behaviour.
+
+### Left open
+
+No trainable segmentation model or weights were invented; that remains optional and outside the
+dependency-light gate.
+
 ## 2026-09-04 — session 23 · Week 6 backup-video generator
 
 ### Attempted

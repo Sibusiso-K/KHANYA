@@ -8,7 +8,7 @@ is the constitution — *what is true and what the rules are*. This file is the 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
 - **Last updated:** 2026-09-04
-- **Last commit at time of writing:** calibration boundary implemented on `reefprint`
+- **Last commit at time of writing:** segmentation scope guards and permitted backbone declaration implemented on `reefprint`
 - **Days to final:** 27 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 - **Abstract deadline: 30 August 2026 — submitted and complete.** Drafted and rendered:
   [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
@@ -86,7 +86,7 @@ cluster-robust CR1 inference on texture uplift, grouped by locality, `MIN_LOCALI
 against synthetic data so far — see `tests/test_heads_falsification.py`'s placeholder test for
 what real data is still missing.
 
-**Not built:** `segment`, `texture`, the rest of `heads` (entrainment risk, NFG load,
+**Not built:** `texture`, the rest of `heads` (entrainment risk, NFG load,
 oxidation index), `integrate`, and the
 hardware-facing half of `acquire` (which, per ADR-0002, has no rig to drive). Each has failing tests naming exactly what
 is missing — **the red test list is the backlog**, deliberately.
@@ -385,13 +385,13 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **293 passed, 16 deselected**. Anything less is a regression, not a quirk.
+Expect **296 passed, 13 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **16 failed**. These are the backlog, not breakage. Each failure names the module and the
+Expect **13 failed**. These are the backlog, not breakage. Each failure names the module and the
 gate or rule it belongs to. CI runs them in a separate non-blocking job.
 
 ```bash

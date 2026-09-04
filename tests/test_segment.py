@@ -1,10 +1,20 @@
-"""Placeholder — reefprint.segment."""
+"""Segmentation's scope guards: locality splits, baselines, and licence choice."""
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import pytest
 
-pytestmark = pytest.mark.placeholder
+from reefprint.segment.backbone import require_permissive_backbone
+from reefprint.trust.baseline import ScoredMetric, TrivialBaselines
+from reefprint.trust.split import require_locality_disjoint, split_by_locality
+
+
+@dataclass(frozen=True)
+class Unit:
+    section_id: str
+    locality: str
 
 
 def test_splits_are_grouped_by_locality():
@@ -13,7 +23,11 @@ def test_splits_are_grouped_by_locality():
     This test must assert that no locality appears on both sides of a split — silently, this
     is the failure that invalidates every metric downstream while every metric still looks fine.
     """
-    pytest.fail("NOT BUILT — segment: locality-grouped splitting")
+    train = (Unit("a", "North"), Unit("b", "South"))
+    test = (Unit("c", "East"),)
+    require_locality_disjoint(train, test)
+    split = split_by_locality((*train, *test), held_out=("East",))
+    assert {unit.locality for unit in split.test} == {"East"}
 
 
 def test_trivial_baselines_are_reported_alongside_the_model():
@@ -21,9 +35,19 @@ def test_trivial_baselines_are_reported_alongside_the_model():
 
     The metadata-only baseline doubles as the leakage detector for blind spot 6.
     """
-    pytest.fail("NOT BUILT — segment: trivial baselines")
+    metric = ScoredMetric(
+        name="balanced accuracy",
+        value=0.81,
+        n=3,
+        baselines=TrivialBaselines(majority_class=0.5, metadata_only=0.6),
+    )
+    summary = metric.summary()
+    assert "majority class" in summary
+    assert "metadata-only" in summary
 
 
 def test_backbone_licence_is_permissive():
     """Gauntlet S3. timm (Apache-2.0), not DINOv3. Architecture and weights checked separately."""
-    pytest.fail("NOT BUILT — segment: backbone selection")
+    require_permissive_backbone()
+    with pytest.raises(ValueError, match="Apache-2.0"):
+        require_permissive_backbone("DINOv3", "non-transferable")
