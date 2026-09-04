@@ -9,7 +9,9 @@ marginal coverage, not free conditional coverage for an arbitrary locality.
 
 The ``n`` used for the coverage band is the number of independent calibration units.  Callers
 must pass one calibration unit per locality (or another explicitly exchangeable unit); counting
-pixels or patches would violate the project's locality-split rule.
+pixels or patches would violate the project's locality-split rule.  Held-out proportions are
+checked against the corresponding Beta-Binomial predictive interval, so their finite sample noise
+is not mistaken for a calibration failure.
 """
 
 from __future__ import annotations
@@ -19,7 +21,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Iterable
 
-from scipy.stats import beta
+from scipy.stats import beta, betabinom
 
 from reefprint.trust.split import Grouped, require_locality_disjoint
 
@@ -44,6 +46,7 @@ class CoverageBand:
     expected: float
     standard_deviation: float
     rank: int
+    misses: int
 
     @property
     def nominal_coverage(self) -> float:
@@ -51,10 +54,48 @@ class CoverageBand:
         return 1.0 - self.alpha
 
     def contains(self, coverage: float) -> bool:
-        """Return whether an observed coverage proportion lies in the configured band."""
+        """Return whether a coverage probability lies in the Beta band.
+
+        This is the calibration-set uncertainty only. Held-out empirical proportions should use
+        :meth:`contains_observation`, which also accounts for their finite sample size.
+        """
         if not 0.0 <= coverage <= 1.0 or not math.isfinite(coverage):
             raise ValueError("coverage must be a finite proportion in [0, 1]")
         return self.lower <= coverage <= self.upper
+
+    def predictive_count_bounds(self, n_observations: int) -> tuple[int, int]:
+        """Return the central predictive bounds for covered observations.
+
+        Conditional on the calibration-set coverage probability, held-out coverage is binomial.
+        Mixing that binomial with the exact Beta law gives a Beta-Binomial predictive distribution,
+        so a small held-out locality is not judged against a noiseless probability interval.
+        """
+        if (
+            not isinstance(n_observations, int)
+            or isinstance(n_observations, bool)
+            or n_observations < 1
+        ):
+            raise ValueError("n_observations must be a positive integer")
+        tail = (1.0 - self.confidence) / 2.0
+        lower = int(math.ceil(float(betabinom.ppf(tail, n_observations, self.rank, self.misses))))
+        upper = int(
+            math.floor(
+                float(betabinom.ppf(1.0 - tail, n_observations, self.rank, self.misses))
+            )
+        )
+        return max(0, lower), min(n_observations, upper)
+
+    def contains_observation(self, n_covered: int, n_observations: int) -> bool:
+        """Return whether an empirical held-out count is in the predictive interval."""
+        if (
+            not isinstance(n_covered, int)
+            or isinstance(n_covered, bool)
+            or n_covered < 0
+            or n_covered > n_observations
+        ):
+            raise ValueError("n_covered must be an integer between zero and n_observations")
+        lower, upper = self.predictive_count_bounds(n_observations)
+        return lower <= n_covered <= upper
 
 
 def coverage_band(
@@ -103,6 +144,7 @@ def coverage_band(
         expected=expected,
         standard_deviation=standard_deviation,
         rank=rank,
+        misses=misses,
     )
 
 
@@ -121,7 +163,12 @@ class LocalityCoverage:
 
     @property
     def within_band(self) -> bool:
-        return self.band.contains(self.coverage)
+        return self.band.contains_observation(self.n_covered, self.n_observations)
+
+    @property
+    def predictive_bounds(self) -> tuple[int, int]:
+        """Central predictive bounds for this locality's held-out count."""
+        return self.band.predictive_count_bounds(self.n_observations)
 
 
 @dataclass(frozen=True, slots=True)
@@ -139,7 +186,9 @@ class CoverageReport:
     def summary(self) -> str:
         """Render an auditable line naming every locality and the honest calibration n."""
         values = ", ".join(
-            f"{item.locality}={item.coverage:.3f} ({'inside' if item.within_band else 'outside'})"
+            f"{item.locality}={item.coverage:.3f} ({item.n_covered}/{item.n_observations}, "
+            f"predictive {item.predictive_bounds[0]}–{item.predictive_bounds[1]}, "
+            f"{'inside' if item.within_band else 'outside'})"
             for item in self.localities
         )
         return (

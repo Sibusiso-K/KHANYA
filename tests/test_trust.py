@@ -69,6 +69,16 @@ def test_reported_coverage_interval_matches_honest_n():
     assert at_20.standard_deviation > at_100.standard_deviation
 
 
+def test_held_out_sample_noise_is_combined_with_calibration_uncertainty():
+    band = coverage_band(20)
+
+    lower, upper = band.predictive_count_bounds(20)
+
+    assert lower < 20 <= upper
+    assert band.contains_observation(20, 20)
+    assert not band.contains_observation(0, 20)
+
+
 def test_pixels_do_not_inflate_the_honest_calibration_n():
     calibration = calibration_units(points_per_locality=20)
     held_out = units("test", "locality_test", 10)

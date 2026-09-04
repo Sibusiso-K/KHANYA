@@ -22,6 +22,33 @@ it is a press release.
 
 ---
 
+## 2026-09-04 — session 18 · Week 3 predictive-band correction
+
+### Attempted
+
+Resolve the Week 3 failure reported by the paired `main` session: a perfect 20/20 held-out
+locality was outside the calibration-only Beta interval.
+
+### Worked
+
+- `CoverageBand` now retains the Beta shapes and derives a central Beta-Binomial predictive
+  interval for each held-out locality. This combines calibration-set uncertainty with the
+  held-out count's binomial noise; 20/20 is therefore not rejected merely because its observed
+  proportion is at the edge of the calibration probability band.
+- `LocalityCoverage.within_band` uses the predictive count interval, while the reported Beta
+  probability band remains visible and the summary names covered/total counts plus predictive
+  bounds.
+- Added a regression test proving the 20/20 case is admissible and 0/20 is rejected. The paired
+  session's reported failure is therefore addressed as a statistical design correction, not a
+  weakened fixture.
+
+### Left open
+
+- The paired host should rerun the full suite and report the exact result. Week 4 remains the next
+  queue item after that confirmation.
+
+---
+
 ## 2026-09-03 — session 17 · Week 3 locality-held-out conformal coverage
 
 ### Attempted

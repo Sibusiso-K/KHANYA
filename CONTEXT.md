@@ -8,7 +8,7 @@ is the constitution — *what is true and what the rules are*. This file is the 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
 - **Last updated:** 2026-09-03
-- **Last commit at time of writing:** Week 3 locality-held-out conformal coverage audit implemented on `reefprint`
+- **Last commit at time of writing:** Week 3 locality-held-out conformal audit corrected with a Beta-Binomial predictive band on `reefprint`
 - **Days to final:** 28 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 - ⏳ **Nearest deadline: the abstract, 30 August 2026 — 7 days out.** One page. Drafted and
   rendered: [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
@@ -94,8 +94,9 @@ is missing — **the red test list is the backlog**, deliberately.
 ### The single next action
 
 **Week 3 implementation is complete on `reefprint`.** `reefprint.trust.conformal` computes the
-exact split-conformal Beta coverage band and audits every held-out locality separately, with
-locality-disjoint calibration/test guards. The remaining Week 3 action is to run this audit
+exact split-conformal Beta coverage band, combines held-out count noise with a Beta-Binomial
+predictive interval, and audits every held-out locality separately, with locality-disjoint
+calibration/test guards. The remaining Week 3 action is to run this audit
 against the 12-section Kaggle prediction output supplied by `main`. Week 1's real-codebook /
 extinction rerun belongs to `main` per the Sept 3 handoff and is not repeated on this branch.
 
