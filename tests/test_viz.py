@@ -9,6 +9,7 @@ survive a projector and ten minutes.
 from __future__ import annotations
 
 import dataclasses
+import socket
 
 import numpy as np
 import pytest
@@ -17,7 +18,16 @@ import reefprint.viz.anisotropy as anisotropy_module
 from reefprint.acquire.phantom import synthetic_rotation_series
 from reefprint.acquire.series import RotationGeometry
 from reefprint.polarim.stokes import stokes_from_rotation_series
+from reefprint.quantity import assumed, stipulated
+from reefprint.trust.abstain import (
+    Abstention,
+    AbstentionTrigger,
+    Conservatism,
+    ConservativeDefault,
+)
 from reefprint.viz.anisotropy import DISPLAY_ANISOTROPY_CEILING, anisotropy_figure
+from reefprint.viz.demo import offline_demo
+from reefprint.viz.decision import decision_figure
 
 REFLECTANCE_PANEL, ANISOTROPY_PANEL, TRACE_PANEL = 0, 1, 2
 
@@ -205,22 +215,43 @@ def test_an_unmapped_geometry_names_the_gap_rather_than_raising(monkeypatch):
     )
 
 
-# ----------------------------------------------------------------------------------------------
-# Not built. Red on purpose.
-# ----------------------------------------------------------------------------------------------
-
-
-@pytest.mark.placeholder
-def test_demo_runs_fully_offline():
+def test_demo_runs_fully_offline(monkeypatch):
     """**Week-5 gate.** No network dependency on stage. One laptop."""
-    pytest.fail("NOT BUILT — viz: offline end-to-end demo, week-5 gate")
+    def network_is_forbidden(*_args, **_kwargs):
+        raise AssertionError("the offline demo attempted to open a network socket")
+
+    monkeypatch.setattr(socket, "socket", network_is_forbidden)
+    demo = offline_demo()
+
+    assert len(demo.gate.axes) == 3
+    assert demo.gate.axes[ANISOTROPY_PANEL].images
+    assert "SYSTEM REFUSED TO ANSWER" in "\n".join(
+        text.get_text() for text in demo.refusal.texts
+    )
 
 
-@pytest.mark.placeholder
 def test_refusals_are_visible_in_the_ui():
     """Rule 5 is a UI requirement as much as a modelling one.
 
     A refusal that renders as a blank panel is a silent failure with extra steps. The
     conservative default and its stated reason both have to be on screen.
     """
-    pytest.fail("NOT BUILT — viz: refusal display")
+    default = ConservativeDefault(
+        applies_to="fine-chromite entrainment risk",
+        quantity=assumed(0.90, "", "test conservative default; synthetic UI fixture"),
+        direction=Conservatism.ASSUME_HIGH,
+        low=stipulated(0.0, "", "risk index range"),
+        high=stipulated(1.0, "", "risk index range"),
+    )
+    figure = decision_figure(
+        Abstention(
+            default=default,
+            reason="the input is outside every calibrated locality",
+            trigger=AbstentionTrigger.OUT_OF_DISTRIBUTION,
+        )
+    )
+    rendered = "\n".join(text.get_text() for text in figure.texts)
+
+    assert "SYSTEM REFUSED TO ANSWER" in rendered
+    assert "the input is outside every calibrated locality" in rendered
+    assert "Conservative default emitted: 0.9" in rendered
