@@ -20,7 +20,7 @@ def test_dashboard_app_embeds_the_stitch_renderer():
     ).read_text(encoding="utf-8")
 
     assert "html = render.render(" in app_source
-    assert "render.render_landing()" in app_source
+    assert "render.render_landing(" in app_source
     assert "st.components.v1.html(" in app_source
     assert "KHANYA_CSS" not in app_source
 
@@ -56,6 +56,42 @@ def test_pre_upload_state_is_stitch_rendered_without_fabricated_claims():
 def test_missing_static_asset_names_the_repair_step():
     with pytest.raises(FileNotFoundError, match="compile step"):
         render._read_text("not-a-real-static-asset.css")
+
+
+def test_startup_refusal_is_visible_and_escapes_untrusted_text():
+    html = render.render_landing("Missing model <script>alert(1)</script>")
+    assert "Analysis unavailable" in html
+    assert "No recommendation has been issued" in html
+    assert "&lt;script&gt;" in html
+    assert "<script>" not in html
+
+
+@pytest.mark.parametrize("liberation, expected", [
+    (0.95, "within specification"),
+    (0.5, "marginal, verify before acting"),
+    (None, "measurement declined"),
+])
+def test_full_result_renders_the_actual_advisor_state(liberation, expected):
+    import re
+    import numpy as np
+    from PIL import Image
+    from src.advisor import advise
+    from src.modal import ModalResult
+
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0},
+                         0.8, liberation, 1, 64)
+    recommendation = advise(result, 0.95)
+    html = render.render(Image.new("RGB", (8, 8)),
+                         np.ones((8, 8), dtype=np.int32), 0.95,
+                         result, recommendation)
+    assert expected in html
+    assert recommendation.action in html
+    assert html.count('src="data:image/png;base64,') == 2
+    # Check actual runtime asset references, including the Jinja/CSS layer.
+    assert not re.search(r'(?:src|href)=[\"\'](?:https?:)?//', html)
+    assert not re.search(r'url\([\"\']?(?:https?:)?//', html)
+    if liberation is None:
+        assert "MEASUREMENT DECLINED" in html
 
 
 @pytest.mark.parametrize(

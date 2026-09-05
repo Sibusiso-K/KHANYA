@@ -5,17 +5,16 @@ Streamlit-native; the result is the offline, inlined Stitch port rendered by
 ``dashboard.render`` inside a component iframe. Do not replace that renderer
 with linked assets: a venue laptop may have no network access.
 """
-import io
 import os
 import sys
 from pathlib import Path
 
 import streamlit as st
-from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from dashboard import render
+from dashboard.inputs import load_image, unavailable_reason
 from src.segmentation import config
 
 
@@ -62,7 +61,7 @@ st.markdown(UPLOAD_BRIDGE_CSS, unsafe_allow_html=True)
 
 
 @st.cache_resource
-def load_model():
+def load_model(checkpoint_key):
     import torch
 
     from src.segmentation import lumenstone as ls
@@ -76,14 +75,14 @@ def load_model():
 
 
 @st.cache_data(show_spinner=False)
-def predict(image_bytes):
+def predict(image_bytes, checkpoint_key):
     """Run the validated native-resolution path, caching only identical bytes."""
     import torch
 
     from src.segmentation import patches as patch_module
 
-    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    model, dev = load_model()
+    image = load_image(image_bytes)
+    model, dev = load_model(checkpoint_key)
     with torch.no_grad():
         labels, mean_confidence = patch_module.sliding_window_predict(model, image, dev)
     return image, labels, mean_confidence
@@ -95,32 +94,40 @@ uploaded = st.file_uploader(
     type=["jpg", "jpeg", "png", "tif", "tiff"],
 )
 
-if uploaded is None:
+def show_landing(reason=None):
     with landing_slot.container():
         st.components.v1.html(
-            render.render_landing(), height=LANDING_FRAME_HEIGHT, scrolling=False
+            render.render_landing(reason), height=LANDING_FRAME_HEIGHT, scrolling=True
         )
+
+
+reason = unavailable_reason(SUBSET, CKPT)
+if uploaded is None:
+    show_landing(reason)
 else:
-    landing_slot.empty()
-    if not CKPT.exists():
-        st.error(
-            f"No trained model at {CKPT}. Copy the validated checkpoint to that "
-            "path before analysing an image."
-        )
+    if reason:
+        show_landing(reason)
         st.stop()
+    try:
+        image_bytes = uploaded.getvalue()
+        load_image(image_bytes)  # Decode before starting expensive model work.
+        from src import modal
+        from src.advisor import advise
+        from src.segmentation import lumenstone as ls
 
-    from src import modal
-    from src.advisor import advise
-    from src.segmentation import lumenstone as ls
-
-    image_bytes = uploaded.getvalue()
-    with st.spinner(
-        "Tiling and predicting at native resolution — about 2–3 minutes on a "
-        "CPU-only laptop the first time; identical uploads are cached."
-    ):
-        image, labels, mean_confidence = predict(image_bytes)
-
-    result = modal.analyse(labels, ls.CLASS_NAMES, refine=True)
-    recommendation = advise(result, mean_confidence)
-    html = render.render(image, labels, mean_confidence, result, recommendation)
-    st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
+        # Changing a checkpoint must invalidate both model and prediction caches.
+        stat = CKPT.stat()
+        checkpoint_key = (str(CKPT), stat.st_mtime_ns, stat.st_size)
+        with st.spinner(
+            "Tiling and predicting at native resolution — about 2–3 minutes on a "
+            "CPU-only laptop the first time; identical uploads are cached."
+        ):
+            image, labels, mean_confidence = predict(image_bytes, checkpoint_key)
+        result = modal.analyse(labels, ls.CLASS_NAMES, refine=True)
+        recommendation = advise(result, mean_confidence)
+        html = render.render(image, labels, mean_confidence, result, recommendation)
+    except (ImportError, OSError, RuntimeError, ValueError) as exc:
+        show_landing(f"Analysis could not complete: {exc}")
+    else:
+        landing_slot.empty()
+        st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)

@@ -33,7 +33,7 @@ import json
 
 import numpy as np
 
-from . import polarimetry as _polarimetry  # noqa: F401  (side effect: REEFPRINT src on sys.path)
+from .polarimetry import ensure_reefprint
 from .segmentation import config
 
 CSV_PATH = (config.ROOT / "data" / "raw" / "bushveld_thaba_chromitite"
@@ -111,6 +111,7 @@ def build_arrays(rows):
 
 
 def main():
+    ensure_reefprint()
     from reefprint.heads.falsification import MIN_LOCALITIES_FOR_INFERENCE, evaluate_texture_uplift
 
     rows = load_rows()

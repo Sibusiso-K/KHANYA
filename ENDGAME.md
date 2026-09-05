@@ -1,5 +1,13 @@
 # ENDGAME — the plan to win Mintek-SCi Grad Hackathon 2026
 
+**2026-09-05 implementation update:** the original workstream descriptions below
+are retained as the plan, not a live count of missing code. Tests and branch-local
+CI now exist on both branches; Weeks 1–6 are built or closed with stated reasons.
+See [the audit](reports/PROJECT-AUDIT-2026-09-05.md) for current checks and limits.
+In particular, the complete real-image rehearsal is not verified on this host:
+the validated checkpoint and raw input images are absent. No domain-data block
+has been overridden, and the commit histories remain separate.
+
 **Status:** active build plan. Supersedes `PITCH.md` §7 ("what to do with the
 remaining time") and extends `JOINT-PLAN.md` §4 phases 2–3.
 **Owners:** Sibusiso (KHANYA / `main`) + Lethabo (REEFPRINT / `reefprint`),

@@ -18,7 +18,7 @@ Full explanation: [`STATUS.md`](STATUS.md).
 
 **Status:** abstract submitted. In the build phase to the **1 Oct** hard
 submission cutoff (13:00) and 10-minute pitch; conference 2 Oct. Team: Sibusiso
-Khumalo, Lethabo Mphukuile. Current plan of record:
+Khumalo, Lethabo Hoaeane, Ipeleng Modise (Team Sonar). Current plan of record:
 [`ENDGAME.md`](ENDGAME.md).
 
 ## Start here
@@ -41,7 +41,9 @@ compared on 12 held-out sections. The better one scored +2.8 points of mean IoU
 — and produced **zero improvement** in plant recommendations. Repairing particle
 topology, with no retraining, cut recommendation errors by two thirds and drove
 unsafe errors (confidently telling the plant to continue while payload is
-locked) to zero on both models. *Per-class IoU is a poor proxy for whether a
+locked) to zero on both models when combined with the empirical uncertainty
+band. These are retrospective results on 12 sections, not a deployment safety
+guarantee. *Per-class IoU is a poor proxy for whether a
 system is safe to act on.* Report §5.0.5–5.0.9.
 
 **2. Chromite composition carries PGE signal beyond Cr₂O₃.** On 1,112 real
@@ -109,16 +111,17 @@ git worktree add --detach ~/Desktop/REEFPRINT origin/reefprint
 
 ## Setup
 
-```bash
-python -m venv .venv && .venv/Scripts/activate
-pip install -r requirements.txt
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt pytest
 ```
 
 Datasets are gitignored (`data/raw/`) — see `DATA-SOURCES.md` for download
 links and licences. Place LumenStone under `data/raw/lumenstone/{S1,S2,S3}_v*/`.
 
 ```bash
-pytest tests/ -q                                     # 46 tests, no data needed
+python -m pytest tests/ -q                           # no dataset needed
 python -m src.segmentation.train_patches            # train
 python -m src.segmentation.train_patches --eval      # held-out test metrics
 python -m src.decision_gap --model patches --refine  # decision-layer accuracy

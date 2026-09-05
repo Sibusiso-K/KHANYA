@@ -6,8 +6,8 @@
 Reads liberation pairs straight from a decision_gap result, so this costs
 milliseconds - no inference, no retraining.
 
-WHY THIS REPLACES THE FIXED BAND. The advisor currently hedges when liberation
-falls within LIBERATION_MARGIN = 0.089 of the threshold, and 0.089 is the mean
+WHY THIS REPLACED THE ORIGINAL BAND. The advisor originally hedged when liberation
+fell within LIBERATION_MARGIN = 0.089 of the threshold, and 0.089 was the mean
 absolute error measured on S2. Two problems with that. It is a point estimate
 dressed as a guarantee - nothing says a +/-MAE band covers any particular
 fraction of cases. And it does not transfer: S1's liberation MAE is 20.3%, so on
@@ -23,10 +23,12 @@ ore body is one pass over its calibration residuals.
 SMALL-SAMPLE HONESTY. Split conformal at level 1-alpha needs
 ceil((n+1)(1-alpha)) <= n, so n=6 calibration sections cannot support 90%
 coverage at all - the highest achievable level is 1 - 1/(n+1) = 85.7%. With 12
-sections it is 92.3%. We therefore use leave-one-out (jackknife+) over the test
-sections, which uses every section for both calibration and evaluation, and we
-report EMPIRICAL coverage rather than claiming the nominal figure. State the
-achievable ceiling rather than quoting a level the data cannot support.
+sections it is 92.3%. Here we evaluate a fixed model's residuals leave-one-out
+over the test sections, using every section for both calibration and evaluation
+in different folds. This is not jackknife+: no predictive models are refitted.
+Each fold has n-1 calibration residuals, so its ceiling is 1 - 1/n. We report
+EMPIRICAL fold coverage; averaging their half-widths does not give a new
+split-conformal guarantee for a fixed deployment band.
 """
 import argparse
 import json
@@ -43,6 +45,10 @@ def quantile_halfwidth(residuals, alpha):
     rather than silently falling back to the largest residual and implying a
     guarantee that does not hold.
     """
+    if not math.isfinite(alpha) or not 0.0 < alpha < 1.0:
+        raise ValueError("alpha must be finite and strictly between zero and one")
+    if any(not math.isfinite(value) or value < 0 for value in residuals):
+        raise ValueError("residuals must be finite and non-negative")
     n = len(residuals)
     k = math.ceil((n + 1) * (1 - alpha))
     if k > n:
@@ -78,24 +84,26 @@ def main():
                         default=[0.20, 0.15, 0.10])
     args = parser.parse_args()
 
-    data = json.load(open(config.REPORT_DIR / args.run))
+    with open(config.REPORT_DIR / args.run) as source:
+        data = json.load(source)
     rows = [r for r in data["rows"]
             if r["liberation_truth"] is not None
             and r["liberation_predicted"] is not None]
     n = len(rows)
+    if n < 2:
+        parser.error("leave-one-out calibration needs at least two measured section pairs")
     residuals = [abs(r["liberation_truth"] - r["liberation_predicted"])
                  for r in rows]
 
     print(f"\n{args.run}  |  {n} sections  |  "
           f"MAE {sum(residuals)/n:.3f}  max residual {max(residuals):.3f}")
-    ceiling = 1 - 1 / (n + 1)
-    print(f"highest coverage level supportable with n={n}: {ceiling:.1%}")
+    ceiling = 1 - 1 / n
+    print(f"highest finite level per leave-one-out fold (n_cal={n-1}): {ceiling:.1%}")
     fixed_cov = sum(1 for x in residuals
                     if x <= advisor.LIBERATION_MARGIN) / n
     print(f"the advisor's fixed band is +/-{advisor.LIBERATION_MARGIN:.3f}, "
           f"which on this run actually covers {fixed_cov:.0%}")
-    print("(a reader seeing 'uncertainty band' assumes ~90%; it does "
-          "not deliver that)")
+    print("This retrospective coverage is not a guarantee for new uploads.")
     print()
 
     print(f"{'level':>8s}{'half-width':>12s}{'vs fixed':>10s}"

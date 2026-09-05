@@ -1,12 +1,19 @@
 # KHANYA / REEFPRINT — where the project actually stands
 
-**As of 2026-08-19.** Single source of truth for what exists, what does not, and
-what to do next. `HANDOVER.md` is the running log; this file is the snapshot.
+**Current audit: 2026-09-05.** See [the audit report](reports/PROJECT-AUDIT-2026-09-05.md)
+and `HANDOVER.md` entry 42 for current verification. Main has 87 passing tests;
+the real Stitch dashboard runs offline and visibly refuses without its validated
+checkpoint. Real-image inference and the complete talk sequence still need that
+checkpoint and original micrographs on this host. The fixed S2 reference band is
+not a coverage guarantee for future uploads.
+
+**Historical research snapshot below: 2026-08-19.** The detailed findings remain
+useful, but its next-step and implementation-status prose is not a current backlog.
 
 | | |
 |---|---|
 | Competition | Mintek SCi Grad Hackathon 2026, Problem 3 — **selected** (letter 14 Aug) |
-| Abstract due | **30 Aug 2026** — 14 days out |
+| Abstract | Submitted; 30 Aug 2026 deadline closed |
 | Final hacking day | **1 Oct 2026**, on site at Mintek, 13:00 hard submission cutoff, 10-min pitch |
 | Conference | 2 Oct 2026, compulsory; five finalists announced, then originality authentication |
 

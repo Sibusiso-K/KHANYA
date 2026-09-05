@@ -88,6 +88,11 @@ def _resolve_reefprint_src():
     """
     override = os.environ.get("REEFPRINT_SRC")
     candidates = (Path(override),) if override else REEFPRINT_SRC_CANDIDATES
+    if not override:
+        from importlib.util import find_spec
+        spec = find_spec("reefprint")
+        if spec is not None and spec.origin:
+            candidates = (Path(spec.origin).parent.parent, *candidates)
     found = [c for c in candidates if (c / STOKES_MODULE).exists()]
     if not found:
         raise RuntimeError(
@@ -110,9 +115,16 @@ def _resolve_reefprint_src():
     )
 
 
-REEFPRINT_SRC = _resolve_reefprint_src()
-if str(REEFPRINT_SRC) not in sys.path:
-    sys.path.insert(0, str(REEFPRINT_SRC))
+def ensure_reefprint():
+    """Resolve the physics package only when executing the cross-branch seam.
+
+    Archive parsing and chemistry arithmetic must remain importable in a clean
+    main checkout, including CI, without another branch on the user's Desktop.
+    """
+    source = _resolve_reefprint_src()
+    if str(source) not in sys.path:
+        sys.path.insert(0, str(source))
+    return source
 
 
 class GeometryMismatch(RuntimeError):
@@ -270,6 +282,7 @@ def demonstrate_n2(sigma=0.25, n_angles=36, n_per_group=4000, alpha=0.10, seed=0
         base = true_s0 * (1.0 + modulation * np.cos(2 * angles)[:, None])
         return base + rng.normal(0.0, sigma, size=(n_angles, n))
 
+    ensure_reefprint()
     from reefprint.polarim.stokes import stokes_from_rotation_series
 
     # Three populations: bright isotropic, DARK isotropic (the trap), and a
@@ -452,6 +465,7 @@ def sample_section(archive, names, split, stem, rng):
     # property of the acquisition rig: if one section is the other geometry,
     # all 47 are, and continuing on the rest would silently pool a mismatched
     # estimator into the result.
+    ensure_reefprint()
     from reefprint.polarim.geometry import HarmonicVerdict, harmonic_signature
 
     signature = harmonic_signature(intensities, angles_rad)

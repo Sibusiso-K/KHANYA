@@ -6,7 +6,7 @@ Every value fed to templates/khanya.html.jinja is measured, not asserted - see
 that file's own header comment for what was cut from the Stitch mockup and
 why. Jinja2 is already a Streamlit dependency, not a new one (SBOM.md
 unaffected). static/tailwind.css and static/fonts/ are build-time artefacts,
-committed as static assets - see dashboard/README-BUILD.md to regenerate them,
+committed as static assets - see dashboard/build/README.md to regenerate them,
 never regenerated at demo time.
 """
 import base64
@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from PIL import Image
 
 from src import advisor as advisor_module
@@ -24,7 +24,8 @@ from src.advisor import verdict_state
 
 TEMPLATE_DIR = Path(__file__).resolve().parent / "templates"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
-_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
+_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True,
+                   undefined=StrictUndefined)
 
 
 def _read_text(relative):
@@ -65,12 +66,13 @@ def _base_context():
     }
 
 
-def render_landing():
+def render_landing(reason=None):
     """Render the pre-upload dashboard state from the same Stitch assets."""
     template = _env.get_template("landing.html.jinja")
     return template.render(
         **_base_context(),
         subset_label=f"LumenStone {os.environ.get('KHANYA_SUBSET', 'S2').upper()}",
+        refusal_reason=reason,
     )
 
 

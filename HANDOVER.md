@@ -19,6 +19,33 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-05 — Codex (42) — cross-project reliability audit, main changes only
+
+**Did:** Hardened invalid measurements and labels, preserved unknown liberation
+when no payload survives particle filtering, disabled implicit pretrained-backbone
+downloads, validated conformal inputs, and deferred REEFPRINT discovery until
+physics is used (pure main helpers now import without a Desktop checkout).
+The real Stitch renderer now escapes untrusted text, visibly refuses missing
+checkpoints/unsupported subsets, validates uploaded images, and invalidates model
+caches when checkpoint metadata changes. Reagent intervention is not shown green.
+Corrected the fixed S2 band's description: retrospective reference, no guarantee
+on new uploads. Updated stale status pointers and team spelling.
+
+**Verified:** 87 tests passed on this host with CPU PyTorch; critical Python lint
+and diff whitespace checks passed. Browser inspection confirmed the actual Stitch
+missing-checkpoint screen at localhost:8501. Three verdict render states are
+tested with synthetic inputs, not claimed as real-image inference. Full report:
+`reports/PROJECT-AUDIT-2026-09-05.md`.
+
+**Blocked on:** validated `best.pt` and original micrographs are absent. Restore
+those for entry 37's real-image checks; report montages are not suitable uploads.
+No files from the contaminated older reefprint checkout were committed or reset.
+REEFPRINT fixes live in their own branch history and build log.
+
+**Next:** run the validated checkpoint against original test_01/04/06/09 images,
+then rehearse the complete offline sequence. Do not infer scientific validation
+from the code-test pass count.
+
 ## 2026-09-04 — Codex (41) — Stitch dashboard boots without the model stack
 
 **Did:** Fixed the reason the local dashboard link was refusing to run on this

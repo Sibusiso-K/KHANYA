@@ -33,6 +33,7 @@ sourced numbers we do not have is a worse failure than admitting placeholders:
   a numeric fraction threshold.
 """
 from dataclasses import dataclass
+import math
 
 LOW_LIBERATION = 0.50        # SOURCED - see module docstring
 PAYLOAD_FLOOR = 0.003        # UNSOURCED placeholder
@@ -48,13 +49,13 @@ DELETERIOUS_CEILING = 0.05   # UNSOURCED placeholder
 # sections, not the ~90% the word "band" implies. See src/conformal.py and
 # report section 5.0.8 for the full derivation.
 #
-# Replaced with a split-conformal half-width: the empirical 85th-percentile
-# absolute residual under leave-one-out calibration on the 12 S2 test sections
-# (reports/conformal_decision_gap_patches_refined.json). 85% rather than 90%
-# because 1 - 1/(n+1) = 92.3% is the highest level n=12 can support at all, and
-# we report the achievable level rather than claim one the data cannot back.
-# This is therefore a genuine distribution-free coverage guarantee under
-# exchangeability, not a dressed-up point estimate.
+# Replaced with the rounded mean of leave-one-out conformal half-widths at
+# nominal 85% on the 12 S2 test sections. Each fold calibrates on the other 11
+# residuals; the recorded fold intervals cover 11/12 sections (91.7%; see
+# reports/conformal_decision_gap_patches_refined.json). This fixed mean width
+# is not itself a conformal order statistic. Its reuse on future uploads does
+# NOT inherit a split-conformal coverage guarantee from those fold intervals;
+# an independent, exchangeable calibration set is still required for that claim.
 #
 # The width nearly quadrupled (0.089 -> 0.335) versus the original constant.
 # That is the correction, not a regression: the old band was overconfident,
@@ -94,6 +95,28 @@ def advise(result, mean_confidence: float,
     exact failure mode this module exists to catch: a model can score well on
     aggregate accuracy while missing the phase that carries all the value.
     """
+    if not math.isfinite(liberation_margin) or liberation_margin < 0:
+        raise ValueError("liberation_margin must be finite and non-negative")
+
+    measurements = {
+        "mean confidence": mean_confidence,
+        "ore area fraction": result.ore_area_fraction,
+        **{f"{role} fraction": fraction
+           for role, fraction in result.role_fractions.items()},
+    }
+    if result.liberation is not None:
+        measurements["liberation"] = result.liberation
+    invalid = [name for name, value in measurements.items()
+               if not math.isfinite(value) or not 0.0 <= value <= 1.0]
+    if invalid:
+        return Recommendation(
+            "No recommendation - invalid measurement",
+            "Cannot act on non-finite or out-of-range measurements: "
+            + ", ".join(invalid)
+            + ". Re-run the measurement or verify manually.",
+            "low - verify manually",
+        )
+
     confidence = "high" if mean_confidence >= 0.85 else "low - verify manually"
     payload = result.role_fractions.get("payload", 0.0)
 
@@ -140,8 +163,9 @@ def advise(result, mean_confidence: float,
             "Marginal - verify before acting",
             f"Liberation is {result.liberation:.0%}, within the "
             f"+/-{liberation_margin:.1%} conformal uncertainty band around the "
-            f"{LOW_LIBERATION:.0%} floor (85% empirical coverage, held-out "
-            "sections; see src/conformal.py). The true value could plausibly "
+            f"{LOW_LIBERATION:.0%} floor (derived from leave-one-out S2 "
+            "calibration at nominal 85%; not a validated coverage guarantee "
+            "for new uploads). The true value could plausibly "
             "sit on either side of the threshold, so the honest answer is that "
             "this field does not decide. Candidate actions are 'grind finer' if "
             "liberation is genuinely below the floor, or 'continue at setpoint' "
@@ -217,6 +241,6 @@ def verdict_state(action: str) -> tuple[str, str]:
         return "hold", "verdict state: marginal, verify before acting"
     if action.startswith(("Flag", "No recommendation")):
         return "hold", "verdict state: measurement declined"
-    if action.startswith("Grind"):
+    if action.startswith(("Grind", "Adjust reagent dosage")):
         return "grind", "verdict state: confident intervention"
     return "", "verdict state: within specification"

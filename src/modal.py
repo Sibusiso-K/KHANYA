@@ -139,7 +139,7 @@ class ModalResult:
     phase_fractions: dict      # mineral -> area fraction OF ORE (sums to ~1.0)
     role_fractions: dict       # role -> area fraction of ore
     ore_area_fraction: float   # ore / (ore + resin); mounting density, not grade
-    liberation: float          # mass-weighted, upper bound - see module docstring
+    liberation: float | None  # None means no measurable payload particles
     n_particles: int
     payload_pixels: int
 
@@ -294,8 +294,10 @@ def liberation_index(labels, payload_mask, background_index=0,
     """Share of payload area sitting in particles that are >=threshold payload.
 
     Returns (liberation, n_particles). Liberation is None when there is no
-    payload in the field - that is "no measurement", which is a different
-    statement from "zero liberation", and the advisor must not conflate them.
+    payload in a retained particle - that is "no measurement", which is a
+    different statement from "zero liberation", and the advisor must not
+    conflate them. Payload outside retained particles stays in the denominator
+    when a measurement exists, preserving the estimator's conservative policy.
     """
     ore = labels != background_index
     if refine:
@@ -320,15 +322,18 @@ def liberation_index(labels, payload_mask, background_index=0,
         particles[payload_mask & (particles > 0)], minlength=int(ids.max()) + 1
     )
 
-    liberated_payload, kept = 0, 0
+    liberated_payload, measured_payload, kept = 0, 0, 0
     for particle_id, size in zip(ids, counts):
         if size < min_pixels:
             continue
         kept += 1
         payload_in_particle = int(payload_counts[particle_id])
+        measured_payload += payload_in_particle
         if payload_in_particle and payload_in_particle / size >= threshold:
             liberated_payload += payload_in_particle
 
+    if measured_payload == 0:
+        return None, kept
     return liberated_payload / payload_total, kept
 
 
@@ -336,6 +341,12 @@ def analyse(labels, class_names, roles=None, background_index=0,
             refine: bool = False):
     """Labelled mask (H x W of class indices) -> ModalResult."""
     labels = np.asarray(labels)
+    if labels.ndim != 2 or labels.size == 0 or not np.issubdtype(labels.dtype, np.integer):
+        raise ValueError("labels must be a non-empty 2-D integer mask")
+    if not class_names or not 0 <= background_index < len(class_names):
+        raise ValueError("class_names must include the background index")
+    if labels.min() < 0 or labels.max() >= len(class_names):
+        raise ValueError("labels contain a class index absent from class_names")
     roles = roles or LUMENSTONE_ROLES
 
     counts = np.bincount(labels.ravel(), minlength=len(class_names))

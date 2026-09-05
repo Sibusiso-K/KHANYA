@@ -11,7 +11,12 @@ def build_model(num_classes: int = 2, pretrained: bool = True):
     # architectures unless this is pinned - which is what broke checkpoint
     # loading (train pretrained=True, eval pretrained=False).
     weights = DeepLabV3_ResNet50_Weights.DEFAULT if pretrained else None
-    model = deeplabv3_resnet50(weights=weights, aux_loss=True)
+    # torchvision otherwise defaults weights_backbone to ImageNet weights even
+    # when weights=None. Evaluation loads our checkpoint and must never fetch a
+    # backbone from the network first. Full pretrained weights include it already.
+    model = deeplabv3_resnet50(
+        weights=weights, weights_backbone=None, aux_loss=True
+    )
     model.classifier[4] = torch.nn.Conv2d(256, num_classes, kernel_size=1)
     if model.aux_classifier is not None:
         model.aux_classifier[4] = torch.nn.Conv2d(256, num_classes, kernel_size=1)

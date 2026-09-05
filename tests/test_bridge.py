@@ -9,6 +9,20 @@ not at all.
 import numpy as np
 import pytest
 
+
+def test_main_helpers_import_without_a_reefprint_checkout(tmp_path):
+    import os
+    import subprocess
+    import sys
+
+    env = dict(os.environ, REEFPRINT_SRC=str(tmp_path / "absent"))
+    proc = subprocess.run(
+        [sys.executable, "-c", "from src.polarimetry import list_sections; "
+         "from src.chromite_pge_falsification import cation_ratios"],
+        env=env, capture_output=True, text=True, check=False,
+    )
+    assert proc.returncode == 0, proc.stderr
+
 from src.chromite_pge_falsification import MOLAR_MASS, cation_ratios
 from src.polarimetry import ROTATION_RE, list_sections, section_frames
 
