@@ -26,8 +26,8 @@ from reefprint.trust.abstain import (
     ConservativeDefault,
 )
 from reefprint.viz.anisotropy import DISPLAY_ANISOTROPY_CEILING, anisotropy_figure
-from reefprint.viz.demo import offline_demo
 from reefprint.viz.decision import decision_figure
+from reefprint.viz.demo import offline_demo
 
 REFLECTANCE_PANEL, ANISOTROPY_PANEL, TRACE_PANEL = 0, 1, 2
 
@@ -217,7 +217,8 @@ def test_an_unmapped_geometry_names_the_gap_rather_than_raising(monkeypatch):
 
 def test_demo_runs_fully_offline(monkeypatch):
     """**Week-5 gate.** No network dependency on stage. One laptop."""
-    def network_is_forbidden(*_args, **_kwargs):
+
+    def network_is_forbidden(*_args: object, **_kwargs: object) -> None:
         raise AssertionError("the offline demo attempted to open a network socket")
 
     monkeypatch.setattr(socket, "socket", network_is_forbidden)
@@ -226,9 +227,7 @@ def test_demo_runs_fully_offline(monkeypatch):
     # Three content panels plus one colorbar axis for each image panel.
     assert len(demo.gate.axes) == 5
     assert demo.gate.axes[ANISOTROPY_PANEL].images
-    assert "SYSTEM REFUSED TO ANSWER" in "\n".join(
-        text.get_text() for text in demo.refusal.texts
-    )
+    assert "SYSTEM REFUSED TO ANSWER" in "\n".join(text.get_text() for text in demo.refusal.texts)
 
 
 def test_refusals_are_visible_in_the_ui():

@@ -49,5 +49,5 @@ def test_trivial_baselines_are_reported_alongside_the_model():
 def test_backbone_licence_is_permissive():
     """Gauntlet S3. timm (Apache-2.0), not DINOv3. Architecture and weights checked separately."""
     require_permissive_backbone()
-    with pytest.raises(ValueError, match="Apache-2.0"):
+    with pytest.raises(ValueError, match=r"Apache-2\.0"):
         require_permissive_backbone("DINOv3", "non-transferable")

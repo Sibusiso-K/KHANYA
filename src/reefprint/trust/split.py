@@ -182,6 +182,7 @@ def require_locality_disjoint(
 
     :raises ValueError: naming every locality that appears on both sides.
     """
+    _require_one_locality_per_section([*train, *test])
     shared = sorted({u.locality for u in train} & {u.locality for u in test})
     if shared:
         raise ValueError(

@@ -6,9 +6,8 @@ import pytest
 
 from reefprint.integrate.advisory import AdvisoryRecord
 
-pytestmark = pytest.mark.placeholder
 
-
+@pytest.mark.placeholder
 def test_opc_ua_server_exposes_advisory_values():
     """asyncua is LGPL-3.0: general-purpose machine only, never a sealed appliance. S3."""
     pytest.fail("NOT BUILT — integrate: OPC UA advisory")

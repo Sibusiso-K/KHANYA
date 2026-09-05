@@ -210,10 +210,15 @@ def extinction_from_stage_series(
     frames = np.asarray(frames, dtype=float)
     angles_rad = np.asarray(angles_rad, dtype=float)
 
+    if not np.isfinite(frames).all() or not np.isfinite(angles_rad).all():
+        raise ValueError("frames and angles must be finite")
+    if frames.size == 0:
+        raise ValueError("frames must contain measured pixels")
+
     if angles_rad.ndim != 1:
         msg = f"angles_rad must be 1-D, got shape {angles_rad.shape}"
         raise ValueError(msg)
-    if frames.shape[0] != angles_rad.size:
+    if frames.ndim < 1 or frames.shape[0] != angles_rad.size:
         msg = f"frames {frames.shape} does not match angles_rad {angles_rad.shape}"
         raise ValueError(msg)
     if angles_rad.size < MIN_ANGLES:

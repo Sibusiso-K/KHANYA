@@ -40,6 +40,14 @@ def main() -> int:
 
     demo = offline_demo()
     screens = [_figure_image(demo.gate), _figure_image(demo.refusal)]
+    # GIF frames share a canvas: preserve the taller refusal, including its reason.
+    size = (max(screen.width for screen in screens), max(screen.height for screen in screens))
+    padded = []
+    for screen in screens:
+        frame = Image.new("RGBA", size, "white")
+        frame.paste(screen, ((size[0] - screen.width) // 2, (size[1] - screen.height) // 2))
+        padded.append(frame)
+    screens = padded
     # Ten frames per screen keeps common players from treating a short GIF as a still image.
     duration_ms = round(args.seconds_per_screen * 1000 / 10)
     frames = [screen for screen in screens for _ in range(10)]

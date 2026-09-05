@@ -15,15 +15,13 @@ def test_counts_convert_to_quantitative_reflectance():
     assert np.mean(result) == pytest.approx(12.94, rel=1e-3)
 
 
-def test_known_minerals_land_near_published_qdf_values():
-    """Chromite near R = 13%, gangue/resin near R = 4.5-5%.
-
-    The IMA/COM Quantitative Data File is the teacher. This test is what stops the pipeline
-    from being self-consistent and wrong.
-    """
+def test_approximate_references_do_not_claim_verified_qdf_records():
+    """An internal approximate table cannot masquerade as a published measurement."""
     assert qdf_value("chromite").value == pytest.approx(13.0)
     assert qdf_value("gangue/resin").value == pytest.approx(4.75)
-    assert qdf_value("chromite").provenance.value.startswith("a published")
+    assert "not a verified QDF record" in qdf_value("chromite").cite()
+    assert qdf_value("chromite").provenance.name == "ASSUMED"
+    assert qdf_value("gangue/resin").provenance.name == "ASSUMED"
 
 
 def test_dark_and_flat_field_correction_precede_reflectance():

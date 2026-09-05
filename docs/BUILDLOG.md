@@ -22,6 +22,46 @@ it is a press release.
 
 ---
 
+## 2026-09-05 — session 34 · reliability, provenance and test-selection audit
+
+### Attempted
+
+Audit the remaining implementation rather than force data-dependent placeholders
+green. Work from a clean reefprint worktree: the older local checkout contains
+pre-existing staged cross-branch changes and was preserved untouched.
+
+### Worked
+
+- Reject nonfinite inversion inputs and section leakage across locality names;
+  malformed quality metadata now refuses instead of crashing.
+- Association matrices normalize symmetric directed contacts globally; a hand-counted
+  three-phase case pins the previously contradictory normalization contract.
+- Approximate reflectance constants are ASSUMED, not falsely labelled verified QDF.
+- The synthetic offline demo invokes the actual geometry guard and displays the
+  refusal reason and conservative default provenance. Shared GIF canvases prevent
+  clipping of its taller refusal panel.
+- CI now triggers on reefprint pushes. The real advisory-record guard was hidden
+  by a module-wide placeholder marker; it now runs in blocking CI.
+- CPU-only Python verification on this host: **314 passed, 7 deselected**. Coverage
+  before the marker correction was 92% statement/branch combined (313 tests).
+  Ruff check and format checks pass. Regenerated GIF: two 1400 x 550 screens at
+  four seconds each; inspected the refusal frame visually, no clipped reason.
+
+### Did not work
+
+Initial lint found existing import/annotation/format errors; corrected them without
+changing scope. The placeholder run initially reported seven failures and one pass,
+revealing the incorrectly excluded implemented test rather than eight missing builds.
+
+### Left open
+
+Seven explicitly red gates remain: public-series Stokes clearance, three domain
+heads, real Bushveld falsification, texture/chemistry control, optional OPC UA.
+No absent dataset, validated head, hardware or transport was fabricated. Approximate
+reference values still need wavelength-specific sourcing before quantitative use.
+The main dashboard's complete real-image rehearsal needs its validated checkpoint
+and original micrographs; a synthetic backup is not equivalent evidence.
+
 ## 2026-09-04 — session 33 · documentation count correction
 
 ### Attempted

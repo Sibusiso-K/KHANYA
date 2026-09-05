@@ -7,6 +7,7 @@ import pytest
 from reefprint.heads.output import HeadEstimate
 from reefprint.quantity import measured
 
+
 @pytest.mark.placeholder
 def test_fine_chromite_entrainment_risk_index():
     """Cr2O3 is the binding constraint on UG2 flotation — gauntlet F4."""

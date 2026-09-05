@@ -22,7 +22,15 @@ def test_association_matrix_is_symmetric_and_normalised():
     names, matrix = association_matrix(np.array([[1, 1, 2], [1, 2, 2]]))
     assert names == ("label-1", "label-2")
     assert matrix == pytest.approx(matrix.T)
-    assert matrix.sum(axis=1) == pytest.approx(1.0)
+    assert matrix.sum() == pytest.approx(1.0)
+
+
+def test_three_phase_contacts_preserve_symmetry_with_unequal_boundaries():
+    # Two 1-2 edges and one 2-3 edge; each appears in both directions.
+    _, matrix = association_matrix(np.array([[1, 2, 1, 0, 2, 3]]))
+    expected = np.array([[0, 2, 0], [2, 0, 1], [0, 1, 0]]) / 6
+    assert matrix == pytest.approx(expected)
+    assert matrix == pytest.approx(matrix.T)
 
 
 @pytest.mark.placeholder

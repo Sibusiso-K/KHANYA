@@ -55,7 +55,12 @@ def extract_grains(
 def association_matrix(
     labels: np.ndarray, *, phase_names: dict[int, str] | None = None
 ) -> tuple[tuple[str, ...], np.ndarray]:
-    """Return a symmetric row-normalised matrix of 4-neighbour mineral contacts."""
+    """Return symmetric fractions of total directed 4-neighbour mineral contacts.
+
+    Each shared edge is counted in both directions. The entire matrix sums to one
+    when contacts exist (otherwise zero); rows are not conditional probabilities.
+    Row normalisation would destroy symmetry when phases have unequal contacts.
+    """
     image = np.asarray(labels)
     if image.ndim != 2 or not np.issubdtype(image.dtype, np.integer):
         raise ValueError("labels must be a 2-D integer map")
@@ -71,6 +76,6 @@ def association_matrix(
             i, j = index[int(first)], index[int(second)]
             counts[i, j] += 1.0
             counts[j, i] += 1.0
-    totals = counts.sum(axis=1, keepdims=True)
+    totals = counts.sum()
     normalised = np.divide(counts, totals, out=np.zeros_like(counts), where=totals > 0)
     return tuple(names.get(label, f"label-{label}") for label in ids), normalised

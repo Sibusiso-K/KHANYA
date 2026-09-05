@@ -180,6 +180,11 @@ def stokes_from_rotation_series(
     intensities = np.asarray(intensities, dtype=float)
     angles_rad = np.asarray(angles_rad, dtype=float)
 
+    if not np.isfinite(intensities).all() or not np.isfinite(angles_rad).all():
+        raise ValueError("intensities and angles must be finite")
+    if intensities.size == 0:
+        raise ValueError("intensities must contain measured pixels")
+
     if angles_rad.ndim != 1:
         msg = f"angles_rad must be 1-D, got shape {angles_rad.shape}"
         raise ValueError(msg)

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from reefprint.quantity import Quantity, cited
+from reefprint.quantity import Quantity, assumed
 
 FloatArray = npt.NDArray[np.floating]
 
@@ -81,17 +81,21 @@ def correct_counts(
 
 
 QDF_VALUES: dict[str, Quantity] = {
-    "chromite": cited(
-        13.0, "R%", "IMA/COM Quantitative Data File: chromite, visible ore microscopy"
+    "chromite": assumed(
+        13.0, "R%", "CLAUDE.md approximate physics table; not a verified QDF record"
     ),
-    "gangue/resin": cited(
-        4.75, "R%", "IMA/COM Quantitative Data File: gangue/resin, visible ore microscopy"
+    "gangue/resin": assumed(
+        4.75, "R%", "midpoint of CLAUDE.md approximate 4.5-5 range; not a verified QDF record"
     ),
 }
 
 
 def qdf_value(mineral: str) -> Quantity:
-    """Return the cited QDF anchor for a named calibration check."""
+    """Return an approximate reference, NOT a verified QDF calibration standard.
+
+    The historical function name is retained for compatibility. Wavelength-specific
+    QDF records have not been supplied; these two values carry ASSUMED provenance.
+    """
     key = mineral.strip().lower()
     try:
         return QDF_VALUES[key]

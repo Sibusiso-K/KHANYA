@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from matplotlib.figure import Figure
 
 from reefprint.acquire.phantom import synthetic_rotation_series
+from reefprint.acquire.series import RotationGeometry
 from reefprint.polarim.stokes import stokes_from_rotation_series
 from reefprint.quantity import assumed, stipulated
 from reefprint.trust.abstain import (
@@ -36,6 +37,7 @@ def offline_demo() -> OfflineDemo:
     test instrument, not evidence about mineralogy; the real-data claim remains separate.
     """
     phantom = synthetic_rotation_series(noise_pct=0.25, shape=(64, 96), seed=20260904)
+    phantom.series.require_analyser_rotation()
     stokes = stokes_from_rotation_series(
         phantom.series.frames,
         phantom.series.angles_rad,
@@ -46,6 +48,7 @@ def offline_demo() -> OfflineDemo:
         stokes,
         labels=phantom.labels,
         phase_names={1: "pentlandite", 2: "pyrrhotite"},
+        title="REEFPRINT / KHANYA — synthetic phantom (not real ore)",
     )
     conservative_default = ConservativeDefault(
         applies_to="fine-chromite entrainment risk",
@@ -54,12 +57,23 @@ def offline_demo() -> OfflineDemo:
         low=stipulated(0.0, "", "risk index range [0, 1] by construction"),
         high=stipulated(1.0, "", "risk index range [0, 1] by construction"),
     )
+    # Deliberately remove geometry metadata from a synthetic input. The actual
+    # production guard supplies the refusal; it is not a scripted verdict.
+    unsupported = replace(
+        phantom.series, geometry=RotationGeometry.UNKNOWN, source="synthetic demo input"
+    )
+    try:
+        unsupported.require_analyser_rotation()
+    except ValueError as exc:
+        reason = str(exc)
+    else:
+        raise RuntimeError("the geometry guard accepted an unsupported demo input")
     refusal = decision_figure(
         Abstention(
             default=conservative_default,
-            reason="rotation geometry is not established; refusing a mineral map",
+            reason=reason,
             trigger=AbstentionTrigger.UNSUPPORTED_GEOMETRY,
         ),
-        title="REEFPRINT refusal path",
+        title="REEFPRINT / KHANYA — synthetic input, actual geometry refusal",
     )
     return OfflineDemo(gate=gate, refusal=refusal)

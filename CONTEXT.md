@@ -7,9 +7,9 @@ is the constitution — *what is true and what the rules are*. This file is the 
 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
-- **Last updated:** 2026-09-04
-- **Last commit at time of writing:** interval-bearing prediction-head output contract implemented on `reefprint`
-- **Days to final:** 27 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
+- **Last updated:** 2026-09-05
+- **Last commit at time of writing:** project audit: numerical guards, honest reference provenance, demo refusal and CI repair
+- **Days to final:** 26 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 - **Abstract deadline: 30 August 2026 — submitted and complete.** Drafted and rendered:
   [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
   [`docs/06-abstract.pdf`](docs/06-abstract.pdf) is what was sent. **The submission packet is
@@ -385,13 +385,13 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **301 passed, 8 deselected**. Anything less is a regression, not a quirk.
+Expect **314 passed, 7 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **8 failed**. These are the backlog, not breakage. Each failure names the module and the
+Expect **7 failed**. These are the backlog, not breakage. Each failure names the module and the
 gate or rule it belongs to. CI runs them in a separate non-blocking job.
 
 ```bash

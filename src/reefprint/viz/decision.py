@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from textwrap import fill
+
 from matplotlib.figure import Figure
 
 from reefprint.quantity import require_reportable
@@ -17,7 +19,7 @@ def decision_figure(decision: Decision, *, title: str = "REEFPRINT decision") ->
     will be emitted and the specific reason that caused the refusal. This is a display boundary,
     so a prediction's quantity is checked for reportability before it reaches the figure.
     """
-    figure = Figure(figsize=(8.0, 3.2), layout="constrained")
+    figure = Figure(figsize=(10.0, 5.5), layout="constrained")
     figure.suptitle(title, fontsize=14, fontweight="bold")
     axes = figure.subplots()
     axes.set_axis_off()
@@ -25,10 +27,9 @@ def decision_figure(decision: Decision, *, title: str = "REEFPRINT decision") ->
     if isinstance(decision, Abstention):
         quantity = decision.default.quantity
         require_reportable(quantity)
-        unit = f" {quantity.unit}" if quantity.unit else ""
         figure.text(
             0.5,
-            0.70,
+            0.82,
             "SYSTEM REFUSED TO ANSWER",
             ha="center",
             va="center",
@@ -38,8 +39,8 @@ def decision_figure(decision: Decision, *, title: str = "REEFPRINT decision") ->
         )
         figure.text(
             0.5,
-            0.48,
-            f"Reason: {decision.reason}",
+            0.56,
+            fill(f"Reason: {decision.reason}", width=100),
             ha="center",
             va="center",
             fontsize=11,
@@ -47,8 +48,10 @@ def decision_figure(decision: Decision, *, title: str = "REEFPRINT decision") ->
         )
         figure.text(
             0.5,
-            0.25,
-            f"Conservative default emitted: {quantity.value:g}{unit}",
+            0.21,
+            fill(f"Conservative default emitted: {quantity.cite()}", width=100)
+            + "\n"
+            + fill(f"Applies to: {decision.default.applies_to}", width=100),
             ha="center",
             va="center",
             fontsize=11,

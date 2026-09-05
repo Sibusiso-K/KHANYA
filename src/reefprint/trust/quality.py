@@ -11,6 +11,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from enum import StrEnum
+from numbers import Real
 
 __all__ = [
     "InputQualityMetrics",
@@ -128,7 +129,8 @@ def assess_input_quality(
         "foreground_fraction": metrics.foreground_fraction,
     }
     malformed = any(
-        value is None
+        not isinstance(value, Real)
+        or isinstance(value, bool)
         or not math.isfinite(value)
         or (name != "sharpness" and not 0.0 <= value <= 1.0)
         or (name == "sharpness" and value < 0.0)
