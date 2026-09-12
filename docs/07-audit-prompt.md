@@ -84,15 +84,39 @@ which adds an axis reflectance does not contain, and which splits the base-metal
 behaviour governs PGE deportment (pentlandite: cubic, isotropic, PGE host, floats — versus
 pyrrhotite: anisotropic, depressed, low PGE).
 
-**What is built and tested** (278 passing tests, 24 deliberately-failing "backlog" tests):
+**What is built and tested** (**314 passing tests, 7 deliberately-failing "backlog" tests**):
 Stokes inversion; fourth-harmonic extinction estimator; a rotation-geometry discriminator; the
 acquisition boundary; a synthetic phantom with analytic ground truth; the mask↔series bridge with
-mirrored guards; and a **trust layer** — locality-disjoint splitting, mandatory trivial baselines,
-conservative-default abstention, and a provenance type that makes an unlabelled number a type
-error.
+mirrored guards; traceable reflectance calibration; a **trust layer** — locality-disjoint
+splitting, mandatory trivial baselines, conservative-default abstention, split-conformal coverage
+audited per held-out locality, a degraded-input quality gate that refuses each named degradation,
+and a provenance type that makes an unlabelled number a type error; an **offline demo path with a
+visible refusal**; and a **generated backup demo video**.
 
-**What is NOT built:** calibration, segmentation inside REEFPRINT, texture, most prediction heads,
-and — critically for this brief — **`integrate` (OPC UA / plant interface) does not exist.**
+**Gate status: weeks 3, 4, 5 and 6 are green.** Week 1 leg (a) passed. Week 1 leg (b) and week 2
+are the open ones.
+
+**What is still NOT built** — the seven backlog tests name it exactly:
+- Week-1 gate on a public reflected-light rotation series (leg (b) — see below).
+- The three domain heads: **fine-chromite entrainment risk, naturally-floating-gangue load,
+  stockpile oxidation index.** These are our "processability" outputs and they do not exist yet.
+- The falsification test run on real Bushveld data, and texture features controlling for Cr₂O₃
+  and pyroxene fraction.
+- **`integrate`: an OPC UA server exposing advisory values.** There is a dependency-free
+  `AdvisoryRecord` boundary — carrying an `advisory_influenced` endogeneity flag from record zero
+  — but **no server**. This is the brief's "integrates with … controls" deliverable and it is
+  the largest single gap.
+
+**`segment` inside REEFPRINT is a licence-guard backbone declaration, not a trained model.** The
+trained segmentation model lives on the KHANYA side. Do not assume REEFPRINT segments anything.
+
+**A positioning decision you must stress-test.** Our `integrate` module deliberately states:
+*"Mintek owns MillStar and FloatStar. This is an advisory that replaces a laboratory turnaround,
+not a controller that replaces theirs."* That is commercially shrewd — we do not tell the client
+their control system is the problem. But the brief's literal words are *"integrates with existing
+sorting or flotation controls to provide immediate operational feedback."* Tell us whether
+advisory-only satisfies that requirement or quietly under-delivers against it, and how to
+position so that it reads as respect for their installed base rather than as a missing feature.
 
 **Week-1 gate, leg (a): PASSED.** On the synthetic phantom, 40.4× separation between the
 anisotropic and isotropic phases. This proves the mathematics, not the mineralogy.
@@ -182,16 +206,27 @@ the cost in days.
 4. **The three phases.** The deliverable requires ≥3 distinct mineral phases. Which three (or
    more) should we commit to, given our data and our magnetite failure? What does the accuracy
    report contain, at what honest *n*, with which baselines and which split?
-5. **Processability.** How do we define and defend a "processability" prediction that a
-   metallurgist finds credible rather than invented? We have entrainment risk, non-floating gangue
-   load, and an oxidation index as candidate heads, plus real assay data. Ground it in published
-   metallurgy and cite it.
-6. **Plant integration — our weakest area, and an explicit deliverable.** `integrate` is not
-   built. Design the smallest honest thing that satisfies "integrates with existing sorting or
-   flotation controls to provide immediate operational feedback" and can be demonstrated live,
-   offline, without a plant. Consider a local OPC UA server, a simulated flotation response
-   consuming our mineralogy output, and a setpoint recommendation with visible abstention. Tell
-   us exactly how to label the simulated parts so it reads as rigour rather than as a mock-up.
+5. **Processability — none of it is built yet, and it is half the brief.** Fine-chromite
+   entrainment risk, naturally-floating-gangue load and stockpile oxidation index exist as named,
+   failing tests and nothing more. How do we define and defend a "processability" prediction that
+   a metallurgist finds credible rather than invented? Ground each in published metallurgy and
+   cite it. Then tell us honestly whether to build all three in 19 days or **one, properly** —
+   and if one, which.
+6. **Plant integration — our largest gap, and an explicit deliverable.** We have an
+   `AdvisoryRecord` boundary but no OPC UA server. Design the smallest honest thing that
+   satisfies "integrates with existing sorting or flotation controls to provide immediate
+   operational feedback" and can be demonstrated live, offline, without a plant. Consider a local
+   OPC UA server, a simulated flotation response consuming our mineralogy output, and a setpoint
+   recommendation with visible abstention. Tell us exactly how to label the simulated parts so it
+   reads as rigour rather than as a mock-up. Note a licence trap we have already flagged
+   internally: `asyncua` is LGPL-3.0, which we hold is fine on a general-purpose machine but
+   **not** on a sealed appliance, because anti-tivoisation would make that deliverable
+   unassignable to Mintek. Confirm or correct that reading, and say what it means for how we
+   describe the deployment target on stage.
+   Also address the **endogeneity problem** we have already built a flag for: once an advisory
+   influences plant operation, the plant data it later trains on is no longer observational. Our
+   records carry `advisory_influenced` from record zero. Tell us whether a judge will see that as
+   sophistication or as an admission, and how to present it.
 7. **Agents.** Is a multi-step agent system justified here, or is it complexity that costs us
    credibility with an industrial audience? If justified, specify each agent's exact role, why a
    deterministic component could not do it, and how the no-LLM-computes-a-mineralogical-value rule
