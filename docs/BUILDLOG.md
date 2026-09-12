@@ -22,6 +22,85 @@ it is a press release.
 
 ---
 
+## 2026-09-12 — session 17 · S3 v2's frames are NOT REGISTERED. N3 was measuring nothing.
+
+### Attempted
+
+Pulled the Kaggle v4 result (real codebook, all 47 sections) and asked the week-1 leg (b)
+question directly: within each section, do anisotropic phases show higher extinction depth than
+isotropic ones?
+
+### The result — a clean null, and then the reason for it
+
+**No separation whatsoever.** Anisotropic higher than isotropic in **15 of 29** sections;
+coin-flip expectation is 14.5. Median difference **+0.38 DN²** against a median within-section
+spread across minerals of **13.3 DN²**. Background (resin, no crystal anisotropy) frequently
+reads *higher* than arsenopyrite (strongly anisotropic) — e.g. `S3_test_01`, background 19.62 vs
+arsenopyrite 17.66, with cubic pyrite highest in that section at 22.62.
+
+**The dominant signal is the section, not the mineral.** Between-section spread of section
+medians is **92.8 DN²** (16.8 to 109.6) — **7× the within-section spread across minerals**. That
+is the signature of illumination/exposure, which is exactly what `bridge/extinction.py`'s own
+docstring warned raw un-normalised depth would conflate ("finding N2 in a new costume").
+
+**The estimator's own self-test fails.** `crossing_ratio` is pinned at 1.0 for ideal crossed
+polars. Measured: **median 11.01, range 4.67–26.00** across 146 mineral-section pairs. An order
+of magnitude off. These frames do not behave like a crossed-polars stage rotation.
+
+### Then the actual cause, found by checking the obvious alternative before concluding
+
+Before writing this up as "the data has no polarimetric signal", checked the explanation that
+would make it **our** bug instead: are the frames registered at all?
+
+**They are not. The field rotates with the specimen.** Frame-to-frame correlation against r000
+decays along the *rotated-image control* curve, not a registered-field curve:
+
+| section | r005 | 5° control | r040/045 | 45° control |
+|---|---|---|---|---|
+| S3_test_01 | +0.7114 | +0.6572 | +0.3129 | +0.2929 |
+| S3_test_02 | +0.6671 | +0.6157 | +0.2675 | +0.1801 |
+| S3_test_03 | +0.3734 | +0.3682 | +0.1834 | +0.2918 |
+
+A registered polarimetric series holds high correlation across angles — only intensity modulates,
+the grain structure is fixed. These track physical rotation of the image.
+
+Naive centred de-rotation does **not** reliably fix it: dramatic recovery on `S3_test_03` r005
+(+0.3137 → +0.8142) but it makes `S3_test_01` r005 and r040 *worse*. So the transform is a
+rotation about a centre that is **not** the image centre and appears to vary by section — not a
+clean centred rotation that a fixed `-angle` undoes.
+
+### What this invalidates — state it plainly
+
+**Every per-pixel result computed on this archive measured a pixel that is a different physical
+point in each frame.** That includes:
+
+- **N3's harmonic verdict (`NEITHER`), all three independent runs**, plus the brightness-quantile
+  re-run. Two people measured it, identically, and the number was reproducible — because the
+  *bug* was reproducible. N3 did not find "neither geometry"; N3 had no valid per-pixel time
+  series to find a geometry in.
+- **The entire extinction-depth result above.** The null is real but it is a null about
+  unregistered data, which carries no information about polarimetry.
+
+The reproducibility across two machines and three runs is worth naming as the lesson: it bought
+confidence in an answer to a question that was never actually being asked. Agreement between runs
+tests the pipeline's determinism, not its validity.
+
+**Leg (b) is not failed. Leg (b) has never been run.** Whether a 4φ extinction signal survives
+proper registration is now an open, testable question — and it is the first thing to test.
+
+### Left open
+
+- **Registration is the prerequisite nothing else can proceed without.** Needs a per-frame
+  transform estimated from the data (log-polar phase correlation, or ECC/feature-based), not a
+  fixed rotation by the filename angle. Rotation centre must be estimated per section.
+- After registration, valid pixels are only the **inscribed region present at every angle** —
+  the corners rotate out of frame. The honest denominator shrinks accordingly.
+- **The mask can only be valid for one frame** (presumably r000). Any per-mineral statistic must
+  map the mask through the same estimated transform, or be computed in r000's frame after
+  de-rotating every other frame onto it.
+- `CONTEXT.md` N3's wording, and every doc asserting "leaning stage", now overstates what was
+  measured. Corrected there this session.
+
 ## 2026-09-05 — session 34 · reliability, provenance and test-selection audit
 
 ### Attempted

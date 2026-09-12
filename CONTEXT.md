@@ -7,9 +7,9 @@ is the constitution — *what is true and what the rules are*. This file is the 
 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
-- **Last updated:** 2026-09-05
-- **Last commit at time of writing:** project audit: numerical guards, honest reference provenance, demo refusal and CI repair
-- **Days to final:** 26 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
+- **Last updated:** 2026-09-12
+- **Last commit at time of writing:** S3 v2's rotation frames are not registered — N3 and the extinction result both measured nothing
+- **Days to final:** 19 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 - **Abstract deadline: 30 August 2026 — submitted and complete.** Drafted and rendered:
   [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
   [`docs/06-abstract.pdf`](docs/06-abstract.pdf) is what was sent. **The submission packet is
@@ -107,16 +107,24 @@ extinction rerun belongs to `main` per the Sept 3 handoff and is not repeated on
 
 The Week 1 routing notes below are historical context, not this branch's next action.
 
-**N3 came back `NEITHER` a third time, 2026-08-27, on this machine, on the archive verified
-byte-for-byte against Yandex's declared size — and the brightness-restricted re-run (the
-targeted check that could have flipped it) moved 2θ SNR from 3.4x to 4.0x but still did not
-clear the 5.0x threshold, while 4φ stayed flat at 1.8x.** `test_the_real_s3_v2_archive_has_been_
-measured` is deleted; N3 has now been measured three times, independently, all `NEITHER`. Do
-not run the Stokes inversion on S3 v2. Reasoning unchanged: extinction depth (stage, 4φ) scales
-as bireflectance-squared, weaker; analyser modulation (2θ) scales as bireflectance directly, on
-a bright S0, stronger. A geometry whose signal is the *weaker* one is more likely to vanish
-under noise than one whose signal is stronger. A symmetric null is therefore asymmetric
-evidence — it leans stage.
+**2026-09-12 — N3's verdict is WITHDRAWN. S3 v2's rotation frames are not registered: the field
+rotates with the specimen, so a given pixel is a different physical point in every frame.**
+Frame-to-frame correlation against r000 decays along the *rotated-image control* curve
+(`S3_test_01`: r005 +0.7114 vs 5°-control +0.6572; r040 +0.3129 vs 45°-control +0.2929), not the
+high, flat curve a registered polarimetric series would hold. Naive centred de-rotation does not
+reliably repair it — dramatic recovery on `S3_test_03` r005 (+0.3137 → +0.8142), worse on
+`S3_test_01` — so the rotation centre is off-image-centre and varies by section.
+
+**Consequence: every per-pixel result on this archive measured nothing.** That includes all three
+independent `NEITHER` runs and the brightness-quantile re-run, and the full-codebook extinction
+result (which showed anisotropic phases higher than isotropic in **15 of 29** sections against a
+coin-flip expectation of 14.5, with between-section spread **7×** the within-section spread across
+minerals, and the estimator's own `crossing_ratio` self-test reading **median 11.01** where ideal
+crossed polars pins it at **1.0**). N3 did not find "neither geometry" — N3 had no valid per-pixel
+time series in which to find one. Reproducibility across two machines bought confidence in an
+answer to a question that was never being asked; agreement tests determinism, not validity.
+
+**Leg (b) is not failed — leg (b) has never been run.** See `docs/BUILDLOG.md` session 17.
 
 **The loader is built, TDD'd, and now proven on 12 real full-resolution sections.**
 `experiments/003-s3v2-extinction/run.py::load_section_as_specimen_series`, 4 passing tests in
@@ -126,17 +134,21 @@ measured 9 of 12 attempted real sections at full 3396x2547 resolution, including
 `(71, 2547, 3396)` float64 array that OOM'd on the local machine. The memory blocker is
 resolved: Kaggle's RAM handles it, no downsampling or bridge-module restructure was needed.
 
-**What is actually next: substitute the real codebook and get an actual mineralogical result.**
-The Kaggle run used an explicit placeholder codebook (`code_0`, `code_1`, ...) — Rule 6 still
-applies, and the real per-mineral extinction-depth claim (pentlandite dark / pyrrhotite
-extincting) needs KHANYA's real `.segmentation.lumenstone.CODEBOOK` substituted in. Re-running
-is one `kaggle kernels push` once that mapping is available — the dataset and kernel are already
-set up.
+**What is actually next: register the frames, then re-run N3 — in that order.** Nothing measured
+on this archive means anything until a per-frame transform is estimated *from the data* (log-polar
+phase correlation, or ECC/feature-based), because the filename angle alone does not undo it. Then:
+restrict to the inscribed region present at every angle (corners rotate out of frame, so the
+honest denominator shrinks), map the mask through the same transform (it can only be valid for
+one frame, presumably r000), and only then re-run `harmonic_signature`. **The real codebook is
+already in hand** — `data/lumenstone/s3_codebook.json`, cited from petroscope's own
+`lumenstone.yaml` (see its `SOURCE.md`), so Rule 6 is satisfied and that is no longer a blocker.
+The Kaggle dataset and kernel are set up, so a re-run is one `kaggle kernels push`.
 
-**One new real finding to flag, not yet investigated:** `S3_test_04` was skipped —
-`"frame S3_test_04_r045.jpg shape (3396, 2547) != mask shape (2547, 3396)"`, a transposed frame
-in a real section's rotation series. Not a loader bug (the "report, don't raise" design caught
-it correctly); worth checking whether this is one corrupted file or a systematic issue.
+**Before sinking days into it, cost it against 19 days to final.** Registration is real work with
+an unknown payoff — the signal may or may not survive it. The Mintek brief does *not* require
+polarimetry; it requires ≥3 mineral phases identified, processability predicted, and integration
+with plant controls. Decide deliberately whether leg (b) is on the critical path to the
+submission or is a research thread that runs beside it.
 
 Also left open, not investigated: the archive now reports **47 sections**, not the 29 prior
 sessions' wording carried from Sibusiso's runs. Doesn't change the verdict — noted in
