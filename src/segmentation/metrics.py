@@ -48,8 +48,19 @@ def confusion_from_batch(pred, target, num_classes, confusion, valid=None):
 
 
 def summarise(confusion):
+    """IoU/pixel-accuracy plus the per-class confusion counts the 2026-09-12
+    review's accuracy-report template asks for (TP/FP/FN/recall/precision) -
+    added here rather than recomputed elsewhere so there is exactly one place
+    that reads the confusion matrix.
+
+    Recall and precision are NaN, not zero, when their denominator is zero
+    (no ground-truth pixels for recall; no predicted pixels for precision) -
+    a class absent from both truth and prediction has no defined rate, and
+    reporting zero would misstate a model that correctly never predicted it.
+    """
     num_classes = confusion.shape[0]
     ious, pixel_acc_num, pixel_acc_den = [], 0.0, 0.0
+    tp_list, fp_list, fn_list, recall_list, precision_list = [], [], [], [], []
     for c in range(num_classes):
         tp = confusion[c, c]
         fp = confusion[:, c].sum() - tp
@@ -58,10 +69,20 @@ def summarise(confusion):
         ious.append((tp / denom).item() if denom > 0 else float("nan"))
         pixel_acc_num += tp
         pixel_acc_den += confusion[c, :].sum()
+        tp_list.append(int(tp))
+        fp_list.append(int(fp))
+        fn_list.append(int(fn))
+        recall_list.append((tp / (tp + fn)).item() if (tp + fn) > 0 else float("nan"))
+        precision_list.append((tp / (tp + fp)).item() if (tp + fp) > 0 else float("nan"))
     return {
         "iou_per_class": ious,
         "mean_iou": sum(v for v in ious if v == v) / len([v for v in ious if v == v]),
         "pixel_accuracy": (pixel_acc_num / pixel_acc_den).item(),
+        "tp_per_class": tp_list,
+        "fp_per_class": fp_list,
+        "fn_per_class": fn_list,
+        "recall_per_class": recall_list,
+        "precision_per_class": precision_list,
     }
 
 
