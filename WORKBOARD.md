@@ -6,7 +6,7 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-13, 00:40 SAST — **P5's first open item CLOSED** — naive-condition discrepancy confirmed, not a bug |
+| **Last updated** | 2026-09-13, 01:05 SAST — **P5 fully checked**: S3_test_03's stage-rotation flip retracted after a visual check; 4/5 sections hold |
 | **Days to final** | **19** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
 | **REEFPRINT suite** | **337 passed, 4 deselected** — re-run and verified 2026-09-13 (+7 for P5's registration estimator tests) |
@@ -315,20 +315,25 @@ were also tried and abandoned as wrong before switching to direct correlation-se
 
 **Run for real on Kaggle** (`lethabomh14/reefprint-p5-registration`, ~10 min, CPU only) — not
 locally, since a full section needs ~5 GB and this machine had 155 MB free. Full result and
-caveats: `experiments/007-s3v2-registration/README.md`. Headline, **not yet a claim for the
-talk**: naive centred de-rotation already clears `DETECTION_SNR` for `snr_2` on all 5 measurable
-sections; proper registration leaves 3/5 sections `SECOND` (analyser), moves one to `BOTH`
-(mixed), and **flips one (`S3_test_03`) to `FOURTH` (stage)** — a split verdict CLAUDE.md's own
-geometry README already said would itself be a finding.
+caveats: `experiments/007-s3v2-registration/README.md`. Headline, **the honest current state**:
+naive centred de-rotation already clears `DETECTION_SNR` for `snr_2` on all 5 measurable
+sections; proper registration leaves `S3_test_01/07/12` at a clean `SECOND` (analyser) and moves
+`S3_test_02` to `BOTH` (mixed) — **these four hold.**
 
 **Confirmed same day — `experiments/008-n3-original-method-rerun/`**: N3's original,
 unmodified, zero-registration method returns `NEITHER` on all 5 of the same sections (snr_2
 1.78–4.43, all under threshold), exactly reproducing the historical finding. The naive-vs-N3
 discrepancy is confirmed as a registration-methodology difference — any sensible de-rotation
 recovers real structure zero registration cannot see — not a bug and not a contradiction.
-**`S3_test_03`'s flip still needs a visual sanity check before anyone trusts it** — its offset
-(−397 px) is the largest found, the profile of either a real result or a spurious search
-optimum. That is the one remaining item before this reaches a slide.
+
+**`S3_test_03`'s flip to `FOURTH` (stage) does NOT hold — checked by eye, 2026-09-13,
+`experiments/009-s3test03-visual-check/`.** A tracked grain sits in the same place under naive
+and "registered" de-rotation alike, at two angular separations — a real 397 px offset should
+have displaced it visibly and did not. Its score improvement was also the second-smallest of
+the five despite the largest offset. **`S3_test_03`'s registered verdict is retracted; do not
+quote `FOURTH`/stage for this section.** P5's remaining open item is fixing the search itself
+(masked scoring, tighter radius) before re-trying that one section — not a blocker for the
+other four, which are ready to be quoted as `WORKBOARD.md`'s honest state.
 
 ---
 

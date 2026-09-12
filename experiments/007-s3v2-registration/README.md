@@ -32,7 +32,7 @@ run through `reefprint.polarim.geometry.harmonic_signature`.
 |---|---:|---|---:|---|---:|---|
 | S3_test_01 | 71 | SECOND (analyser) | 12.54 / 4.44 | SECOND (analyser) | 11.67 / 4.83 | (−100.9, 31.6) |
 | S3_test_02 | 72 | SECOND (analyser) | 11.18 / 3.54 | **BOTH (mixed)** | 11.29 / **5.56** | (−106.8, 23.5) |
-| S3_test_03 | 72 | SECOND (analyser) | 9.35 / 2.78 | **FOURTH (stage)** | **3.19** / **5.29** | (−397.3, 40.8) |
+| S3_test_03 | 72 | SECOND (analyser) | 9.35 / 2.78 | ~~FOURTH (stage)~~ ⚠️ see below | 3.19 / 5.29 | (−397.3, 40.8) |
 | S3_test_07 | 24 | SECOND (analyser) | 6.89 / 2.09 | SECOND (analyser) | 5.97 / 2.49 | (−94.7, 72.1) |
 | S3_test_12 | 24 | SECOND (analyser) | 7.11 / 2.68 | SECOND (analyser) | 6.14 / 2.48 | (−91.6, 64.0) |
 
@@ -70,7 +70,19 @@ collapses (9.35 → 3.19) while its `snr_4` clears threshold for the first time 
 proper registration turns what looked like a rotating-analyser section into what reads as a
 stage rotation. CLAUDE.md's own geometry-experiment README already anticipated this outcome in
 the abstract: *"the acquisition protocol should be constant across a dataset, so a split verdict
-is itself a finding."* Here it is, on real data, for the first time.
+is itself a finding."*
+
+**`S3_test_03`'s flip does NOT survive a visual check — checked 2026-09-13,
+`experiments/009-s3test03-visual-check/`.** A single distinctive grain, tracked at two
+independent angular separations (155° and 305° from the reference), sits in almost exactly the
+same position under the **naive** (image-centre) and **registered** (−397 px offset)
+de-rotations alike — the two are visually indistinguishable for this feature. A real 397-pixel
+axis offset (≈12% of the frame's width) should displace that grain by a large, visible amount
+between the two conditions; it does not. `S3_test_03`'s relative score improvement (×1.34) is
+also one of the smaller of the five sections despite having the largest absolute offset — a
+large offset with a modest score gain and no visible improvement is the profile of a search
+that converged on structure elsewhere in the frame, not the specimen's true rotation axis.
+**Do not report `S3_test_03` as `FOURTH`/stage.** `S3_test_01/02/07/12` are unaffected by this.
 
 ## What this does NOT yet mean
 
@@ -87,18 +99,18 @@ is itself a finding."* Here it is, on real data, for the first time.
 - **It does not mean leg (b) is closed.** Five sections is a small, convenience sample driven by
   which sections happen to carry a full rotation series and a matching mask shape — not a
   claim about the other 42.
-- **`S3_test_03`'s flip is the single most important thing to re-check before anyone quotes this
-  page.** A −397 px offset is the largest found and the one section whose verdict inverted —
-  exactly the profile of either a genuine, interesting finding or a registration search that
-  wandered into a spurious local optimum on a harder section. Re-run with a wider
-  `search_radius` and a visual check of the registered stack before trusting this row.
+- **`S3_test_03`'s flip did not survive a visual check** (`experiments/009-s3test03-visual-check/`)
+  — treat that row as unresolved, not as a finding, until a masked/tighter-radius re-run either
+  confirms a smaller genuine offset or drops it back to `SECOND`.
 
 ## Left open, in priority order
 
 1. ✅ **Done** — `experiments/008-n3-original-method-rerun/` confirmed the naive-condition
    discrepancy is a registration-methodology difference, not a bug.
-2. Visually inspect `S3_test_03`'s registered stack — does it look like a properly aligned
-   rotation series, or does the large offset look like an artefact?
+2. ✅ **Done** — `experiments/009-s3test03-visual-check/` checked `S3_test_03`'s registered
+   stack by eye at two angles; the found offset does not look like a genuine correction. See
+   that experiment's *What would actually resolve it* for the follow-up (masked scoring, a
+   tighter search radius, a second grain).
 3. Widen from 5 to the full ~18 sections that do carry a rotation series, once 1–2 are resolved.
 4. Map the mask through the same registration transform and re-run the per-mineral anisotropy
    bridge (`reefprint.bridge`) on a section that reads clean `SECOND`, to see whether the

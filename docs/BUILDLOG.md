@@ -22,6 +22,72 @@ it is a press release.
 
 ---
 
+## 2026-09-13 — session 25 · S3_test_03's stage-rotation flip does not survive looking at it
+
+### Attempted
+
+The last open item from experiment 007's list, asked for directly: visually check whether
+`S3_test_03`'s registered stack looks like a properly aligned rotation series, or whether its
+large found offset (-397 px, the biggest of the five sections measured) looks like an artefact.
+
+### Worked
+
+- **`experiments/009-s3test03-visual-check/`** de-rotates two frames (155 deg and 305 deg from
+  the reference) two ways each — naively about the image centre, and "registered" about the
+  estimated centre — and saves both next to the untouched reference, so the comparison is a
+  picture, not a number to trust on faith.
+- **Run on Kaggle** (`lethabomh14/reefprint-p5-visual-check`, ~3.5 min, one section at full
+  resolution). Actually looked at the images (not just generated them): a single, distinctive
+  grain — roughly rectangular, with a dark inclusion and a network of fine cracks — sits in
+  almost exactly the same position under **both** the naive and the "registered" de-rotation, at
+  **both** angular separations checked. A real 397-pixel axis offset, about 12% of the frame's
+  width, should displace that grain by a large, visible amount between the two conditions. It
+  does not.
+- **The numbers agree with the picture, once looked at together.** `S3_test_03`'s relative score
+  improvement (16.10 -> 21.60, ×1.34) is the second-smallest of the five sections measured,
+  despite having by far the largest absolute offset. A large offset paired with a modest score
+  gain and no visible improvement in the dominant grain is the profile of a search that converged
+  on structure elsewhere in the frame (background, a resin boundary, JPEG artefacts) rather than
+  the specimen's true rotation axis.
+- **Retracted, in the record, not quietly dropped.** `experiments/007-s3v2-registration/
+  README.md`'s table, prose and *Left open* list are all updated to say `S3_test_03`'s `FOURTH`
+  verdict does not hold, with the reasoning kept rather than deleted — the same treatment N3's
+  own withdrawal got in session 17, because a retracted result recorded honestly is worth more
+  than one that quietly disappears. `S3_test_01/02/07/12` are unaffected and still hold.
+- **P5's honest final state**: the naive-condition confirmation (session 24) and the four
+  surviving per-section verdicts (`SECOND`/`SECOND`/`BOTH`/`SECOND`) are usable. `S3_test_03`
+  needs the search itself fixed — masked scoring, a tighter radius — before it is re-tried, and
+  that is a follow-up, not a blocker on the other four.
+
+### Did not work
+
+Nothing failed outright — this session's finding *is* that a previous session's finding does not
+hold, which is a different thing from something failing.
+
+### Learned
+
+**A large found parameter paired with a small improvement in the objective is itself a signal,
+and it is checkable before spending time on a visual inspection.** `S3_test_03`'s registration
+score improved by only ×1.34 against `S3_test_07`'s ×2.49 for a search that moved the estimate
+four times farther — that ratio was available the moment experiment 007 finished, and naming it
+up front would have flagged the section as suspect before the visual check confirmed it, not
+after. The numeric report and the picture should be read together next time, not the picture only
+after the number has already been written into a table as if settled.
+
+### Left open
+
+- **Fix the `S3_test_03` search**: mask background/border content out of the correlation
+  objective, try a tighter `search_radius`, and check against a second tracked grain before
+  trusting any re-run's result.
+- **Widen from 5 to the ~18 sections that carry a real rotation series**, using the four
+  confirmed verdicts and the fixed search, not the retracted one.
+- **Map the mask through the registration transform and re-run the anisotropy bridge** on a
+  clean `SECOND` section — still the measurement the whole project exists to make, still not
+  attempted on real data. Unchanged from session 23's *Left open*.
+- **P4's segmentation half** remains Sibusiso's, on `main` — unchanged from session 24.
+
+---
+
 ## 2026-09-13 — session 24 · N3's naive-condition discrepancy confirmed, not a bug; P4's segmentation half checked and found genuinely blocked
 
 ### Attempted
