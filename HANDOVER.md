@@ -19,6 +19,45 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-12 — Sibusiso (46) — the refusal state confirmed on a real image, an actual out-of-domain test
+
+**Did:** Closed the last gap from entry 44 - the refusal/hold verdict had only
+been exercised with synthetic inputs (per the Sept 5 audit), not a real image.
+Ran a genuine out-of-domain challenge: LumenStone S1 test sections (different
+geology - Berezovskoe polymetallic hydrothermal ore, different phase
+vocabulary) through the S2-trained checkpoint, the same direct-render sequence
+used in entry 44. This is the "explicit out-of-domain challenge" the Sept 12
+review recommended building - not a corrupted or synthetic image, a real
+section the model was never meant to see.
+
+Of 4 S1 sections tried, `s1_test_02` produced a real refusal: predicted
+99.7% pyrrhotite / 0.2% pentlandite / 0.0% chalcopyrite, payload at 0.30% of
+ore area - exactly at the `PAYLOAD_FLOOR` - triggering "Flag for manual
+review - low payload signal" (verdict state: measurement declined). Confirmed
+in-browser: the amber refusal panel, honest phrasing, and correct threshold
+citation all render as designed. The other three S1 sections landed
+"Marginal - verify before acting" rather than outright refusal - a real
+mixed result, not a clean pass, worth knowing before the pitch: the model
+does not reliably refuse out-of-domain input, it more often lands in the
+uncertain band.
+
+**Verified:** All three verdict states (confident-green, marginal-amber,
+refusal-amber) now confirmed against real images through the actual compiled
+dashboard, not synthetic inputs. Render HTML saved locally
+(`s1_test_01/02/03/05.html`) for reference, not committed - these are scratch
+verification artifacts, not shipped demo assets.
+
+**Changed:** nothing in the repo - verification only, no code touched.
+
+**Blocked on:** same as entry 45 - the review's data-rights and integration
+items need both of us.
+
+**Next:** worth deciding together whether "3 of 4 out-of-domain sections land
+Marginal rather than Refused" is a result to show honestly in the pitch (it
+supports the review's point that mean-softmax confidence alone doesn't gate
+intervention) or a threshold to tighten first. Either way, don't quietly drop
+it - it's a real finding about the system's actual out-of-domain behaviour.
+
 ## 2026-09-12 — Sibusiso (45) — began triaging the adversarial review; fixed finding 7's fail-open bug
 
 **Did:** Started triage of `reports/TECHNICAL-REVIEW-2026-09-12.md` (entry 43).
