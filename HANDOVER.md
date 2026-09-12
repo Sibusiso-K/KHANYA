@@ -19,6 +19,49 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-12 — Sibusiso (44) — real end-to-end verification, and a real layout bug fixed
+
+**Did:** Ran the actual sequence entry 37 through 42 all flagged as the
+blocking next step, now that this host has both the validated checkpoint
+(`checkpoints/lumenstone_s2_patches/best.pt`) and the original test images.
+Called `patch_module.sliding_window_predict` -> `modal.analyse` -> `advise`
+-> `dashboard.render.render()` directly (bypassing Streamlit's file picker,
+which can't be automated) against `test_01/04/06/09.jpg`. Results: test_01
+confidence 0.781, "Continue at current setpoint" (confident/green); test_04
+(0.821), test_06 (0.700), test_09 (0.766) all landed "Marginal - verify before
+acting" (amber/hold) - matching the decision-gap report's prior expectation
+exactly. Screenshotted both states in-browser: side-by-side image panel,
+modal mineralogy, verdict card, and the two-candidate marginal breakdown all
+render correctly, no em dashes, no fabricated content.
+
+While diagnosing what turned out to be a real bug, found the committed
+`dashboard/static/tailwind.css` was missing `.md:grid-cols-2` entirely - it
+predated the input/predicted side-by-side panel being added to
+`khanya.html.jinja`, so on `main` as pulled, the two images were genuinely
+stacking vertically at every viewport width instead of splitting at the md
+breakpoint. Recompiled via `dashboard/build` (`npx tailwindcss --minify`)
+and confirmed the class is now present in the right `@media` block; visual
+render now shows the true side-by-side layout at desktop width.
+
+**Verified:** 87 tests pass on this host (matches Codex's Sept 5 and Sept 12
+reports). Real-image inference through the full pipeline (not synthetic
+inputs) for the first time in this project's history. Both verdict states
+(confident-green, marginal-amber) visually confirmed against the actual
+compiled Stitch CSS, not a stale render.
+
+**Changed:** `dashboard/static/tailwind.css` (recompiled, 1-line minified
+diff - added the missing responsive grid rule).
+
+**Blocked on:** `reports/TECHNICAL-REVIEW-2026-09-12.md` (entry 43) still
+needs triage by both of us - not actioned this session. Grind/red verdict
+state (a genuinely below-floor liberation reading) not yet seen on a real
+image; none of the four test images landed there.
+
+**Next:** Lethabo - triage entry 43's review together. Whoever picks this up
+next: if you find or produce a test image that should land "Grind finer"
+(red), run it through the same direct-render sequence above to complete
+verification of the third verdict state.
+
 ## 2026-09-12 — Codex (43) — publish full adversarial review
 
 **Did:** Preserved the complete team-requested review in
