@@ -2,7 +2,7 @@
 
 Project constitution. Claude Code reads this at the start of every session. Keep it current; it outranks anything in `docs/`.
 
-**Read [`CONTEXT.md`](CONTEXT.md) next.** This file says what is *true* and what the *rules* are. `CONTEXT.md` says where we are, what the single next action is, and what has already bitten us — it is the file that lets a fresh session or a different machine pick up cold. Then [`docs/BUILDLOG.md`](docs/BUILDLOG.md) for what was tried and what failed, and [`docs/05-toolchain.md`](docs/05-toolchain.md) for what to install.
+**Read [`WORKBOARD.md`](WORKBOARD.md) next — it is the shared board Lethabo and Sibusiso both read, and its §0 lists the corrections that beat every other document including parts of this one.** This file says what is *true* and what the *rules* are. `CONTEXT.md` says where we are, what the single next action is, and what has already bitten us — it is the file that lets a fresh session or a different machine pick up cold. Then [`docs/BUILDLOG.md`](docs/BUILDLOG.md) for what was tried and what failed, and [`docs/05-toolchain.md`](docs/05-toolchain.md) for what to install.
 
 **Maintenance rule — these four are updated as work proceeds, not at the end.** Any session that changes the state updates `CONTEXT.md` (§3 next action, §5 if something bit you) and appends to `docs/BUILDLOG.md`. Any session that adds a dependency updates `SBOM.md` **and** `docs/05-toolchain.md` in the same commit. A stale `CONTEXT.md` is worse than none, because it will be trusted.
 
@@ -28,7 +28,21 @@ Built for the Mintek-SCi Grad Hackathon 2026, challenge: *Computer Vision for Re
 
 ## The physics — read this before proposing anything
 
-Hyperspectral reflectance spectroscopy identifies minerals by **molecular absorption features**. Chromite is an opaque spinel with none, and it is **50–75 vol% of UG2 ore**. Spectroscopy on chromitite is a brightness meter. This is why the project pivoted.
+> **Our illumination is UNPOLARISED. No polariser sits in the illumination path**
+> ([ADR-0005](docs/04-decisions/0005-unpolarised-illumination-with-a-rotating-analyser.md), 2026-09-12).
+> The analyser is the only polarising element, and the polarisation we measure is *generated on
+> reflection* by differential reflectance between a grain's eigen-axes: an isotropic grain returns
+> unpolarised light (DOLP 0, flat through the rotation), an anisotropic one returns partially
+> polarised light with DOLP equal to its bireflectance contrast. **Put a fixed polariser in the
+> illumination path and this inverts** — at normal incidence an isotropic medium preserves the linear
+> azimuth, so it reads DOLP 1 and `I(θ) = I₀cos²θ`, *full* modulation from a cubic mineral. The
+> repository asserted the opposite in prose until 2026-09-12 while computing the correct thing; an
+> external reviewer caught it. Pinned now by
+> `test_an_isotropic_grain_under_a_fixed_polariser_modulates_fully`. **"Isotropic stays dark through a
+> full rotation" is true of *specimen* rotation between crossed polars and false of *analyser*
+> rotation — never write it about ours.**
+
+SWIR hyperspectral mineral identification works on **molecular vibrational absorption features**. Chromite is an opaque spinel and has none, and it is **50–75 vol% of UG2 ore** — so SWIR spectroscopy on chromitite is close to a brightness meter. This is why the project pivoted. **Keep that claim narrow.** Chromite *does* have electronic (crystal-field) absorption in the VNIR, so "chromite has no absorption features" is false and must not be said; the defensible statement is about vibrational SWIR identification of an opaque spinel. The 50–75 vol% figure needs an ore-specific citation with its denominator stated — volume, mass and image-area fractions are not interchangeable.
 
 Opaque ore minerals are identified by **quantitative specular reflectance (R%), bireflectance, and anisotropy under crossed polars** — reflected-light ore microscopy, standardised since the 1940s.
 
@@ -38,14 +52,14 @@ This is the trap that most threatens the week-1 gate, and it is not a naming qui
 
 | Geometry | What turns | Modulation | Recovers |
 |---|---|---|---|
-| **Rotating analyser** | analyser, with polariser and specimen fixed | `I(θ) = (S0 + S1cos2θ + S2sin2θ)/2` — **2nd harmonic** | the full linear Stokes vector. **This is our claim.** |
+| **Rotating analyser** | the analyser only — specimen fixed, **illumination unpolarised, no polariser in the path** (ADR-0005) | `I(θ) = (S0 + S1cos2θ + S2sin2θ)/2` — **2nd harmonic** | the full linear Stokes vector. **This is our claim.** |
 | **Stage rotation under crossed polars** | the specimen, with polars fixed and crossed | `I(φ) = \|r₁−r₂\|²(1 − cos4φ)/8` — **4th harmonic** | extinction depth only. The classical observation since the 1940s. |
 
 A 4φ signal has **no 2θ component at all**. Fitting the Stokes model to a stage rotation returns `S1 = S2 = 0` for every anisotropic grain — no exception, no NaN, a perfectly realisable answer, **every anisotropic mineral silently reported as isotropic.** The only witness is `residual_rms`, which sits at exactly `S0/(2√2)`. Proven, not asserted: `test_a_crossed_polars_stage_rotation_inverts_to_zero_anisotropy`.
 
 Hence `RotationSeries.geometry`, which defaults to `UNKNOWN` rather than to the convenient answer, and `require_analyser_rotation()`, which must be called before any Stokes inversion.
 
-**Consequence for the data:** published "XPL rotation sequences" — LumenStone S3 v2, MUMDMC2025 — are almost certainly *stage* rotations, because that is how anisotropy has always been observed. **Verify before building on them** (open finding **N3**). If they are, leg (b) needs a fourth-harmonic estimator, not the Stokes inversion, and the two must never be conflated in the talk.
+**Consequence for the data:** published "XPL rotation sequences" — LumenStone S3 v2, MUMDMC2025 — are *expected* to be stage rotations, because that is how anisotropy has always been observed, but **this is a prior, not a measurement**. **N3's `NEITHER` verdict is WITHDRAWN**: S3 v2's frames are not registered, so every per-pixel result on that archive measured nothing (`WORKBOARD.md` §0 C1, `docs/BUILDLOG.md` session 17). **Leg (b) has never been run.** Verify registration *before* geometry, on any archive, before building on it. If a series does turn out to be a stage rotation, leg (b) needs a fourth-harmonic estimator, not the Stokes inversion, and the two must never be conflated in the talk.
 
 *Also worth knowing:* extinction depth goes as the **square** of bireflectance contrast `a`, while analyser modulation goes as `a` — so the rotating analyser's advantage is `2/a`, and it **grows as the anisotropy weakens**. That is a real argument for the instrument, and it is strongest exactly where the base-metal sulphides live.
 
@@ -53,7 +67,7 @@ Hence `RotationSeries.geometry`, which defaults to `UNKNOWN` rather than to the 
 
 | Mineral | Optics | Metallurgy |
 |---|---|---|
-| Pentlandite | cubic → **isotropic**, stays dark through full analyser rotation | principal PGE host, floats |
+| Pentlandite | cubic → **isotropic**, **flat** through full analyser rotation — DOLP 0, no modulation (*not* dark: at R ≈ 50% it is one of the brightest phases on the section) | principal PGE host, floats |
 | Pyrrhotite | **moderate bireflectance**, anisotropic | depressed, low PGE |
 | Chalcopyrite | weakly anisotropic | floats fast |
 | Chromite | cubic, isotropic, R ≈ 13% | entrainment risk, smelter penalty |
@@ -144,7 +158,7 @@ Python 3.12 · `uv` · `ruff` · pytest + hypothesis · scikit-image · OpenCV �
 
 Micro-Manager and ImageJ/Fiji are **not** dependencies. They were acquisition-side; with no rig there is nothing to drive. Data comes in through `RotationSeries`, which is the acquisition boundary and takes a phantom, a stored public series, or a driver that does not exist.
 
-Instrument design, **not built** (ADR-0002): Raspberry Pi 5 · Pi HQ Camera · reversed M12 or microscope objective · **OpenFlexure** printed stage (sub-100 nm, open source) · steppers + PCA9685 · multispectral LED ring · salvaged LCD polarisers · acrylic-resin polished sections. This is a BOM to present, not kit to buy.
+Instrument design, **not built** (ADR-0002): Raspberry Pi 5 · Pi HQ Camera · reversed M12 or microscope objective · **OpenFlexure** printed stage (sub-100 nm, open source) · steppers + PCA9685 · multispectral LED ring · **one** salvaged LCD polariser as the rotating analyser, plus a depolarising diffuser on the illumination side — **not** a crossed pair (ADR-0005) · acrylic-resin polished sections. This is a BOM to present, not kit to buy.
 
 ## Reference sources — free and authoritative
 

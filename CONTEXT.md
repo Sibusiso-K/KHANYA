@@ -9,6 +9,8 @@ Keep it current. A stale CONTEXT.md is worse than none, because it will be trust
 
 - **Last updated:** 2026-09-12
 - **Last commit at time of writing:** S3 v2's rotation frames are not registered — N3 and the extinction result both measured nothing
+- **Read [`WORKBOARD.md`](WORKBOARD.md) first.** It is the shared board Lethabo and Sibusiso both read: what in
+  here is superseded, the scoreboard against the brief, the work queue, and the open decisions.
 - **Days to final:** 19 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
 - **Abstract deadline: 30 August 2026 — submitted and complete.** Drafted and rendered:
   [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
@@ -27,11 +29,12 @@ Keep it current. A stale CONTEXT.md is worse than none, because it will be trust
 | # | File | Why |
 |---|---|---|
 | 1 | [`CLAUDE.md`](CLAUDE.md) | Constitution. The physics, the nine rules, the kill list. Outranks everything. |
-| 2 | **this file** | Where we are and what to do next. |
-| 3 | [`docs/BUILDLOG.md`](docs/BUILDLOG.md) | What we tried, what worked, what did not, and why. Append-only. |
-| 4 | [`docs/00-STATUS.md`](docs/00-STATUS.md) | Which docs are current vs superseded. `docs/` holds four generations of design and they contradict each other on purpose. |
-| 5 | [`docs/04-decisions/`](docs/04-decisions/) | ADRs. Three so far, all binding. ADR-0003 is the naming: **REEFPRINT, otherwise known as KHANYA**. |
-| 6 | [`docs/02-gauntlet-findings.md`](docs/02-gauntlet-findings.md) | The adversarial review. **Read before proposing anything** — most good ideas here were already killed for a stated reason. |
+| 2 | [`WORKBOARD.md`](WORKBOARD.md) | **The shared board Lethabo and Sibusiso both read.** Corrections in force, the scoreboard against the brief, the work queue, and the open decisions. Read it before this file — §0 lists what in here is superseded. |
+| 3 | **this file** | Where we are and what to do next, in detail. |
+| 4 | [`docs/BUILDLOG.md`](docs/BUILDLOG.md) | What we tried, what worked, what did not, and why. Append-only. |
+| 5 | [`docs/00-STATUS.md`](docs/00-STATUS.md) | Which docs are current vs superseded. `docs/` holds four generations of design and they contradict each other on purpose. |
+| 6 | [`docs/04-decisions/`](docs/04-decisions/) | ADRs. Three so far, all binding. ADR-0003 is the naming: **REEFPRINT, otherwise known as KHANYA**. |
+| 7 | [`docs/02-gauntlet-findings.md`](docs/02-gauntlet-findings.md) | The adversarial review. **Read before proposing anything** — most good ideas here were already killed for a stated reason. |
 
 Everything else is reference, and `docs/00-STATUS.md` tells you which parts of it are still true.
 
@@ -41,12 +44,17 @@ Everything else is reference, and `docs/00-STATUS.md` tells you which parts of i
 
 REEFPRINT identifies opaque ore minerals and quantifies their deportment from reflected-light
 microscopy, by recovering the **full linear Stokes vector at every pixel** from a rotating-analyser
-image series. Hyperspectral reflectance cannot do this: chromite is an opaque spinel with no
-molecular absorption features and it is 50–75 vol% of UG2 ore, so spectroscopy on chromitite is a
-brightness meter. Reflected-light ore microscopy has identified these minerals since the 1940s by
-quantitative reflectance, bireflectance and anisotropy under crossed polars. The measurement that
-carries the project is that **pentlandite is cubic and stays dark through a full analyser
-rotation while pyrrhotite is anisotropic and lights up** — and that split governs PGE deportment
+image series. SWIR hyperspectral identification cannot do this: chromite is an opaque spinel with
+no molecular *vibrational* absorption features and it is 50–75 vol% of UG2 ore, so SWIR
+spectroscopy on chromitite is close to a brightness meter. **Keep that narrow** — chromite does
+have electronic (crystal-field) absorption in the VNIR, so "no absorption features" is false and
+must not be said, and the 50–75 vol% figure needs an ore-specific citation with its denominator
+stated. Reflected-light ore microscopy has identified these minerals since the 1940s by
+quantitative reflectance, bireflectance and anisotropy under crossed polars — though *that*
+classical observation is a **stage** rotation, and ours is not; see ADR-0005. The measurement that
+carries the project is that, **under unpolarised illumination** ([ADR-0005](docs/04-decisions/0005-unpolarised-illumination-with-a-rotating-analyser.md)),
+**pentlandite is cubic and stays flat through a full analyser rotation — DOLP 0, no modulation —
+while pyrrhotite is anisotropic and lights up** — and that split governs PGE deportment
 and flotation response. It is software, evaluated on public data. **No instrument is built**
 ([ADR-0002](docs/04-decisions/0002-software-only-no-instrument-is-built.md)).
 
@@ -56,7 +64,7 @@ and flotation response. It is software, evaluated on public data. **No instrumen
 
 | Week | Gate | State |
 |---|---|---|
-| **1** | Rotation series in, per-pixel Stokes out, pentlandite dark / pyrrhotite lit, on screen | **Leg (a) phantom: PASSED**, 40.4× separation. **Leg (b) real public data: N3 measured, verdict `NEITHER`** ← *we are here*. Sibusiso ran `experiments/002-s3v2-geometry/run.py` against the real `S3_v2.zip` twice, identically: 29 sections, 116,000 pixels, 2nd-harmonic SNR 2.5× its floor, 4th-harmonic SNR 1.1×, threshold 5.0×. Neither harmonic clears detection. Not clearance for the Stokes inversion — see §8 N3 for why this leans stage, not neutral. |
+| **1** | Rotation series in, per-pixel Stokes out, pentlandite dark / pyrrhotite lit, on screen | **Leg (a) phantom: PASSED**, 40.4× separation. **Leg (b): never run.** The `NEITHER` verdict reported here previously is **WITHDRAWN** — S3 v2's frames are not registered, so every per-pixel result on that archive measured nothing (see the 2026-09-12 correction below, `docs/BUILDLOG.md` session 17, and `WORKBOARD.md` §0 C1). What survives is that the geometry discriminator **refused the input, correctly**. |
 | 2 | Falsification test computed, with CI | **Statistical core built and tested** (`reefprint.heads.falsification`, cluster-robust CR1 by locality, honest n = locality count). Proven against synthetic data with a known ground truth — a real texture effect detected, a real absence not manufactured. **Real Bushveld geochemistry now in hand for 3 of 4 required inputs** — `data/bushveld_thaba_chromitite/` (Bachmann 2019, Mendeley, CC BY 4.0, cited): 1,205 assay rows give `target` (real PGE grades), `Cr2O3_%` (half of `baseline_features`), and 317-borehole `localities`, all real, none synthetic. **`texture_features` is still the missing piece, and it is structurally missing, not administratively** — see §8. |
 | 3 | Conformal coverage within band, per held-out locality | **implemented and tested** (`reefprint.trust.conformal`; Week 3 gate harness) |
 | 4 | Zero silent failures under degraded input | **implemented and tested** (`reefprint.trust.quality`; explicit refusal for each named degradation) |
@@ -92,6 +100,14 @@ hardware-facing half of `acquire` (which, per ADR-0002, has no rig to drive). Ea
 is missing — **the red test list is the backlog**, deliberately.
 
 ### The single next action
+
+**2026-09-12 — the next action is now tracked on [`WORKBOARD.md`](WORKBOARD.md) §3, and the queue
+there is P1 → P5. It is blocked on decision D1** (does polarimetry come off the critical path?),
+which is the domain lead's call and is recorded in `WORKBOARD.md` §4. Once D1 is answered the
+first action is **P1 — the OPC UA advisory server**, acceptance test
+`tests/test_integrate.py::test_opc_ua_server_exposes_advisory_values`. The weekly-gate framing
+below is historical: the gates are green or closed, and what remains is the brief's literal
+deliverables, which `WORKBOARD.md` §2 scores.
 
 **Weeks 1–6 are green or closed with a documented reason.** The paired host ran the full
 offline-demo path and materialised `output/reefprint-backup-demo.gif`. The next action on this
@@ -397,7 +413,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **314 passed, 7 deselected**. Anything less is a regression, not a quirk.
+Expect **315 passed, 7 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
@@ -519,7 +535,7 @@ rusty met-eng *and* owns the ten-minute narrative, and neither should quietly be
 |---|---|---|
 | **N1** | Pirard 2007 prior art — full paper still unread (paywalled, both ScienceDirect and an academia.edu mirror blocked direct fetch), but 2026-08-28 the abstract (via search indexing, not a verified literal quote) narrowed the risk: plane-polarised static grain-boundary imaging + grey-level intercept stereology, no analyser rotation, no per-pixel Stokes recovery — further from our claim than assumed. See CLAUDE.md's prior-art note. Full text still needed before week 6, lower urgency than previously. | before week 6 |
 | **N2** | 1/S0 noise floor means no fixed anisotropy threshold is defensible. Any discrimination rule must condition on S0 and report an interval. | week 2+ |
-| **N3** | **Is LumenStone S3 v2 a stage rotation or an analyser rotation?** **Measured, twice, identically: `NEITHER` clears `DETECTION_SNR` (2θ SNR 2.5×, 4θ SNR 1.1×, threshold 5.0×), leaning stage on the physics (extinction scales as bireflectance², weaker; analyser modulation scales as bireflectance, stronger — a symmetric null favours the weaker signal's geometry).** Not closed — open until either a confirmed-analyser archive turns up or a pixel-selection re-run clears the 2θ threshold. Route leg (b) and KHANYA's ten-mineral symmetry test through `reefprint.polarim.extinction`, not the Stokes inversion, until then. | open — route around it, see §3 |
+| **N3** | **WITHDRAWN 2026-09-12 — the verdict measured nothing.** S3 v2's frames are **not registered**: the field rotates with the specimen, so a given pixel is a different physical point in every frame. All three independent `NEITHER` runs and the brightness-quantile re-run were computed across unregistered frames; agreement across two machines tested determinism, not validity. The question *"is S3 v2 a stage or an analyser rotation?"* is **unanswered**, and leg (b) has **never been run**. What survives, and improves: the discriminator refused the input, and refusing was correct. Re-opening it needs a per-frame transform estimated **from the data** (log-polar phase correlation or ECC) — see `WORKBOARD.md` P5. | open — off the critical path |
 | **F1** | Chromite-proxy collapse — the falsification test runs regardless and the result is published either way. | week 2 gate |
 | **F2** | Talc/serpentine without SWIR is unproven. If it fails, drop to two properties. | week 2, empirical |
 | **S2** | Plant history was generated under FloatStar closed-loop control. No causal claim from observational plant data. | any use of the Kaggle flotation dataset |

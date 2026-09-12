@@ -4,10 +4,13 @@ Identifies opaque ore minerals and quantifies their deportment by multispectral 
 reflectance plus full linear Stokes polarimetry, with calibrated uncertainty and an explicit
 refusal mechanism.
 
-The physics, in one line: opaque minerals have no diagnostic molecular absorption features, so
-they are identified by specular reflectance, bireflectance and anisotropy under crossed polars.
-Pentlandite is cubic and stays dark through a full analyser rotation; pyrrhotite is anisotropic
-and lights up. That distinction governs PGE deportment.
+The physics, in one line: opaque minerals have no diagnostic molecular *vibrational* absorption
+features, so they are identified by specular reflectance, bireflectance and anisotropy. Our
+illumination is **unpolarised**, with the analyser the only polarising element (ADR-0005), so
+the polarisation is generated on reflection: pentlandite is cubic and stays **flat** through a
+full analyser rotation — DOLP 0, no modulation — while pyrrhotite is anisotropic and lights up.
+That distinction governs PGE deportment. The classical *crossed-polars* observation is a
+**stage** rotation and is a different instrument; see :mod:`reefprint.polarim.geometry`.
 
 See ``CLAUDE.md`` for the rules that constrain every module here. Rule 1 — *never invent a
 number* — is the one that applies to every subpackage without exception, so its guard lives

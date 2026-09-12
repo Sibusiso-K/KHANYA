@@ -7,10 +7,33 @@ An ideal linear analyser at angle ``theta`` in front of the detector passes
 which is Malus's law generalised to partially polarised light. Three or more analyser angles
 that are distinct modulo pi therefore determine (S0, S1, S2) per pixel.
 
-Why this is the load-bearing measurement: under crossed polars an isotropic phase shows no
-modulation as the analyser turns, and an anisotropic one does. Pentlandite is cubic and stays
-dark through a full rotation; pyrrhotite has moderate bireflectance and lights up. The
-normalised modulation depth,
+**The illumination is unpolarised, and that is not a detail** (ADR-0005). No polariser sits in
+the illumination path: unpolarised light reaches the specimen and the analyser is the only
+polarising element, in front of the detector. The polarisation we measure is *generated on
+reflection*, by differential reflectance between the grain's two eigen-axes.
+
+    incident        grain                    reflected                       DOLP
+    unpolarised     isotropic, r1 == r2      unpolarised                     0    -> no modulation
+    unpolarised     anisotropic, r1 != r2    partially linearly polarised    (|r1|^2 - |r2|^2)
+                                             along the eigen-axes            / (|r1|^2 + |r2|^2)
+
+So an isotropic phase shows no modulation as the analyser turns and an anisotropic one does.
+Pentlandite is cubic and stays flat through a full rotation; pyrrhotite has moderate
+bireflectance and lights up.
+
+**The counterexample that pins this, and why the arrangement must be stated.** Put a fixed
+polariser in the illumination path instead and the conclusion inverts. At normal incidence an
+isotropic medium has ``r_s == r_p``, so its Jones matrix is ``r * I`` and reflection preserves
+the linear azimuth: incident linear light returns linear light at the same azimuth, giving
+``(S0, S1, S2) = (I0, I0, 0)``, ``DOLP = 1`` and ``I(theta) = I0 cos^2(theta)`` — *full*
+modulation, from a cubic mineral. An isotropic grain that "stays dark through a full rotation"
+is an observation about **specimen rotation between fixed crossed polars**, which is the other
+row of the geometry table in :mod:`reefprint.polarim.geometry` and a different instrument.
+Conflating the two is the error this module's own guard exists to prevent, and the repository
+made it in prose until 2026-09-12. Pinned by
+``test_an_isotropic_grain_under_a_fixed_polariser_modulates_fully``.
+
+The normalised modulation depth,
 
     (I_max - I_min) / (I_max + I_min) = sqrt(S1**2 + S2**2) / S0 = DOLP
 

@@ -22,6 +22,94 @@ it is a press release.
 
 ---
 
+## 2026-09-12 — session 18 · one shared board, and the illumination path does not match the code
+
+*Numbering note: this file carries two merged counters — the 17 above is the newest `reefprint`
+entry, and the 2x/3x series arrived with `main`'s rebase. Newest is still top, by date.*
+
+### Attempted
+
+Absorb `docs/08-handover.md` cold, verify the state it claims, and give Lethabo and Sibusiso a
+single file they can both open to know what is being worked on — the repo carries eleven
+overlapping status documents across two branches and they disagree.
+
+### Worked
+
+- **Baseline re-verified, not taken on trust.** `uv run pytest -m "not placeholder" -q` →
+  **314 passed, 7 deselected** in 115.92 s. `uv run pytest -m placeholder -q` → **7 failed**,
+  and the seven names match the documented backlog exactly.
+- **`WORKBOARD.md` created** at repo root: corrections in force, lane ownership, the scoreboard
+  against the brief's literal deliverables, the P1–P5 queue with acceptance tests, the open
+  decisions, and the session ritual. It is the index, not a twelfth status document — it says
+  which of the existing eleven to trust.
+- **Two stale rows in `CONTEXT.md` corrected.** §3's week-1 table and §8's N3 row still reported
+  the `NEITHER` verdict as a measurement, while a paragraph further down the same file said it was
+  withdrawn. A file that contradicts itself will be quoted from the wrong half.
+
+### Did not work — and this is the finding
+
+**The constitution and the code disagree about whether a polariser is in the illumination path,
+and the disagreement inverts the headline discriminator.** Found by reading finding #5 of
+`khanya/main:reports/TECHNICAL-REVIEW-2026-09-12.md` against the source. `08-handover.md` does
+not mention it.
+
+- `src/reefprint/polarim/stokes.py:10` — *"under crossed polars an isotropic phase shows no
+  modulation as the analyser turns"*. `CLAUDE.md`'s geometry table — *"analyser, with polariser
+  and specimen fixed"*.
+- With a fixed polariser this is **false**. Normal-incidence reflection off an isotropic medium
+  preserves the linear azimuth, so (S0,S1,S2) = (I₀, I₀, 0), DOLP = 1, I(θ) = I₀cos²θ — *full*
+  modulation. The review's counterexample is correct.
+- **But the code does not implement that arrangement.** `acquire/phantom.py:203` sets
+  `magnitude = anisotropy × reflectance_pct`, so DOLP = `anisotropy`, and `:98` sets cubic → 0.
+  That is the forward model for **unpolarised incident light**, where polarisation is *generated*
+  on reflection by differential reflectance between the eigen-axes: isotropic → DOLP 0,
+  anisotropic → DOLP = (|r₁|²−|r₂|²)/(|r₁|²+|r₂|²) = bireflectance contrast. Both correct
+  physics; different instruments.
+- Corroboration that unpolarised is the intended model: `CLAUDE.md`'s own scaling argument
+  (analyser modulation goes as `a`, extinction as `a²`) only holds under it.
+- **So the forward model is sound and the prose names the wrong instrument.** The BOM's *"salvaged
+  LCD polarisers"* (plural) is a third inconsistent statement of the same thing.
+- Flagged in `CLAUDE.md` §Physics as an open block rather than rewritten — it is decision **D2**
+  for the domain lead, not a typo, and rewriting the constitution's physics unilaterally is
+  exactly what blind spot 11 warns about.
+
+### Learned
+
+**A correction that lands in one paragraph does not reach the table three screens up.** Session
+17 withdrew N3 and wrote the withdrawal into `CONTEXT.md` §3's prose, and both the summary table
+above it and the §8 row below it went on asserting the withdrawn verdict for a day. When a finding
+is withdrawn, grep the whole file for the number, not just the section you were editing.
+
+### Then both decisions were taken, same session
+
+**D1 → [ADR-0004](04-decisions/0004-polarimetry-is-a-research-thread-not-the-submission-spine.md).**
+Polarimetry comes off the critical path. Spine is segmentation → processability → plant interface.
+Nothing is deleted and the claim is not withdrawn — leg (b) is *untested*, not *negative*.
+
+**D2 → [ADR-0005](04-decisions/0005-unpolarised-illumination-with-a-rotating-analyser.md).**
+Illumination is unpolarised; the prose named the wrong instrument. Corrected in `CLAUDE.md`,
+`CONTEXT.md`, `README.md`, `src/reefprint/__init__.py` and `polarim/stokes.py`; BOM reconciled to
+one analyser plus a depolarising diffuser; pinned by
+`test_an_isotropic_grain_under_a_fixed_polariser_modulates_fully`.
+
+**Two things the fix sharpened that the analysis had not:**
+
+- **"Dark" was wrong twice over.** An unmodulated isotropic grain sits at `S0/2` throughout, and
+  pentlandite at R ≈ 50% is among the *brightest* phases on the section. The word is **flat**.
+- **The submitted abstract is clean.** Both its uses of "crossed polars" describe the classical
+  stage-rotation discipline, not our instrument. Checked before assuming it needed a correction.
+
+**And the repo caught its own drift.** Adding the counterexample test took the suite 314 → 315, and
+`test_context_quotes_the_real_passing_and_deselected_counts` failed until `CONTEXT.md` §4 was
+updated. Final state: **315 passed, 7 deselected**, ruff clean.
+
+### Left open
+- D3 (T1 texture dataset) · D4 (T2 pyroxene proxy) · D5 (LumenStone rights) · D6 (commit email).
+- `ENDGAME.md` §3's framing table still cites the invalid extinction null as an asset. That file
+  is on `main` — Sibusiso's to correct, per ADR-0003.
+
+---
+
 ## 2026-09-12 — session 17 · S3 v2's frames are NOT REGISTERED. N3 was measuring nothing.
 
 ### Attempted

@@ -345,5 +345,53 @@ def test_anisotropy_separates_sulphides_that_reflectance_cannot():
     assert stokes.anisotropy[pyrrhotite].mean() > 0.08
 
 
+def test_an_isotropic_grain_under_a_fixed_polariser_modulates_fully() -> None:
+    """The counterexample that fixes our illumination arrangement in place (ADR-0005).
+
+    Our instrument illuminates with **unpolarised** light, so an isotropic grain reflects
+    unpolarised light and shows no analyser modulation at all. Put a fixed polariser in the
+    illumination path instead and the conclusion inverts: at normal incidence an isotropic
+    medium has ``r_s == r_p``, so reflection preserves the linear azimuth, the reflected state
+    is ``(I0, I0, 0)``, and Malus's law gives ``I(theta) = I0 cos^2(theta)`` — a cubic mineral
+    modulating from full brightness to zero.
+
+    This test exists because the repository asserted the opposite in prose until 2026-09-12,
+    while computing the correct thing. It is the guard that stops the false sentence returning:
+    "isotropic stays dark through a full rotation" is true of *specimen* rotation between fixed
+    crossed polars, and false of *analyser* rotation under a fixed polariser.
+    """
+    intensity = 1.0
+
+    # An isotropic grain under a FIXED POLARISER. Not our arrangement — the counterexample.
+    linear = StokesImage(
+        s0=np.asarray(intensity),
+        s1=np.asarray(intensity),  # fully linearly polarised, along the polariser axis
+        s2=np.asarray(0.0),
+        residual_rms=np.asarray(0.0),
+        n_angles=MIN_ANGLES,
+    )
+    assert linear.dolp == pytest.approx(1.0)
+
+    angles = np.linspace(0.0, np.pi, 36, endpoint=False)
+    observed = np.array([float(intensity_at_angle(linear, angle)) for angle in angles])
+
+    # Malus: full modulation, zero at the crossed position. Not "dark throughout".
+    assert observed.max() == pytest.approx(intensity)
+    assert observed.min() == pytest.approx(0.0, abs=1e-12)
+    assert observed == pytest.approx(intensity * np.cos(angles) ** 2)
+
+    # And the same grain under OUR arrangement — unpolarised illumination — is flat.
+    unpolarised = StokesImage(
+        s0=np.asarray(intensity),
+        s1=np.asarray(0.0),
+        s2=np.asarray(0.0),
+        residual_rms=np.asarray(0.0),
+        n_angles=MIN_ANGLES,
+    )
+    assert unpolarised.dolp == pytest.approx(0.0)
+    flat = np.array([float(intensity_at_angle(unpolarised, angle)) for angle in angles])
+    assert flat == pytest.approx(intensity / 2.0)
+
+
 def _with_reflectance(phase: Phase, reflectance_pct: float) -> Phase:
     return replace(phase, reflectance_pct=reflectance_pct)

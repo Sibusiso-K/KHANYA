@@ -25,9 +25,12 @@ Mineralogical Characterisation*. Team Sonar. Final: 1 October 2026, Mintek Randb
 > contain, and that axis discriminates the base-metal sulphides whose split governs PGE
 > deportment and flotation response.
 
-Pentlandite is cubic: it stays dark through a full analyser rotation. Pyrrhotite is
-anisotropic: it lights up. Pentlandite is the principal PGE host and it floats. Pyrrhotite is
-depressed and carries little PGE. Telling them apart is the whole point.
+Our illumination is **unpolarised**, with the analyser the only polarising element
+([ADR-0005](docs/04-decisions/0005-unpolarised-illumination-with-a-rotating-analyser.md)).
+Pentlandite is cubic, so the light it reflects stays unpolarised and its intensity is **flat**
+through a full analyser rotation — DOLP 0. Pyrrhotite is anisotropic: it lights up. Pentlandite
+is the principal PGE host and it floats. Pyrrhotite is depressed and carries little PGE. Telling
+them apart is the whole point.
 
 **Keep the claim narrow.** "Nobody uses polarised light" is false — Pirard, Lebichot & Krier
 (2007) is direct prior art on polarised-light imaging in ore microscopy. Per-pixel Stokes
