@@ -62,8 +62,12 @@ def run_epoch(model, loader, criterion, optimiser, dev, train: bool):
 def report(summary):
     lines = [f"  mean IoU {summary['mean_iou']:.4f}   "
              f"pixel accuracy {summary['pixel_accuracy']:.4f}"]
-    for name, iou in zip(ls.CLASS_NAMES, summary["iou_per_class"]):
-        lines.append(f"    {name:14s} IoU {iou:.4f}")
+    for name, iou, recall, precision in zip(
+        ls.CLASS_NAMES, summary["iou_per_class"],
+        summary["recall_per_class"], summary["precision_per_class"],
+    ):
+        lines.append(f"    {name:14s} IoU {iou:.4f}   "
+                     f"recall {recall:.4f}   precision {precision:.4f}")
     return "\n".join(lines)
 
 
