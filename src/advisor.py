@@ -142,8 +142,12 @@ def advise(result, mean_confidence: float,
     if payload < PAYLOAD_FLOOR:
         return Recommendation(
             "Flag for manual review - low payload signal",
-            f"Payload phases occupy {payload:.2%} of ore area, below the "
-            f"{PAYLOAD_FLOOR:.2%} floor. Do not report confidence on aggregate "
+            # 3 decimal places, not 2: PAYLOAD_FLOOR is itself 0.30%, so a
+            # payload just under it (e.g. 0.299%) rounds to the same "0.30%"
+            # at 2dp and the message reads as self-contradictory ("0.30%,
+            # below the 0.30% floor").
+            f"Payload phases occupy {payload:.3%} of ore area, below the "
+            f"{PAYLOAD_FLOOR:.3%} floor. Do not report confidence on aggregate "
             "accuracy alone - a model can score well overall while effectively "
             "missing this class.",
             confidence,

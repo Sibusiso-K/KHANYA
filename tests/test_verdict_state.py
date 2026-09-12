@@ -22,7 +22,7 @@ def test_only_abstaining_states_render_amber(action, expected_class):
 
 @pytest.mark.parametrize("action", [
     "",
-    "Somethign unexpected",
+    "Something unexpected",
     "continue at current setpoint",  # wrong case is not the exact match
 ])
 def test_unrecognised_actions_fail_safe_not_open(action):
