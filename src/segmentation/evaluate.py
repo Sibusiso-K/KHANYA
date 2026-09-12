@@ -29,11 +29,11 @@ def main():
         metrics.confusion_from_batch(pred, masks, 2, confusion)
 
     summary = metrics.summarise(confusion)
-    print(json.dumps(summary, indent=2))
+    print(json.dumps(metrics.json_safe(summary), indent=2))
 
     config.REPORT_DIR.mkdir(exist_ok=True)
     with open(config.REPORT_DIR / "segmentation_test_metrics.json", "w") as f:
-        json.dump(summary, f, indent=2)
+        json.dump(metrics.json_safe(summary), f, indent=2)
 
 
 if __name__ == "__main__":

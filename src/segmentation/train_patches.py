@@ -169,7 +169,7 @@ def evaluate(loss_name="ce"):
     suffix = "" if loss_name == "ce" else f"_{loss_name}"
     out = config.REPORT_DIR / f"lumenstone_{ls.SUBSET.lower()}_patches{suffix}_test_metrics.json"
     with open(out, "w") as f:
-        json.dump(summary, f, indent=2)
+        json.dump(metrics.json_safe(summary), f, indent=2)
     print(f"wrote {out}")
 
 

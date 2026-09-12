@@ -8,6 +8,41 @@
   ],
   "mean_iou": 0.5725330422082483,
   "pixel_accuracy": 0.8913571306242792,
+  "tp_per_class": [
+    23818553,
+    3777020,
+    0,
+    56571212,
+    8351935
+  ],
+  "fp_per_class": [
+    1453495,
+    1288838,
+    0,
+    4516035,
+    4018256
+  ],
+  "fn_per_class": [
+    2077612,
+    1497200,
+    821587,
+    3976233,
+    2903992
+  ],
+  "recall_per_class": [
+    0.9197714410608675,
+    0.7161286408227188,
+    0.0,
+    0.9343286409525621,
+    0.7420033019048542
+  ],
+  "precision_per_class": [
+    0.9424860620714237,
+    0.7455834727305819,
+    null,
+    0.926072376448721,
+    0.6751662120657635
+  ],
   "class_names": [
     "background",
     "chalcopyrite",
@@ -16,5 +51,6 @@
     "pentlandite"
   ],
   "n_test_images": 12,
-  "method": "sliding window, 512px patches at native resolution, whole sections, no downsampling"
+  "method": "sliding window, 512px patches at native resolution, whole sections, no downsampling",
+  "loss": "ce"
 }

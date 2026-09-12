@@ -2,9 +2,11 @@
 3-class example - added when the 2026-09-12 review's accuracy-report template
 needed real TP/FP/FN/recall/precision, not just IoU and pixel accuracy.
 """
+import json
+
 import torch
 
-from src.segmentation.metrics import summarise
+from src.segmentation.metrics import json_safe, summarise
 
 
 def _confusion_from_pairs(pairs, num_classes=3):
@@ -47,3 +49,22 @@ class TestSummarise:
         pairs = [(0, 0), (1, 1)]
         summary = summarise(_confusion_from_pairs(pairs))
         assert summary["mean_iou"] == 1.0
+
+
+class TestJsonSafe:
+    def test_nan_becomes_null_so_the_report_is_strict_json(self):
+        """A bare NaN token is valid input to Python's own json.dump but is
+        not standard JSON - a stricter reader (JS's JSON.parse, jq) fails to
+        parse it. Every report written to disk must go through this first."""
+        pairs = [(0, 0)]  # class 1 never appears in truth or prediction
+        summary = summarise(_confusion_from_pairs(pairs, num_classes=2))
+        assert summary["precision_per_class"][1] != summary["precision_per_class"][1]
+
+        safe = json_safe(summary)
+        assert safe["precision_per_class"][1] is None
+        # Must not silently corrupt a real, defined value.
+        assert safe["precision_per_class"][0] == 1.0
+
+        dumped = json.dumps(safe)
+        assert "NaN" not in dumped
+        assert json.loads(dumped)["precision_per_class"][1] is None

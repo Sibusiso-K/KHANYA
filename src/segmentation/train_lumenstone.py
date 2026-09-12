@@ -111,7 +111,7 @@ def evaluate():
     config.REPORT_DIR.mkdir(exist_ok=True)
     out = config.REPORT_DIR / "lumenstone_s2_test_metrics.json"
     with open(out, "w") as f:
-        json.dump(summary, f, indent=2)
+        json.dump(metrics.json_safe(summary), f, indent=2)
     print(f"wrote {out}")
 
 

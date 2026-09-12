@@ -88,3 +88,19 @@ def summarise(confusion):
 
 def new_confusion(num_classes=2):
     return torch.zeros(num_classes, num_classes, dtype=torch.float64)
+
+
+def json_safe(summary):
+    """summarise()'s NaN (an undefined rate, e.g. precision for a class the
+    model never predicted) is a real Python float, valid input to Python's
+    own json.dump - but a bare `NaN` token is not standard JSON, and a strict
+    reader (JS's JSON.parse, jq, most non-Python tooling) will fail to parse
+    a report written without this. Convert to null before writing any
+    report to disk; keep using the NaN-valued dict returned by summarise()
+    for in-process arithmetic, where NaN's "any comparison is false"
+    behaviour is what the mean_iou/aggregate logic here already relies on.
+    """
+    return {
+        key: [None if v != v else v for v in value] if isinstance(value, list) else value
+        for key, value in summary.items()
+    }
