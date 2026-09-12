@@ -22,6 +22,72 @@ it is a press release.
 
 ---
 
+## 2026-09-12 — session 19 · P1 shipped: a real local OPC UA advisory server
+
+### Attempted
+
+Build the P1 item from `WORKBOARD.md`: a real local OPC UA server exposing advisory values, a
+separate simulated control client, and a demonstration of refusing a stale advisory. Acceptance
+test: `tests/test_integrate.py::test_opc_ua_server_exposes_advisory_values`.
+
+### Worked
+
+- **`reefprint.integrate.opcua_server.AdvisoryServer`** — a genuine `asyncua.Server`, not a
+  mock. Binds `127.0.0.1` on a port chosen with a plain `socket` bind-then-release before the
+  server starts, so the endpoint is known without introspecting `asyncua` internals. Publishes
+  each advisory head under a `sim_advisories` folder as six OPC UA variables (value, unit,
+  emitted_at, valid_for_seconds, advisory_influenced, source) and hands back opaque node IDs —
+  a real integration is expected to have these from an engineering configuration, not from
+  browsing the address space at runtime.
+- **`reefprint.integrate.opcua_client.SimulatedControlClient`** — its own process boundary,
+  connects over the wire, and either applies a fresh head to a `SimulatedPlantParameter` or
+  returns `RefusedStaleAdvisory`. The refusal type has **no field for a prior value**, mirroring
+  `trust.abstain.Abstention`'s discipline: the transport layer cannot become a place to re-invent
+  "hold the last setpoint" just because the domain layer forbids it.
+- **`AdvisoryRecord` extended** with `unit`, `emitted_at` (default `time.time()`),
+  `valid_for_seconds` (default `inf`, so the existing test needed no change), finite-value
+  validation on every entry, and `is_expired()`. `values` is now stored as a `MappingProxyType`
+  internally — a frozen dataclass with a plain `dict` field was mutable through that field, which
+  is the kind of bug that survives until someone mutates a record after passing it downstream.
+- Verified end to end with a raw `asyncio.run` smoke script before writing the test, publish +
+  read round trip confirmed on the actual API (asyncua 2.0.1) rather than assumed from memory —
+  `add_folder`, `add_variable`, `write_value` and `NodeId.to_string()` are all coroutine or
+  method signatures checked with `inspect.signature` first, because the library's version in
+  this venv (2.0.1) was not something to assume matches whatever version training data implies.
+- Test suite: **317 passed, 6 deselected** (was 315/7 — P1's test moved from placeholder-fail to
+  passing, plus two new tests for the finite-value/expiry guards). `CONTEXT.md` §4's guard
+  caught the stale count immediately, same as session 18.
+- CI: `.github/workflows/ci.yml` now runs `uv sync --all-groups --extra integrate` in both jobs.
+  Deliberately not `--all-extras` — the `ml` extra pulls PyTorch and this suite must stay
+  runnable on a clean checkout without it.
+
+### Did not work
+
+Nothing failed outright; the main risk managed was API drift. `asyncua`'s public interface was
+checked against the installed 2.0.1 wheel with `inspect.signature` before any server code was
+written, specifically because an OPC UA server that silently used a wrong-generation API and
+still imported cleanly would be exactly the kind of green-suite-wrong-code failure CLAUDE.md's
+traps list warns about.
+
+### Learned
+
+**Verify a third-party async library's API against the installed version before writing against
+it, not after.** A five-minute `inspect.signature` pass plus one throwaway smoke script (raw
+`asyncio.run`, no test framework) caught the exact call shapes (`add_variable`'s positional
+order, `NodeId.to_string()` vs `str()`, `Client` as an async context manager) before any of it
+was load-bearing in the real module.
+
+### Left open
+
+- `verdict_state()`'s favourable-fallthrough bug is **KHANYA's**, on `main` — raised to
+  Sibusiso in issue #4, not fixed here.
+- Wiring `AdvisoryServer` + `SimulatedControlClient` into `reefprint.viz.demo`, and a latency
+  measurement on the OPC UA path itself, are folded into **P3**.
+- **P2 is next** — the fine-chromite entrainment risk head,
+  `tests/test_heads.py::test_fine_chromite_entrainment_risk_index`.
+
+---
+
 ## 2026-09-12 — session 18 · one shared board, and the illumination path does not match the code
 
 *Numbering note: this file carries two merged counters — the 17 above is the newest `reefprint`

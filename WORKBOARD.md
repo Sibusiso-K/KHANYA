@@ -6,10 +6,10 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-12, 20:40 SAST — **D1 and D2 CLOSED**, ADR-0004 and ADR-0005 written |
+| **Last updated** | 2026-09-12, 20:50 SAST — **P1 (OPC UA advisory server) SHIPPED** |
 | **Days to final** | **19** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
-| **REEFPRINT suite** | **315 passed, 7 deselected** — re-run and verified 2026-09-12 (314 + the ADR-0005 counterexample test) |
+| **REEFPRINT suite** | **317 passed, 6 deselected** — re-run and verified 2026-09-12 (+2 for P1's OPC UA round-trip and expiry tests, one placeholder now built) |
 | **KHANYA suite** | 87 passing (reported by main's audit; not re-run this session) |
 
 **Detail lives elsewhere, and this file says which of it to trust:**
@@ -154,7 +154,7 @@ sides — a shared board that disagrees with itself is worse than no board.
 | ≥3 mineral phases | 🟡 S2 gives nonzero IoU for three sulphides — **locality separation unverified** | Sibusiso |
 | Accuracy report | 🟡 Partial — needs honest grouping, CIs, trivial baselines | Both |
 | Processability prediction | 🔴 **None of the three heads built** | Lethabo |
-| Integrates with controls | 🔴 **No OPC UA server** — only an `AdvisoryRecord` dataclass | Lethabo |
+| Integrates with controls | ✅ **Real local OPC UA server + separate simulated control client**, acknowledgement/expiry contract demonstrated | Lethabo |
 | Real-time | 🔴 **No latency benchmark exists anywhere** | Sibusiso |
 | Offline demo | 🟢 `reefprint.viz.demo`, backup GIF exists | Lethabo |
 
@@ -174,26 +174,36 @@ And the 2025 winner's shape was domain engineering first, AI as the multiplier.
 is marked done without running the test and reading the output** — this project's own history
 contains a reproducible answer that was a reproducible bug.
 
-### P1 — OPC UA advisory server · `tests/test_integrate.py::test_opc_ua_server_exposes_advisory_values`
+### P1 — OPC UA advisory server ✅ SHIPPED 2026-09-12
 
-Biggest gap against an explicit deliverable, and the beat the demo needs. Build a **real local OPC
-UA server** exposing advisory values, plus a **separate simulated control client** that consumes
-them and visibly changes a parameter. Then demonstrate it **refusing stale or degraded input**.
+`tests/test_integrate.py::test_opc_ua_server_exposes_advisory_values` — **passing**, plus two
+new tests for the finite-value/expiry-window guards and the round trip.
 
-- `asyncua` is **LGPL-3.0** — fine on a general-purpose machine, **never** a sealed appliance;
-  anti-tivoisation would make the deliverable unassignable to Mintek. Say *"runs on plant IT
-  hardware"*, never *"embedded in the sensor"*.
-- Positioning is already set in `integrate/__init__.py`: **an advisory that replaces a laboratory
-  turnaround, not a controller replacing MillStar or FloatStar** (Mintek owns both). Keep it.
-- Keep `advisory_influenced` from record zero — once an advisory moves the plant, later data is no
-  longer observational. Say that out loud; it is a strength.
-- Add an **acknowledgement and expiry contract**: an advisory not consumed inside its validity
-  window expires rather than being actioned stale.
-- Label every simulated element `sim_`. A judge must never wonder which parts were real.
-- From the review, fold in: `AdvisoryRecord` needs units, timestamps, expiry, quality state and
-  finite-value validation; its frozen dataclass still holds a mutable dict; and `verdict_state()`
-  falls through to a *favourable* state for an unrecognised action string. That last one is a
-  silent-failure bug in a safety path — fix it first.
+- **`reefprint.integrate.opcua_server.AdvisoryServer`** — a real local `asyncua.Server`
+  (not a mock), bound to `127.0.0.1` on an ephemeral port, publishing every head under a
+  `sim_advisories` folder. `asyncua` is **LGPL-3.0** — general-purpose machine only, never a
+  sealed appliance; the module docstring says so and never claims embedding. Only importable
+  with `uv sync --extra integrate`; `tests/test_integrate.py` skips cleanly without it via
+  `pytest.importorskip`.
+- **`reefprint.integrate.opcua_client.SimulatedControlClient`** — a separate process boundary
+  that reads a head over the wire and either applies it to a `SimulatedPlantParameter` or
+  returns `RefusedStaleAdvisory`. **No fallback field for a prior value exists on the refusal
+  type** — the same discipline as `trust.abstain.Abstention`, applied at the transport layer
+  so "hold the last setpoint" cannot re-enter through this seam either.
+- **`AdvisoryRecord` extended**: `unit`, `emitted_at` (default `time.time()`), `valid_for_seconds`
+  (default `inf`, back-compatible with the existing test), finite-value validation on every
+  entry in `values`, and `is_expired()`. Internally stores `values` as a `MappingProxyType` so
+  a caller cannot mutate a "frozen" record through its dict field after construction.
+- **CI updated**: `.github/workflows/ci.yml` now runs `uv sync --all-groups --extra integrate`
+  — deliberately *not* `--all-extras`, so the `ml` extra's PyTorch stays out of the default
+  install per `pyproject.toml`'s "kept deliberately lean" note.
+- **Still open, and it is P1's remainder, not P2's**: `verdict_state()`'s favourable-fallthrough
+  bug named below belongs to **KHANYA's `src/decision_gap.py` on `main`**, not this branch —
+  corrected in the issue to Sibusiso, not here. The demo script wiring `AdvisoryServer` +
+  `SimulatedControlClient` into `reefprint.viz.demo` and a **latency measurement on the OPC UA
+  path itself** are not yet done — folded into P3.
+- Positioning kept as set in `integrate/__init__.py`: an advisory that replaces a *laboratory
+  turnaround*, not a controller replacing MillStar or FloatStar (Mintek owns both).
 
 ### P2 — One processability head, built properly · `tests/test_heads.py::test_fine_chromite_entrainment_risk_index`
 
@@ -323,18 +333,17 @@ uv sync && uv run ruff check . && uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **315 passed, 7 deselected**. Anything less is a regression, not a quirk.
+Expect **317 passed, 6 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **7 failed** — the backlog, not breakage. As of 2026-09-12 they are:
+Expect **6 failed** — the backlog, not breakage. As of 2026-09-12 (post-P1) they are:
 
 | Test | Queue item |
 |---|---|
-| `test_integrate.py::test_opc_ua_server_exposes_advisory_values` | **P1 ← start here** |
-| `test_heads.py::test_fine_chromite_entrainment_risk_index` | **P2** |
+| `test_heads.py::test_fine_chromite_entrainment_risk_index` | **P2 ← start here** |
 | `test_heads.py::test_naturally_floating_gangue_load` | P2 (deferred — no SWIR) |
 | `test_heads.py::test_stockpile_oxidation_index` | P2 (deferred — no Fe²⁺/Fe³⁺ split) |
 | `test_heads_falsification.py::test_the_falsification_test_has_been_run_on_real_bushveld_data` | **P4** |

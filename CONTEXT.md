@@ -101,12 +101,15 @@ is missing — **the red test list is the backlog**, deliberately.
 
 ### The single next action
 
-**2026-09-12 — the next action is now tracked on [`WORKBOARD.md`](WORKBOARD.md) §3, and the queue
-there is P1 → P5. It is blocked on decision D1** (does polarimetry come off the critical path?),
-which is the domain lead's call and is recorded in `WORKBOARD.md` §4. Once D1 is answered the
-first action is **P1 — the OPC UA advisory server**, acceptance test
-`tests/test_integrate.py::test_opc_ua_server_exposes_advisory_values`. The weekly-gate framing
-below is historical: the gates are green or closed, and what remains is the brief's literal
+**2026-09-12 — the next action is tracked on [`WORKBOARD.md`](WORKBOARD.md) §3, queue P1 → P5.**
+D1 and D2 are closed (ADR-0004, ADR-0005). **P1 — the OPC UA advisory server — shipped the same
+day**: `reefprint.integrate.opcua_server.AdvisoryServer` (a real local `asyncua.Server`) and
+`reefprint.integrate.opcua_client.SimulatedControlClient` (a separate simulated control client
+that refuses a stale advisory rather than holding it), acceptance test
+`tests/test_integrate.py::test_opc_ua_server_exposes_advisory_values` passing. **The next action
+is P2 — the fine-chromite entrainment risk head**, acceptance test
+`tests/test_heads.py::test_fine_chromite_entrainment_risk_index`. The weekly-gate framing below
+is historical: the gates are green or closed, and what remains is the brief's literal
 deliverables, which `WORKBOARD.md` §2 scores.
 
 **Weeks 1–6 are green or closed with a documented reason.** The paired host ran the full
@@ -413,13 +416,13 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **315 passed, 7 deselected**. Anything less is a regression, not a quirk.
+Expect **317 passed, 6 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **7 failed**. These are the backlog, not breakage. Each failure names the module and the
+Expect **6 failed**. These are the backlog, not breakage. Each failure names the module and the
 gate or rule it belongs to. CI runs them in a separate non-blocking job.
 
 ```bash

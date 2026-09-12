@@ -8,4 +8,8 @@ Positioning, per gauntlet S6 and the "MINE" findings: Mintek owns MillStar and F
 is an advisory that replaces a *laboratory turnaround*, not a controller that replaces theirs.
 
 The dependency-free record boundary is :class:`reefprint.integrate.advisory.AdvisoryRecord`.
+The optional OPC UA transport is :mod:`reefprint.integrate.opcua_server` (a real local server)
+and :mod:`reefprint.integrate.opcua_client` (a separate simulated control client) — both need
+the ``integrate`` extra (``uv sync --extra integrate``) and are not imported by this package's
+``__init__`` so the record boundary stays importable without ``asyncua`` present.
 """
