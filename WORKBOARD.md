@@ -6,10 +6,10 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-12, 21:10 SAST — **P2 (fine-chromite entrainment risk) SHIPPED** |
+| **Last updated** | 2026-09-12, 21:20 SAST — **P3 (latency benchmark) SHIPPED** |
 | **Days to final** | **19** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
-| **REEFPRINT suite** | **322 passed, 5 deselected** — re-run and verified 2026-09-12 (+6 for P2's entrainment-risk head, one more placeholder now built) |
+| **REEFPRINT suite** | **326 passed, 5 deselected** — re-run and verified 2026-09-12 (+4 for P3's latency instrument and tests) |
 | **KHANYA suite** | 87 passing (reported by main's audit; not re-run this session) |
 
 **Detail lives elsewhere, and this file says which of it to trust:**
@@ -155,7 +155,7 @@ sides — a shared board that disagrees with itself is worse than no board.
 | Accuracy report | 🟡 Partial — needs honest grouping, CIs, trivial baselines | Both |
 | Processability prediction | 🟡 **One head shipped** — fine-chromite entrainment risk, structural proxy with a worst-case bound; real literature constants still needed from the domain lead | Lethabo |
 | Integrates with controls | ✅ **Real local OPC UA server + separate simulated control client**, acknowledgement/expiry contract demonstrated | Lethabo |
-| Real-time | 🔴 **No latency benchmark exists anywhere** | Sibusiso |
+| Real-time | 🟡 **Two REEFPRINT-side stages benchmarked with a spread**, on named hardware — Stokes inversion and the OPC UA round trip. **Segmentation inference latency (KHANYA/main) is still unmeasured**; no end-to-end real-time claim exists yet | Both |
 | Offline demo | 🟢 `reefprint.viz.demo`, backup GIF exists | Lethabo |
 
 **Judged on:** Innovation · Feasibility · Impact · Technical Execution · Presentation Clarity.
@@ -245,12 +245,23 @@ tests for the bound, the design-target refusal, and the abstention default.
   a UG2 grind curve actually supports. Feeding this head real segmentation output (chromite mass
   fraction) is also not wired up — folded into whichever integration task connects it.
 
-### P3 — Latency benchmark · no test exists yet, write one
+### P3 — Latency benchmark ✅ SHIPPED 2026-09-12 (REEFPRINT-side stages only)
 
-The brief says "real-time" and we have no number. Measure the **shipped** path end to end on the
-demo laptop: decode → inference → postprocess → advisory emit. Report per-sample latency **with its
-spread, not a best case**, and state the hardware. A "real-time" claim without a measured number on
-named hardware is the most expensive kind of overclaim in this room.
+`tests/test_latency.py` — 4 tests passing. `reefprint.trust.latency` is the instrument
+(`LatencyMeasurement`, `measure_stage`), reporting mean/median/**p95**/sd at honest *n*, never a
+best case. `experiments/005-latency-benchmark/` runs it for real and commits the numbers.
+
+- **Measured, on this hardware (Windows 11, AMD64):** Stokes inversion ≈ 6.7 ms/call at 64×96,
+  ≈ 105 ms/call at 192×256 (36 angles, the week-1 gate's default); the OPC UA advisory
+  publish+connect+read round trip ≈ 8.3 ms/call, including a fresh connection every time (the
+  worst case a non-persistent client hits).
+- **Not measured, and said so in the report, not discovered by a judge:** segmentation
+  inference, decode, postprocess — KHANYA's stages, behind a trained checkpoint absent from
+  this checkout (confirmed absent from the technical review's clone too). **No end-to-end
+  "real-time" claim is made.** Closing this needs a matching benchmark on `main`, same
+  instrument (importable via the bridge pattern), reported in the same table.
+- p95, not just mean, is reported — a control loop cares about the tail it has to tolerate,
+  not the average.
 
 ### P4 — Accuracy report done honestly · `tests/test_heads_falsification.py::test_the_falsification_test_has_been_run_on_real_bushveld_data`
 
@@ -354,7 +365,7 @@ uv sync && uv run ruff check . && uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **322 passed, 5 deselected**. Anything less is a regression, not a quirk.
+Expect **326 passed, 5 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf

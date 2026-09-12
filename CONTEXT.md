@@ -112,10 +112,16 @@ fine-chromite entrainment risk head — shipped the same day**:
 proven worst-case bound rather than a statistical interval; the module computes the formula but
 does not choose the literature `entrainment_factor`/`water_recovery` constants, which remain the
 domain lead's call before this head's output can reach a slide. Acceptance test
-`tests/test_heads.py::test_fine_chromite_entrainment_risk_index` passing. **The next action is
-P3 — the latency benchmark**; no test exists yet, write one. The weekly-gate framing below
-is historical: the gates are green or closed, and what remains is the brief's literal
-deliverables, which `WORKBOARD.md` §2 scores.
+`tests/test_heads.py::test_fine_chromite_entrainment_risk_index` passing. **P3 — the latency
+benchmark — shipped the same day**: `reefprint.trust.latency` (`LatencyMeasurement`,
+`measure_stage`) reports mean/median/p95/sd at honest n, exercised in `tests/test_latency.py`
+and run for real by `experiments/005-latency-benchmark/`. Measured on this hardware: Stokes
+inversion ≈ 6.7 ms/call at 64×96, ≈ 105 ms/call at 192×256; the OPC UA round trip ≈ 8.3 ms/call.
+**Segmentation inference (KHANYA/main) remains unmeasured — no end-to-end "real-time" claim is
+made.** **The next action is P4 — the accuracy report**, acceptance test
+`tests/test_heads_falsification.py::test_the_falsification_test_has_been_run_on_real_bushveld_data`.
+The weekly-gate framing below is historical: the gates are green or closed, and what remains is
+the brief's literal deliverables, which `WORKBOARD.md` §2 scores.
 
 **Weeks 1–6 are green or closed with a documented reason.** The paired host ran the full
 offline-demo path and materialised `output/reefprint-backup-demo.gif`. The next action on this
@@ -421,7 +427,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **322 passed, 5 deselected**. Anything less is a regression, not a quirk.
+Expect **326 passed, 5 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf

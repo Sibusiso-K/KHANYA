@@ -22,6 +22,60 @@ it is a press release.
 
 ---
 
+## 2026-09-12 — session 21 · P3 shipped: latency measured on two REEFPRINT-side stages
+
+### Attempted
+
+Build P3: the brief says "real-time" and nothing in either half of the repository had ever
+measured a number against that claim. Write the instrument first (doctrine rule 3), then run it.
+
+### Worked
+
+- **`reefprint.trust.latency.LatencyMeasurement` and `measure_stage`** — times `n` calls to a
+  callable after discarded warm-up calls, reports mean, median, **p95** (nearest-rank, stated as
+  coarse at small n) and standard deviation (`None` at n < 1, not a false zero), always with
+  named hardware. Refuses construction with no hardware string or zero samples — a latency
+  number that cannot be attributed to a machine cannot be compared against a re-run of itself.
+- **Measured for real, not just tested**: `experiments/005-latency-benchmark/run.py` times the
+  Stokes inversion at two representative phantom sizes and the OPC UA advisory publish+connect+
+  read round trip on the actual local server built for P1. Result, this machine (Windows 11,
+  AMD64): Stokes inversion ≈ 6.7 ms/call at 64×96, ≈ 105 ms/call at 192×256 (36 angles — the
+  week-1 gate's own default); OPC UA round trip ≈ 8.3 ms/call including a fresh TCP connection
+  every time. Report committed at `experiments/005-latency-benchmark/output/latency-report.md`.
+- **The scope limitation is stated in four places, not implied**: the module docstring, the test
+  file's module docstring, the experiment's README under its own "What this does NOT show"
+  heading, and this entry. Segmentation inference, decode and postprocess are KHANYA's, on
+  `main`, behind a trained checkpoint absent from this checkout — the technical review of
+  2026-09-12 confirmed it was absent from the clone it inspected too. **No end-to-end
+  "real-time" claim is made anywhere in this work**; what is claimed is narrower and true: two
+  specific stages of the shipped path run fast enough on ordinary hardware to be an unlikely
+  bottleneck, whatever number segmentation turns out to need.
+- Suite: **322 → 326 passed**, deselected unchanged at 5 (P3 added tests, it did not retire a
+  placeholder — there was no placeholder test for latency to begin with).
+
+### Did not work
+
+Nothing failed outright.
+
+### Learned
+
+**A latency report that states what it does not cover is worth more than one that is silent
+about it.** The instrument itself (`LatencyMeasurement`) has no way to know it is being asked
+to stand in for a claim about a pipeline it never touched — that check has to live in the
+report and the docstring around it, every time, because the honest half of a partial benchmark
+is the part a reader has to be told, not the part they can infer from what is missing.
+
+### Left open
+
+- **A matching benchmark on `main`** for segmentation inference, using the same
+  `reefprint.trust.latency` instrument via the bridge pattern, reported in the same table —
+  needed before any "real-time" sentence reaches the talk. Raised to Sibusiso.
+- **P4 is next** — the accuracy report, done honestly with locality grouping, CIs and both
+  trivial baselines. Acceptance test:
+  `tests/test_heads_falsification.py::test_the_falsification_test_has_been_run_on_real_bushveld_data`.
+
+---
+
 ## 2026-09-12 — session 20 · P2 shipped: the fine-chromite entrainment risk head
 
 ### Attempted
