@@ -22,6 +22,81 @@ it is a press release.
 
 ---
 
+## 2026-09-12 — session 20 · P2 shipped: the fine-chromite entrainment risk head
+
+### Attempted
+
+Build P2 from `WORKBOARD.md`: one processability head, built properly rather than three
+thinly. Acceptance test: `tests/test_heads.py::test_fine_chromite_entrainment_risk_index`.
+
+### Worked
+
+- **`reefprint.heads.entrainment.fine_chromite_entrainment_risk`** — a structural proxy,
+  `chromite_mass_fraction * fine_fraction * entrainment_factor * water_recovery`, grounded in
+  the classical entrainment framework (Trahar 1976, Johnson 1972, formalised by Savassi et al.
+  1998 as a size-dependent classification function `EF(d)` times water recovery `Rw`). Returns
+  a `HeadEstimate` — the shared Rule-4 interval contract from session-earlier work.
+- **The interval is a proven worst-case bound, not a statistical propagation.** All four inputs
+  are `[0, 1]` fractions from a mix of measured, cited and assumed sources, not independent
+  random draws — a normal-approximation CI would claim a precision the proxy does not have.
+  Instead: for nonnegative `a_low <= a <= a_high` and `b_low <= b <= b_high`,
+  `a_low*b_low <= a*b <= a_high*b_high` by monotonicity, chained across all four factors. Proven
+  in the module docstring, checked by
+  `test_the_worst_case_bound_brackets_the_point_estimate_for_any_valid_inputs` against inputs
+  chosen to stress the chain (one factor near 1, one near 0, asymmetric ranges).
+- **`BoundedFraction`** — a fraction plus its own `[low, high]`, mirroring
+  `ConservativeDefault`'s validation shape deliberately, including refusing a `DESIGN_TARGET`
+  input at construction — the earliest point Rule 1's contamination can be caught, before it
+  could ever reach the multiplication.
+- **`entrainment_risk_conservative_default`** wires Rule 5's own worked example: `trust.abstain`'s
+  module docstring already names this exact head as `ASSUME_HIGH` ("over-dose the depressant,
+  cut the feed, lose a little recovery"). `test_entrainment_risk_abstains_conservatively_high_not_low`
+  checks both that a correctly-`ASSUME_HIGH` default emits its stated value, and that a
+  wrongly-reassuring low-side default is refused at construction — the same inversion check
+  `ConservativeDefault` already enforced, exercised through this head specifically.
+- **Rule 6, kept deliberately intact.** The module computes the formula and refuses to choose
+  `entrainment_factor` or `water_recovery` itself — those are a domain judgement (which
+  literature classification curve, at what size cutoff; which plant's typical water recovery),
+  and CLAUDE.md's blind spot 8 says a load-bearing mineralogical claim must not rest on one
+  person's judgement, let alone this module's. Every value the test exercises is `ASSUMED` and
+  labelled **illustrative** in its own source string, so nothing here can be mistaken for a real
+  citation if quoted out of context.
+- Suite: **317 → 322 passed, 6 → 5 deselected** (six new tests; one placeholder retired).
+  `CONTEXT.md` §4's guard caught the drift twice in a row — once for the pass/deselect line,
+  a second time when the fix itself used the wrong number (320 instead of the collected total of
+  322, since `--collect-only` counts a currently-failing test too). Read what the guard actually
+  measures before re-guessing the number by hand.
+
+### Did not work
+
+Nothing failed outright. The one thing worth recording: the first fix to `CONTEXT.md`'s count
+line used **320** (passed-only, read off a `pytest -q` run), not **322** (the `--collect-only`
+total the guard actually checks). The guard test caught the mismatch immediately — exactly
+what it is for — but it is a reminder that "passed" and "collected" are different numbers
+whenever something in the run is failing for an unrelated reason.
+
+### Learned
+
+**A bound proven correct in the docstring is worth writing a test that tries to break it, not
+just one that happens to pass.** The first version of
+`test_the_worst_case_bound_brackets_the_point_estimate_for_any_valid_inputs` used four similar,
+comfortable inputs; the committed version deliberately mixes a near-1, a near-0 and two
+asymmetric ranges, because a monotonicity proof that only gets exercised at gentle inputs has
+not really been checked.
+
+### Left open
+
+- **Real `entrainment_factor` and `water_recovery` citations** — domain lead's call, not code.
+  Nothing computed by this head may reach the accuracy report or a slide until those are real.
+- **Wiring segmentation output (chromite mass fraction) into this head** is not done — folded
+  into whichever task connects `reefprint.heads` to KHANYA's segmentation output across the
+  bridge.
+- **NFG load and oxidation index remain deferred**, per the WORKBOARD: NFG unproven without
+  SWIR (open question 1), oxidation index not computable from the available XRF majors.
+- **P3 is next** — the latency benchmark. No test exists yet; write one.
+
+---
+
 ## 2026-09-12 — session 19 · P1 shipped: a real local OPC UA advisory server
 
 ### Attempted

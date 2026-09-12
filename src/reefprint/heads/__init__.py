@@ -2,7 +2,12 @@
 
 The three visible properties that survived the v2 retarget:
 
-- **Fine-chromite entrainment risk** — Cr2O3 is the binding constraint on UG2 flotation.
+- **Fine-chromite entrainment risk** — Cr2O3 is the binding constraint on UG2 flotation. **Built**
+  in ``entrainment.py`` (P2, WORKBOARD.md): a structural proxy, ``chromite_mass_fraction *
+  fine_fraction * entrainment_factor * water_recovery``, reported with a worst-case bound rather
+  than a statistical interval. The module computes the formula; it does not choose the
+  literature entrainment-factor or water-recovery numbers, which are the caller's domain call
+  (Rule 6).
 - **Naturally-floating-gangue load** — talc/serpentine, for depressant dosing. Detection
   without SWIR is open question 1, settled empirically in week 2. If it fails, drop to two.
 - **Stockpile oxidation index** — sulphide surfaces tarnish with residence time, destroying

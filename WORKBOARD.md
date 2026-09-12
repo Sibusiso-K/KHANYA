@@ -6,10 +6,10 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-12, 20:50 SAST — **P1 (OPC UA advisory server) SHIPPED** |
+| **Last updated** | 2026-09-12, 21:10 SAST — **P2 (fine-chromite entrainment risk) SHIPPED** |
 | **Days to final** | **19** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
-| **REEFPRINT suite** | **317 passed, 6 deselected** — re-run and verified 2026-09-12 (+2 for P1's OPC UA round-trip and expiry tests, one placeholder now built) |
+| **REEFPRINT suite** | **322 passed, 5 deselected** — re-run and verified 2026-09-12 (+6 for P2's entrainment-risk head, one more placeholder now built) |
 | **KHANYA suite** | 87 passing (reported by main's audit; not re-run this session) |
 
 **Detail lives elsewhere, and this file says which of it to trust:**
@@ -153,7 +153,7 @@ sides — a shared board that disagrees with itself is worse than no board.
 |---|---|---|
 | ≥3 mineral phases | 🟡 S2 gives nonzero IoU for three sulphides — **locality separation unverified** | Sibusiso |
 | Accuracy report | 🟡 Partial — needs honest grouping, CIs, trivial baselines | Both |
-| Processability prediction | 🔴 **None of the three heads built** | Lethabo |
+| Processability prediction | 🟡 **One head shipped** — fine-chromite entrainment risk, structural proxy with a worst-case bound; real literature constants still needed from the domain lead | Lethabo |
 | Integrates with controls | ✅ **Real local OPC UA server + separate simulated control client**, acknowledgement/expiry contract demonstrated | Lethabo |
 | Real-time | 🔴 **No latency benchmark exists anywhere** | Sibusiso |
 | Offline demo | 🟢 `reefprint.viz.demo`, backup GIF exists | Lethabo |
@@ -205,24 +205,45 @@ new tests for the finite-value/expiry-window guards and the round trip.
 - Positioning kept as set in `integrate/__init__.py`: an advisory that replaces a *laboratory
   turnaround*, not a controller replacing MillStar or FloatStar (Mintek owns both).
 
-### P2 — One processability head, built properly · `tests/test_heads.py::test_fine_chromite_entrainment_risk_index`
+### P2 — One processability head, built properly ✅ SHIPPED 2026-09-12 (fine-chromite entrainment risk)
 
-Three heads specified, none built. **Build one well rather than three thinly.**
+`tests/test_heads.py::test_fine_chromite_entrainment_risk_index` — **passing**, plus five more
+tests for the bound, the design-target refusal, and the abstention default.
 
-- **Fine-chromite entrainment risk** is the strongest candidate: Cr₂O₃ is the binding constraint on
-  UG2 flotation and the most legible to a Mintek metallurgist.
-- **Oxidation index** is the documented fallback that does not depend on the texture residual — but
-  it was found **not computable from XRF majors** (no Fe²⁺/Fe³⁺ split). Do not resurrect it
+- **`reefprint.heads.entrainment.fine_chromite_entrainment_risk`** — the structural proxy,
+  `chromite_mass_fraction * fine_fraction * entrainment_factor * water_recovery` (Trahar 1976 /
+  Johnson 1972 / Savassi et al. 1998 entrainment-factor framework). Returns a
+  `HeadEstimate` with a **worst-case bound**, not a statistical confidence interval — the four
+  inputs are a mix of measured, cited and assumed quantities, not independent random draws, and
+  a normal-approximation CI would claim precision the proxy does not have. The bound is proven
+  correct in the module docstring (product of nonnegative factors is monotone) and checked by
+  `test_the_worst_case_bound_brackets_the_point_estimate_for_any_valid_inputs`.
+- **`reefprint.heads.entrainment.BoundedFraction`** — a fraction plus its own `[low, high]`, all
+  `Quantity`, mirroring `ConservativeDefault`'s validation shape. Kept local to this head until a
+  second one (NFG load, oxidation index) needs the same contract.
+- **This module computes the formula and nothing else.** It does not choose
+  `entrainment_factor` or `water_recovery` — which literature classification curve, at what size
+  cutoff, which plant's typical water recovery — because that is exactly the domain judgement
+  Rule 6 forbids an LLM from making, and blind spot 8 says must not rest on one person either.
+  Every value the test exercises is `ASSUMED`/`CITED` and labelled **illustrative** — **these are
+  not the real numbers to quote in the accuracy report; the domain lead must supply and cite the
+  real `entrainment_factor` and `water_recovery` before this head's output reaches a slide.**
+- **`entrainment_risk_conservative_default`** wires Rule 5's own worked example (`trust.abstain`'s
+  module docstring already names this exact head as `ASSUME_HIGH`) — an abstention on this head
+  must not quietly default low, and the inversion check catches it if it does.
+- **Oxidation index** is the documented fallback that does not depend on the texture residual —
+  but it was found **not computable from XRF majors** (no Fe²⁺/Fe³⁺ split). Do not resurrect it
   without new data.
 - **NFG load** (talc/serpentine) is unproven without SWIR — open question 1. If it fails we drop to
   two properties rather than claim it anyway.
-- Whatever ships is a **clearly labelled structural proxy** with its inputs, assumptions and a
-  stated interval — never a number presented as a measurement. `reefprint.quantity` enforces this;
-  `DESIGN_TARGET` provenance never passes `require_reportable()`.
 - Review's naming point, accepted: call the existing liberation output an **"apparent 2D sulphide
   association index"** until specimen preparation and particle identity are verified. If these are
   intact polished sections rather than particulate mounts, connected regions separated by resin may
-  not be feed particles at all.
+  not be feed particles at all. (This is KHANYA's output, on `main` — not built here.)
+- **Still open, and it belongs to the domain lead, not to further code**: the real
+  `entrainment_factor`/`water_recovery` citations, and which chromite `fine_fraction` size cutoff
+  a UG2 grind curve actually supports. Feeding this head real segmentation output (chromite mass
+  fraction) is also not wired up — folded into whichever integration task connects it.
 
 ### P3 — Latency benchmark · no test exists yet, write one
 
@@ -333,18 +354,17 @@ uv sync && uv run ruff check . && uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **317 passed, 6 deselected**. Anything less is a regression, not a quirk.
+Expect **322 passed, 5 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **6 failed** — the backlog, not breakage. As of 2026-09-12 (post-P1) they are:
+Expect **5 failed** — the backlog, not breakage. As of 2026-09-12 (post-P1, post-P2) they are:
 
 | Test | Queue item |
 |---|---|
-| `test_heads.py::test_fine_chromite_entrainment_risk_index` | **P2 ← start here** |
-| `test_heads.py::test_naturally_floating_gangue_load` | P2 (deferred — no SWIR) |
+| `test_heads.py::test_naturally_floating_gangue_load` | deferred — no SWIR (open question 1) |
 | `test_heads.py::test_stockpile_oxidation_index` | P2 (deferred — no Fe²⁺/Fe³⁺ split) |
 | `test_heads_falsification.py::test_the_falsification_test_has_been_run_on_real_bushveld_data` | **P4** |
 | `test_texture.py::test_falsification_test_controls_for_cr2o3_and_pyroxene_fraction` | P4 (blocked — T1/T2) |
