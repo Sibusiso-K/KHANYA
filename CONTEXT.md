@@ -118,8 +118,17 @@ benchmark — shipped the same day**: `reefprint.trust.latency` (`LatencyMeasure
 and run for real by `experiments/005-latency-benchmark/`. Measured on this hardware: Stokes
 inversion ≈ 6.7 ms/call at 64×96, ≈ 105 ms/call at 192×256; the OPC UA round trip ≈ 8.3 ms/call.
 **Segmentation inference (KHANYA/main) remains unmeasured — no end-to-end "real-time" claim is
-made.** **The next action is P4 — the accuracy report**, acceptance test
-`tests/test_heads_falsification.py::test_the_falsification_test_has_been_run_on_real_bushveld_data`.
+made.** **P4 — the Bushveld half of the accuracy report — shipped the same day.** The literal
+texture H0 remains untestable (T1/T2) and that is the reported result, per Rule 9. The accepted
+pivot — does chromite composition (Cr#, Mg#) add PGE signal beyond Cr2O3 alone — has been run for
+real on 1,112 Bushveld assays across 305 boreholes: ΔR² = 0.0279, p = 0.0002, **bit-for-bit
+identical to seventeen significant figures** against Sibusiso's independent implementation on
+`main`. `experiments/006-bushveld-chromite-falsification/`; the old placeholder test was deleted
+per its own instruction, per `tests/test_heads_falsification.py`'s updated module docstring.
+**The next action is the segmentation half of P4** — locality-disjoint phase-IoU with CIs and
+both trivial baselines, using C2's real phase numbers — which needs KHANYA's held-out
+predictions and belongs to `main`. On this branch, **P5 — leg (b) registration — is next**, only
+if the domain lead confirms P1–P4 are sufficiently green to spend time on the research thread.
 The weekly-gate framing below is historical: the gates are green or closed, and what remains is
 the brief's literal deliverables, which `WORKBOARD.md` §2 scores.
 
@@ -427,13 +436,13 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **326 passed, 5 deselected**. Anything less is a regression, not a quirk.
+Expect **330 passed, 4 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **5 failed**. These are the backlog, not breakage. Each failure names the module and the
+Expect **4 failed**. These are the backlog, not breakage. Each failure names the module and the
 gate or rule it belongs to. CI runs them in a separate non-blocking job.
 
 ```bash

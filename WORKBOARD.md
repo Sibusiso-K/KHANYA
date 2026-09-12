@@ -6,10 +6,10 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-12, 21:20 SAST — **P3 (latency benchmark) SHIPPED** |
+| **Last updated** | 2026-09-12, 21:45 SAST — **P4 (Bushveld falsification) SHIPPED** |
 | **Days to final** | **19** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
-| **REEFPRINT suite** | **326 passed, 5 deselected** — re-run and verified 2026-09-12 (+4 for P3's latency instrument and tests) |
+| **REEFPRINT suite** | **330 passed, 4 deselected** — re-run and verified 2026-09-12 (+4 for P4's Bushveld harness tests, one placeholder deleted per its own instruction) |
 | **KHANYA suite** | 87 passing (reported by main's audit; not re-run this session) |
 
 **Detail lives elsewhere, and this file says which of it to trust:**
@@ -152,7 +152,7 @@ sides — a shared board that disagrees with itself is worse than no board.
 | Requirement | Status | Owner |
 |---|---|---|
 | ≥3 mineral phases | 🟡 S2 gives nonzero IoU for three sulphides — **locality separation unverified** | Sibusiso |
-| Accuracy report | 🟡 Partial — needs honest grouping, CIs, trivial baselines | Both |
+| Accuracy report | 🟡 **Bushveld chromite-composition result shipped, cross-checked bit-for-bit against an independent implementation.** Segmentation accuracy report (locality-disjoint IoU, CIs, baselines) still needs KHANYA's held-out predictions | Both |
 | Processability prediction | 🟡 **One head shipped** — fine-chromite entrainment risk, structural proxy with a worst-case bound; real literature constants still needed from the domain lead | Lethabo |
 | Integrates with controls | ✅ **Real local OPC UA server + separate simulated control client**, acknowledgement/expiry contract demonstrated | Lethabo |
 | Real-time | 🟡 **Two REEFPRINT-side stages benchmarked with a spread**, on named hardware — Stokes inversion and the OPC UA round trip. **Segmentation inference latency (KHANYA/main) is still unmeasured**; no end-to-end real-time claim exists yet | Both |
@@ -263,23 +263,37 @@ best case. `experiments/005-latency-benchmark/` runs it for real and commits the
 - p95, not just mean, is reported — a control loop cares about the tail it has to tolerate,
   not the average.
 
-### P4 — Accuracy report done honestly · `tests/test_heads_falsification.py::test_the_falsification_test_has_been_run_on_real_bushveld_data`
+### P4 — the falsification gate, done honestly ✅ SHIPPED 2026-09-12 (Bushveld half)
 
-Use C2's phase numbers, not the binary ones. Every metric needs locality-disjoint grouping
-(`reefprint.trust.split`), a CI at honest *n* (`LocalitySplit.n_groups` — localities, not
-sections), and **both** trivial baselines with uplift against the *stronger* one
-(`trust.baseline.ScoredMetric` will not construct without them).
+The placeholder `tests/test_heads_falsification.py::test_the_falsification_test_has_been_run_on_real_bushveld_data`
+is **deleted, per its own instruction** — something has run, and the result is recorded here and
+in `docs/BUILDLOG.md` session 22.
 
-We have a real positive result: on **1,112 Bushveld chromitite assays across 305 boreholes**,
-chromite composition (Cr#, Mg#) adds significant PGE signal beyond Cr₂O₃ — **ΔR² = 0.0279,
-p = 0.0002**, cluster-robust by borehole. **State its caveats before a judge finds them:** modest
-effect size; Cr# is arithmetically related to the Cr₂O₃ baseline; it is *fitted* association, not
-an out-of-locality predictive evaluation; and boreholes within one orebody are not automatically
-independent localities. Report it as *"a separate geochemical association analysis"* — **never** as
-evidence that texture predicts processability or that H₀ was rejected.
-
-For the texture falsification itself the honest output is **"not testable with available data"**,
-published with a missing-data specification. That is Rule 9 working, not a failure.
+- **The literal H0 remains untestable and that is the reported result** (Rule 9): `texture_features`
+  is structurally missing (T1) and pyroxene fraction is not a column (T2). "Not testable with
+  available data" is published with this missing-data specification, not silently dropped.
+- **The accepted pivot HAS run on real data**: `experiments/006-bushveld-chromite-falsification/`
+  reproduces, **reefprint-natively** (no import from `main` — per ADR-0003), whether chromite
+  composition (Cr#, Mg#, Barnes & Roeder 2001) adds PGE signal beyond Cr₂O₃ alone, on
+  **1,112 Bushveld chromitite assays across 305 boreholes**: **ΔR² = 0.0279, p = 0.0002**,
+  cluster-robust by borehole.
+- **Cross-checked, not just computed**: this run is **bit-for-bit identical to seventeen
+  significant figures** against Sibusiso's independent implementation on `khanya/main`
+  (`src/chromite_pge_falsification.py`, `reports/chromite_pge_falsification.json`) — two
+  separately written programs on the same data landing on the same number is real verification,
+  and it is the strongest form ADR-0003's two-history separation can produce.
+- `tests/test_bushveld_chromite_falsification.py` (4 tests) exercises the CSV-parsing and
+  cation-ratio harness against synthetic data — same reason `test_s3v2_reader.py` doesn't need
+  the real S3 v2 archive: `data/` is gitignored, so CI checks the harness, and the real run
+  (done once, by hand) is what's recorded.
+- **Caveats stated before a judge finds them** (in the experiment README): modest effect size;
+  Cr# is arithmetically related to the Cr₂O₃ baseline; it is *fitted* association, not an
+  out-of-locality predictive evaluation; boreholes within one orebody are not automatically
+  independent localities. Report it as *"a separate geochemical association analysis"* — **never**
+  as evidence that texture predicts processability, and never as the texture H0 rejected.
+- **Still open, and out of scope for this branch**: the *segmentation* accuracy report (locality-
+  disjoint phase-IoU with CIs and both trivial baselines, per C2's real numbers) needs KHANYA's
+  held-out predictions and locality manifest — that half of P4 is Sibusiso's, on `main`.
 
 ### P5 — Leg (b) registration · research thread, only if P1–P4 are green
 
@@ -365,20 +379,19 @@ uv sync && uv run ruff check . && uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **326 passed, 5 deselected**. Anything less is a regression, not a quirk.
+Expect **330 passed, 4 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
 ```
 
-Expect **5 failed** — the backlog, not breakage. As of 2026-09-12 (post-P1, post-P2) they are:
+Expect **4 failed** — the backlog, not breakage. As of 2026-09-12 (post-P1, P2, P4) they are:
 
 | Test | Queue item |
 |---|---|
 | `test_heads.py::test_naturally_floating_gangue_load` | deferred — no SWIR (open question 1) |
-| `test_heads.py::test_stockpile_oxidation_index` | P2 (deferred — no Fe²⁺/Fe³⁺ split) |
-| `test_heads_falsification.py::test_the_falsification_test_has_been_run_on_real_bushveld_data` | **P4** |
-| `test_texture.py::test_falsification_test_controls_for_cr2o3_and_pyroxene_fraction` | P4 (blocked — T1/T2) |
+| `test_heads.py::test_stockpile_oxidation_index` | deferred — no Fe²⁺/Fe³⁺ split |
+| `test_texture.py::test_falsification_test_controls_for_cr2o3_and_pyroxene_fraction` | blocked — T1/T2 (the literal texture H0; see P4's closure note for the accepted pivot) |
 | `test_acquire.py::test_the_week_1_gate_runs_on_a_public_reflected_light_rotation_series` | P5 |
 
 ---

@@ -22,6 +22,76 @@ it is a press release.
 
 ---
 
+## 2026-09-12 — session 22 · P4 shipped: the Bushveld falsification, cross-checked bit-for-bit
+
+### Attempted
+
+Close the acceptance test named for P4: `tests/test_heads_falsification.py::
+test_the_falsification_test_has_been_run_on_real_bushveld_data`. Its own docstring said "delete
+this test and record the result in docs/BUILDLOG.md once it has run."
+
+### Worked
+
+- **Found, before writing anything, that the real run already existed — on `main`.** Git log
+  search turned up `b58596c` (Sibusiso, 3 Sept): `src/chromite_pge_falsification.py` and a
+  checked-in `reports/chromite_pge_falsification.json`, importing `reefprint.heads.falsification`
+  unchanged via the bridge pattern. Read it before writing anything new — doctrine rule 1,
+  extract don't infer, applied to a claim about the project's own history rather than a paper.
+- **Built `experiments/006-bushveld-chromite-falsification/run.py`, reefprint-native**: same
+  computation (Cr#/Mg# per Barnes & Roeder 2001, cluster-robust `evaluate_texture_uplift`), no
+  import from `main`, using this branch's own copy of the Bachmann (2019) CSV. Result:
+  **n_obs=1112, n_localities=305, baseline_r2=0.11193237858997018,
+  full_r2=0.13980320644998467, delta_r2=0.02787082786001449,
+  p_value=0.00018062196419940484** — **identical to Sibusiso's independent implementation to
+  every one of seventeen significant figures.** Two separately written programs, same data, same
+  number: this is the strongest verification a two-history split can produce, and it closes the
+  gate honestly rather than by trusting a checked-in JSON on the other branch.
+- **The literal H0 stays reported as untestable**, not quietly replaced by the pivot. Rewrote
+  `tests/test_heads_falsification.py`'s module docstring to say both things at once (Rule 9): the
+  texture-vs-Cr2O3-and-pyroxene H0 remains untestable (T1/T2 unresolved), and a narrower, real,
+  accepted pivot has been run and is not the same claim.
+- **`tests/test_bushveld_chromite_falsification.py`** (4 tests, CI-safe): a hand-worked check on
+  the Cr#/Mg# arithmetic at round numbers, and three tests against a synthetic CSV built to the
+  real column layout — same pattern as `test_s3v2_reader.py`, since `data/` is gitignored and
+  CI cannot see the real 1,205-row file.
+- **Caveats written into the experiment README before a judge finds them**: modest effect size;
+  Cr# is arithmetically related to the Cr2O3 baseline; fitted in-sample association, not an
+  out-of-locality predictive test; boreholes within a project may not be fully independent
+  localities. The result is to be quoted as *"a separate geochemical association analysis,"*
+  never as the texture H0 rejected.
+- Suite: **326 → 330 passed**, deselected **5 → 4** (the placeholder deleted per its own
+  instruction, not skipped). `CONTEXT.md` §4's guard now checks a third invariant too —
+  `test_the_two_counts_partition_the_whole_suite` — caught the drift the same way as every
+  prior session.
+
+### Did not work
+
+Nothing failed outright. The near-miss: the first version of
+`test_load_rows_refuses_a_missing_file` matched on `"Mendeley"` (capitalised) against an error
+message that says `"data.mendeley.com"` (lowercase, it's a URL) — caught immediately by running
+the test rather than assuming the regex was right.
+
+### Learned
+
+**Before writing a falsification harness from scratch, grep the other branch's history for the
+exact numbers CLAUDE.md already cites.** `docs/08-handover.md` quotes "ΔR² = 0.0279, p = 0.0002"
+as an existing result without saying where the code lives; a two-minute `git log --all --oneline
+| grep` found it committed on `main` three sessions ago. Reproducing it independently was still
+the right call — the cross-check is worth more than trusting the number — but reproducing it
+*blind*, without first reading what already existed, would have risked a second implementation
+that quietly disagreed with the first for a reason neither script would have surfaced.
+
+### Left open
+
+- **The segmentation half of P4** — locality-disjoint phase-IoU with CIs and both trivial
+  baselines, per C2's real S1/S2 numbers — needs KHANYA's held-out predictions and locality
+  manifest. Sibusiso's, on `main`.
+- **P5 (leg (b) registration)** is next in the queue per ADR-0004, gated on the domain lead
+  confirming P1–P4 are sufficiently green to spend unbounded research time on it — not started
+  without that confirmation, since P5 has no acceptance test and no time limit the way P1–P4 did.
+
+---
+
 ## 2026-09-12 — session 21 · P3 shipped: latency measured on two REEFPRINT-side stages
 
 ### Attempted
