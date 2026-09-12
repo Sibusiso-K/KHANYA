@@ -19,6 +19,54 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-12 — Sibusiso (47) — real per-class recall/precision, and a strict-JSON bug
+
+**Did:** Picked up the review's "Accuracy report" item (finding, owned by
+Sibusiso in its effort table) - the part that needed no new data, just
+reading the confusion matrix this project already builds. Extended
+`metrics.summarise()` to return per-class TP/FP/FN/recall/precision
+alongside the existing IoU/pixel-accuracy, pinned with a hand-worked 3-class
+test (`tests/test_segmentation_metrics.py`). Recall/precision are NaN, not
+zero, when their denominator is zero - a class absent from both truth and
+prediction has no defined rate.
+
+Re-ran the actual S2 patch checkpoint against all 12 held-out test sections
+on this host - the first time this evaluation could be reproduced since the
+checkpoint became available. Confirms STATUS.md's existing "total class
+collapse" diagnosis with real numbers: magnetite recall **0.0** (821,587
+real ground-truth pixels, zero true positives) but precision **undefined**
+(the model predicts zero magnetite pixels anywhere in the test set, so
+0/0) - recall and precision disagree in exactly the way that distinguishes
+"missed it" from "never guessed it," which a bare IoU of 0.0000 cannot show.
+
+While regenerating the report, caught a real portability bug: NaN serialises
+as a bare `NaN` token under Python's own `json.dump`, which is not standard
+JSON - a stricter reader (JS `JSON.parse`, `jq`, most non-Python tooling)
+fails to parse it. Added `metrics.json_safe()` to convert NaN to null only
+at write time, applied at all three report-writing call sites, and
+re-sanitised the already-committed S2 patch report. Verified with Node's
+own `JSON.parse` that the file now parses strictly.
+
+**Verified:** 93/93 tests pass. Confirmed the regenerated report parses
+under both Python's `json.load` and Node's `JSON.parse`.
+
+**Changed:** `src/segmentation/metrics.py`, `src/segmentation/evaluate.py`,
+`src/segmentation/train_lumenstone.py`, `src/segmentation/train_patches.py`,
+`tests/test_segmentation_metrics.py`,
+`reports/lumenstone_s2_patches_test_metrics.json` (regenerated + sanitised).
+
+**Blocked on:** the rest of the review's accuracy-report template still
+needs things only the two of us (or Mintek/MOTT) can supply - manifest
+hashes, locality/specimen counts, calibration-set independence, the
+trivial/metadata/colour-only baselines, and the cluster-bootstrap confidence
+intervals. This entry closes the part that was pure arithmetic on data
+already in the repo; it is not a substitute for the full template.
+
+**Next:** whoever builds the trivial baselines (constant-class,
+metadata-only, colour-only) next can reuse `metrics.summarise()` and
+`json_safe()` as-is - the plumbing is now in place, only the baseline
+predictions themselves are missing.
+
 ## 2026-09-12 — Sibusiso (46) — the refusal state confirmed on a real image, an actual out-of-domain test
 
 **Did:** Closed the last gap from entry 44 - the refusal/hold verdict had only
