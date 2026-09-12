@@ -6,10 +6,10 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-12, 21:45 SAST — **P4 (Bushveld falsification) SHIPPED** |
+| **Last updated** | 2026-09-13, 00:20 SAST — **P5 run on Kaggle, real mixed result, not yet a claim** |
 | **Days to final** | **19** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
-| **REEFPRINT suite** | **330 passed, 4 deselected** — re-run and verified 2026-09-12 (+4 for P4's Bushveld harness tests, one placeholder deleted per its own instruction) |
+| **REEFPRINT suite** | **337 passed, 4 deselected** — re-run and verified 2026-09-13 (+7 for P5's registration estimator tests) |
 | **KHANYA suite** | 87 passing (reported by main's audit; not re-run this session) |
 
 **Detail lives elsewhere, and this file says which of it to trust:**
@@ -295,14 +295,30 @@ in `docs/BUILDLOG.md` session 22.
   disjoint phase-IoU with CIs and both trivial baselines, per C2's real numbers) needs KHANYA's
   held-out predictions and locality manifest — that half of P4 is Sibusiso's, on `main`.
 
-### P5 — Leg (b) registration · research thread, only if P1–P4 are green
+### P5 — Leg (b) registration 🟡 RUN 2026-09-13, real result, NOT yet a claim
 
-Not on the critical path. If time exists: estimate a per-frame transform **from the data**
-(log-polar phase correlation, or ECC) — the filename angle alone does not undo it. Naive centred
-de-rotation does not fix it (helps a lot on `S3_test_03` r005, +0.3137 → +0.8142; hurts on
-`S3_test_01`), so the rotation centre is off-image-centre and varies by section. Then restrict to
-the inscribed region present at every angle, map the mask through the same transform, and only then
-re-run `harmonic_signature`. Kaggle dataset and kernel are already set up — one `kaggle kernels push`.
+`reefprint.acquire.registration.estimate_rotation_centre` — a coarse-to-fine correlation search
+over the rotation-centre offset, using each frame's *known* nominal angle (never estimated) to
+reduce the search from a blind per-frame-pair problem to one 2-D search for the whole series.
+Validated on synthetic data with a known offset (`tests/test_registration.py`, 7 tests) — **only
+after fixing a real bug found while validating it**: the first version passed the search offset
+directly as the rotation point instead of adding it to the image centre first, silently exploring
+the wrong region of the plane while still returning plausible-looking numbers. Two earlier
+algebraic derivations (relating measured translations to the centre offset via a linear system)
+were also tried and abandoned as wrong before switching to direct correlation-search — see
+`docs/BUILDLOG.md` session 23.
+
+**Run for real on Kaggle** (`lethabomh14/reefprint-p5-registration`, ~10 min, CPU only) — not
+locally, since a full section needs ~5 GB and this machine had 155 MB free. Full result and
+caveats: `experiments/007-s3v2-registration/README.md`. Headline, **not yet a claim for the
+talk**: naive centred de-rotation already clears `DETECTION_SNR` for `snr_2` on all 5 measurable
+sections (a break from N3's original `NEITHER`, hypothesised but **not yet checked** to be
+because N3's original method used zero registration, not this script's coarse one); proper
+registration leaves 3/5 sections `SECOND` (analyser), moves one to `BOTH` (mixed), and **flips
+one (`S3_test_03`) to `FOURTH` (stage)** — a split verdict CLAUDE.md's own geometry README
+already said would itself be a finding. **`S3_test_03`'s flip needs a visual sanity check before
+anyone trusts it** — its offset (−397 px) is the largest found, the profile of either a real
+result or a spurious search optimum.
 
 ---
 
@@ -379,7 +395,7 @@ uv sync && uv run ruff check . && uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **330 passed, 4 deselected**. Anything less is a regression, not a quirk.
+Expect **337 passed, 4 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf

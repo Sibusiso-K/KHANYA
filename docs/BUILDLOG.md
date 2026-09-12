@@ -22,6 +22,117 @@ it is a press release.
 
 ---
 
+## 2026-09-13 — session 23 · P5 run for real: a genuine, mixed, unverified registration result
+
+### Attempted
+
+P5 from `WORKBOARD.md`, approved after checking in: build and validate a per-frame registration
+estimator, then run leg (b) for real — does registering S3 v2's frames let a harmonic clear its
+detection floor? Two operational constraints surfaced before any real code ran: this machine had
+**155 MB free of 8 GB**, and a full section's frame stack needs ~5 GB
+(`experiments/003-s3v2-extinction/`'s own docstring) — so the real archive was never going to be
+attempted here. Flagged to the user via `AskUserQuestion` rather than pushed through silently;
+the user's answer was explicit: **run it on Kaggle**, which the project already had a private
+dataset and code-mirror set up for (session 16f).
+
+### Worked
+
+- **`reefprint.acquire.registration.estimate_rotation_centre`** — a coarse-to-fine correlation
+  search over the rotation-centre offset. Uses each frame's *known* nominal angle (from the
+  acquisition record, never estimated) to reduce what would otherwise be a per-frame-pair blind
+  registration problem to a single 2-D search for the whole series: the correct centre is the
+  only offset where every frame's de-rotation is exactly the reference frame, so the score is
+  maximised there rather than merely locally plausible.
+- **Two wrong derivations tried and abandoned before this, on purpose recorded rather than
+  hidden.** First: an algebraic derivation relating measured per-frame translations to the centre
+  offset via a linear system, `A @ offset = b` — wrong twice (once from an incorrect operator,
+  once from a coordinate-convention mismatch), because deriving the sign and transpose convention
+  by hand is exactly the kind of thing this project's traps list warns about getting subtly
+  wrong. Switched to direct optimisation instead, which does not depend on getting an algebraic
+  sign right — it only needs the objective (correlation) to be correct, which is checkable by
+  inspection (grid-scan the landscape, confirm the peak sits at the known synthetic answer).
+- **A real bug found by validating, not by trusting the first result that ran without crashing.**
+  The first version of `estimate_rotation_centre` passed the search offset directly as the
+  absolute rotation point instead of adding it to the image centre first — it silently explored
+  candidates near pixel (0, 0) instead of near the image centre, and still returned a
+  plausible-looking number for every input, including a "correctly centred series" test that
+  should have found zero and instead found ~18 pixels. Caught because the test suite includes a
+  negative control (`test_a_correctly_centred_series_finds_zero_offset`) and a positive one with
+  a *known* nonzero answer (`test_recovers_a_known_off_centre_rotation`), and both failed loudly
+  rather than one silently compensating for the other. Pinned by a dedicated regression test,
+  `test_estimate_rotation_centre_is_anchored_at_the_image_centre_not_the_origin`.
+- **Validated on synthetic data, 7 tests, before touching anything real** — sub-pixel accuracy
+  recovering a known off-centre offset, a negative control at zero offset, refusal on
+  mismatched/empty input, and `inscribed_region_mask` checked for monotonic shrinkage as the
+  centre moves off-axis and for staying inside frame bounds on a deliberately non-square,
+  non-power-of-two shape.
+- **Run for real, on Kaggle** (`lethabomh14/reefprint-p5-registration`, private, CPU only,
+  ~10 minutes): mounted the existing `lumenstone-s3-v2-reefprint` (5.2 GB, session 16f) and a
+  freshly-versioned `reefprint-code` dataset (added `registration.py` and `experiments/007`).
+  `_DirArchive` duck-types `zipfile.ZipFile`'s interface against Kaggle's auto-extracted mount,
+  matching session 16f's finding that an uploaded zip does not stay a zip on Kaggle.
+- **The real result, 5 sections measured**: naive centred de-rotation (not zero registration —
+  approximate, about the image centre) already clears `DETECTION_SNR` for the 2nd harmonic on
+  all 5. Proper registration (estimated true centre) leaves `S3_test_01/07/12` at a clean
+  `SECOND` (analyser), moves `S3_test_02` to `BOTH` (mixed — its snr_4 crosses threshold too),
+  and **flips `S3_test_03` to `FOURTH`** (stage — its snr_2 collapses from 9.35 to 3.19 while
+  snr_4 rises from 2.78 to 5.29). Every found offset is large: 95-397 pixels on 2547x3396
+  frames, 3-15% of the frame width. Full table and every number:
+  `experiments/007-s3v2-registration/README.md`.
+- Suite: **330 -> 337 passed, 4 deselected unchanged** (7 new tests; no placeholder retired —
+  P5 never had one, unlike P1-P4).
+
+### Did not work / not yet explained
+
+**The naive-condition result contradicts N3's original three independent `NEITHER` measurements,
+and this session has a hypothesis, not a check, for why.** N3's original method
+(`experiments/002-s3v2-geometry/run.py`) samples scattered pixel positions directly from raw,
+undecoded, un-rotated frames — genuinely zero registration. This session's "naive" condition
+already applies an approximate rotation correction (about the image centre) before sampling,
+which is not the same starting point. The leading explanation — that any sensible de-rotation,
+even about the wrong centre, recovers far more real per-pixel structure than none at all — is
+physically plausible and consistent with everything else this session found, but **has not been
+checked by running N3's exact original method against these same 5 sections side by side**, and
+saying so is the point: this project's own traps list (`CLAUDE.md` §5.1) exists because a result
+that overturns a prior finding this sharply needs that check before anyone trusts it, not after.
+
+Transient local test flakiness was also observed and diagnosed, not chased: a full-suite run
+mid-session reported 13 failures in `test_geometry.py`/`test_extinction.py` that a clean re-run
+did not reproduce, consistent with the same severe memory pressure (155 MB free) that routed the
+real archive work to Kaggle in the first place — subprocess-spawning tests are the most exposed
+to this, confirmed by re-running the docs-count guard (which shells out to a fresh pytest
+process) in isolation and getting a clean pass.
+
+### Learned
+
+**A result that contradicts a project's own prior finding is a reason to check the comparison
+more closely, not a reason to report the newer number as the correction.** The naive condition
+clearing threshold where N3 found nothing looks like progress; it is at least as likely to be
+a methodology difference as a genuine improvement, and the README for this experiment says so
+in its own words rather than letting the more flattering reading stand by default.
+
+**Ask before spending unbounded time or touching a resource-constrained machine, even when
+"carry on" has already been said once.** The session paused with `AskUserQuestion` when two new,
+un-disclosed constraints surfaced mid-task (memory pressure discovered only once close to
+running something that would hit it; an unvalidated estimator discovered only once tested) —
+a general "keep going" from an earlier turn does not cover risks that were not yet visible when
+that instruction was given.
+
+### Left open
+
+- **`S3_test_03`'s flip** — the largest offset found (-397 px) and the one verdict that inverted.
+  Visual check of the registered stack before this section's result is trusted at all.
+- **N3's original method, re-run against these same 5 sections**, to check the naive-condition
+  hypothesis above rather than leave it asserted.
+- **Widen from 5 to the ~18 sections that carry a real rotation series**, once the two items
+  above are resolved.
+- **Map the mask through the same transform and re-run the per-mineral anisotropy bridge** on a
+  clean `SECOND` section — the actual measurement (pentlandite dark, pyrrhotite lit) the whole
+  project exists to make, still not attempted on real data.
+- **P4's segmentation half** remains Sibusiso's, on `main` — unchanged from session 22.
+
+---
+
 ## 2026-09-12 — session 22 · P4 shipped: the Bushveld falsification, cross-checked bit-for-bit
 
 ### Attempted

@@ -125,10 +125,21 @@ real on 1,112 Bushveld assays across 305 boreholes: ΔR² = 0.0279, p = 0.0002, 
 identical to seventeen significant figures** against Sibusiso's independent implementation on
 `main`. `experiments/006-bushveld-chromite-falsification/`; the old placeholder test was deleted
 per its own instruction, per `tests/test_heads_falsification.py`'s updated module docstring.
+**P5 — leg (b) registration — run for real on Kaggle, 2026-09-13, with a genuinely mixed
+result that is NOT yet a claim.** `reefprint.acquire.registration.estimate_rotation_centre`
+(validated on synthetic data, `tests/test_registration.py`) found a real, non-trivial offset on
+all 5 measurable real sections. Naive centred de-rotation already clears `DETECTION_SNR` for the
+2nd harmonic on all 5 — a sharp break from N3's original `NEITHER` that is **hypothesised, not
+yet checked**, to be because N3's original method used zero registration rather than this
+script's coarse one. Proper registration leaves 3/5 sections reading `SECOND` (analyser), moves
+one to `BOTH` (mixed), and **flips one (`S3_test_03`) to `FOURTH` (stage)** — full numbers and
+every caveat in `experiments/007-s3v2-registration/README.md`. **`S3_test_03`'s flip needs a
+visual sanity check before it is trusted**, and the naive-condition discrepancy needs N3's
+original method re-run side by side before this result reaches anyone outside the team.
 **The next action is the segmentation half of P4** — locality-disjoint phase-IoU with CIs and
 both trivial baselines, using C2's real phase numbers — which needs KHANYA's held-out
-predictions and belongs to `main`. On this branch, **P5 — leg (b) registration — is next**, only
-if the domain lead confirms P1–P4 are sufficiently green to spend time on the research thread.
+predictions and belongs to `main`. On this branch, the next actions on P5 are the two checks
+named in its README's *Left open* section.
 The weekly-gate framing below is historical: the gates are green or closed, and what remains is
 the brief's literal deliverables, which `WORKBOARD.md` §2 scores.
 
@@ -436,7 +447,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **330 passed, 4 deselected**. Anything less is a regression, not a quirk.
+Expect **337 passed, 4 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
@@ -558,7 +569,7 @@ rusty met-eng *and* owns the ten-minute narrative, and neither should quietly be
 |---|---|---|
 | **N1** | Pirard 2007 prior art — full paper still unread (paywalled, both ScienceDirect and an academia.edu mirror blocked direct fetch), but 2026-08-28 the abstract (via search indexing, not a verified literal quote) narrowed the risk: plane-polarised static grain-boundary imaging + grey-level intercept stereology, no analyser rotation, no per-pixel Stokes recovery — further from our claim than assumed. See CLAUDE.md's prior-art note. Full text still needed before week 6, lower urgency than previously. | before week 6 |
 | **N2** | 1/S0 noise floor means no fixed anisotropy threshold is defensible. Any discrimination rule must condition on S0 and report an interval. | week 2+ |
-| **N3** | **WITHDRAWN 2026-09-12 — the verdict measured nothing.** S3 v2's frames are **not registered**: the field rotates with the specimen, so a given pixel is a different physical point in every frame. All three independent `NEITHER` runs and the brightness-quantile re-run were computed across unregistered frames; agreement across two machines tested determinism, not validity. The question *"is S3 v2 a stage or an analyser rotation?"* is **unanswered**, and leg (b) has **never been run**. What survives, and improves: the discriminator refused the input, and refusing was correct. Re-opening it needs a per-frame transform estimated **from the data** (log-polar phase correlation or ECC) — see `WORKBOARD.md` P5. | open — off the critical path |
+| **N3** | **RE-OPENED 2026-09-13 with a real, mixed, unverified result.** After the 2026-09-12 withdrawal (frames not registered), `reefprint.acquire.registration` was built, validated on synthetic data, and run for real on Kaggle against 5 measurable sections. Naive centred de-rotation now clears `DETECTION_SNR` on all 5 (hypothesis, not yet checked: because it is coarse registration, not zero registration, unlike N3's original method). Proper registration: 3/5 `SECOND` (analyser), 1 `BOTH` (mixed), 1 **flips to `FOURTH`** (stage, `S3_test_03`). **Not closed** — the naive-condition discrepancy and `S3_test_03`'s flip both need checking before this reaches anyone outside the team. Full numbers: `experiments/007-s3v2-registration/README.md`. | open — real result in hand, unverified |
 | **F1** | Chromite-proxy collapse — the falsification test runs regardless and the result is published either way. | week 2 gate |
 | **F2** | Talc/serpentine without SWIR is unproven. If it fails, drop to two properties. | week 2, empirical |
 | **S2** | Plant history was generated under FloatStar closed-loop control. No causal claim from observational plant data. | any use of the Kaggle flotation dataset |
