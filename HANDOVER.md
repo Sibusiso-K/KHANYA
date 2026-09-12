@@ -19,6 +19,24 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-12 — Codex (43) — publish full adversarial review
+
+**Did:** Preserved the complete team-requested review in
+`reports/TECHNICAL-REVIEW-2026-09-12.md`, with reviewed commit IDs and an explicit
+distinction between feedback and implemented changes. Added a README entry.
+The review covers both branches; publication changes documentation on main only.
+
+**Verified:** Review body matches the full conversation response. No runtime code
+changed. The review's attempted test run could not start because the available
+Python runtime lacks pytest; reported model metrics and earlier test counts were
+not independently reproduced.
+
+**Blocked on:** Model artifacts, specimen/locality metadata, data/weight permissions,
+and the other evidence items enumerated at the end of the review remain unresolved.
+
+**Next:** Both authors should triage the findings and proposed schedule. Publishing
+the review does not mark its recommendations accepted or its findings fixed.
+
 ## 2026-09-05 — Codex (42) — cross-project reliability audit, main changes only
 
 **Did:** Hardened invalid measurements and labels, preserved unknown liberation

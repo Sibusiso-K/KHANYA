@@ -25,6 +25,7 @@ Khumalo, Lethabo Hoaeane, Ipeleng Modise (Team Sonar). Current plan of record:
 
 | Doc | Answers |
 |---|---|
+| [`reports/TECHNICAL-REVIEW-2026-09-12.md`](reports/TECHNICAL-REVIEW-2026-09-12.md) | Full adversarial technical review: evidence gaps, proposed redesign, accuracy report template, integration, IP/licensing and the 19-day submission plan — recommendations, not implemented fixes |
 | [`ENDGAME.md`](ENDGAME.md) | **The plan of record** — who we present to, how we are scored, what is left to build, who builds it |
 | [`STATUS.md`](STATUS.md) | What exists, what doesn't, what to build next — the current snapshot |
 | [`HANDOVER.md`](HANDOVER.md) | Session-by-session log. Read the newest entry before pushing; add one after |
