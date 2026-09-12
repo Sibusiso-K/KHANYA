@@ -19,6 +19,44 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-12 — Sibusiso (45) — began triaging the adversarial review; fixed finding 7's fail-open bug
+
+**Did:** Started triage of `reports/TECHNICAL-REVIEW-2026-09-12.md` (entry 43).
+It is large and mostly requires data/rights/hardware decisions only the two
+of us can make together (locality manifests, OPC UA integration, dataset
+permissions, the 19-day schedule) - not actioned here. Picked off the one
+finding that was a pure code fix I could verify alone: finding 7 noted
+`verdict_state()` fell through to the confident-green css class for any
+action string it didn't recognise. Checked every literal action string
+`advise()` can actually produce (9 of them, `src/advisor.py`) - only
+`"Continue at current setpoint"` is meant to render green. Changed the
+fallthrough to abstain (amber/hold) for anything else, so a typo or a future
+action added without updating this function fails safe, not open.
+
+**Verified:** New parametrized tests in `tests/test_verdict_state.py` pin
+this (empty string, an unrecognised string, and a wrong-case near-match all
+now render "hold"). Full suite: 89/90 pass - the one failure
+(`test_dashboard_inputs.py::test_application_starts_with_visible_refusal_without_checkpoint`)
+is a pre-existing Streamlit/Starlette version-incompatibility in this host's
+environment (`ImportError: cannot import name 'DEFAULT_EXCLUDED_CONTENT_TYPES'`
+inside Streamlit's own vendored Starlette gzip middleware), not caused by
+this change - worth either of us pinning `starlette`/`streamlit` versions to
+fix, next session.
+
+**Changed:** `src/advisor.py`, `tests/test_verdict_state.py`.
+
+**Blocked on:** everything else in entry 43's review that isn't a pure code
+fix - data rights (LumenStone permissions), locality/specimen manifests,
+OPC UA integration, laptop timing measurements, the accuracy-report
+corrections (finding 1), and the redesign/schedule decisions. Those need
+both of us, not another solo session.
+
+**Next:** Lethabo and Sibusiso - sit down together on the review's Sep 12-13
+gate items (data identity, rights requests, report/task mismatch) before
+either of us builds further on an unresolved foundation. Whoever picks up
+code next: `starlette`/`streamlit` version pin (see Verified above) is a
+quick, isolated fix if you want it off the board.
+
 ## 2026-09-12 — Sibusiso (44) — real end-to-end verification, and a real layout bug fixed
 
 **Did:** Ran the actual sequence entry 37 through 42 all flagged as the
