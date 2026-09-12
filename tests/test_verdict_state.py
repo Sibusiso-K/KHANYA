@@ -18,3 +18,16 @@ from src.advisor import verdict_state
 def test_only_abstaining_states_render_amber(action, expected_class):
     css_class, _label = verdict_state(action)
     assert css_class == expected_class
+
+
+@pytest.mark.parametrize("action", [
+    "",
+    "Somethign unexpected",
+    "continue at current setpoint",  # wrong case is not the exact match
+])
+def test_unrecognised_actions_fail_safe_not_open(action):
+    """A typo or a new action added later must not silently render green -
+    advise() has an exhaustive set of literal action strings; anything else
+    is abstaining until proven otherwise."""
+    css_class, _label = verdict_state(action)
+    assert css_class == "hold"

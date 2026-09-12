@@ -243,4 +243,9 @@ def verdict_state(action: str) -> tuple[str, str]:
         return "hold", "verdict state: measurement declined"
     if action.startswith(("Grind", "Adjust reagent dosage")):
         return "grind", "verdict state: confident intervention"
-    return "", "verdict state: within specification"
+    if action == "Continue at current setpoint":
+        return "", "verdict state: within specification"
+    # An action string that matches none of the above is not a state advise()
+    # can produce today - treat it as abstaining rather than defaulting to
+    # green, so a future typo or new action fails safe, not open.
+    return "hold", "verdict state: unrecognised action, treated as abstaining"
