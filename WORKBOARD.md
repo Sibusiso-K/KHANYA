@@ -6,7 +6,7 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-13, 00:20 SAST — **P5 run on Kaggle, real mixed result, not yet a claim** |
+| **Last updated** | 2026-09-13, 00:40 SAST — **P5's first open item CLOSED** — naive-condition discrepancy confirmed, not a bug |
 | **Days to final** | **19** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
 | **REEFPRINT suite** | **337 passed, 4 deselected** — re-run and verified 2026-09-13 (+7 for P5's registration estimator tests) |
@@ -291,9 +291,14 @@ in `docs/BUILDLOG.md` session 22.
   out-of-locality predictive evaluation; boreholes within one orebody are not automatically
   independent localities. Report it as *"a separate geochemical association analysis"* — **never**
   as evidence that texture predicts processability, and never as the texture H0 rejected.
-- **Still open, and out of scope for this branch**: the *segmentation* accuracy report (locality-
-  disjoint phase-IoU with CIs and both trivial baselines, per C2's real numbers) needs KHANYA's
-  held-out predictions and locality manifest — that half of P4 is Sibusiso's, on `main`.
+- **Still open, and confirmed genuinely blocked, not just unscheduled** (checked 2026-09-13):
+  every metrics file committed on `main` is a single **pooled** confusion matrix over all 12 S2
+  test images — no per-image or per-locality breakdown exists to un-pool. `split_ids()` reads
+  train/test directories and does not consume a locality manifest, and none exists in the repo.
+  The trained checkpoint is also absent from this checkout. None of the three can be built or
+  approximated from this side without contradicting rule 1 — this is Sibusiso's, on `main`, and
+  needs new artefacts (per-image metrics, a locality manifest, the checkpoint) before
+  `reefprint.trust.split`/`baseline`/`conformal` can be pointed at any of it.
 
 ### P5 — Leg (b) registration 🟡 RUN 2026-09-13, real result, NOT yet a claim
 
@@ -312,13 +317,18 @@ were also tried and abandoned as wrong before switching to direct correlation-se
 locally, since a full section needs ~5 GB and this machine had 155 MB free. Full result and
 caveats: `experiments/007-s3v2-registration/README.md`. Headline, **not yet a claim for the
 talk**: naive centred de-rotation already clears `DETECTION_SNR` for `snr_2` on all 5 measurable
-sections (a break from N3's original `NEITHER`, hypothesised but **not yet checked** to be
-because N3's original method used zero registration, not this script's coarse one); proper
-registration leaves 3/5 sections `SECOND` (analyser), moves one to `BOTH` (mixed), and **flips
-one (`S3_test_03`) to `FOURTH` (stage)** — a split verdict CLAUDE.md's own geometry README
-already said would itself be a finding. **`S3_test_03`'s flip needs a visual sanity check before
-anyone trusts it** — its offset (−397 px) is the largest found, the profile of either a real
-result or a spurious search optimum.
+sections; proper registration leaves 3/5 sections `SECOND` (analyser), moves one to `BOTH`
+(mixed), and **flips one (`S3_test_03`) to `FOURTH` (stage)** — a split verdict CLAUDE.md's own
+geometry README already said would itself be a finding.
+
+**Confirmed same day — `experiments/008-n3-original-method-rerun/`**: N3's original,
+unmodified, zero-registration method returns `NEITHER` on all 5 of the same sections (snr_2
+1.78–4.43, all under threshold), exactly reproducing the historical finding. The naive-vs-N3
+discrepancy is confirmed as a registration-methodology difference — any sensible de-rotation
+recovers real structure zero registration cannot see — not a bug and not a contradiction.
+**`S3_test_03`'s flip still needs a visual sanity check before anyone trusts it** — its offset
+(−397 px) is the largest found, the profile of either a real result or a spurious search
+optimum. That is the one remaining item before this reaches a slide.
 
 ---
 

@@ -22,6 +22,84 @@ it is a press release.
 
 ---
 
+## 2026-09-13 — session 24 · N3's naive-condition discrepancy confirmed, not a bug; P4's segmentation half checked and found genuinely blocked
+
+### Attempted
+
+Two follow-ups the user asked for directly: re-run N3's original method on the same 5 sections
+experiment 007 measured, and start P4's segmentation half (locality-disjoint phase-IoU with CIs
+and both trivial baselines).
+
+### Worked — the N3 re-run
+
+- **`experiments/008-n3-original-method-rerun/`** calls `experiments/002-s3v2-geometry/run.py`'s
+  own `read_section` and `harmonic_signature` unchanged, restricted to exactly the 5 section
+  stems experiment 007 measured, so the comparison is apples to apples: same sections, same
+  archive, same estimator, only the registration step differs.
+- **Confirmed on Kaggle** (`lethabomh14/reefprint-p5-n3-rerun`, ~35 s — this method never warps a
+  frame, so it is far cheaper than experiment 007's full-stack registration): N3's original,
+  unmodified, zero-registration method returns `NEITHER` on **all 5** sections, `snr_2` ranging
+  1.78-4.43, every value under the 5.0 threshold — exactly reproducing the historical finding.
+  Experiment 007's "naive" condition (coarse de-rotation about the image centre, not zero
+  registration) shows `snr_2` 6.89-12.54 on the identical 5 sections, clearing threshold in
+  every case.
+- **This settles the open item, and settles it as good news for the project's actual thesis, not
+  a contradiction of it.** The two experiments do not disagree about the same measurement; they
+  measure different starting points, and the result is direct evidence *for* the registration
+  thesis (`WORKBOARD.md` §0 C1): a pixel that is a different physical grain in every frame
+  carries no coherent modulation to detect at any harmonic — which is what N3's three original
+  runs measured, correctly, on genuinely unregistered data — and the moment frames are even
+  approximately realigned, real structure appears.
+- Suite unaffected by this session's code (008 is a standalone Kaggle experiment script,
+  no `src/` changes) — verification limited to linting `experiments/008-n3-original-method-rerun/`
+  and a local smoke test against a tiny synthetic archive before spending Kaggle quota on the
+  real run, same discipline as experiment 007.
+
+### Did not work — P4's segmentation half, checked and found genuinely blocked
+
+Before writing any code, checked what `khanya/main` actually has to build a locality-disjoint
+accuracy report from. Found, and confirmed by reading rather than assuming:
+
+- **No per-section or per-image metrics exist anywhere in `main`'s git history** — every
+  committed report (`reports/lumenstone_s2_test_metrics.json`,
+  `reports/lumenstone_s2_patches_test_metrics.json`, and siblings) is a single **pooled**
+  confusion matrix over all 12 test images. A pooled TP/FP/FN cannot be un-pooled into
+  per-locality estimates after the fact — the per-image breakdown was never recorded.
+- **No locality manifest exists.** Grepped `main`'s segmentation code directly: `split_ids()`
+  reads the archive's train/test directories and randomly selects validation image IDs from
+  training. It does not consume, and there is nothing in the repository providing, a mapping
+  from image ID to real-world locality (specimen, mine, or section-of-origin) — exactly the gap
+  the external technical review's finding #2 already named.
+- **The trained checkpoint is absent from this checkout too**, consistent with the technical
+  review's own note that it could not find one in the clone it inspected.
+
+**This is not a "not done yet" gap this session could close with more effort — it is missing the
+raw material** (per-image or per-locality metrics, a locality manifest, the checkpoint) that
+would have to exist before `reefprint.trust.split`/`trust.baseline`/`trust.conformal` could be
+pointed at it at all. Building any of those three is Sibusiso's, on `main`, and none of it can be
+faked or approximated from this side without contradicting rule 1.
+
+### Learned
+
+**Checking whether a task's inputs exist is itself worth reporting, even when the answer is
+no.** The user asked for two things in one message; one had a clean, actionable path (a second
+Kaggle kernel, ~35 seconds of compute) and the other did not exist to be started at all. Neither
+answer earns silence — the second one earns a precise statement of exactly what is missing and
+whose side it is on, so the next person does not re-discover the same gap by trying to build on
+it directly.
+
+### Left open
+
+- **`S3_test_03`'s flip** — still the one remaining item before P5's result reaches a slide.
+  Visual check of the registered stack.
+- **P4's segmentation half** — raised to Sibusiso in the standing issue thread with the precise
+  list of what is missing (per-image metrics, a locality manifest, the checkpoint), rather than
+  left as a vague "still open" line.
+- **Widen from 5 to the ~18 sections that carry a real rotation series**, once `S3_test_03` is
+  resolved — unchanged from session 23.
+
+---
+
 ## 2026-09-13 — session 23 · P5 run for real: a genuine, mixed, unverified registration result
 
 ### Attempted

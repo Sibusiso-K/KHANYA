@@ -52,19 +52,16 @@ estimated true one — already clears `DETECTION_SNR` for `snr_2` on all 5 measu
 That is a sharp break from the earlier N3 measurements (session 16d/17), which found `NEITHER`
 on **every** section tried, on the same archive, using the same `harmonic_signature` estimator.
 
-The most likely explanation, stated as a hypothesis rather than a settled fact: N3's original
-runs (`experiments/002-s3v2-geometry/run.py`) sample scattered pixel *positions* directly from
-the raw, undecoded-and-unrotated frames — genuinely **zero** registration, not even an
-approximate one. This script's "naive" condition already applies a coarse rotation correction
-(about the wrong centre, but a rotation correction nonetheless) before sampling. If a specimen's
-rotation axis sits close enough to the image centre relative to grain size, an approximate
-correction can recover enough per-pixel consistency for `harmonic_signature` to find real
-structure, even though the *residual* misalignment (the actual axis offset) is what full
-registration then targets. **This has not been verified by re-running N3's exact original method
-against this script's data side by side** — it is the leading hypothesis, not a checked fact, and
-saying so is the point: CLAUDE.md's trap 1 says a reproducible answer can be a reproducible bug,
-and a result that overturns a prior finding this sharply needs that check before it is trusted,
-not after.
+**Confirmed, 2026-09-13 — `experiments/008-n3-original-method-rerun/`.** N3's original,
+unmodified method (`experiments/002-s3v2-geometry/run.py::read_section`, scattered pixel
+positions from the raw, undecoded-and-unrotated frames — genuinely **zero** registration)
+returns `NEITHER` on all 5 of these same sections, with every `snr_2` under 5.0 (1.78–4.43). This
+script's "naive" condition already applies a coarse rotation correction (about the wrong centre,
+but a rotation correction nonetheless) before sampling, and that is the entire difference: **any
+sensible de-rotation recovers real per-pixel structure that zero registration cannot see at
+all**, which is direct evidence *for* the project's registration thesis, not a contradiction of
+N3's original finding. Full comparison table: `experiments/008-n3-original-method-rerun/
+README.md`.
 
 **The verdict is not uniform across sections, and two of five change under proper registration**:
 `S3_test_02` gains a real `snr_4` (3.54 → 5.56) alongside its already-present `snr_2`, moving it
@@ -77,8 +74,9 @@ is itself a finding."* Here it is, on real data, for the first time.
 
 ## What this does NOT yet mean
 
-- **It does not close N3.** N3 asked whether S3 v2 is a stage or analyser archive; this result
-  says the answer may not be single-valued across the archive at all, which is a different,
+- **It does not close N3.** N3 asked whether S3 v2 is a stage or analyser archive; the *naive*
+  vs zero-registration comparison is confirmed (above), but this result on its own says the
+  archive's answer may not be single-valued across sections at all, which is a different,
   larger question the project has not previously had reason to ask.
 - **It does not validate the registration estimator on real data**, only on synthetic data with a
   known answer (`tests/test_registration.py`). The found offsets are large and plausible for a
@@ -97,9 +95,8 @@ is itself a finding."* Here it is, on real data, for the first time.
 
 ## Left open, in priority order
 
-1. Re-run N3's *original* method (zero registration, scattered raw pixels) against these same 5
-   sections in the same session, so the naive-condition discrepancy above is checked, not
-   hypothesised.
+1. ✅ **Done** — `experiments/008-n3-original-method-rerun/` confirmed the naive-condition
+   discrepancy is a registration-methodology difference, not a bug.
 2. Visually inspect `S3_test_03`'s registered stack — does it look like a properly aligned
    rotation series, or does the large offset look like an artefact?
 3. Widen from 5 to the full ~18 sections that do carry a rotation series, once 1–2 are resolved.
