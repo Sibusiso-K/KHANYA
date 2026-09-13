@@ -19,6 +19,32 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-13 — Sibusiso (50) — WORKBOARD D5 closed without emailing the author
+
+**Did:** Team decision: do not contact LumenStone's author for licensing
+clarification. Rather than leave D5 open or silently drop it, checked
+whether the decision is actually defensible and documented why: `data/raw/`
+and `checkpoints/` are both gitignored, so zero LumenStone files and no
+derived checkpoint reach the public repository MOTT will review; everything
+we actually do (private training, an academic research demonstration,
+cited derived metrics) is inside the published "free use in your own
+research work" terms as written. Re-checked the LumenStone site and the
+authors' `petroscope` repo for any more specific terms - nothing new.
+Documented the reasoning in `DATA-SOURCES.md` §1 and added an explicit
+disclosure sentence to `MINTEK-FIT.md` §3.4: any future commercial
+development is Mintek's own licensing conversation to have, not one we've
+pre-empted or assumed resolved. Removed the now-obsolete email draft.
+
+**Verified:** 94/94 tests pass (docs-only change).
+
+**Changed:** `DATA-SOURCES.md`, `MINTEK-FIT.md`.
+
+**Blocked on:** nothing - D5 is closed, not deferred.
+
+**Next:** if Mintek does want to develop this further post-selection, that
+licensing conversation is theirs to have, not a task item for us before
+1 October.
+
 ## 2026-09-13 — Sibusiso (49) — the real-time gap, quantified: 5x over target
 
 **Did:** Closed the WORKBOARD.md P3 remainder - segmentation latency was the
