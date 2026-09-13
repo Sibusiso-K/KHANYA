@@ -19,6 +19,80 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-13 — Sibusiso (48) — WORKBOARD sync, CI was red on every push, REEFPRINT cross-verified
+
+**Did:** Reviewed both branches and Lethabo's issue #4 (WORKBOARD.md, ADR-0004,
+ADR-0005). Actioned the two `main`-side items and confirmed the numbers she
+asked about, replied on the issue. Then found something nobody had flagged:
+**CI has failed on every single push to `main` since at least 2026-09-05**
+(`gh run list` - every run red, this session's included, until this one).
+
+Cause: `.github/workflows/ci.yml` runs `pytest tests/ -q`, not `python -m
+pytest`. Without the repo root on `sys.path`, every test importing `src.*` or
+`dashboard.*` fails collection with `ModuleNotFoundError` - which is nearly
+the whole suite. Every "N passed" count in this project's history, including
+this session's, was run with `python -m pytest`, which inserts cwd into
+`sys.path` automatically and completely masked the bug. Reproduced locally:
+bare `pytest tests/` fails the identical way on this host. Fixed with a
+9-line `pytest.ini` (`pythonpath = .`). Verified: `pytest tests/ -q`, the
+exact CI command, now passes 94/94 locally, and the next push's Actions run
+went green - first green run on `main` this project has had.
+
+**Also this session:**
+- Retracted the withdrawn S3v2/extinction claim from `ENDGAME.md` and
+  `README.md` per WORKBOARD.md correction C1 (Lethabo: "must not reach a
+  judge"). Mirrored `WORKBOARD.md` onto `main` verbatim, as issue #4 asked.
+- Confirmed S1/S2 accuracy numbers exactly match what's checked in - not
+  stale. Replied on issue #4 with the confirmation and a status report.
+- Renamed "liberation" to "apparent 2D sulphide association index" across
+  every user-facing surface (dashboard, advisor text, README/STATUS/
+  PITCH/MINTEK-FIT), per the review and WORKBOARD's acceptance. Internal
+  Python identifiers (`LOW_LIBERATION`, `Result.liberation`, etc.)
+  deliberately unchanged - rationale in `src/advisor.py`'s docstring.
+- Checked whether a locality manifest is buildable from LumenStone's own
+  distributed data - it is not (no metadata ships, confirmed by inspection).
+  Built the per-image breakdown instead (genuinely buildable, not a locality
+  substitute) - `evaluate()` now reports both pooled and per-image confusion.
+- **Independently cross-verified REEFPRINT's test suite** on this host, in a
+  fresh isolated venv (Python 3.12.14, `reefprint` requires `<3.13`; this
+  host's default interpreters are 3.13/3.14, resolved via a `uv`-managed
+  3.12 install already present). `337 passed, 4 deselected` - **exact match**
+  to WORKBOARD.md's claimed count, on a completely separate machine and
+  environment from where that count was originally produced. The 4
+  deselected also fail for the exact stated reasons when run explicitly
+  (`test_the_week_1_gate...`, `test_naturally_floating_gangue_load`,
+  `test_stockpile_oxidation_index`, `test_falsification_test_controls_for_
+  cr2o3_and_pyroxene_fraction`). This is real independent verification, not
+  a re-report of Lethabo's own number - matches ENDGAME.md §6's coordination
+  protocol ("Claude runs REEFPRINT's suite... and reports failures back").
+- Checked pyrrhotite-reject-as-Bushveld-PGE-default framing across every
+  pitch-facing doc on `main` - not present anywhere; `src/modal.py`'s
+  S2-specific role table was already correctly scoped and caveated.
+
+**Verified:** 94/94 tests pass locally via both `python -m pytest` and bare
+`pytest` (the CI invocation). CI Actions run confirmed green after the fix.
+337/4 REEFPRINT cross-check confirmed independently.
+
+**Changed:** `ENDGAME.md`, `README.md`, `WORKBOARD.md` (new, mirrored),
+`src/advisor.py`, `dashboard/templates/khanya.html.jinja`,
+`dashboard/templates/landing.html.jinja`, `STATUS.md`, `PITCH.md`,
+`MINTEK-FIT.md`, `src/segmentation/metrics.py`, `src/segmentation/
+train_patches.py`, `tests/test_segmentation_metrics.py`, `pytest.ini` (new).
+
+**Blocked on:** the segmentation latency benchmark (via `reefprint.trust.
+latency` through the bridge) and a fresh per-image S2 evaluation re-run were
+both in progress when this entry was written - see the next entry for
+results. D3-D6 in WORKBOARD.md §4 remain open decisions for Lethabo/both;
+D5 (LumenStone rights email) and D6 (UNISA/Wits email reconciliation) need
+someone to actually send an email, which needs your explicit go-ahead before
+I do it on your behalf.
+
+**Next:** whoever reads this - check `gh run list` occasionally. A red CI
+badge silently survived at least 8 days and roughly a dozen pushes without
+anyone noticing, because we all `python -m pytest` locally. It won't recur
+now that `pytest.ini` is committed, but it's worth remembering the local
+habit that let it hide this long.
+
 ## 2026-09-12 — Sibusiso (47) — real per-class recall/precision, and a strict-JSON bug
 
 **Did:** Picked up the review's "Accuracy report" item (finding, owned by
