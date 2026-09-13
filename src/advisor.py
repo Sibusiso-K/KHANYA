@@ -31,6 +31,20 @@ sourced numbers we do not have is a worse failure than admitting placeholders:
   floatable and drives depressant demand in PGM flotation - that is the
   REEFPRINT abstract's own reason for including the phase - but no source gives
   a numeric fraction threshold.
+
+Naming, corrected 2026-09-13 per the 2026-09-12 external review (accepted by
+both branches, see WORKBOARD.md P2): every user-facing string below calls the
+liberation-index output an "apparent 2D sulphide association" rather than
+"liberation" outright. Whether these LumenStone sections are prepared
+particulate mounts (where a connected region genuinely is a feed particle,
+and "liberation" is the correct metallurgical term) or intact polished rock
+(where a connected region separated by resin may not be a particle at all)
+has not been verified - see this file's own upper-bound caveat on the "Grind
+finer" text. Internal names (LOW_LIBERATION, Result.liberation,
+liberation_index()) are left as-is: they accurately describe the geometric
+quantity computed and the cited literature threshold it is compared against,
+and renaming them changes nothing a judge sees while adding regression risk
+this close to submission.
 """
 from dataclasses import dataclass
 import math
@@ -155,24 +169,24 @@ def advise(result, mean_confidence: float,
 
     if result.liberation is None:
         return Recommendation(
-            "Flag for manual review - liberation not measurable",
-            "Payload is present but no particle cleared the minimum size for a "
-            "liberation measurement. Reported as unmeasured rather than as a "
-            "number we cannot defend.",
+            "Flag for manual review - association index not measurable",
+            "Payload is present but no particle cleared the minimum size for "
+            "an association-index measurement. Reported as unmeasured rather "
+            "than as a number we cannot defend.",
             confidence,
         )
 
     if abs(result.liberation - LOW_LIBERATION) < liberation_margin:
         return Recommendation(
             "Marginal - verify before acting",
-            f"Liberation is {result.liberation:.0%}, within the "
-            f"+/-{liberation_margin:.1%} conformal uncertainty band around the "
-            f"{LOW_LIBERATION:.0%} floor (derived from leave-one-out S2 "
-            "calibration at nominal 85%; not a validated coverage guarantee "
+            f"Apparent 2D sulphide association is {result.liberation:.0%}, "
+            f"within the +/-{liberation_margin:.1%} conformal uncertainty band "
+            f"around the {LOW_LIBERATION:.0%} floor (derived from leave-one-out "
+            "S2 calibration at nominal 85%; not a validated coverage guarantee "
             "for new uploads). The true value could plausibly "
             "sit on either side of the threshold, so the honest answer is that "
             "this field does not decide. Candidate actions are 'grind finer' if "
-            "liberation is genuinely below the floor, or 'continue at setpoint' "
+            "association is genuinely below the floor, or 'continue at setpoint' "
             "if above. Confirm with an additional field or an assay before "
             "changing the circuit.",
             confidence,
@@ -181,12 +195,16 @@ def advise(result, mean_confidence: float,
     if result.liberation < LOW_LIBERATION:
         return Recommendation(
             "Grind finer",
-            f"Liberation is {result.liberation:.0%}, below the "
-            f"{LOW_LIBERATION:.0%} floor, across {result.n_particles} particles. "
-            "Payload locked in composite particles will report to tailings and "
-            "depress recovery. Note this figure is an upper bound - apparent "
-            "liberation from 2D sections is biased high against true volumetric "
-            "liberation, so the real case for grinding is at least this strong.",
+            f"Apparent 2D sulphide association is {result.liberation:.0%}, "
+            f"below the {LOW_LIBERATION:.0%} floor, across {result.n_particles} "
+            "particles. Payload locked in composite particles will report to "
+            "tailings and depress recovery. Note this figure is an upper bound "
+            "on true liberation - apparent association from 2D sections is "
+            "biased high against true volumetric liberation, so the real case "
+            "for grinding is at least this strong. This is a structural image "
+            "measurement, not a validated liberation assay: it assumes the "
+            "sections are prepared particulate mounts where a connected region "
+            "is a real particle, which has not been verified.",
             confidence,
         )
 
@@ -214,8 +232,9 @@ def advise(result, mean_confidence: float,
 
     return Recommendation(
         "Continue at current setpoint",
-        f"Payload at {payload:.0%} of ore area, liberation {result.liberation:.0%} "
-        f"across {result.n_particles} particles, no phase over its threshold.",
+        f"Payload at {payload:.0%} of ore area, apparent 2D sulphide "
+        f"association {result.liberation:.0%} across {result.n_particles} "
+        "particles, no phase over its threshold.",
         confidence,
     )
 

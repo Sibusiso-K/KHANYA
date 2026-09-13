@@ -4,17 +4,18 @@
 REEFPRINT is the specification, the physics and the measurement half — it lives
 on the [`reefprint`](https://github.com/Sibusiso-K/KHANYA/tree/reefprint) branch
 of this repository. KHANYA is this branch: the segmentation model, the modal
-mineralogy and liberation calculators, the conformal calibration, and the
-offline dashboard. The two commit histories are kept deliberately unmerged so
+mineralogy and apparent 2D sulphide association index calculators, the
+conformal calibration, and the offline dashboard. The two commit histories
+are kept deliberately unmerged so
 each author's contribution stays independently verifiable — Mintek's Office of
 Technology Transfer runs an IP assessment on top-ranked entries before winners
 are announced.
 
 Challenge area: **AI for Mineral Processing**. Real-time mineralogical
 characterisation from reflected-light optical microscopy: micrograph ->
-segmentation -> modal mineralogy -> liberation -> plant recommendation. One
-learned stage (the CNN); everything downstream is deterministic and auditable.
-Full explanation: [`STATUS.md`](STATUS.md).
+segmentation -> modal mineralogy -> apparent 2D sulphide association index ->
+plant recommendation. One learned stage (the CNN); everything downstream is
+deterministic and auditable. Full explanation: [`STATUS.md`](STATUS.md).
 
 **Status:** abstract submitted. In the build phase to the **1 Oct** hard
 submission cutoff (13:00) and 10-minute pitch; conference 2 Oct. Team: Sibusiso

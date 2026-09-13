@@ -160,9 +160,9 @@ segmentation labels for optical images of the same sections".
 
 ### 3.5 Flotation decisions, which is their stated ambition
 
-KHANYA's outputs are flotation-circuit decisions: grind finer for liberation,
-adjust depressant dosage for a reject or deleterious phase, continue at setpoint,
-or verify. The advisor reasons over metallurgical **roles** rather than mineral
+KHANYA's outputs are flotation-circuit decisions: grind finer when the apparent
+2D sulphide association index is low, adjust depressant dosage for a reject or
+deleterious phase, continue at setpoint, or verify. The advisor reasons over metallurgical **roles** rather than mineral
 names, so retargeting from one ore to another is a mapping change rather than a
 rewrite.
 

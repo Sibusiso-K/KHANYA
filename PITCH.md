@@ -61,9 +61,9 @@ claim, and it is exactly what the originality authentication stage rewards.
 
 ### 3.2 A system that knows when it does not know
 
-When a liberation estimate falls within the decision threshold's uncertainty
-band, the advisor returns **"Marginal — verify before acting"** and names both
-candidate actions instead of guessing.
+When the apparent 2D sulphide association index falls within the decision
+threshold's uncertainty band, the advisor returns **"Marginal — verify before
+acting"** and names both candidate actions instead of guessing.
 
 **Corrected 2026-08-18, and this correction is itself part of the pitch.** The
 band was originally the estimator's mean absolute error (±8.9%), used as a
@@ -120,9 +120,10 @@ every other abstract opens with.
 
 Then, in order:
 
-1. **What we built** — micrograph to segmentation to modal mineralogy to
-   liberation by particle composition to a flotation recommendation. One learned
-   stage; the rest deterministic and auditable.
+1. **What we built** — micrograph to segmentation to modal mineralogy to an
+   apparent 2D sulphide association index by particle composition to a
+   flotation recommendation. One learned stage; the rest deterministic and
+   auditable.
 2. **Evidence** — five phases, 12 held-out sections, mean IoU 0.5725, and the
    decision-error table. Give both numbers. The decision number is the point.
 3. **The honesty mechanism** — uncertainty band derived from measured error;

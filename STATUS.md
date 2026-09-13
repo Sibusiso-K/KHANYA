@@ -7,6 +7,17 @@ checkpoint. Real-image inference and the complete talk sequence still need that
 checkpoint and original micrographs on this host. The fixed S2 reference band is
 not a coverage guarantee for future uploads.
 
+**2026-09-13 naming correction, accepted from the external review (WORKBOARD.md
+P2):** the dashboard and `src/advisor.py`'s user-facing text now call this
+output an **apparent 2D sulphide association index**, not "liberation" -
+whether these sections are prepared particulate mounts (where "liberation" is
+the correct term) or intact polished rock (where a connected region separated
+by resin may not be a real particle) has not been verified. Below this point,
+"liberation" is left as written where it names a historical experiment or
+research finding at the time it was run — not rewritten retroactively — but
+the two current-architecture references (§0's stage table, the pipeline
+diagram below) are updated to match.
+
 **Historical research snapshot below: 2026-08-19.** The detailed findings remain
 useful, but its next-step and implementation-status prose is not a current backlog.
 
@@ -37,7 +48,7 @@ decision layer**. One learned component, three deterministic ones:
 | 1. Segmentation | DeepLabv3+ResNet50 CNN, semantic segmentation, 5 classes | **Yes** - supervised |
 | 2. Modal mineralogy | Pixel counting + mineral-to-role lookup | No - arithmetic |
 | 2.5. Topology repair | Morphological opening, hole filling, watershed | No - classical image processing |
-| 3. Liberation | Connected components + particle composition | No - geometry |
+| 3. Association index (apparent, 2D) | Connected components + particle composition | No - geometry |
 | 4. Advisor | Threshold rules over metallurgical roles | No - hand-written rules |
 
 Only the CNN learns. Everything downstream is deterministic and inspectable, and
@@ -300,7 +311,7 @@ micrograph (3396x2547 reflected light, polished section)
         |                 area fractions as proportion of ORE (resin excluded)
         |                 -> mineral -> metallurgical ROLE mapping
         v
-  LIBERATION              connected components = particles
+  ASSOCIATION INDEX       connected components = particles (apparent, 2D)
         |                 mass-weighted share of payload in liberated particles
         v
   ADVISOR                 src/advisor.py — reasons over ROLES, not minerals
