@@ -19,6 +19,64 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-13 — Sibusiso (51) — real browser upload, first time this project has been tested this way
+
+**Did:** Every prior verification this project has of the dashboard (mine and
+Codex's) either called `dashboard.render.render()` directly in a script,
+bypassing Streamlit's uploader, or inspected the app in a browser without an
+actual file going through it. Neither is what a judge does. This session
+ran the `khanya-advisor` Streamlit server for real
+(`.claude/launch.json`, port 8501) and drove an **actual browser file
+upload** through the real `st.file_uploader` widget, using
+`claude-in-chrome`'s `file_upload` action against the widget's underlying
+`<input type="file">` element - the literal click-Upload-choose-a-file
+path, not a workaround.
+
+**test_01.jpg** (confident case): uploaded, waited through the real ~2-3
+minute native-resolution inference (matches the measured p95 154s from
+entry 49 - the spinner's "about 2-3 minutes" claim holds up), and the
+rendered result showed 95% association / 78% confidence / 181 particles /
+"Continue at current setpoint" - exact match to every prior figure produced
+for this image by direct rendering. Confirmed live: the "ASSOCIATION INDEX"
+label, the "apparent, 2D · floor: 50%" caption, and the recommendation text
+opening "Payload at 88% of ore area, apparent 2D sulph..." - the liberation
+rename (entry 48) renders correctly in the actual running app, not just in
+a synthetic test.
+
+**test_04.jpg** (marginal case): same real upload flow, on a fresh browser
+tab/session after the first tab's automation surface stopped responding to
+script injection mid-wait (server logs confirmed the render had actually
+completed at 08:43:44 regardless). Re-uploaded the same file to a new tab;
+Streamlit's `@st.cache_data` on `predict()` is process-wide, not
+per-session, so it hit cache and rendered near-instantly. Result: 74%
+association / 82% confidence / 170 particles, "VERDICT STATE: MARGINAL,
+VERIFY BEFORE ACTING" (amber), text opening "Apparent 2D sulphide
+association is 74%, within..." - exact match to prior figures, rename
+correct here too.
+
+**This closes a real gap, not a formality**: it is the first time in this
+project's history that the actual upload widget - the one specific piece of
+native Streamlit UI a judge will personally click - has been exercised by
+anything other than a human at a keyboard. Direct-render testing (entries
+44/46) proved the pipeline and template; this proves the widget wiring
+between them works too.
+
+**Verified:** two of three verdict states now confirmed through the actual
+upload flow (confident, marginal). Refusal/hold was already confirmed on a
+real out-of-domain image via direct render (entry 46, s1_test_02) but not
+yet through this exact upload path - worth doing once, not urgent, since
+the render call in between is identical either way.
+
+**Changed:** nothing in the repo - verification only.
+
+**Blocked on:** nothing new. Same outstanding items as entries 48-50 (live
+demo scope decision, D6, a clean idle-machine latency re-run).
+
+**Next:** if anyone rehearses the actual demo before 1 October, this is the
+exact click-path to rehearse - `.claude/launch.json`'s `khanya-advisor`
+config already has the right command (`streamlit run dashboard/app.py
+--server.port 8501`).
+
 ## 2026-09-13 — Sibusiso (50) — WORKBOARD D5 closed without emailing the author
 
 **Did:** Team decision: do not contact LumenStone's author for licensing
