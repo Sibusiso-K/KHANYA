@@ -25,6 +25,7 @@ Khumalo, Lethabo Hoaeane, Ipeleng Modise (Team Sonar). Current plan of record:
 
 | Doc | Answers |
 |---|---|
+| [`WORKBOARD.md`](WORKBOARD.md) | **Read this first.** The shared index and scoreboard — which of the other status docs to trust, who owns what, the open decisions. Authored on `reefprint`, mirrored here; edit it there, not on both branches |
 | [`reports/TECHNICAL-REVIEW-2026-09-12.md`](reports/TECHNICAL-REVIEW-2026-09-12.md) | Full adversarial technical review: evidence gaps, proposed redesign, accuracy report template, integration, IP/licensing and the 19-day submission plan — recommendations, not implemented fixes |
 | [`ENDGAME.md`](ENDGAME.md) | **The plan of record** — who we present to, how we are scored, what is left to build, who builds it |
 | [`STATUS.md`](STATUS.md) | What exists, what doesn't, what to build next — the current snapshot |
@@ -54,12 +55,14 @@ improvement — ΔR² = 0.0279, **p = 0.0002**, cluster-robust by borehole.
 Effect size is modest and Cr# is arithmetically related to the baseline; both
 caveats are stated in [`reports/chromite_pge_falsification.json`](reports/chromite_pge_falsification.json).
 
-**3. Four things we checked and could not claim.** The rotation geometry of the
-public archive is not established by the data; extinction found no
-symmetry separation in it; no public texture-plus-chemistry dataset exists for
-UG2; no oxidation index is computable from XRF majors. Each is documented with
-its evidence. The system that reports these is the product — see
-[`ENDGAME.md`](ENDGAME.md) §3.
+**3. Things we checked and could not claim.** The rotation geometry of the
+public archive is not established by the data — investigating why found its
+frames are not registered to each other, so no per-pixel measurement on it
+(the earlier reported extinction result included) is valid; no public
+texture-plus-chemistry dataset exists for UG2; no oxidation index is
+computable from XRF majors. Each is documented with its evidence, and the
+registration finding is still evolving on `reefprint`'s `WORKBOARD.md`. The
+system that reports these is the product — see [`ENDGAME.md`](ENDGAME.md) §3.
 
 ## Repository map
 

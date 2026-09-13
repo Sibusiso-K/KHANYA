@@ -8,6 +8,22 @@ In particular, the complete real-image rehearsal is not verified on this host:
 the validated checkpoint and raw input images are absent. No domain-data block
 has been overridden, and the commit histories remain separate.
 
+**2026-09-13 correction — read this before §2 and §3 below.** Lethabo's
+`WORKBOARD.md` (on `reefprint`, mirrored here at repo root) correction C1
+**withdraws** the S3 v2 geometry-discriminator/extinction result this section
+originally cited: S3 v2's frames are not registered, so a given pixel is a
+different physical point in every frame, and every per-pixel measurement on
+that archive — the `NEITHER` verdicts and the extinction-detection-rate
+comparison — measured nothing. Agreement across two machines tested
+determinism, not validity. This is **not** a withdrawal of the trust layer's
+value: the discriminator correctly refused an unusable input, and that refusal
+is the honest, improved story — see `WORKBOARD.md` §0 C1 for the current,
+still-evolving state (as of 2026-09-13, registered re-analysis finds
+detectable signal in 4 of 5 sections, not yet promoted to a talk claim).
+`WORKBOARD.md` is the authoritative live document for this topic from here on;
+the table below is corrected to stop citing the withdrawn claim, not to
+re-derive REEFPRINT's physics.
+
 **Status:** active build plan. Supersedes `PITCH.md` §7 ("what to do with the
 remaining time") and extends `JOINT-PLAN.md` §4 phases 2–3.
 **Owners:** Sibusiso (KHANYA / `main`) + Lethabo (REEFPRINT / `reefprint`),
@@ -81,10 +97,11 @@ Scored as a judge would, not as we would like.
 ### The strategic problem, named
 
 Our most distinctive intellectual asset is **epistemic honesty**. We have, on
-the record: N3 came back `NEITHER`; extinction found no separation in S3 v2;
-no public texture dataset exists; no oxidation index is computable from XRF
-majors. That is genuinely better science than most entries will contain, and
-Rule 9 says falsification is a deliverable.
+the record: the geometry discriminator refused S3 v2 as an unusable input
+(the frames turned out not to be registered — see the 2026-09-13 correction
+above, `WORKBOARD.md` §0 C1); no public texture dataset exists; no oxidation
+index is computable from XRF majors. That is genuinely better science than
+most entries will contain, and Rule 9 says falsification is a deliverable.
 
 **But a judge scoring *Impact* hears four sentences beginning "we checked, and
 it didn't work."**
@@ -98,14 +115,13 @@ Do not solve this by hiding the nulls. Solve it by making the nulls the
 
 > **We built the part of an automated mineralogy system that knows when its own
 > answer is not trustworthy — and we proved it works by turning it on ourselves
-> and letting it refuse four times.**
+> and letting it refuse.**
 
 Under this framing every null becomes an asset:
 
 | The null | What it proves about the product |
 |---|---|
-| Geometry discriminator returns `NEITHER` on S3 v2 | The instrument detects an unusable input instead of returning a confident wrong map. **We measured the cost of not having it: a stage series inverted with the analyser model returns median anisotropy 1.5e-02 — a strongly anisotropic mineral reported as isotropic, no error raised.** |
-| Extinction finds no separation (8.2% detection vs 10.0% false-positive floor) | The conformal calibration is honest: it hits its 10% target exactly and declines to manufacture signal. |
+| Geometry discriminator refused S3 v2 as an unusable input | The instrument declines to guess rather than returning a confident wrong map. Investigating the refusal found the archive's frames are not registered to each other — a real finding about the public dataset, not a defect in our trust layer. **Do not describe this as "detecting a stage rotation" or cite a specific per-pixel measurement from it** — see the 2026-09-13 correction above; `WORKBOARD.md` is authoritative on the current, still-evolving re-analysis. |
 | Texture features do not exist publicly (T1) | We searched the literature systematically and documented it, rather than fabricating a feature. |
 | Oxidation index not computable (no Fe²⁺/Fe³⁺ split in XRF majors) | We check whether the data can support a claim *before* making it. |
 
