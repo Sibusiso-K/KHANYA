@@ -6,10 +6,10 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-13, 01:05 SAST — **P5 fully checked**: S3_test_03's stage-rotation flip retracted after a visual check; 4/5 sections hold |
+| **Last updated** | 2026-09-13, 01:55 SAST — **P5 escalated**: the registration search is not reproducible on real data; do not quote any registered offset yet |
 | **Days to final** | **19** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
-| **REEFPRINT suite** | **337 passed, 4 deselected** — re-run and verified 2026-09-13 (+7 for P5's registration estimator tests) |
+| **REEFPRINT suite** | **339 passed, 4 deselected** — re-run and verified 2026-09-13 (+2 for the roi_mask feature's tests) |
 | **KHANYA suite** | 87 passing (reported by main's audit; not re-run this session) |
 
 **Detail lives elsewhere, and this file says which of it to trust:**
@@ -315,25 +315,33 @@ were also tried and abandoned as wrong before switching to direct correlation-se
 
 **Run for real on Kaggle** (`lethabomh14/reefprint-p5-registration`, ~10 min, CPU only) — not
 locally, since a full section needs ~5 GB and this machine had 155 MB free. Full result and
-caveats: `experiments/007-s3v2-registration/README.md`. Headline, **the honest current state**:
-naive centred de-rotation already clears `DETECTION_SNR` for `snr_2` on all 5 measurable
-sections; proper registration leaves `S3_test_01/07/12` at a clean `SECOND` (analyser) and moves
-`S3_test_02` to `BOTH` (mixed) — **these four hold.**
+caveats: `experiments/007-s3v2-registration/README.md`. Headline, **the naive-condition state,
+which is solid**: naive centred de-rotation clears `DETECTION_SNR` for `snr_2` on all 5
+measurable sections, confirmed against N3's original zero-registration method
+(`experiments/008-n3-original-method-rerun/`, `NEITHER` on all 5 — a registration-methodology
+difference, not a bug). **The registered-offset numbers are NOT solid — see below.**
 
-**Confirmed same day — `experiments/008-n3-original-method-rerun/`**: N3's original,
-unmodified, zero-registration method returns `NEITHER` on all 5 of the same sections (snr_2
-1.78–4.43, all under threshold), exactly reproducing the historical finding. The naive-vs-N3
-discrepancy is confirmed as a registration-methodology difference — any sensible de-rotation
-recovers real structure zero registration cannot see — not a bug and not a contradiction.
+**⚠️ 2026-09-13, escalated: the registration search is not reproducible on real data, with
+unchanged code and unchanged input** (`experiments/010-s3test03-masked-rerun/README.md`).
+Attempting the mask fix `experiments/009`'s visual check recommended for `S3_test_03` surfaced a
+bigger problem underneath it: re-running the *unmasked* search on that same section, same code,
+same archive, found a completely different offset than session 23 did (~50 px this time vs
+~397 px before) — while the naive condition's own numbers, computed from the same decoded
+frames, reproduce bit-for-bit across both runs. That rules out a data/decode difference and
+narrows it to the search itself: the working hypothesis is that real mineral texture's
+self-similarity gives the correlation objective multiple near-tied local optima, and the coarse
+grid's `if score > best_score` has no tie-break rule for when floating-point noise decides
+between them (CLAUDE.md Rule 5: sort every traversal, tie-break every min/max — this does
+neither).
 
-**`S3_test_03`'s flip to `FOURTH` (stage) does NOT hold — checked by eye, 2026-09-13,
-`experiments/009-s3test03-visual-check/`.** A tracked grain sits in the same place under naive
-and "registered" de-rotation alike, at two angular separations — a real 397 px offset should
-have displaced it visibly and did not. Its score improvement was also the second-smallest of
-the five despite the largest offset. **`S3_test_03`'s registered verdict is retracted; do not
-quote `FOURTH`/stage for this section.** P5's remaining open item is fixing the search itself
-(masked scoring, tighter radius) before re-trying that one section — not a blocker for the
-other four, which are ready to be quoted as `WORKBOARD.md`'s honest state.
+**Consequence: no specific registered-offset number for any of the 5 sections should be quoted
+to the precision it was reported at** — `S3_test_01/02/07/12`'s registered verdicts were not
+re-checked for run-to-run stability and may or may not be as fragile as `S3_test_03`'s turned
+out to be. The mask fix itself also did not help — it found an even larger, still-wrong-looking
+offset for `S3_test_03` and a *worse* verdict (`NEITHER`). **This is now a real, unbounded piece
+of engineering work** (a determinism check on the search, a landscape diagnostic, then a
+tie-break rule), not a quick follow-up, and it is the point ADR-0004's "P5 only if time exists"
+condition needs re-checking against.
 
 ---
 
@@ -410,7 +418,7 @@ uv sync && uv run ruff check . && uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **337 passed, 4 deselected**. Anything less is a regression, not a quirk.
+Expect **339 passed, 4 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf

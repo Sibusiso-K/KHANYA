@@ -22,6 +22,93 @@ it is a press release.
 
 ---
 
+## 2026-09-13 — session 26 · the S3_test_03 mask fix failed, and found something worse: the search itself is not reproducible
+
+### Attempted
+
+Per experiment 009's recommendation: mask out the frame border and background before scoring, so
+`S3_test_03`'s registration search cannot be won by aligning non-specimen content, and re-run.
+
+### Worked, in the sense that it found the truth rather than a comforting answer
+
+- **`experiments/010-s3test03-masked-rerun/`** adds `roi_mask` support to
+  `reefprint.acquire.registration.estimate_rotation_centre` (a boolean array restricting which
+  pixels the correlation objective scores), validated on controlled synthetic data first: a
+  region carrying independent random noise (no genuine rotational relationship to anything, a
+  stand-in for background that does not share the specimen's rotation) measurably dilutes the
+  discrimination between the true offset and a wrong one when included, and excluding it via
+  `roi_mask` sharpens that gap back up and still recovers the true offset accurately. Two new
+  tests, 9/9 passing in `tests/test_registration.py`.
+- **Run for real on Kaggle** (`lethabomh14/reefprint-p5-masked-rerun`, ~7 min): a mask excluding
+  a 20% border margin and the darkest 15% of pixels (background/resin, per CLAUDE.md's own
+  reflectance table). Result: the masked search found an **even larger** offset than before
+  (−248, +403 vs the earlier −397, +41) and the resulting harmonic verdict got *worse*
+  (`NEITHER`, both harmonics now under threshold, against the naive condition's clean `SECOND`
+  at 9.35). The mask did not help.
+
+### Did not work — and this is the real finding
+
+**Checking why the mask made things worse surfaced that the search itself is not reproducible.**
+This run's *unmasked* search — same code (checked with `git diff`: the unmasked path is
+byte-identical to what produced session 23's result), same section, same archive — found an
+offset of roughly (−50, +5), not session 23's (−397, +41). Four times smaller, different sign
+structure, not a rounding-level difference.
+
+Before concluding this was environmental drift (a Kaggle container image update, a different
+JPEG decoder), checked the one thing that would prove or disprove it directly: this run's
+*naive* condition — a completely separate computation from the search, using the same decoded
+frame stack — matches session 23's naive numbers **bit-for-bit**: `snr_2 = 9.350294830486483` in
+both runs, to sixteen significant figures. If decode, archive mount, or frame ordering had
+drifted between the two Kaggle runs, this number would not match exactly. It does. The raw pixel
+data feeding both runs is provably identical, and the code path is provably identical. The
+search itself produced two different answers from the same inputs.
+
+The working hypothesis, stated as a hypothesis and not asserted as fact: real mineral texture is
+self-similar at the scale of individual grains, so the correlation objective the coarse-to-fine
+search climbs likely has multiple local optima of similar height rather than one clear peak.
+Which one the coarse (first) pass lands in can then come down to floating-point summation order
+inside `warp`'s interpolation or `corrcoef`'s reduction — order not guaranteed identical run to
+run under multi-threaded BLAS, even with unchanged code and unchanged input.
+`_coarse_to_fine_search`'s own `if score > best_score` comparison has no tie-break rule for
+exactly this situation — CLAUDE.md Rule 5 says sort every set traversal and tie-break every
+min/max, and this comparison does neither.
+
+### Learned
+
+**A registration search validated only on synthetic data, where the true optimum is usually the
+only real peak, can hide a landscape problem that only shows up on the noisier, more
+self-similar texture real data actually has.** `tests/test_registration.py`'s synthetic cases
+all use sparse, well-separated blob features specifically because they are easy to reason about
+— which is also exactly the property that makes them a poor test of whether the objective has
+competing near-tied optima. The gap between "passes on synthetic data" and "reproducible on real
+data" is not the same gap as "passes on synthetic data" and "correct on real data," and this
+session conflated them until the numbers stopped matching.
+
+**Escalate immediately when a fix for a small problem uncovers a bigger one, rather than finish
+the small fix first.** The mask fix was abandoned mid-investigation the moment the
+non-reproducibility became visible, because continuing to tune the mask against a search that
+cannot even reproduce its own prior answer would have produced more numbers with no more
+trustworthiness than the ones already retracted.
+
+### Left open, and now the priority order has changed
+
+1. **A determinism check on the search**: run `estimate_rotation_centre` twice, same process,
+   same environment, same real section — confirm it matches itself before asking whether it
+   matches across environments.
+2. **A landscape diagnostic**: tabulate the coarse grid's scores for one real section, to check
+   directly whether multiple near-tied peaks exist (confirming the hypothesis) or whether
+   something else is going on.
+3. **A tie-break rule**, once the cause is confirmed.
+4. **Only then**: re-run all five sections and check which of the previously reported verdicts
+   (`S3_test_01/02/07/12`, not just `03`) are actually stable.
+5. **This is the point to re-check ADR-0004's "P5 only if time exists" condition against how
+   much time is actually left** — items 1-4 are real engineering work, not a quick follow-up,
+   and P5 was never meant to consume time at this cost. Flagged to the user directly rather than
+   continuing to spend Kaggle sessions on it unilaterally.
+6. **P4's segmentation half** remains Sibusiso's, on `main` — unchanged from session 24.
+
+---
+
 ## 2026-09-13 — session 25 · S3_test_03's stage-rotation flip does not survive looking at it
 
 ### Attempted

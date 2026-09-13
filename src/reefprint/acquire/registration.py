@@ -49,6 +49,31 @@ and it has not been run at the time this module was written (memory-constrained 
 real archive is 5.2 GB and a full section's frame stack needs roughly 5 GB once constructed,
 per ``experiments/003-s3v2-extinction/run.py``'s own docstring — routed to Kaggle instead, see
 ``experiments/007-s3v2-registration/``).
+
+**A real failure mode, found on real data, not fully understood yet.** Leg (b), once run
+(``experiments/007-s3v2-registration/``), found a plausible-looking but wrong offset on one real
+section (``S3_test_03``): a large offset, a positive but modest score improvement, and — checked
+by eye (``experiments/009-s3test03-visual-check/``) — no visible change in a tracked grain's
+position between the naive and "corrected" de-rotations. :func:`estimate_rotation_centre`'s
+``roi_mask`` parameter was added to exclude border and background content from the objective, on
+the hypothesis that such content — which does not rotate the way the specimen interior does —
+was winning the correlation search instead of the specimen. **The mask did not fix it**
+(``experiments/010-s3test03-masked-rerun/``): masked scoring found an even larger, still-wrong-
+looking offset. Worse, investigating that led to a bigger problem: **the unmasked search itself
+is not reproducible run to run on this real section, with unchanged code and unchanged input** —
+one run finds an offset four times larger than another. The naive-condition pipeline (which
+never touches this search) reproduces bit-for-bit across the same two runs, ruling out a data or
+decode difference. The leading hypothesis is that real mineral texture's self-similarity gives
+the correlation objective multiple near-tied local optima, and ``_coarse_to_fine_search``'s
+``if score > best_score`` comparison has no tie-break rule for when floating-point noise decides
+between them (CLAUDE.md Rule 5: sort every traversal, tie-break every min/max — this does
+neither). **Until that is fixed and checked, no specific offset this function returns on real
+data should be trusted to the precision it is reported at**, on `S3_test_03` or any other
+section — see ``experiments/010-s3test03-masked-rerun/README.md`` for the full account and what
+would need to happen before this is resolved. The ``roi_mask`` feature itself remains correct
+and tested on controlled synthetic data
+(``test_roi_mask_excludes_a_non_rotating_corrupted_region_and_sharpens_discrimination``); it did
+not turn out to be the fix this particular real-data problem needed.
 """
 
 from __future__ import annotations
@@ -131,6 +156,7 @@ def estimate_rotation_centre(
     search_radius: float = 40.0,
     levels: int = 4,
     steps_per_level: int = 9,
+    roi_mask: npt.NDArray[np.bool_] | None = None,
 ) -> RotationCentreEstimate:
     """Find the ``(dx, dy)`` offset of the true rotation centre from the image centre.
 
@@ -151,8 +177,19 @@ def estimate_rotation_centre(
     :param steps_per_level: grid points per axis per level. Validated to sub-pixel accuracy at
         the default (4 levels, 9 steps) on synthetic data — see
         ``tests/test_registration.py::test_recovers_a_known_off_centre_rotation``.
+    :param roi_mask: boolean array, same shape as ``reference``, restricting which pixels the
+        correlation objective scores. ``None`` (the default) scores the whole frame. **Exclude
+        background, resin, and border content here** — it does not rotate the way the specimen
+        interior does, and an unmasked search can be won by aligning it instead of the specimen,
+        which is exactly the failure found on real data (``S3_test_03``, module docstring) and
+        pinned by
+        ``test_roi_mask_excludes_a_non_rotating_corrupted_region_and_sharpens_discrimination``.
+        Defined once, in the reference frame's coordinates, and applied unchanged to every
+        candidate — a mask that moved with the candidate could be gamed by the search the same
+        way the unmasked objective already was.
 
-    :raises ValueError: if ``frames`` and ``angles_deg`` disagree in length, or either is empty.
+    :raises ValueError: if ``frames`` and ``angles_deg`` disagree in length, either is empty, or
+        ``roi_mask`` selects no pixels at all.
     """
     if len(frames) != len(angles_deg):
         raise ValueError(
@@ -161,6 +198,8 @@ def estimate_rotation_centre(
         )
     if len(frames) == 0:
         raise ValueError("cannot estimate a rotation centre from zero frames")
+    if roi_mask is not None and not roi_mask.any():
+        raise ValueError("roi_mask selects no pixels — nothing left for the objective to score")
 
     # offset_xy is relative to the IMAGE centre, per this function's contract — every candidate
     # rotation point is that centre plus the offset, never the offset alone. Losing this "plus
@@ -170,13 +209,15 @@ def estimate_rotation_centre(
     # still returning a plausible-looking number. Pinned by
     # ``test_estimate_rotation_centre_is_anchored_at_the_image_centre_not_the_origin``.
     image_centre = np.array([reference.shape[1] / 2.0, reference.shape[0] / 2.0])
+    reference_scored = reference if roi_mask is None else reference[roi_mask]
 
     def total_correlation(offset_xy: FloatArray) -> float:
         candidate_centre = image_centre + offset_xy
         total = 0.0
         for angle, frame in zip(angles_deg, frames, strict=True):
             derotated = rotate_about(frame, -angle, tuple(candidate_centre))
-            total += float(np.corrcoef(reference.ravel(), derotated.ravel())[0, 1])
+            derotated_scored = derotated if roi_mask is None else derotated[roi_mask]
+            total += float(np.corrcoef(reference_scored.ravel(), derotated_scored.ravel())[0, 1])
         return total
 
     score_at_zero = total_correlation(np.array([0.0, 0.0]))
