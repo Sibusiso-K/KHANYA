@@ -1,0 +1,72 @@
+{
+  "measurements": [
+    {
+      "stage": "segmentation: one 512px patch, model forward only",
+      "hardware": "Windows 11, AMD64, Python 3.13.14",
+      "n": 30,
+      "mean_seconds": 2.6296851166662236,
+      "median_seconds": 2.4006093999996665,
+      "stdev_seconds": 0.5158479436474602,
+      "p95_seconds": 3.5955606999996235,
+      "seconds": [
+        2.0449403999955393,
+        2.2722703000035835,
+        2.152633400000923,
+        2.0424280000006547,
+        2.1041964999967604,
+        2.153553700001794,
+        2.1420266999994055,
+        2.371888800000306,
+        2.3571157999977004,
+        2.666031600005226,
+        2.4852028000022983,
+        2.3658628999983193,
+        2.4016381000037654,
+        2.4413272999954643,
+        2.347748899999715,
+        2.5442455999946105,
+        2.378673400002299,
+        2.3995806999955676,
+        2.394371800000954,
+        2.3719547000000603,
+        2.5821622000003117,
+        3.008838599998853,
+        2.7145533000002615,
+        3.0010215000002063,
+        3.7887716999975964,
+        3.345553499995731,
+        3.5955606999996235,
+        3.6983182999974815,
+        3.316287100002228,
+        3.4017951999994693
+      ]
+    },
+    {
+      "stage": "segmentation: whole native-resolution section (test_01, 3396x2547), sliding-window inference only",
+      "hardware": "Windows 11, AMD64, Python 3.13.14",
+      "n": 3,
+      "mean_seconds": 139.86678716666938,
+      "median_seconds": 133.9665309999982,
+      "stdev_seconds": 12.67956152486,
+      "p95_seconds": 154.42129000000568,
+      "seconds": [
+        131.21254050000425,
+        133.9665309999982,
+        154.42129000000568
+      ]
+    }
+  ],
+  "not_measured": [
+    "image decode / EXIF handling",
+    "topology repair",
+    "modal mineralogy",
+    "advisor logic",
+    "HTML render",
+    "Streamlit component round trip"
+  ],
+  "design_targets_not_yet_achieved": {
+    "fresh_512x512_field_p95_seconds": 5,
+    "fresh_full_image_p95_seconds": 30,
+    "source": "reports/TECHNICAL-REVIEW-2026-09-12.md, real-time decision section"
+  }
+}
