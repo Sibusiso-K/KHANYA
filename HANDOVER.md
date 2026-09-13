@@ -19,6 +19,85 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-13 — Sibusiso (49) — the real-time gap, quantified: 5x over target
+
+**Did:** Closed the WORKBOARD.md P3 remainder - segmentation latency was the
+one benchmark table cell Codex explicitly could not fill from `reefprint`
+("closing this needs a matching benchmark on `main`, same instrument").
+Built `src/segmentation/latency_benchmark.py` using `reefprint.trust.
+latency.measure_stage()` through the bridge (`ensure_reefprint()`), same
+instrument as their Stokes-inversion/OPC-UA numbers, never reimplemented.
+
+**The number that should change how the demo is run:** whole native-resolution
+section (3396x2547, sliding-window inference only) - **mean 139.9s, p95
+154.4s**, n=3, this hardware. The review's design target was p95 <= 30s for a
+full image. **We are roughly 5x over it.** A single 512px patch (model-forward
+only) is p95 3.60s against a 5s target for a full *field* - meaning even the
+smaller, patch-sized live-demo option consumes most of its budget on model
+inference alone, before decode, postprocessing, or render are added. Neither
+target is close to met on this hardware.
+
+**Data-quality caveat, not smoothed over:** the 30 raw patch timings drift
+upward across the run (2.04s at call 1 to 3.70s near the end) rather than
+sitting in a stable distribution - consistent with a sustained-load thermal
+or memory effect, exactly what the review's own timing protocol asks to
+check for. This is not a clean steady-state measurement and should be
+re-run on an otherwise-idle machine before it goes anywhere near a slide.
+n=3 for the whole-section stage (not the instrument's default n=30) because
+each call costs 2-3 minutes; stated as the smaller sample it is.
+
+**This directly bears on the live-demo scope decision flagged earlier this
+session:** predeclaring a single small field for the live run and showing
+the full-section case as an honestly-labelled recorded/batch result is now
+not just prudent, it is close to necessary at these numbers - a live
+four-minute wait immediately before beat 6 (the refusal, the beat the whole
+talk is built around) is a real risk to Feasibility and to the demo's own
+pacing. This still needs a human decision, not a unilateral code change.
+
+**Also this session, closing out from entry 48's "blocked on":**
+- Regenerated the S2 patch report with real per-image data (the prior entry's
+  fix, actually run): per-image mean IoU ranges from **0.3400** (test_06) to
+  **0.7275** (test_02) against a pooled 0.5725 - a spread the pooled number
+  hid entirely. Performance is concentrated on a few hard sections, not
+  uniform. Committed to `reports/lumenstone_s2_patches_test_metrics.json`.
+- Confirmed WORKBOARD.md's citation of a `verdict_state()` fail-open bug in
+  `src/decision_gap.py` is a stale file reference on their side - that
+  function lives in `src/advisor.py` and was already fixed in an earlier
+  session (`5791d58`, before this repo-review session started). No new fix
+  needed; flagged in reply so the board can be corrected.
+- Drafted the WORKBOARD.md D5 email (LumenStone rights clarification to
+  khvostikov@cs.msu.ru) plus its fallback sentence, and handed it directly
+  to Sibusiso rather than sending it - no email tool available in this
+  session, and it goes to someone outside the team either way.
+- Posted two follow-up comments on issue #4 keeping Lethabo current: the
+  CI-fix/cross-verification report, and (pending) this entry's latency
+  numbers.
+
+**Verified:** `reports/segmentation_latency.json` is valid strict JSON.
+94/94 tests still pass; CI still green on every push since the `pytest.ini`
+fix (checked `gh run list` after each push this session).
+
+**Changed:** `src/segmentation/latency_benchmark.py` (new),
+`reports/segmentation_latency.json` (new),
+`reports/lumenstone_s2_patches_test_metrics.json` (regenerated),
+`scratch/lumenstone-rights-email-draft.md` (new, untracked - not for the
+repo, handed to Sibusiso directly).
+
+**Blocked on:** a clean, idle-machine re-run of the latency benchmark (this
+one has a thermal-drift caveat); the live-demo scope decision (single-field
+live vs full-section recorded); D5 actually being sent; D6 (UNISA/Wits
+email reconciliation) - a purely human/institutional matter, not something
+to guess at without knowing which affiliation is actually correct.
+
+**Next:** whoever picks this up - re-run `python -m src.segmentation.
+latency_benchmark` on a machine that has been idle for a few minutes first,
+to get a clean measurement without the thermal-drift caveat, before quoting
+these numbers anywhere final. The 5x-over-target gap itself is real and
+almost certainly won't close with a clean re-run alone (drift adds maybe
+20-30%, not 5x) - the actual fix is the demo-scope decision above, or
+genuine inference optimisation (patch batching, a smaller/faster backbone,
+INT8 - all bigger asks than fit in this session).
+
 ## 2026-09-13 — Sibusiso (48) — WORKBOARD sync, CI was red on every push, REEFPRINT cross-verified
 
 **Did:** Reviewed both branches and Lethabo's issue #4 (WORKBOARD.md, ADR-0004,
