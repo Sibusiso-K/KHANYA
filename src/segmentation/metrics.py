@@ -99,8 +99,16 @@ def json_safe(summary):
     report to disk; keep using the NaN-valued dict returned by summarise()
     for in-process arithmetic, where NaN's "any comparison is false"
     behaviour is what the mean_iou/aggregate logic here already relies on.
+
+    Recurses into nested dicts (e.g. a per-image breakdown, itself keyed by
+    stem to a summarise()-shaped dict) and lists of dicts - a report is not
+    guaranteed to be flat, and a NaN buried one level down is exactly as
+    unparseable as one at the top.
     """
-    return {
-        key: [None if v != v else v for v in value] if isinstance(value, list) else value
-        for key, value in summary.items()
-    }
+    if isinstance(summary, dict):
+        return {key: json_safe(value) for key, value in summary.items()}
+    if isinstance(summary, list):
+        return [json_safe(value) for value in summary]
+    if isinstance(summary, float) and summary != summary:
+        return None
+    return summary

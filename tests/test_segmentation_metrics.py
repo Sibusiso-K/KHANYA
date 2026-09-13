@@ -68,3 +68,17 @@ class TestJsonSafe:
         dumped = json.dumps(safe)
         assert "NaN" not in dumped
         assert json.loads(dumped)["precision_per_class"][1] is None
+
+    def test_nan_inside_a_nested_per_image_dict_is_also_caught(self):
+        """A per-image breakdown nests a full summarise()-shaped dict per
+        stem - json_safe must recurse into it, not just sanitise the
+        top-level fields."""
+        pairs = [(0, 0)]  # class 1 never appears
+        nested = summarise(_confusion_from_pairs(pairs, num_classes=2))
+        report = {"mean_iou": 1.0, "per_image": {"test_01": nested}}
+
+        safe = json_safe(report)
+        assert safe["per_image"]["test_01"]["precision_per_class"][1] is None
+
+        dumped = json.dumps(safe)
+        assert "NaN" not in dumped

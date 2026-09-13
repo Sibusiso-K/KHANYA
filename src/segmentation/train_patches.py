@@ -143,20 +143,37 @@ def evaluate(loss_name="ce"):
     model.load_state_dict(torch.load(checkpoint_for(loss_name), map_location=dev))
     model.eval()
 
+    # Per-image breakdown alongside the pooled matrix, not instead of it: the
+    # 2026-09-12 review's accuracy-report template asks for a locality-level
+    # split, which LumenStone's archive does not ship metadata to build (no
+    # locality/specimen manifest exists in the distributed data - confirmed
+    # by inspection, not assumed). Per-image is the coarser breakdown that
+    # IS buildable from what we have, and it is a real step towards it: test
+    # image != locality, but a pooled dataset-wide number currently hides
+    # whether performance is uniform or concentrated in a few hard sections.
     _, _, test_ids = ls.split_ids()
     confusion = metrics.new_confusion(ls.NUM_CLASSES)
+    per_image = {}
     for stem in tqdm(sorted(test_ids), leave=False):
         image = Image.open(ls.DATA_DIR / "imgs" / "test" / f"{stem}.jpg")
         predicted, _ = patches.sliding_window_predict(model, image, dev)
         truth = patches.labels_for(stem, "test")
-        metrics.confusion_from_batch(
-            torch.from_numpy(predicted), torch.from_numpy(truth),
-            ls.NUM_CLASSES, confusion,
-        )
+        pred_t, truth_t = torch.from_numpy(predicted), torch.from_numpy(truth)
+        metrics.confusion_from_batch(pred_t, truth_t, ls.NUM_CLASSES, confusion)
+        image_confusion = metrics.new_confusion(ls.NUM_CLASSES)
+        metrics.confusion_from_batch(pred_t, truth_t, ls.NUM_CLASSES, image_confusion)
+        per_image[stem] = metrics.summarise(image_confusion)
 
     summary = metrics.summarise(confusion)
     summary["class_names"] = ls.CLASS_NAMES
     summary["n_test_images"] = len(test_ids)
+    summary["per_image"] = per_image
+    summary["per_image_note"] = (
+        "Per test image, not per locality - LumenStone ships no "
+        "locality/specimen manifest to group by. Do not treat a test image "
+        "as an independent locality when computing a cluster-robust "
+        "interval; see the 2026-09-12 review's accuracy-report template."
+    )
     summary["method"] = (
         f"sliding window, {patches.PATCH}px patches at native resolution, "
         "whole sections, no downsampling"
