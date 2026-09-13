@@ -132,13 +132,46 @@ images from the previous version"), with annotations possibly revised.
 All x50 magnification, 3396x2547 px. Source material: 30 CIS ore deposits,
 Carl Zeiss AxioScope 40 microscope, Canon Powershot G10.
 
-**Licence / Data Usage Agreement** (verbatim from the site, 2026-08-14): free use
-in your own research work; if publishing work that uses the dataset, cite the
-references. Permissive enough for the hackathon — acknowledge it explicitly in
-the submission, per Mintek's requirement that external data be acknowledged.
+**Licence / Data Usage Agreement** (verbatim from the site, 2026-08-14 and
+re-confirmed 2026-09-13, no change): free use in your own research work; if
+publishing work that uses the dataset, cite the references. No formal SPDX
+licence, and no explicit statement on commercial use or redistribution
+either way. Checked the authors' own toolkit repo (`petroscope`) for anything
+more specific to the dataset itself, separate from the library's own
+GPL-3.0 - nothing found.
 
-- Contact if needed: Alexander Khvostikov, khvostikov@cs.msu.ru,
-  ORCID 0000-0002-4217-7141. No longer blocking — download works.
+**2026-09-13 decision: operate within the published terms as written, and
+disclose the ambiguity rather than resolve it by email.** The team decided
+against contacting the author for clarification (WORKBOARD.md D5, closed
+this way rather than left open). This is a defensible position, not an
+avoidance of the question, for three concrete reasons:
+
+1. **We do not redistribute LumenStone's data at all.** `data/raw/` and
+   `checkpoints/` are both gitignored - zero files from this dataset, and no
+   trained weights derived from it, are present in the public repository
+   that Mintek's Office of Technology Transfer will review. Verified:
+   `git ls-files | grep "^data/raw\|^checkpoints/"` returns nothing.
+2. **What we do is unambiguously "your own research work."** Private
+   training, reporting derived metrics (with citation, per the terms), and a
+   live academic demonstration at a university-affiliated hackathon are the
+   exact activity the published terms describe, not a commercial product
+   launch.
+3. **Any further commercialisation is Mintek's decision to make, not ours to
+   pre-empt.** If this submission is selected and MOTT wants to develop it
+   further, licensing LumenStone (or replacing it with cleared data) for that
+   specific purpose is squarely within MOTT's own remit and institutional
+   standing - better positioned to negotiate that than a student team, and
+   only actually necessary if that stage is reached.
+
+**State this explicitly in the submission** rather than silently assuming
+it is resolved: cite the dataset per its terms, and note that any
+production/commercial use beyond this research demonstration would need a
+direct licensing conversation with the authors, which we have not initiated.
+That sentence costs nothing and closes the gap the review flagged (D5)
+without needing a response from anyone outside the team.
+
+- Author contact, on file if this ever needs to be revisited: Alexander
+  Khvostikov, khvostikov@cs.msu.ru, ORCID 0000-0002-4217-7141.
 - Benchmark to beat: **mean IoU 0.8373** (ResUNet, S1v1). Also PSPNet+ResNet18 on
   S1+S2: IoU 0.88, pixel accuracy 0.96.
 

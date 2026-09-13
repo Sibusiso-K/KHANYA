@@ -158,6 +158,19 @@ data.
 "can we have some images" but "can QEMSCAN maps of polished sections be used as
 segmentation labels for optical images of the same sections".
 
+**Disclosure, not resolution, on the public dataset we did use.** LumenStone
+(the S1/S2 imagery this submission trains on) is published under informal
+"free use in your own research work, cite the references" terms - no formal
+licence, no explicit statement on commercial use (see `DATA-SOURCES.md` §1).
+We have not sought further clarification from the authors: we do not
+redistribute any of their data or a derived checkpoint (both gitignored,
+verified absent from the public repository), and everything we do with it -
+private training, a research demonstration, cited derived metrics - is
+squarely inside the terms as published. **If this submission advances and
+Mintek's Office of Technology Transfer wants to develop it further, a direct
+licensing conversation with the dataset's authors would be the next step,
+and we have not initiated one.** Said here rather than discovered later.
+
 ### 3.5 Flotation decisions, which is their stated ambition
 
 KHANYA's outputs are flotation-circuit decisions: grind finer when the apparent
