@@ -135,6 +135,19 @@ def test_progress_render_marks_a_real_tile_and_reports_measured_state():
     assert "gold frame = tile just classified" in html
 
 
+def test_evidence_render_labels_ground_truth_as_held_out_validation():
+    import numpy as np
+    from PIL import Image
+    image = Image.new("RGB", (8, 8), "white")
+    labels = np.zeros((8, 8), dtype=np.int32)
+    html = render.render_evidence("test_01", image, labels, labels, 0.9, 12)
+    assert "EVIDENCE VIEW · HELD-OUT VALIDATION" in html
+    assert "Expert annotation · ground truth" in html
+    assert "not a live or blind inference" in html
+    assert "12 held-out sections" in html
+    assert html.count('src="data:image/png;base64,') == 3
+
+
 @pytest.mark.parametrize(
     "action, expected_count",
     [

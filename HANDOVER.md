@@ -19,6 +19,24 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-14 — Codex — separate held-out Evidence view
+
+**Did:** Added an explicitly separate Evidence mode to the dashboard. It
+restricts selection to the real held-out S2 test IDs from `split_ids()`, loads
+expert masks through `labels_for()`, and shows input, ground truth, and model
+prediction side by side with clear validation-only labelling. Live uploads never
+attempt filename matching or display ground truth.
+
+**Changed:** `dashboard/app.py`, `dashboard/render.py`,
+`dashboard/templates/evidence.html.jinja`, `tests/test_render.py`.
+
+**Blocked on:** The checkout has no LumenStone data or Python/Streamlit runtime,
+so browser verification against a real test image could not be performed here.
+
+**Next:** In the normal demo environment, select Evidence mode and confirm the
+held-out selector lists all test sections and the three-panel comparison renders
+for a real S2 image.
+
 ## 2026-09-14 — Codex — truthful tile-by-tile inference animation
 
 **Did:** Added a server-driven progress callback to the native sliding-window

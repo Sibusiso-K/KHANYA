@@ -128,6 +128,21 @@ def render_progress(image, labels, completed, total, tile_box, tile_confidence):
     )
 
 
+def render_evidence(stem, image, ground_truth, predicted, mean_confidence,
+                    n_test_images):
+    """Render a held-out test example; never used by the live upload path."""
+    template = _env.get_template("evidence.html.jinja")
+    return template.render(
+        **_base_context(),
+        stem=stem,
+        n_test_images=n_test_images,
+        input_micrograph_b64=_image_png_b64(image),
+        ground_truth_b64=_colourise_png_b64(ground_truth),
+        predicted_phases_b64=_colourise_png_b64(predicted),
+        confidence=mean_confidence,
+    )
+
+
 def _candidates(result, recommendation):
     """The two candidate actions for a marginal verdict, equally weighted.
 

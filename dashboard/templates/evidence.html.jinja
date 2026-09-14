@@ -1,0 +1,16 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+@font-face{font-family:mono;src:url(data:font/ttf;base64,{{ font_mono_regular_b64 }})}
+*{box-sizing:border-box}body{margin:0;background:#00131D;color:#E3EAEB;font-family:mono,monospace;padding:22px}
+.eyebrow{font-size:11px;letter-spacing:.2em;color:#FFB539;font-weight:700}.title{font-size:23px;margin:8px 0 6px}.note{font-size:11px;color:#8CA6AE;line-height:1.6;max-width:1000px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}.panel{border:1px solid #194D5C;border-radius:6px;padding:11px;background:#071C27}.label{font-size:10px;color:#8CA6AE;text-transform:uppercase;letter-spacing:.12em;margin-bottom:9px}.panel img{display:block;width:100%;height:330px;object-fit:contain;background:#00131D}.footer{margin-top:14px;color:#8CA6AE;font-size:11px}.footer strong{color:#E3EAEB}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style></head><body>
+<div class="eyebrow">EVIDENCE VIEW · HELD-OUT VALIDATION</div>
+<div class="title">Known test section: {{ stem }}</div>
+<div class="note">This is validation evidence on a previously scored S2 test image, not a live or blind inference. The expert annotation is shown beside the model output so segmentation quality can be inspected visually. Test set: {{ n_test_images }} held-out sections. Model: DeepLabV3 · ResNet-50.</div>
+<div class="grid">
+  <div class="panel"><div class="label">Input · reflected-light micrograph</div><img alt="Held-out test micrograph" src="data:image/png;base64,{{ input_micrograph_b64 }}"></div>
+  <div class="panel"><div class="label">Expert annotation · ground truth</div><img alt="Expert annotated ground-truth mineral phases" src="data:image/png;base64,{{ ground_truth_b64 }}"></div>
+  <div class="panel"><div class="label">Model prediction · measured output</div><img alt="Model predicted mineral phases" src="data:image/png;base64,{{ predicted_phases_b64 }}"></div>
+</div>
+<div class="footer">Mean prediction confidence (measured): <strong>{{ "%.1f"|format(confidence * 100) }}%</strong> · LumenStone S2 v2 · offline evidence</div>
+</body></html>

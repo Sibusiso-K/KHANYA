@@ -131,9 +131,10 @@ landing_slot = st.empty()
 progress_slot = st.empty()
 LIVE_FIELD_LABEL = "Live Field Mode — fast, 512×512 field, timed live"
 FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image"
+EVIDENCE_LABEL = "Evidence — held-out S2 test set"
 mode = st.radio(
     "ANALYSIS MODE",
-    [LIVE_FIELD_LABEL, FULL_SECTION_LABEL],
+    [LIVE_FIELD_LABEL, FULL_SECTION_LABEL, EVIDENCE_LABEL],
     horizontal=True,
     help=(
         "Live Field Mode analyses one 512×512 field with a single model "
@@ -141,12 +142,9 @@ mode = st.radio(
         "full-section inference measures p95 196s, about 6.5x over the "
         "review's 30s design target — unworkable as a live demo beat). "
         "Full section is the validated whole-image path used for the "
-        "backup recording (BACKUP-DEMO-SCRIPT.md)."
+        "backup recording (BACKUP-DEMO-SCRIPT.md). Evidence is a separate "
+        "view over known held-out S2 test images and never uses live uploads."
     ),
-)
-uploaded = st.file_uploader(
-    "REFLECTED-LIGHT MICROGRAPH OF A POLISHED SECTION",
-    type=["jpg", "jpeg", "png", "tif", "tiff"],
 )
 
 def show_landing(reason=None):
@@ -157,6 +155,45 @@ def show_landing(reason=None):
 
 
 reason = unavailable_reason(SUBSET, CKPT)
+if mode == EVIDENCE_LABEL:
+    progress_slot.empty()
+    if reason:
+        show_landing(f"Evidence unavailable: {reason}")
+        st.stop()
+    try:
+        from src.segmentation import lumenstone as ls
+        _train_ids, _val_ids, test_ids = ls.split_ids()
+        evidence_stem = st.selectbox(
+            "HELD-OUT S2 TEST SECTION",
+            sorted(test_ids),
+            help="Selection is restricted to the real held-out test IDs returned by the dataset split.",
+        )
+        evidence_image_path = ls.DATA_DIR / "imgs" / "test" / f"{evidence_stem}.jpg"
+        evidence_image = load_image(evidence_image_path.read_bytes())
+        from src.segmentation.patches import labels_for
+        evidence_labels = labels_for(evidence_stem, "test")
+        evidence_bytes = evidence_image_path.read_bytes()
+        stat = CKPT.stat()
+        evidence_checkpoint_key = (str(CKPT), stat.st_mtime_ns, stat.st_size)
+        with st.spinner("Running the real native-resolution model on the selected held-out section…"):
+            _image, evidence_predicted, evidence_confidence = predict(
+                evidence_bytes, evidence_checkpoint_key
+            )
+        st.components.v1.html(
+            render.render_evidence(
+                evidence_stem, evidence_image, evidence_labels,
+                evidence_predicted, evidence_confidence, len(test_ids),
+            ),
+            height=850, scrolling=True,
+        )
+    except (FileNotFoundError, ImportError, OSError, RuntimeError, ValueError) as exc:
+        show_landing(f"Evidence unavailable: {exc}")
+    st.stop()
+
+uploaded = st.file_uploader(
+    "REFLECTED-LIGHT MICROGRAPH OF A POLISHED SECTION",
+    type=["jpg", "jpeg", "png", "tif", "tiff"],
+)
 if uploaded is None:
     show_landing(reason)
 else:
