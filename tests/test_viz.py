@@ -17,6 +17,7 @@ import pytest
 import reefprint.viz.anisotropy as anisotropy_module
 from reefprint.acquire.phantom import synthetic_rotation_series
 from reefprint.acquire.series import RotationGeometry
+from reefprint.integrate.advisory import AdvisoryRecord
 from reefprint.polarim.stokes import stokes_from_rotation_series
 from reefprint.quantity import assumed, stipulated
 from reefprint.trust.abstain import (
@@ -25,6 +26,7 @@ from reefprint.trust.abstain import (
     Conservatism,
     ConservativeDefault,
 )
+from reefprint.viz.advisory import SimulatedSetpoint, advisory_figure, apply_or_refuse
 from reefprint.viz.anisotropy import DISPLAY_ANISOTROPY_CEILING, anisotropy_figure
 from reefprint.viz.decision import decision_figure
 from reefprint.viz.demo import offline_demo
@@ -228,6 +230,84 @@ def test_demo_runs_fully_offline(monkeypatch):
     assert len(demo.gate.axes) == 5
     assert demo.gate.axes[ANISOTROPY_PANEL].images
     assert "SYSTEM REFUSED TO ANSWER" in "\n".join(text.get_text() for text in demo.refusal.texts)
+
+    advisory_text = "\n".join(text.get_text() for text in demo.advisory.axes[1].texts)
+    assert "SECOND ADVISORY REFUSED" in advisory_text
+    assert demo.advisory.axes[0].lines, "the setpoint history panel must actually plot something"
+
+
+def _record(value: float, *, emitted_at: float, valid_for_seconds: float = 300.0) -> AdvisoryRecord:
+    return AdvisoryRecord(
+        values={"fine_chromite_risk": value},
+        advisory_influenced=False,
+        source="test fixture",
+        unit="fraction",
+        emitted_at=emitted_at,
+        valid_for_seconds=valid_for_seconds,
+    )
+
+
+def test_apply_or_refuse_moves_the_setpoint_on_a_fresh_advisory():
+    setpoint = SimulatedSetpoint(name="sim_test_setpoint", value=0.0)
+    outcome = apply_or_refuse(
+        _record(0.62, emitted_at=1_000.0), "fine_chromite_risk", setpoint, now=1_005.0
+    )
+
+    assert outcome.applied
+    assert setpoint.value == pytest.approx(0.62)
+    assert setpoint.history == [0.0, 0.62]
+
+
+def test_apply_or_refuse_leaves_the_setpoint_untouched_on_a_stale_advisory():
+    """Same no-fallback discipline as `RefusedStaleAdvisory`: a refused advisory must not move
+    the setpoint at all, not even partway, and must not be silently held as a new "last known".
+    """
+    setpoint = SimulatedSetpoint(name="sim_test_setpoint", value=0.0)
+    apply_or_refuse(_record(0.62, emitted_at=1_000.0), "fine_chromite_risk", setpoint, now=1_005.0)
+
+    stale = _record(0.91, emitted_at=1_000.0, valid_for_seconds=300.0)
+    outcome = apply_or_refuse(stale, "fine_chromite_risk", setpoint, now=1_301.0)
+
+    assert not outcome.applied
+    assert outcome.age_seconds == pytest.approx(301.0)
+    assert outcome.valid_for_seconds == pytest.approx(300.0)
+    assert setpoint.value == pytest.approx(0.62), "the refused value must never reach the setpoint"
+    assert setpoint.history == [0.0, 0.62], "no third entry — a refusal writes no history at all"
+
+
+def test_advisory_figure_refuses_to_render_an_applied_outcome_as_a_refusal():
+    """The figure's own contract: it exists to show a refusal, so an applied outcome passed to
+    its refusal-shaped panel is a caller bug, not something to render as if it were one.
+    """
+    setpoint = SimulatedSetpoint(name="sim_test_setpoint", value=0.62)
+    applied = apply_or_refuse(
+        _record(0.62, emitted_at=1_000.0), "fine_chromite_risk", setpoint, now=1_005.0
+    )
+    with pytest.raises(ValueError, match="refused"):
+        advisory_figure(
+            setpoint, head="fine_chromite_risk", refused_value=0.62, refused_outcome=applied
+        )
+
+
+def test_advisory_figure_shows_the_refusal_and_the_held_setpoint():
+    setpoint = SimulatedSetpoint(name="sim_test_setpoint", value=0.62)
+    setpoint.history = [0.0, 0.62]
+    refused = apply_or_refuse(
+        _record(0.91, emitted_at=1_000.0, valid_for_seconds=300.0),
+        "fine_chromite_risk",
+        setpoint,
+        now=1_301.0,
+    )
+
+    figure = advisory_figure(
+        setpoint, head="fine_chromite_risk", refused_value=0.91, refused_outcome=refused
+    )
+    rendered = "\n".join(text.get_text() for text in figure.axes[1].texts)
+
+    assert "SECOND ADVISORY REFUSED" in rendered
+    assert "0.91" in rendered
+    assert "0.62" in rendered, "the setpoint's actual held value must be on screen"
+    assert len(figure.axes[0].lines[0].get_ydata()) == len(setpoint.history)
 
 
 def test_refusals_are_visible_in_the_ui():

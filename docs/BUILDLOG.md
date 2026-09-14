@@ -22,6 +22,55 @@ it is a press release.
 
 ---
 
+## 2026-09-15 — session 30 · wired the plant-parameter advisory demo into the offline demo (Workstream E)
+
+### Attempted
+
+The brief's most judge-visible line — "demonstration of how the model's output can be used to
+adjust plant parameters" — had a real, tested implementation (P1: `AdvisoryServer`,
+`SimulatedControlClient`, `RefusedStaleAdvisory`) that nothing ever rendered on screen. Add the
+third panel `docs/10-2026-09-14-literature-and-brief-plan.md`'s Workstream E specifies: advisory
+published → simulated setpoint moves → stale advisory refused, setpoint unchanged.
+
+### Worked
+
+- **`src/reefprint/viz/advisory.py`** — `SimulatedSetpoint`, `AdvisoryOutcome`, `apply_or_refuse`,
+  `advisory_figure`. Renders the setpoint's real history alongside an explicit refusal panel,
+  mirroring `decision_figure`'s rule that a refusal is a coloured status, never a blank panel.
+- **A real constraint caught before it became a bug**: `tests/test_viz.py::test_demo_runs_fully_offline`
+  monkeypatches `socket.socket` to raise if the demo opens *any* socket, including a loopback one
+  — and `AdvisoryServer` genuinely binds one to listen. Wiring the real OPC UA server/client into
+  `offline_demo()` would have broken that test on the first run. Instead, `apply_or_refuse`
+  reproduces `SimulatedControlClient.poll_and_apply`'s exact decision
+  (`AdvisoryRecord.is_expired(now=...)`) directly against the record, with no network read —
+  `AdvisoryRecord` is genuinely dependency-free by its own module docstring, so this needed no new
+  dependency and no compromise on the "fully offline" guard. `SimulatedSetpoint` is a deliberate
+  local reimplementation of `opcua_client.SimulatedPlantParameter`, not an import of it — that
+  module does `from asyncua import Client` unconditionally at module scope, and importing it would
+  have made the *offline* demo depend on the optional `integrate` extra just to draw a panel.
+- **The module docstring says plainly what this is and is not**: the same acknowledgement-and-
+  expiry contract as the real wire path (`tests/test_integrate.py::test_opc_ua_server_exposes_advisory_values`),
+  shown without the network — not a substitute for that test, and not to be presented as the wire
+  proof.
+- `OfflineDemo` gained a third field, `advisory: Figure`. 4 new tests
+  (`tests/test_viz.py`): a fresh advisory moves the setpoint, a stale one leaves it untouched with
+  no history entry at all, `advisory_figure` refuses to render an applied outcome as a refusal
+  (its own contract check), and the figure's refusal panel + held value are both actually on
+  screen. `test_demo_runs_fully_offline` extended to assert the third panel's content, and still
+  passes with the socket guard active.
+- Suite: **345 → 349 passed, 4 deselected**. `CONTEXT.md`/`WORKBOARD.md` counts and
+  `docs/09-brief-compliance.md`'s row updated in the same commit.
+
+### Left open
+
+- **The backup GIF (`experiments/004-backup-video`) still shows only the old two-panel demo** —
+  needs regenerating to include the advisory panel before it can be trusted as the week-6/
+  Presentation-Clarity fallback.
+- The real, networked OPC UA round trip remains proven only by `tests/test_integrate.py`; nothing
+  in this session changes that coverage, by design.
+
+---
+
 ## 2026-09-14 — session 29 · experiment 011's first Kaggle push ran for hours; found and fixed the cost driver, not yet a real-data result
 
 ### Attempted
