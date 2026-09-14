@@ -32,6 +32,7 @@ Khumalo, Lethabo Hoaeane, Ipeleng Modise (Team Sonar). Current plan of record:
 | [`STATUS.md`](STATUS.md) | What exists, what doesn't, what to build next — the current snapshot |
 | [`HANDOVER.md`](HANDOVER.md) | Session-by-session log. Read the newest entry before pushing; add one after |
 | [`PITCH.md`](PITCH.md) | Positioning, abstract structure, the 10-minute run of show |
+| [`BACKUP-DEMO-SCRIPT.md`](BACKUP-DEMO-SCRIPT.md) | Exact sequence for recording the offline demo backup video (ENDGAME W7) — real images, verified results, not yet recorded |
 | [`MINTEK-FIT.md`](MINTEK-FIT.md) | Why this matters to Mintek specifically, and what to ask them for |
 | [`JOINT-PLAN.md`](JOINT-PLAN.md) | How the KHANYA and REEFPRINT halves join, and the seam between them |
 | [`DATA-SOURCES.md`](DATA-SOURCES.md) | Every dataset considered, licence status, why each was kept or ruled out |
