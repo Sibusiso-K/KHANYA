@@ -19,6 +19,60 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-14 — Sibusiso (56) — Live Field Mode: the real-time gap actually closed
+
+**Did:** Asked Sibusiso directly whether to build `JUDGE-READY-WORKPLAN.md`'s
+highest-value P0 item without waiting for formal cross-branch sign-off,
+since three independent analyses (mine, Lethabo's issue #4 comment, and
+Codex's workplan) had already converged on the same fix. Approved - built it.
+
+**`src/segmentation/patches.single_field_predict()`**: one model forward
+pass over a single 512x512 field, centre-cropped (never resized - the
+checkpoint was trained on native-resolution patches, and resizing distorts
+scale in a way it has never been evaluated against). Refuses an image
+smaller than the field rather than padding/upscaling into an untested
+regime. Pinned with 3 tests (shape, refusal, crop centring) using an
+untrained model - accuracy needs the real checkpoint and isn't a unit-test
+concern.
+
+**`dashboard/app.py`**: an ANALYSIS MODE selector, Live Field Mode default.
+`predict_live_field()` is deliberately not `@st.cache_data` - a cached
+result reused across uploads would report a stale timing as fresh, which is
+exactly what the workplan says not to do. Model loading happens before the
+timer starts (a one-time setup cost, not per-upload latency).
+
+**`dashboard/render.py` + template**: a `mode_label`/`elapsed_seconds` pair
+next to the model-identity caption entry 55 added - "measured, this run:
+Xs end to end," never fabricated (None when unmeasured, template shows
+nothing rather than inventing a number).
+
+**Verified for real**: ran the actual Streamlit app, uploaded two real S2
+test images through the browser. First (cold) call: **4.7s end to end** -
+near the review's 5s field target, down from the whole-section path's
+measured 162-196s. Second call also fast and correct (68% association, 84%
+confidence, a different, plausible field crop). Both showed genuinely
+distinct, correctly-computed results, not placeholders.
+
+**Verified:** 111/111 tests pass. CI green on the push.
+
+**Changed:** `src/segmentation/patches.py`, `tests/test_patches.py` (new),
+`dashboard/app.py`, `dashboard/render.py`,
+`dashboard/templates/khanya.html.jinja`, `tests/test_render.py`.
+
+**Blocked on:** the full-section path is unaffected and still measures
+162-196s - Live Field Mode is a genuine alternative for the live beat, not
+a fix to full-section latency itself (per the workplan's own scoping: P2
+optimisation work on the full-resolution path is separate and lower
+priority). OPC UA publication still isn't wired from either path - that's
+the workplan's other P0, needs `reefprint`'s side too.
+
+**Next:** rehearse with Live Field Mode as the live beat and the full
+section as the recorded backup (`BACKUP-DEMO-SCRIPT.md`'s existing script
+already frames it that way). The 5s target is close but not always
+comfortably cleared on a cold first call (4.7s) - a warm-up upload before
+the real demo run would help, worth noting in the rehearsal, not something
+code can fix further without changing what's being measured.
+
 ## 2026-09-14 — Sibusiso (55) — three of JUDGE-READY-WORKPLAN.md's P0 items closed
 
 **Did:** Pulled Codex's `JUDGE-READY-WORKPLAN.md` (entry 54) and verified it
