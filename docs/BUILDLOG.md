@@ -22,6 +22,55 @@ it is a press release.
 
 ---
 
+## 2026-09-14 — session 29 · experiment 011's first Kaggle push ran for hours; found and fixed the cost driver, not yet a real-data result
+
+### Attempted
+
+Ran `experiments/011-sift-ransac-registration` (session 28's SIFT+RANSAC estimator vs the
+existing grid search, on the real S3 v2 archive) on Kaggle as
+`lethabomh14/reefprint-p5-sift-ransac-registration`.
+
+### Did not work
+
+**The kernel did not finish.** `experiments/007-s3v2-registration`'s comparable job (grid search,
+12 sections attempted, 5 measurable, full 3396x2547 resolution) completed in ~10 minutes. This one
+was still `RUNNING` after several hours with no sign of finishing. Diagnosed rather than just
+killed: the design ran `estimate_rotation_centre_sift_ransac` **twice per section** (the
+determinism check) on **every "other" frame** (up to 71 per section) at `SIFT_DOWNSAMPLE=2`
+(~2 megapixels each), and the estimator itself runs a fresh `SIFT().detect_and_extract()` on every
+frame with no caching between the two calls. Worked backwards from the arithmetic: up to
+~71 frames × 2 calls × up to 5-12 sections attempted is on the order of a thousand full
+detect-and-extract-and-match-and-RANSAC passes, none of which existed in 007's design at all.
+**Deleted the stuck kernel** (`kaggle kernels delete -y`) rather than wait it out or let it
+silently keep consuming session time — it is a private, disposable Kaggle artefact, not a git
+history or a repo file, and this project's own convention (sessions 16f, 23–26) already treats
+kernel iteration as normal.
+
+### Worked
+
+- **`MAX_SIFT_FRAMES = 10`**: SIFT+RANSAC now runs on an evenly-spaced subsample of at most 10
+  frames per section (`_evenly_spaced_indices`, deterministic — `np.linspace` rounded, not
+  random), not all 71. The per-frame estimator's accuracy and determinism are properties of the
+  method and its seeded RNG, not something 71 frames demonstrate better than 10.
+- **The determinism check now runs on only the first usable section**, not every section — the
+  same reasoning: determinism is a property of the code, checking it five times adds no
+  information the first check didn't already give, at five times the cost.
+- **The grid search and the full-resolution harmonic-verdict reconstruction are unchanged** — they
+  were never the identified cost driver (007 already proves that part fits comfortably in ~10
+  minutes at full resolution), so nothing there needed touching.
+- Re-pushed as a fresh kernel version (same slug), currently running — result not yet in.
+
+### Left open
+
+- **Still no real-data result.** This session fixed a runtime problem, not the actual P5 question.
+  The next check-in is whether the fixed kernel completes in a reasonable time and what it finds.
+- If the fixed kernel is *still* too slow, the next lever is dropping `SIFT_DOWNSAMPLE` toward
+  `GRID_DOWNSAMPLE`'s value (trading keypoint match quality for speed) rather than cutting
+  `MAX_SIFT_FRAMES` further, since 10 frames is already a fairly thin basis for the per-frame
+  diagnostic this method's whole value proposition rests on.
+
+---
+
 ## 2026-09-14 — session 28 · built the published SIFT+RANSAC registration estimator, per Rule 10
 
 ### Attempted

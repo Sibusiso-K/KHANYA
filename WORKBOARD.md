@@ -475,7 +475,9 @@ Every session that changes state, no exceptions:
 7. **If a task had a published method, the ADR or buildlog entry names it and says why we are or
    are not using it** (Rule 10, `CLAUDE.md`).
 8. **Commit and push** — `git push khanya main:reefprint`.
-9. **Tell Sibusiso.** Issue #1 is closed; open a fresh issue on
+9. **Tell Sibusiso.** [Issue #5](https://github.com/Sibusiso-K/KHANYA/issues/5) is open, asking
+   for `best.pt`, S1/S2, LumenStone V1, and the S1 v1 test-stem list — the Workstream B/C
+   prerequisites. Otherwise, open a fresh issue on
    [Sibusiso-K/KHANYA](https://github.com/Sibusiso-K/KHANYA/issues) and link the commit.
 
 A stale board is worse than none, because it will be trusted. **If this file and the code disagree,
