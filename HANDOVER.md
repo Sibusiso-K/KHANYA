@@ -19,6 +19,38 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-14 — Sibusiso (53) — backup demo script (ENDGAME W7 was not started)
+
+**Did:** Checked ENDGAME.md W7 ("record the working demo... the moment W3 is
+green, not at the end") against the repo - nobody had started it, and by
+entry 52 W3 has been green (real browser-upload verification of all three
+verdict states). Attempted to close the gap with an automated screen
+recording first (`claude-in-chrome`'s `gif_creator`); its screenshot
+capture was unreliable this session (repeated CDP timeouts, not related to
+server load - happened on a fresh, idle page too), so abandoned that path
+rather than burn more time on a flaky tool for a nice-to-have.
+
+Wrote `BACKUP-DEMO-SCRIPT.md` instead - an exact, pre-verified sequence for
+a human to record: the same three real images this session confirmed
+through the actual upload flow (entries 51-52), their exact expected
+numbers, and the real measured latency figures so the recording doesn't
+have to improvise or guess what the app will show or how long it will take.
+Flags the live-demo-scope tradeoff explicitly (record the full-section case
+if the live portion goes small) rather than assuming an answer. Added to
+README's doc index.
+
+**Verified:** 94/94 tests pass (docs-only change).
+
+**Changed:** `BACKUP-DEMO-SCRIPT.md` (new), `README.md`.
+
+**Blocked on:** an actual human recording the video following the script -
+that's the one part of W7 this session cannot do itself.
+
+**Next:** whoever has 15 minutes and a screen recorder - `BACKUP-DEMO-
+SCRIPT.md` has the exact steps. This is now the last concrete, well-defined
+task item on `main` that isn't a human decision (demo scope, D6) or blocked
+on another branch (P5's scope).
+
 ## 2026-09-14 — Sibusiso (52) — all three verdict states confirmed by real browser upload; latency variance is real
 
 **Did:** Closed the two loose ends entry 51 left open.
