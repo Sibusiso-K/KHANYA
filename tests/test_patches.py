@@ -7,7 +7,7 @@ from PIL import Image
 
 from src.segmentation import lumenstone as ls
 from src.segmentation.model import build_model, device
-from src.segmentation.patches import PATCH, single_field_predict
+from src.segmentation.patches import PATCH, single_field_predict, sliding_window_predict
 
 
 @pytest.fixture(scope="module")
@@ -53,3 +53,23 @@ class TestSingleFieldPredict:
 
         _labels, _confidence, cropped = single_field_predict(model, image, dev)
         assert np.array(cropped).min() == 255  # the whole crop is the white region
+
+
+def test_sliding_window_reports_only_completed_tiles(untrained_model):
+    model, dev = untrained_model
+    image = Image.fromarray(np.zeros((600, 700, 3), dtype=np.uint8))
+    events = []
+    sliding_window_predict(
+        model, image, dev, patch=512, overlap=0,
+        progress_callback=lambda *event: events.append(event),
+    )
+    assert len(events) == 4
+    assert [event[0] for event in events] == [1, 2, 3, 4]
+    assert all(event[1] == 4 for event in events)
+    for _completed, _total, labels, box, confidence in events:
+        assert labels.shape == (600, 700)
+        assert np.count_nonzero(labels >= 0) > 0
+        assert 0.0 <= confidence <= 1.0
+        left, top, right, bottom = box
+        assert 0 <= left < right <= 700
+        assert 0 <= top < bottom <= 600

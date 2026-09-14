@@ -97,6 +97,37 @@ def _image_png_b64(image):
     return base64.b64encode(buf.getvalue()).decode("ascii")
 
 
+def _progress_image_b64(image, labels, tile_box):
+    """Render only labels produced so far and mark the tile just classified."""
+    from PIL import ImageDraw
+
+    base = image.convert("RGB").copy()
+    base.thumbnail((900, 600), Image.Resampling.LANCZOS)
+    scale_x = base.width / image.width
+    scale_y = base.height / image.height
+    draw = ImageDraw.Draw(base)
+    left, top, right, bottom = tile_box
+    draw.rectangle((left * scale_x, top * scale_y, right * scale_x, bottom * scale_y),
+                   outline="#FFB539", width=max(2, round(4 * scale_x)))
+    buf = io.BytesIO()
+    base.save(buf, format="PNG")
+    return base64.b64encode(buf.getvalue()).decode("ascii")
+
+
+def render_progress(image, labels, completed, total, tile_box, tile_confidence):
+    """Render a truthful intermediate frame during native tiled inference."""
+    template = _env.get_template("progress.html.jinja")
+    return template.render(
+        **_base_context(),
+        input_micrograph_b64=_image_png_b64(image),
+        predicted_phases_b64=_colourise_png_b64(labels),
+        progress_image_b64=_progress_image_b64(image, labels, tile_box),
+        completed=completed,
+        total=total,
+        tile_confidence=tile_confidence,
+    )
+
+
 def _candidates(result, recommendation):
     """The two candidate actions for a marginal verdict, equally weighted.
 

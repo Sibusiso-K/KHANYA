@@ -88,6 +88,20 @@ def predict(image_bytes, checkpoint_key):
     return image, labels, mean_confidence
 
 
+def predict_with_progress(image_bytes, checkpoint_key, progress_callback):
+    """Run the native tiled path while reporting each completed tile."""
+    import torch
+    from src.segmentation import patches as patch_module
+
+    image = load_image(image_bytes)
+    model, dev = load_model(checkpoint_key)
+    with torch.no_grad():
+        labels, mean_confidence = patch_module.sliding_window_predict(
+            model, image, dev, progress_callback=progress_callback
+        )
+    return image, labels, mean_confidence
+
+
 def predict_live_field(image_bytes, checkpoint_key):
     """The Live Field Mode fast path: one field, one forward pass, timed
     end to end on THIS call. Deliberately not @st.cache_data - a cached
@@ -114,6 +128,7 @@ def predict_live_field(image_bytes, checkpoint_key):
 
 
 landing_slot = st.empty()
+progress_slot = st.empty()
 LIVE_FIELD_LABEL = "Live Field Mode — fast, 512×512 field, timed live"
 FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image"
 mode = st.radio(
@@ -170,10 +185,23 @@ else:
             mode_label = f"{LIVE_FIELD_LABEL.split(' — ')[0]}, 512×512 field"
         else:
             with st.spinner(
-                "Tiling and predicting at native resolution — about 2–3 minutes on a "
-                "CPU-only laptop the first time; identical uploads are cached."
+                "Tiling and predicting at native resolution — each frame below is "
+                "updated after a real tile classification."
             ):
-                image, labels, mean_confidence = predict(image_bytes, checkpoint_key)
+                progress_image = load_image(image_bytes)
+
+                def on_tile(completed, total, partial_labels, tile_box, tile_confidence):
+                    progress_slot.components.v1.html(
+                        render.render_progress(
+                            progress_image, partial_labels, completed,
+                            total, tile_box, tile_confidence,
+                        ),
+                        height=700, scrolling=False,
+                    )
+
+                image, labels, mean_confidence = predict_with_progress(
+                    image_bytes, checkpoint_key, on_tile
+                )
             elapsed = None
             mode_label = "Full section, native resolution"
 
@@ -185,4 +213,5 @@ else:
         show_landing(f"Analysis could not complete: {exc}")
     else:
         landing_slot.empty()
+        progress_slot.empty()
         st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)

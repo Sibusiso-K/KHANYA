@@ -1,0 +1,18 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+@font-face{font-family:mono;src:url(data:font/ttf;base64,{{ font_mono_regular_b64 }})}
+*{box-sizing:border-box}body{margin:0;background:#00131D;color:#E3EAEB;font-family:mono,monospace;padding:18px}
+.eyebrow{font-size:11px;letter-spacing:.18em;color:#FFB539;font-weight:700}.title{font-size:20px;margin:8px 0 16px}
+.meter{height:8px;background:#12333e;border-radius:5px;overflow:hidden;margin:10px 0 18px}.meter span{display:block;height:100%;background:#2DD4BF;width:{{ (completed / total * 100)|round(1) }}%}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel{border:1px solid #194D5C;border-radius:6px;padding:10px;background:#071C27}.label{font-size:10px;color:#8CA6AE;text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}.panel img{display:block;width:100%;height:230px;object-fit:contain;background:#00131D}
+.status{display:flex;justify-content:space-between;font-size:11px;color:#8CA6AE;margin-top:12px}.status strong{color:#E3EAEB}.live{color:#2DD4BF}
+</style></head><body>
+<div class="eyebrow">LIVE NATIVE-RESOLUTION INFERENCE</div>
+<div class="title">Classifying section tiles · <span class="live">{{ completed }} / {{ total }} complete</span></div>
+<div class="meter"><span></span></div>
+<div class="grid">
+  <div class="panel"><div class="label">Field scan · gold frame = tile just classified</div><img alt="Uploaded micrograph with the just classified tile marked" src="data:image/png;base64,{{ progress_image_b64 }}"></div>
+  <div class="panel"><div class="label">Measured phase labels so far · dark = not classified</div><img alt="Measured labels for completed tiles" src="data:image/png;base64,{{ predicted_phases_b64 }}"></div>
+</div>
+<div class="status"><span>Tile confidence (measured): <strong>{{ "%.1f"|format(tile_confidence * 100) }}%</strong></span><span>Model: <strong>DeepLabV3 · ResNet-50</strong></span></div>
+</body></html>

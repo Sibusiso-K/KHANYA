@@ -200,7 +200,8 @@ def build_loaders():
 
 
 @torch.no_grad()
-def sliding_window_predict(model, image, dev, patch=PATCH, overlap=64):
+def sliding_window_predict(model, image, dev, patch=PATCH, overlap=64,
+                           progress_callback=None):
     """Full native-resolution prediction by tiling, with overlapping windows
     accumulated as logits so tile seams do not become visible label boundaries.
 
@@ -221,6 +222,9 @@ def sliding_window_predict(model, image, dev, patch=PATCH, overlap=64):
     if lefts[-1] != width - patch:
         lefts.append(max(0, width - patch))
 
+    total_tiles = len(tops) * len(lefts)
+    completed_labels = np.full((height, width), -1, dtype=np.int32)
+    completed = 0
     for top in tops:
         for left in lefts:
             tile = array[top:top + patch, left:left + patch]
@@ -229,8 +233,18 @@ def sliding_window_predict(model, image, dev, patch=PATCH, overlap=64):
                 (0.485, 0.456, 0.406), (0.229, 0.224, 0.225),
             ).unsqueeze(0).to(dev)
             logits = model(tensor)["out"][0].cpu()
+            tile_probabilities = logits.softmax(0)
+            tile_labels = tile_probabilities.argmax(0).numpy()
             accumulated[:, top:top + tile.shape[0], left:left + tile.shape[1]] += logits
             counts[:, top:top + tile.shape[0], left:left + tile.shape[1]] += 1
+            completed_labels[top:top + tile.shape[0], left:left + tile.shape[1]] = tile_labels
+            completed += 1
+            if progress_callback is not None:
+                progress_callback(
+                    completed, total_tiles, completed_labels.copy(),
+                    (left, top, left + tile.shape[1], top + tile.shape[0]),
+                    float(tile_probabilities.max(0).values.mean().item()),
+                )
 
     probabilities = (accumulated / counts.clamp(min=1)).softmax(0)
     return probabilities.argmax(0).numpy(), probabilities.max(0).values.mean().item()

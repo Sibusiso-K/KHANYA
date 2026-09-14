@@ -122,6 +122,19 @@ def test_live_field_mode_shows_its_measured_elapsed_time_not_a_fabricated_one():
     assert "end to end" not in without_timing  # no fabricated number when unmeasured
 
 
+def test_progress_render_marks_a_real_tile_and_reports_measured_state():
+    import numpy as np
+    from PIL import Image
+    image = Image.new("RGB", (700, 600), "white")
+    labels = np.full((600, 700), -1, dtype=np.int32)
+    labels[:512, :512] = 1
+    html = render.render_progress(image, labels, 1, 4, (0, 0, 512, 512), 0.82)
+    assert "1 / 4 complete" in html
+    assert "82.0%" in html
+    assert "dark = not classified" in html
+    assert "gold frame = tile just classified" in html
+
+
 @pytest.mark.parametrize(
     "action, expected_count",
     [

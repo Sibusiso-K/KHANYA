@@ -19,6 +19,25 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-14 — Codex — truthful tile-by-tile inference animation
+
+**Did:** Added a server-driven progress callback to the native sliding-window
+predictor and wired it to a Streamlit placeholder. Each intermediate frame is
+rendered only after a real model tile has completed; unclassified pixels remain
+dark and the just-classified tile is marked with its measured confidence.
+
+**Changed:** `src/segmentation/patches.py`, `dashboard/app.py`,
+`dashboard/render.py`, `dashboard/templates/progress.html.jinja`,
+`tests/test_patches.py`, `tests/test_render.py`.
+
+**Blocked on:** Browser verification requires a Python/Streamlit runtime and
+the trained checkpoint; neither is available in this checkout's environment.
+
+**Next:** Run full-section mode with the supplied S2 test image in a normal
+Python environment and confirm the iframe advances through the real tile count.
+Live Field Mode remains one measured forward pass and is not artificially
+subdivided.
+
 ## 2026-09-14 — Sibusiso (56) — Live Field Mode: the real-time gap actually closed
 
 **Did:** Asked Sibusiso directly whether to build `JUDGE-READY-WORKPLAN.md`'s
