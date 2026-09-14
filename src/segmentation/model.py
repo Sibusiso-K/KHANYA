@@ -14,7 +14,16 @@ def build_model(num_classes: int = 2, pretrained: bool = True):
     # `weights`, so pretrained=True vs False silently build different
     # architectures unless this is pinned - which is what broke checkpoint
     # loading (train pretrained=True, eval pretrained=False).
-    weights = DeepLabV3_ResNet50_Weights.DEFAULT if pretrained else None
+    #
+    # Pinned to the explicit enum, not .DEFAULT: as of torchvision 0.28,
+    # .DEFAULT resolves to COCO_WITH_VOC_LABELS_V1 (the only member this
+    # enum has), but a future torchvision release could add a member and
+    # repoint DEFAULT at it, silently changing which pretrained weights the
+    # shipped checkpoint was fine-tuned from without anyone noticing (the
+    # 2026-09-12 review's exact ask - "pin the explicit enum and checkpoint
+    # hash rather than DEFAULT"). Record in SBOM.md if this enum member ever
+    # changes.
+    weights = DeepLabV3_ResNet50_Weights.COCO_WITH_VOC_LABELS_V1 if pretrained else None
     # torchvision otherwise defaults weights_backbone to ImageNet weights even
     # when weights=None. Evaluation loads our checkpoint and must never fetch a
     # backbone from the network first. Full pretrained weights include it already.

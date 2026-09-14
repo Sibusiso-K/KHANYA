@@ -1,0 +1,149 @@
+{
+  "subset": "S2",
+  "n_train_images": 31,
+  "n_test_images": 12,
+  "majority_class_baseline": {
+    "iou_per_class": [
+      0.0,
+      0.0,
+      0.0,
+      0.5833348844626403,
+      0.0
+    ],
+    "mean_iou": 0.11666697689252806,
+    "pixel_accuracy": 0.5833348844626403,
+    "tp_per_class": [
+      0,
+      0,
+      0,
+      60547445,
+      0
+    ],
+    "fp_per_class": [
+      0,
+      0,
+      0,
+      43247899,
+      0
+    ],
+    "fn_per_class": [
+      25896165,
+      5274220,
+      821587,
+      0,
+      11255927
+    ],
+    "recall_per_class": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0
+    ],
+    "precision_per_class": [
+      null,
+      null,
+      null,
+      0.5833348844626403,
+      null
+    ],
+    "class_names": [
+      "background",
+      "chalcopyrite",
+      "magnetite",
+      "pyrrhotite",
+      "pentlandite"
+    ],
+    "baseline": "majority_class",
+    "majority_class": "pyrrhotite"
+  },
+  "colour_only_baseline": {
+    "iou_per_class": [
+      0.9142026010184539,
+      0.49031550590631406,
+      0.07988604495003357,
+      0.2932388856505482,
+      0.19623094269809285
+    ],
+    "mean_iou": 0.3947747960446885,
+    "pixel_accuracy": 0.5412572456043886,
+    "tp_per_class": [
+      24424185,
+      3509521,
+      566293,
+      18157226,
+      9522757
+    ],
+    "fp_per_class": [
+      820216,
+      1883459,
+      6267173,
+      1372126,
+      37272388
+    ],
+    "fn_per_class": [
+      1471980,
+      1764699,
+      255294,
+      42390219,
+      1733170
+    ],
+    "recall_per_class": [
+      0.9431583788564832,
+      0.6654104303574747,
+      0.6892672352410639,
+      0.2998842643153646,
+      0.8460215671263682
+    ],
+    "precision_per_class": [
+      0.9675089933803539,
+      0.6507572807612859,
+      0.0828705374402975,
+      0.929740321133031,
+      0.20349882450412324
+    ],
+    "class_names": [
+      "background",
+      "chalcopyrite",
+      "magnetite",
+      "pyrrhotite",
+      "pentlandite"
+    ],
+    "baseline": "colour_only_nearest_centroid",
+    "centroid_rgb_per_class": [
+      [
+        75.17268140473345,
+        69.6268595516574,
+        65.27247588520909
+      ],
+      [
+        190.45161526207204,
+        172.8619518947011,
+        143.24616750672482
+      ],
+      [
+        137.40510659601986,
+        127.6657432517001,
+        118.94132421043848
+      ],
+      [
+        184.59837216760482,
+        166.92796952237717,
+        149.86034591438397
+      ],
+      [
+        196.27615873507983,
+        179.95106185087585,
+        158.6947243321449
+      ]
+    ],
+    "centroid_pixel_counts": [
+      199981,
+      191455,
+      119845,
+      180854,
+      193530
+    ]
+  },
+  "metadata_only_baseline": "not applicable - LumenStone ships no locality/specimen/acquisition metadata beyond the image itself (confirmed by inspection, DATA-SOURCES.md); nothing distinguishes it from the majority-class baseline above"
+}
