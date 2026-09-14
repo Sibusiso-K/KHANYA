@@ -182,6 +182,10 @@ body { background:#00131D; color:#E3EAEB; font-family:'Plus Jakarta Sans',sans-s
           <span class="text-on-surface font-bold">{{ model_checkpoint }}</span>
           <span> · {{ model_scope }} · offline inference</span>
         </div>
+        <div class="rounded-md bg-surface-container-lowest border border-outline/70 px-3 py-2 font-mono text-[10px] text-on-surface-variant leading-relaxed">
+          <span class="text-on-surface font-bold">{{ mode_label }}</span>
+          {% if elapsed_display %}<span> · measured, this run: {{ elapsed_display }}s end to end</span>{% endif %}
+        </div>
       </div>
     </div>
 

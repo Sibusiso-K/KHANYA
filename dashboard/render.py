@@ -142,8 +142,17 @@ _VERDICT_CSS = {
 }
 
 
-def render(image, labels, mean_confidence, result, recommendation):
-    """Render the dashboard for one measured field. Returns an HTML string."""
+def render(image, labels, mean_confidence, result, recommendation,
+           mode_label="Full section, native resolution", elapsed_seconds=None):
+    """Render the dashboard for one measured field. Returns an HTML string.
+
+    mode_label, elapsed_seconds: which analysis path produced this result
+    and how long it actually took, end to end, on this run - never a cached
+    or estimated figure (Live Field Mode's caller must time a fresh,
+    uncached call; see dashboard/app.py). elapsed_seconds is None for a
+    caller that hasn't measured one (e.g. a direct-render test) - the
+    template shows nothing rather than a fabricated number.
+    """
     from src.segmentation import lumenstone as ls
 
     css_class, state_label = verdict_state(recommendation.action)
@@ -195,4 +204,6 @@ def render(image, labels, mean_confidence, result, recommendation):
         band_width_pct=(min(1.0, floor + margin) - max(0.0, floor - margin)) * 100,
         is_refusal=css_class == "hold" and not recommendation.action.startswith("Marginal"),
         generated_at=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        mode_label=mode_label,
+        elapsed_display=None if elapsed_seconds is None else f"{elapsed_seconds:.1f}",
     )

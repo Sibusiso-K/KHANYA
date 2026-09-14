@@ -92,8 +92,34 @@ def test_full_result_renders_the_actual_advisor_state(liberation, expected):
     # Check actual runtime asset references, including the Jinja/CSS layer.
     assert not re.search(r'(?:src|href)=[\"\'](?:https?:)?//', html)
     assert not re.search(r'url\([\"\']?(?:https?:)?//', html)
+    assert "Full section, native resolution" in html  # the default mode_label
     if liberation is None:
         assert "MEASUREMENT DECLINED" in html
+
+
+def test_live_field_mode_shows_its_measured_elapsed_time_not_a_fabricated_one():
+    import numpy as np
+    from PIL import Image
+    from src.advisor import advise
+    from src.modal import ModalResult
+
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.8, 0.95, 1, 64)
+    recommendation = advise(result, 0.95)
+
+    with_timing = render.render(
+        Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
+        result, recommendation,
+        mode_label="Live Field Mode, 512x512 field",
+        elapsed_seconds=3.42,
+    )
+    assert "Live Field Mode, 512x512 field" in with_timing
+    assert "3.4s end to end" in with_timing
+
+    without_timing = render.render(
+        Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
+        result, recommendation,
+    )
+    assert "end to end" not in without_timing  # no fabricated number when unmeasured
 
 
 @pytest.mark.parametrize(

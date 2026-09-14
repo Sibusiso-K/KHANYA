@@ -234,3 +234,45 @@ def sliding_window_predict(model, image, dev, patch=PATCH, overlap=64):
 
     probabilities = (accumulated / counts.clamp(min=1)).softmax(0)
     return probabilities.argmax(0).numpy(), probabilities.max(0).values.mean().item()
+
+
+@torch.no_grad()
+def single_field_predict(model, image, dev, patch=PATCH):
+    """One model forward pass over a single patch-sized field - the fast path
+    for the dashboard's Live Field Mode, in place of sliding_window_predict's
+    full tiled sweep (measured mean 162s / p95 196s over a whole native
+    section, reports/segmentation_latency.json - 6.5x over the review's own
+    30s design target and unworkable as a *live* demo beat).
+
+    A CENTRE CROP, not a resize: the model was trained on native-resolution
+    patch x patch tiles (see this module's own docstring), and resizing a
+    larger field down to patch x patch would change the physical scale a
+    pixel represents in a way this checkpoint has never been evaluated
+    against. Returns (labels, mean_confidence, cropped_image) - the caller
+    must render against cropped_image, not the original upload, since only
+    the crop was actually measured.
+
+    Raises ValueError if the image is smaller than patch x patch in either
+    dimension - refusing rather than padding or upscaling into an untested
+    regime, the same discipline this project applies to every other
+    unmeasurable input (see src/advisor.py's refusal branches).
+    """
+    array = np.array(image.convert("RGB"))
+    height, width = array.shape[:2]
+    if height < patch or width < patch:
+        raise ValueError(
+            f"image is {width}x{height}, smaller than the {patch}x{patch} "
+            "live field in at least one dimension - Live Field Mode needs "
+            "an image at least this large; use the full-section path instead."
+        )
+    top, left = (height - patch) // 2, (width - patch) // 2
+    tile = array[top:top + patch, left:left + patch]
+    tensor = TF.normalize(
+        TF.to_tensor(np.ascontiguousarray(tile)),
+        (0.485, 0.456, 0.406), (0.229, 0.224, 0.225),
+    ).unsqueeze(0).to(dev)
+    logits = model(tensor)["out"][0].cpu()
+    probabilities = logits.softmax(0)
+    labels = probabilities.argmax(0).numpy()
+    mean_confidence = probabilities.max(0).values.mean().item()
+    return labels, mean_confidence, Image.fromarray(tile)

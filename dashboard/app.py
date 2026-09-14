@@ -88,7 +88,47 @@ def predict(image_bytes, checkpoint_key):
     return image, labels, mean_confidence
 
 
+def predict_live_field(image_bytes, checkpoint_key):
+    """The Live Field Mode fast path: one field, one forward pass, timed
+    end to end on THIS call. Deliberately not @st.cache_data - a cached
+    result reused across uploads would report a stale timing as if it were
+    fresh, which is exactly the thing a live demo must not do (JUDGE-READY-
+    WORKPLAN.md: "never use cached output as a fresh timing result").
+    """
+    import time
+
+    import torch
+
+    from src.segmentation import patches as patch_module
+
+    # Model load is a one-time, cache_resource-backed setup cost, not part of
+    # per-upload inference latency - loaded before the timer starts, same as
+    # latency_benchmark.py's warmup calls being excluded from its measurement.
+    model, dev = load_model(checkpoint_key)
+    start = time.perf_counter()
+    image = load_image(image_bytes)
+    with torch.no_grad():
+        labels, mean_confidence, field = patch_module.single_field_predict(model, image, dev)
+    elapsed = time.perf_counter() - start
+    return field, labels, mean_confidence, elapsed
+
+
 landing_slot = st.empty()
+LIVE_FIELD_LABEL = "Live Field Mode — fast, 512×512 field, timed live"
+FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image"
+mode = st.radio(
+    "ANALYSIS MODE",
+    [LIVE_FIELD_LABEL, FULL_SECTION_LABEL],
+    horizontal=True,
+    help=(
+        "Live Field Mode analyses one 512×512 field with a single model "
+        "pass, measured end to end on every run (JUDGE-READY-WORKPLAN.md: "
+        "full-section inference measures p95 196s, about 6.5x over the "
+        "review's 30s design target — unworkable as a live demo beat). "
+        "Full section is the validated whole-image path used for the "
+        "backup recording (BACKUP-DEMO-SCRIPT.md)."
+    ),
+)
 uploaded = st.file_uploader(
     "REFLECTED-LIGHT MICROGRAPH OF A POLISHED SECTION",
     type=["jpg", "jpeg", "png", "tif", "tiff"],
@@ -118,14 +158,29 @@ else:
         # Changing a checkpoint must invalidate both model and prediction caches.
         stat = CKPT.stat()
         checkpoint_key = (str(CKPT), stat.st_mtime_ns, stat.st_size)
-        with st.spinner(
-            "Tiling and predicting at native resolution — about 2–3 minutes on a "
-            "CPU-only laptop the first time; identical uploads are cached."
-        ):
-            image, labels, mean_confidence = predict(image_bytes, checkpoint_key)
+
+        if mode == LIVE_FIELD_LABEL:
+            with st.spinner(
+                "Live Field Mode — one 512×512 field, one model pass, "
+                "timed live. Not cached: every run measures fresh."
+            ):
+                image, labels, mean_confidence, elapsed = predict_live_field(
+                    image_bytes, checkpoint_key
+                )
+            mode_label = f"{LIVE_FIELD_LABEL.split(' — ')[0]}, 512×512 field"
+        else:
+            with st.spinner(
+                "Tiling and predicting at native resolution — about 2–3 minutes on a "
+                "CPU-only laptop the first time; identical uploads are cached."
+            ):
+                image, labels, mean_confidence = predict(image_bytes, checkpoint_key)
+            elapsed = None
+            mode_label = "Full section, native resolution"
+
         result = modal.analyse(labels, ls.CLASS_NAMES, refine=True)
         recommendation = advise(result, mean_confidence)
-        html = render.render(image, labels, mean_confidence, result, recommendation)
+        html = render.render(image, labels, mean_confidence, result, recommendation,
+                             mode_label=mode_label, elapsed_seconds=elapsed)
     except (ImportError, OSError, RuntimeError, ValueError) as exc:
         show_landing(f"Analysis could not complete: {exc}")
     else:
