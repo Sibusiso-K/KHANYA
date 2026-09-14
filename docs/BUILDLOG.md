@@ -22,6 +22,79 @@ it is a press release.
 
 ---
 
+## 2026-09-14 — session 27 · anchored the brief and a literature pass in `CLAUDE.md`; found the S1 benchmark number was stale
+
+### Attempted
+
+The domain lead asked where the official hackathon brief should live so every task is measured
+against it, whether we meet it, and what a literature review of ore-microscopy segmentation says
+about how to close the gap to the published ResUNet benchmark (mIoU 0.8373) without using its
+GPL-3.0 code or its trained weights.
+
+### Worked
+
+- **Found and corrected a stale benchmark artefact that made the project look 2.5× worse than it
+  is.** `khanya/main:reports/benchmark_s1_patches.json` (committed `1cda84d`, 17 Aug) reports
+  S1 mIoU **0.3295** against the published **0.8373** — but it scores *cached predictions* from
+  the superseded 512-patch checkpoint (`src/benchmark.py`: *"Uses the CACHED predictions… no
+  inference"*), and the model was retrained at 2,560 patches afterwards without the cache being
+  remade. The real, current number — `reports/lumenstone_s1_patches_test_metrics.json`
+  (`ebf2b15`, 24 Aug), same 7 classes, same 20 test images — is **0.7116**. Re-caching and
+  re-running `src/benchmark.py` is the outstanding fix (zero GPU-hours), tracked as
+  `docs/09-brief-compliance.md` §1 "Accuracy report".
+- **`CLAUDE.md` now carries the brief and its judging criteria verbatim** in a new §"What we are
+  judged on", and a new §"What the literature says drives accuracy here" — seven factors from
+  three sources, each cited (petroscope README; **Korshunov et al. 2025**, *Mining Sci. & Tech.
+  (Russia)* 10(3):232–244, doi:10.17073/2500-0632-2025-05-416, CC BY 4.0, the LumenStone dataset
+  authors' own paper, fetched and read in full; **Jiang et al. 2024**, *Minerals* 14:1281,
+  doi:10.3390/min14121281, read via search summary only — MDPI returned 403 on direct fetch, so
+  its figures are marked indicative, not citable, until the PDF is read).
+- **New Rule 10**: check the published method before inventing one. Retroactively explains
+  `experiments/010`'s finding — our bespoke registration search is not reproducible, and
+  Korshunov et al.'s published method (SIFT + RANSAC affine, `skimage`, BSD-3-Clause, already a
+  declared dependency) is a zero-new-dependency fix nobody had tried.
+- **The cross-version asterisk on 0.8373 turns out to be near-free to remove.** The LumenStone
+  dataset page states each version contains all previous images plus additional samples — S1 v1
+  is 59 train + 16 test, v2 is 64 train + 20 test — so if v1's 16 test stems are a subset of v2's
+  20 (unverified, needs the filename list from Sibusiso), evaluating the existing checkpoint on
+  those 16 gives a direct, like-for-like comparison at **zero GPU-hours**. This replaces a planned
+  train-on-v1 retraining step.
+- **Built the requirements-traceability ledger** `docs/09-brief-compliance.md`, requested by
+  `docs/07-audit-prompt.md:258` and never built until now — one row per literal requirement,
+  evidence as a path or test name.
+- Updated `WORKBOARD.md` (stale day count 19 → 17, §2 gained an Evidence column, §8 gained two
+  ritual steps), `docs/08-handover.md` §4 (superseded, now points at the ledger instead of
+  carrying a second copy of the deliverables table), `docs/03-free-stack.md` (LumenStone subsets
+  S1/S2/S3/V1/P1/P2/ICM1 recorded, plus the Korshunov citation), and `SBOM.md` (LumenStone's terms
+  of use quoted verbatim, closing a standing VERIFY item — it was an unconfirmed informal claim,
+  now a sourced quote).
+- Full agreed plan recorded at `docs/10-2026-09-14-literature-and-brief-plan.md`.
+- Suite: **339 passed, 4 deselected**, unchanged — no code touched this session, docs only.
+
+### Did not work
+
+Nothing failed. This was a research and documentation session; no code changed.
+
+### Learned
+
+Two of the four unresolved items on the project (the cross-version benchmark caveat, and the
+LumenStone data licence VERIFY) were both closer to resolved than assumed — the dataset's own
+page had the answer to both, and nobody had fetched it in full before today. **Rule 10 exists
+because of this pattern repeating**: `experiments/010`'s non-reproducible search is the same
+failure mode as an un-fetched licence page — a question answerable from a primary source, guessed
+at instead.
+
+### Left open
+
+- The v1/v2 stem-subset check itself — needs the 16-name filename list from Sibusiso, not yet
+  requested at time of writing.
+- SIFT+RANSAC as a P5 registration method — proposed, not yet implemented or run.
+- The Jiang et al. 2024 ensemble figures (mIoU 91.65) remain indicative until the PDF is read in
+  full rather than via search summary.
+- LumenStone V1 (the colour-adaptation subset) is not yet in this checkout or on Kaggle.
+
+---
+
 ## 2026-09-13 — session 26 · the S3_test_03 mask fix failed, and found something worse: the search itself is not reproducible
 
 ### Attempted

@@ -108,14 +108,28 @@ Certified standards are the one genuinely expensive item. You may not need them.
 
 | Dataset | What | Why it matters |
 |---|---|---|
-| **LumenStone** | polished-section images with mineral segmentation labels, **PPL and XPL**, plus published colour-adaptation methods | The closest thing to a purpose-built benchmark for exactly your task |
+| **LumenStone** | polished-section images with mineral segmentation labels, **PPL and XPL**, plus published colour-adaptation methods. **Subsets, confirmed 2026-09-14**: S1 (Berezovskoe, hydrothermal, 7 classes, 59+16 train/test v1 → 64+20 v2), S2 (Norilsk layered ultramafic, 5 classes, 23+6 → 37+12), S3 (high-T hydrothermal, 9 classes, 27+8 → 33+14+XPL rotations), **V1 (30 images, 10 samples × 3 imaging variations, for colour-adaptation methods — not yet used here, see `CLAUDE.md` factor table)**, P1/P2 (panorama stitching), ICM1 (tag annotations, "coming soon") | The closest thing to a purpose-built benchmark for exactly your task |
 | **IronOreRLM** | 563 reflected-light microscopy images of iron ores, Indian mines | Real RLM imagery, different ore — good for domain-shift testing |
 | **MUMDMC2025** | 14,400 photomicrographs, PPL/XPL at 72 rotations | rotation and polarisation physics; transmitted light, so complementary |
 | **IMA/COM QDF** | reflectance spectra, 510 species | the reference labels |
 | **CGS National Core Library** | 1,500 boreholes, 420 km, Donkerhoek | real Bushveld material, an hour away |
 | USGS splib07 · ECOSTRESS · RockSL | spectral libraries | free |
 
-**Prior art to cite (and to beat):** *Deep learning semantic segmentation of opaque and non-opaque minerals from epoxy resin in reflected light microscopy* (Minerals Engineering); *Res-UNet Ensemble Learning for Semantic Segmentation of Mineral Optical Microscopy Images* (Minerals); improved YOLOv8n for fine-grained mineral recognition; *Automated ore microscopy based on multispectral measurements of specular reflectance*. All of these use **non-polarised** light.
+**LumenStone terms of use, quoted verbatim** (read 2026-09-14, `imaging.cs.msu.ru/en/research/geology/lumenstone`):
+*"You are free to use the provided data in your own research work. If you intend to publish research
+work that uses this dataset, you have to cite the references whenever appropriate."* Recorded in
+full in `SBOM.md`'s data table.
+
+**Prior art to cite (and to beat):** *Deep learning semantic segmentation of opaque and non-opaque minerals from epoxy resin in reflected light microscopy* (Minerals Engineering); *Res-UNet Ensemble Learning for Semantic Segmentation of Mineral Optical Microscopy Images* (Jiang et al. 2024, *Minerals* 14:1281, doi:10.3390/min14121281); improved YOLOv8n for fine-grained mineral recognition; *Automated ore microscopy based on multispectral measurements of specular reflectance*. All of these use **non-polarised** light.
+
+**Read in full 2026-09-14, and load-bearing for the accuracy work — not just prior art:**
+**Korshunov, D.M. et al. (2025), "From visual diagnostics to deep learning: automatic mineral
+identification in polished section images," *Mining Science and Technology (Russia)* 10(3):232–244,
+doi:10.17073/2500-0632-2025-05-416, CC BY 4.0.** The LumenStone dataset authors' own paper: PSPNet +
+ResNet18, class-balanced patch sampling, a Colour Correction Matrix, and — the finding that matters
+most for our novelty claim — **XPL registered to PPL and fed to the network as extra input
+channels, reported as an improvement.** Full factor-by-factor treatment: `CLAUDE.md` §"What the
+literature says drives accuracy here" and `docs/09-brief-compliance.md` §3.
 
 > ⚠️ **The sentence that used to end this paragraph — "that's your gap" — was too broad and is
 > withdrawn (finding N1, 2026-08-15).** Those four papers use non-polarised light; **the field
@@ -174,4 +188,4 @@ You are not a student team improvising on a budget. You are a team that noticed 
 
 ## Sources
 
-[Craig & Vaughan open access (MSA)](http://www.minsocam.org/msa/openaccess_publications/craig_vaughan/) · [IMA/COM reflectance database (GTK)](http://projects.gtk.fi/com/results/reflectance_data.html) · [QDF for Ore Minerals](https://link.springer.com/book/10.1007/978-94-011-1486-8) · [OpenFlexure Project](https://openflexure.org/) · [OpenFlexure Delta Stage](https://openflexure.org/projects/deltastage/) · [Micro-Manager](https://micro-manager.org/) · [µManager on ImageJ](https://imagej.net/software/micro-manager) · [LumenStone / polished section identification](https://mst.misis.ru/jour/article/view/974) · [IronOreRLM dataset](https://pubmed.ncbi.nlm.nih.gov/40534715/) · [Res-UNet mineral segmentation](https://doi.org/10.3390/min14121281) · [Semantic segmentation of opaque minerals in RLM](https://www.sciencedirect.com/science/article/abs/pii/S0892687521002363) · [RRUFF](https://rruff.info/ima/) · [CHPC](https://www.chpc.ac.za/) · [LCD polariser salvage method](https://www.improwis.com/projects/method_salvage_lcd_polarizers/) · [CGS National Core Library](https://www.geoscience.org.za/cgs/systems/publications/national-core-library/)
+[Craig & Vaughan open access (MSA)](http://www.minsocam.org/msa/openaccess_publications/craig_vaughan/) · [IMA/COM reflectance database (GTK)](http://projects.gtk.fi/com/results/reflectance_data.html) · [QDF for Ore Minerals](https://link.springer.com/book/10.1007/978-94-011-1486-8) · [OpenFlexure Project](https://openflexure.org/) · [OpenFlexure Delta Stage](https://openflexure.org/projects/deltastage/) · [Micro-Manager](https://micro-manager.org/) · [µManager on ImageJ](https://imagej.net/software/micro-manager) · [LumenStone / polished section identification](https://mst.misis.ru/jour/article/view/974) · [LumenStone dataset page (MSU)](https://imaging.cs.msu.ru/en/research/geology/lumenstone) · [petroscope (GPL-3.0, data yes, code never)](https://github.com/xubiker/petroscope) · [IronOreRLM dataset](https://pubmed.ncbi.nlm.nih.gov/40534715/) · [Res-UNet mineral segmentation](https://doi.org/10.3390/min14121281) · [Semantic segmentation of opaque minerals in RLM](https://www.sciencedirect.com/science/article/abs/pii/S0892687521002363) · [RRUFF](https://rruff.info/ima/) · [CHPC](https://www.chpc.ac.za/) · [LCD polariser salvage method](https://www.improwis.com/projects/method_salvage_lcd_polarizers/) · [CGS National Core Library](https://www.geoscience.org.za/cgs/systems/publications/national-core-library/)

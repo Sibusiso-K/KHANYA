@@ -6,8 +6,8 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-13, 01:55 SAST — **P5 escalated**: the registration search is not reproducible on real data; do not quote any registered offset yet |
-| **Days to final** | **19** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
+| **Last updated** | 2026-09-14 — **brief and literature anchored in `CLAUDE.md`**; stale S1 benchmark number identified (0.3295 was a stale cached-prediction artefact, real figure 0.7116); ledger built at `docs/09-brief-compliance.md` |
+| **Days to final** | **17** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
 | **REEFPRINT suite** | **339 passed, 4 deselected** — re-run and verified 2026-09-13 (+2 for the roi_mask feature's tests) |
 | **KHANYA suite** | 87 passing (reported by main's audit; not re-run this session) |
@@ -19,7 +19,8 @@ replace the detail — it tells you which detail is still true and what is being
 | `CLAUDE.md` (reefprint) | Constitution — physics, the nine rules, the kill list | **Yes** — §Physics corrected 2026-09-12 per C3 |
 | `CONTEXT.md` (reefprint) | Situation report | **Yes** — §3 table and §8 N3 row corrected 2026-09-12 per C1 |
 | `docs/BUILDLOG.md` (reefprint) | Append-only record of what was tried | **Yes — this is the primary record** |
-| `docs/08-handover.md` (reefprint) | Implementation handover, 12 Sept | Yes, and it is the parent of this file — but it **predates C3**, which it does not mention |
+| `docs/08-handover.md` (reefprint) | Implementation handover, 12 Sept | Yes, and it is the parent of this file — but it **predates C3**, which it does not mention. Its §4 deliverables table was superseded 2026-09-14; it now points at the ledger |
+| `docs/09-brief-compliance.md` (reefprint) | Requirements-traceability ledger, built 2026-09-14 | **Yes — this is the one place "have we met the brief?" is checkable, not asserted** |
 | `STATUS.md`, `ENDGAME.md`, `JOINT-PLAN.md`, `PITCH.md` (main) | KHANYA's status set | Mixed — see C1 and C2 |
 | `reports/TECHNICAL-REVIEW-2026-09-12.md` (main) | External adversarial review | Yes, as **feedback**. Findings 5 and 8 accepted (C3, P4); finding 6 accepted **in part** — see C3's last paragraph |
 
@@ -149,22 +150,31 @@ sides — a shared board that disagrees with itself is worse than no board.
 > **accuracy report** · a **demonstration of how the model's output can be used to adjust plant
 > parameters** · real-time · integrates with existing sorting or flotation controls.
 
-| Requirement | Status | Owner |
-|---|---|---|
-| ≥3 mineral phases | 🟡 S2 gives nonzero IoU for three sulphides — **locality separation unverified** | Sibusiso |
-| Accuracy report | 🟡 **Bushveld chromite-composition result shipped, cross-checked bit-for-bit against an independent implementation.** Segmentation accuracy report (locality-disjoint IoU, CIs, baselines) still needs KHANYA's held-out predictions | Both |
-| Processability prediction | 🟡 **One head shipped** — fine-chromite entrainment risk, structural proxy with a worst-case bound; real literature constants still needed from the domain lead | Lethabo |
-| Integrates with controls | ✅ **Real local OPC UA server + separate simulated control client**, acknowledgement/expiry contract demonstrated | Lethabo |
-| Real-time | 🟡 **Two REEFPRINT-side stages benchmarked with a spread**, on named hardware — Stokes inversion and the OPC UA round trip. **Segmentation inference latency (KHANYA/main) is still unmeasured**; no end-to-end real-time claim exists yet | Both |
-| Offline demo | 🟢 `reefprint.viz.demo`, backup GIF exists | Lethabo |
+**Full detail, evidence paths and the "exceeds because…" column now live in
+[`docs/09-brief-compliance.md`](docs/09-brief-compliance.md) — this table is the summary, that is
+the source of truth. Update both in the same commit.**
+
+| Requirement | Status | Evidence | Owner |
+|---|---|---|---|
+| ≥3 mineral phases | 🟡 S2 gives nonzero IoU for three sulphides — **locality separation unverified**, magnetite IoU 0.0000 | ledger §1 row 1 | Sibusiso |
+| Accuracy report | 🟡 **Bushveld chromite-composition result shipped, cross-checked bit-for-bit against an independent implementation.** Segmentation accuracy report (locality-disjoint IoU, CIs, baselines) still needs KHANYA's held-out predictions | ledger §1 row 2 | Both |
+| Processability prediction | 🟡 **One head shipped** — fine-chromite entrainment risk, structural proxy with a worst-case bound; real literature constants still needed from the domain lead | `src/reefprint/heads/entrainment.py` | Lethabo |
+| Integrates with controls | ✅ **Real local OPC UA server + separate simulated control client**, acknowledgement/expiry contract demonstrated | ledger §1 row 5 | Lethabo |
+| Real-time | 🟡 **Two REEFPRINT-side stages benchmarked with a spread**, on named hardware — Stokes inversion and the OPC UA round trip. **Segmentation inference latency (KHANYA/main) is still unmeasured**; no end-to-end real-time claim exists yet | ledger §1 row 4 | Both |
+| Offline demo | 🟢 `reefprint.viz.demo`, backup GIF exists — **not yet showing the plant-parameter refusal panel** (Workstream E) | ledger §1 row 6 | Lethabo |
 
 **Judged on:** Innovation · Feasibility · Impact · Technical Execution · Presentation Clarity.
 Winners announced only after MOTT's IP assessment on top-ranked entries; creators receive
-invention credits, so attributable authorship is part of winning.
+invention credits, so attributable authorship is part of winning. Full criterion-by-criterion
+evidence: ledger §2.
 
 **Two facts that shape every decision.** Mintek made UG2 commercially viable — we are pitching a
 UG2 story to the people who wrote the book, so one overclaim costs more here than anywhere else.
 And the 2025 winner's shape was domain engineering first, AI as the multiplier.
+
+**The brief and the accuracy-driving literature are now both anchored in `CLAUDE.md`** (§"What we
+are judged on" and §"What the literature says drives accuracy here") — read there for the seven
+factors, each cited, and the new **Rule 10**: check the published method before inventing one.
 
 ---
 
@@ -445,8 +455,12 @@ Every session that changes state, no exceptions:
 3. **Update `CONTEXT.md` §3's single next action** if the next action changed.
 4. **If a decision was made, write the ADR the same day** into `docs/04-decisions/`.
 5. **If a dependency was added, update `SBOM.md` and `docs/05-toolchain.md` in the same commit.**
-6. **Commit and push** — `git push khanya main:reefprint`.
-7. **Tell Sibusiso.** Issue #1 is closed; open a fresh issue on
+6. **If a deliverable's state changed, update its row in `docs/09-brief-compliance.md` in the same
+   commit.** Evidence is a path or a test name, never prose — a row without one is not done.
+7. **If a task had a published method, the ADR or buildlog entry names it and says why we are or
+   are not using it** (Rule 10, `CLAUDE.md`).
+8. **Commit and push** — `git push khanya main:reefprint`.
+9. **Tell Sibusiso.** Issue #1 is closed; open a fresh issue on
    [Sibusiso-K/KHANYA](https://github.com/Sibusiso-K/KHANYA/issues) and link the commit.
 
 A stale board is worse than none, because it will be trusted. **If this file and the code disagree,

@@ -101,6 +101,15 @@ is missing — **the red test list is the backlog**, deliberately.
 
 ### The single next action
 
+**2026-09-14 update — read this line first, then the historical narrative below.** P1–P5 have all
+now run at least once (P5 with a real, escalated non-reproducibility finding —
+`experiments/010-s3test03-masked-rerun/README.md`). **The current next action is Workstream A/B of
+`docs/10-2026-09-14-literature-and-brief-plan.md`: `docs/09-brief-compliance.md` is now the
+requirements-traceability ledger** (`docs/07-audit-prompt.md:258` asked for one), and the stale
+`reports/benchmark_s1_patches.json` (0.3295) needs re-caching against the current checkpoint to
+show its real score (0.7116) — blocked on `best.pt`, not in this repo. The paragraphs below are the
+detailed history of how P1–P5 got here and remain accurate as history; they are not re-litigated.
+
 **2026-09-12 — the next action is tracked on [`WORKBOARD.md`](WORKBOARD.md) §3, queue P1 → P5.**
 D1 and D2 are closed (ADR-0004, ADR-0005). **P1 — the OPC UA advisory server — shipped the same
 day**: `reefprint.integrate.opcua_server.AdvisoryServer` (a real local `asyncua.Server`) and

@@ -99,18 +99,15 @@ Two facts that should shape every decision:
 
 ## 4. The brief's literal deliverables, and where we stand
 
-> Identify **at least three distinct mineral phases** from provided image datasets · an
-> **accuracy report** · a **demonstration of how the model's output can be used to adjust plant
-> parameters** · real-time · integrates with existing sorting or flotation controls.
+**Superseded 2026-09-14.** This table was accurate on 12 Sep and is not any more — P1–P5 shipped in
+the intervening two days. Rather than let a second stale copy drift out of sync with `WORKBOARD.md`
+§2 the way this one did, the deliverables and the current status now live in exactly one place:
 
-| Requirement | Status |
-|---|---|
-| ≥3 mineral phases | KHANYA S2 reports nonzero IoU for three sulphides — **verify locality separation** |
-| Accuracy report | Partial; needs honest grouping, CIs, trivial baselines |
-| Processability prediction | **None of the three heads built** |
-| Integrates with controls | **No OPC UA server.** Only an `AdvisoryRecord` dataclass |
-| Real-time | **No latency benchmark exists anywhere** |
-| Offline demo | Green (`reefprint.viz.demo`, backup GIF exists) |
+**`CLAUDE.md` §"What we are judged on"** carries the brief verbatim (this file predates that
+section, which is why it isn't there yet in the text above). **[`docs/09-brief-compliance.md`](09-brief-compliance.md)**
+is the live traceability ledger — one row per requirement, evidence as a path or test name, never
+prose. Read that instead of trusting any table copied into a handover document, including the one
+this replaced.
 
 ## 5. Today's independent review reached a verdict worth taking seriously
 
