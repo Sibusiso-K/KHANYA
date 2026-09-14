@@ -26,6 +26,58 @@ repository, unmerged, because two clean parallel histories are the originality d
 
 Built for the Mintek-SCi Grad Hackathon 2026, challenge: *Computer Vision for Real-Time Mineralogical Characterisation*. Team Sonar — three members across three institutions (see §Single technical decision-maker). Final: 1 October 2026, 13:00 submission, 10-minute presentation. **Abstract due 30 August 2026, one page** — `docs/06-abstract.md`.
 
+## What we are judged on — the brief, verbatim
+
+Kept here because this file outranks everything else and a requirement stated anywhere else can go
+stale without anyone noticing. It did: `docs/08-handover.md` §4 and `WORKBOARD.md` §2 carried two
+copies that disagreed. **The ledger, [`docs/09-brief-compliance.md`](docs/09-brief-compliance.md),
+is the single place where each of these maps to evidence — a path or a test name, never prose.**
+
+> Identify **at least three distinct mineral phases** from provided image datasets · an
+> **accuracy report** · a **demonstration of how the model's output can be used to adjust plant
+> parameters** · real-time · integrates with existing sorting or flotation controls.
+
+**Judged on:** Innovation · Feasibility · Impact · Technical Execution · Presentation Clarity.
+
+Winners are announced only after MOTT's IP assessment on top-ranked entries, and **creators receive
+invention credits** — so attributable authorship is part of winning, which is why ADR-0003 keeps two
+clean unmerged histories and why we never ship someone else's trained weights.
+
+**Three consequences that decide arguments.** (1) *The brief never asks for a state-of-the-art mIoU.*
+Being close enough that the number is not a liability, then spending the remaining effort on the
+five criteria, beats chasing +0.02. (2) *Three of the five criteria are not accuracy at all* —
+Feasibility, Impact and Presentation Clarity are won by the refusal path, the offline demo and the
+ten minutes. (3) *Mintek made UG2 commercially viable.* We are pitching a UG2 story to the people
+who wrote the book, so one overclaim costs more here than anywhere else.
+
+## What the literature says drives accuracy here
+
+Ore-microscopy segmentation is a small, well-published field, and it has already answered several
+questions we were about to answer by guessing. Each row is a **factor**, not a suggestion; each
+carries its source. Full working and per-experiment status:
+[`docs/09-brief-compliance.md`](docs/09-brief-compliance.md) §3.
+
+| Factor | What the literature says | Where we stand |
+|---|---|---|
+| **Class-balanced patch sampling** | Sampling patch centres class-uniformly from probability maps is the standard fix for mineral class imbalance (Korshunov 2025; petroscope README) | ✅ done — `patches.py`, ~11× magnetite oversampling |
+| **Colour normalisation *before* augmentation** | A Colour Correction Matrix (affine in LAB, CIEDE2000 loss) maps a distorted image to a reference colour space; brightness/colour augmentation is applied *on top* (Korshunov 2025) | ❌ neither. Our measured fragility: a 15% white-balance shift costs **0.39 mIoU** |
+| **Polarisation as extra input channels** | XPL registered to PPL and fed to the network as additional channels improves segmentation — *from the dataset's own authors* (Korshunov 2025) | 🟡 this is the REEFPRINT thesis, taken further (full per-pixel Stokes, not two states) |
+| **Registration by SIFT + RANSAC affine** | The published method for aligning rotated/XPL frames (Korshunov 2025). `skimage.feature.SIFT` + `skimage.measure.ransac`, BSD-3, already a dependency | ❌ we use a bespoke correlation grid search that `experiments/010` proved **non-reproducible run to run** |
+| **Ensembling** | A weighted-voting Res-UNet ensemble beats every single member, and beats DeepLabV3 and PSPNet (Jiang 2024) | ❌ and `trust/ensemble` does not exist despite the repo map below |
+| **Loss for rare classes** | Dice **+ Focal** (Jiang 2024). Dice alone is unstable while predictions are diffuse | 🟡 CE and CE+Dice tried; **Focal untried** |
+| **Patch size and budget** | 256–384 px at ×50 (Korshunov 2025); ~3 h on one A6000 is the published compute budget | 🟡 we use 512; our own 512→2,560-patch step moved mIoU 0.33 → 0.71 |
+
+**The comparators, so nobody re-derives them:** petroscope's ResUNet on LumenStone **S1 v1**,
+7 classes — mIoU **0.8373** (0.8506 void-borders), per-class 0.7464 (galena) to 0.9628 (pyrite).
+Korshunov et al. on S1+S2, 10 classes — **magnetite 0.650, the worst of their ten**, pentlandite
+0.790, pyrite 0.964, PA 0.96. **Our magnetite problem is the literature's magnetite problem**, and
+saying so with the citation is stronger than hiding a per-class zero inside a mean.
+
+> ⚠️ **Read before citing.** Korshunov et al. is CC BY 4.0 and fetchable in full. The Jiang et al.
+> ensemble figures came from a search summary because MDPI returned 403, and **petroscope's
+> training recipe is not in its README at all**. Anything not read from the source is **indicative,
+> not citable** — the same failure mode as the Pirard 2007 abstract flagged below.
+
 ## The physics — read this before proposing anything
 
 > **Our illumination is UNPOLARISED. No polariser sits in the illumination path**
@@ -106,6 +158,13 @@ Hence `RotationSeries.geometry`, which defaults to `UNKNOWN` rather than to the 
 7. **Licences:** permissive only for anything shipped. `timm` (Apache-2.0) not DINOv3 (non-transferable, no patent grant). `asyncua` (LGPL) runs on a general-purpose machine, never a sealed appliance. Hailo is an optional accelerator, never load-bearing. Maintain an SBOM.
 8. **Commit early, commit often, including failures.** Finalists face originality authentication after 2 October. The commit history is the defence.
 9. **The falsification test is a deliverable, not a risk.** Report the result either way.
+10. **Check the published method before inventing one.** For any task with an established method in
+    the reflected-light microscopy literature — registration, colour adaptation, class balancing,
+    loss choice — name the published method in the ADR or buildlog entry and say why we are or are
+    not using it. A bespoke alternative is allowed; an *unexamined* one is not. Measured cost of
+    skipping this: a bespoke correlation search that turned out not to be reproducible run to run
+    (`experiments/010`), where SIFT+RANSAC was the published answer and `scikit-image` already
+    shipped it as a dependency. See "What the literature says drives accuracy here" above.
 
 ## The falsification test — run this first
 
