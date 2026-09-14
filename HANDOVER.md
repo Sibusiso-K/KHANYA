@@ -19,6 +19,59 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-14 — Sibusiso (57) — live tile-classification animation: verified, one real bug found and fixed
+
+**Did:** Codex shipped `3f77756` ("Show truthful tile progress during section
+inference") on `main` - a live, per-tile visualisation of the segmentation
+model actually classifying minerals during full-section inference (a
+`st.empty()` placeholder re-rendered after every real completed tile, gold
+frame on the tile just classified, phase mask filling in tile by tile, dark
+where unclassified, real measured per-tile confidence shown). Their own
+report was explicit that they had no Python/Streamlit/checkpoint runtime to
+verify it with - so I ran it for real before trusting it, per this
+project's own rule (ENDGAME §6: "neither of us merges our own untested
+work").
+
+**It crashed on the very first tile.** `AttributeError: 'function' object
+has no attribute 'v1'` - `progress_slot.components.v1.html(...)` doesn't
+exist: `st.empty()` returns a `DeltaGenerator`, which has no `.components`
+attribute; `st.components.v1.html` is a module-level function, not a
+`DeltaGenerator` method. The correct pattern (`with progress_slot.
+container(): st.components.v1.html(...)`) was already used two lines above
+for `landing_slot` - the new `on_tile` callback just didn't follow it.
+Fixed and pushed as `cb69e2e`. Invisible to the test suite: tests call
+`render.render_progress()` directly, never through the actual Streamlit
+runtime integration - exactly the gap Codex's own report named.
+
+**After the fix, verified the feature genuinely does what it claims** - not
+just "doesn't crash" but actually inspected the live rendered content at
+multiple points during a real run (test_01.jpg, Full section mode,
+restarted the server clean first - Streamlit does not reliably hot-reload
+module changes, a recurring gotcha documented in earlier entries):
+- 14/48 tiles: gold-framed "tile just classified" box, phase mask visibly
+  filling in, 80.0% measured tile confidence.
+- 24/48 tiles: progress genuinely advancing between checks.
+- Final render: exact match to every previously-verified test_01.jpg figure
+  (95% association, 78% confidence, 35% ore in field, 181 particles,
+  "Continue at current setpoint"), correct `mode_label` ("Full section,
+  native resolution"), no crash at completion.
+
+**Verified:** 113/113 tests pass. CI green on the fix push. Real browser
+verification as detailed above, reading the actual iframe DOM content
+(`document.querySelector('iframe').contentDocument`), not just screenshots.
+
+**Changed:** `dashboard/app.py` (the fix only - Codex's feature code and
+tests are otherwise unchanged).
+
+**Blocked on:** nothing - this closes the tile-progress feature as working,
+not just committed. Live Field Mode is unaffected (it was never routed
+through the broken callback path).
+
+**Next:** worth rehearsing this as part of the live demo beat once the
+demo-scope decision (full-section recorded vs. live) is made - watching the
+model visibly classify real tiles is a strong visual, and it now actually
+works end to end.
+
 ## 2026-09-14 — Codex — truthful tile-by-tile inference animation
 
 **Did:** Added a server-driven progress callback to the native sliding-window
