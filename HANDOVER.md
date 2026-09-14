@@ -19,6 +19,78 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-14 — Sibusiso (55) — three of JUDGE-READY-WORKPLAN.md's P0 items closed
+
+**Did:** Pulled Codex's `JUDGE-READY-WORKPLAN.md` (entry 54) and verified it
+myself rather than take the HANDOVER note on faith - Codex's own environment
+had no working Python/pytest, so their "verified: source and documentation
+changes pass git diff --check" was the only check actually run. Ran the full
+suite both ways (`python -m pytest` and bare `pytest`, matching CI exactly):
+105/105 passed, and the GitHub Actions run for that push is green. Their
+model-identity fix and dashboard changes are real and working, not just
+committed.
+
+Picked up three P0 items explicitly owned by "Sibusiso" in that document:
+
+1. **Trivial baselines for the accuracy report.** Built
+   `src/segmentation/baselines.py` (majority-class, colour-only
+   nearest-centroid) and ran it for real against the actual S2 archive.
+   Majority-class (always predict pyrrhotite): mean IoU 0.1167, pixel
+   accuracy 0.5833. Colour-only: mean IoU 0.3948, pixel accuracy 0.5413 -
+   worse pixel accuracy than majority-class despite much higher IoU, since
+   pyrrhotite dominates test pixels. The real model clears both by a wide
+   margin (+0.456 IoU over majority-class, +0.178 over colour-only). Bonus
+   finding: the three sulphides' colour centroids are nearly
+   indistinguishable in RGB - direct evidence against the "colorimeter"
+   concern, since a colour-only classifier could not separate them well and
+   the real model does. No metadata-only baseline - confirmed (again) that
+   LumenStone ships no metadata to condition one on; reported as "not
+   applicable," not silently skipped. `reports/lumenstone_s2_trivial_
+   baselines.json`.
+2. **Pretrained-weights enum pinned.** `model.py` used
+   `DeepLabV3_ResNet50_Weights.DEFAULT`; pinned to the explicit
+   `COCO_WITH_VOC_LABELS_V1` member per the review's exact ask. Confirmed
+   identical value today (torchvision 0.28) - no behaviour change, but a
+   future torchvision release repointing `.DEFAULT` can no longer silently
+   swap what the shipped checkpoint was fine-tuned from.
+3. **`SBOM.md` for `main` - it never had one.** `reefprint` has always kept
+   one; built `main`'s from scratch: every direct dependency's checked
+   licence, the pretrained-weights provenance note, LumenStone's rights
+   cross-reference, font licences. All direct dependencies are permissive.
+   While building it, found `requirements.txt` names `opencv-python` but
+   this host's actual installed package is `opencv-python-headless` -
+   fixed to match (also more correct: this project never opens a GUI
+   window). Verified CI installs cleanly from the changed file on a fresh
+   Ubuntu runner, not just this Windows host.
+
+Also confirmed the workplan's OOD-detection P0 item is fully closed: grepped
+both code and every doc on `main` for "out-of-domain"/"OOD" claims - the
+only overclaim was in `BACKUP-DEMO-SCRIPT.md`, which Codex's own commit
+already corrected.
+
+**Verified:** 107/107 tests pass (105 + 2 new for the baselines' pure
+logic). CI green on every push this round, including the requirements.txt
+change on a clean environment.
+
+**Changed:** `src/segmentation/baselines.py` (new), `tests/test_baselines.py`
+(new), `reports/lumenstone_s2_trivial_baselines.json` (new),
+`src/segmentation/model.py`, `SBOM.md` (new), `requirements.txt`.
+
+**Blocked on:** the remaining P0 items in `JUDGE-READY-WORKPLAN.md` are
+bigger or need a decision: Live Field Mode (a real feature, not yet built -
+the workplan now treats the live-demo-scope question as decided policy
+rather than an open question, but its own HANDOVER note says the document
+itself is still awaiting cross-branch owner acceptance, so I have not
+started building it without that confirmation), the OPC UA bridge (needs
+`reefprint`'s side too), locality-independent accuracy intervals (still
+genuinely blocked by missing metadata), and the rights register's checkpoint
+hash (the enum is pinned; the hash itself is not yet recorded anywhere).
+
+**Next:** whoever accepts `JUDGE-READY-WORKPLAN.md`'s revised priorities
+(per Codex's own "mirror only after the cross-branch owners accept" note) -
+that acceptance is what unblocks Live Field Mode, which is the highest-value
+remaining item given this week's measured 4-6x real-time gap.
+
 ## 2026-09-14 — Codex (54) — judge-ready workplan and exact model identity
 
 **Did:** Re-evaluated the entry against Mintek's published 2026 themes and the
