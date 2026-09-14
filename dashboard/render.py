@@ -164,6 +164,9 @@ def render(image, labels, mean_confidence, result, recommendation):
     return template.render(
         **_base_context(),
         subset_label=f"LumenStone {ls.SUBSET}",
+        model_name="DeepLabV3 · ResNet-50",
+        model_checkpoint="KHANYA S2 native-patch checkpoint",
+        model_scope="LumenStone S2 v2 analogue · Bushveld validation pending",
         sample_title="Uploaded polished section",
         sample_caption=(
             "Reflected-light micrograph, user-supplied. Every number below is "

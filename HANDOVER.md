@@ -19,6 +19,31 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-14 — Codex (54) — judge-ready workplan and exact model identity
+
+**Did:** Re-evaluated the entry against Mintek's published 2026 themes and the
+current implementation. Added `JUDGE-READY-WORKPLAN.md` as the active
+presentation-readiness backlog: judging-criteria evidence, exact category,
+production-readiness claim ladder, industry deployment contracts, the live
+mineral-image-to-model-to-OPC-UA journey, timed demo choreography and prioritised
+acceptance tests. Corrected the model name from DeepLabV3+ to the actual
+torchvision DeepLabV3 with ResNet-50 used by the code. Added the model/training
+scope to the result UI.
+
+**Verified:** Source and documentation changes pass `git diff --check`.
+Rendering/test execution was not available in this checkout because no usable
+Python/pytest runtime is installed. The new UI values use the existing strict
+Jinja context and must be exercised in the repository's normal environment.
+
+**Blocked on:** The dashboard still does not publish its result through the
+REEFPRINT OPC UA server; the current S1 refusal is a low-payload refusal, not a
+validated OOD gate; Live Field Mode and end-to-end latency are not built; data
+and pretrained-weight transfer rights remain unresolved.
+
+**Next:** Close the P0 items in `JUDGE-READY-WORKPLAN.md` before UI polish or
+additional polarimetry research. Update `WORKBOARD.md` on `reefprint` and mirror
+it only after the cross-branch owners accept the revised priorities.
+
 ## 2026-09-14 — Sibusiso (53) — backup demo script (ENDGAME W7 was not started)
 
 **Did:** Checked ENDGAME.md W7 ("record the working demo... the moment W3 is

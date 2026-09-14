@@ -1,5 +1,12 @@
 # KHANYA / REEFPRINT — where the project actually stands
 
+**Judge-readiness update: 2026-09-14.** The active presentation and
+production-readiness gaps are in [`JUDGE-READY-WORKPLAN.md`](JUDGE-READY-WORKPLAN.md).
+The current engineering scoreboard remains [`WORKBOARD.md`](WORKBOARD.md).
+The latest main commit records **105 passing tests**; that count has not been
+independently reproduced in this checkout because its Python environment is
+absent. The 87-test count below belongs to the 5 September audit.
+
 **Current audit: 2026-09-05.** See [the audit report](reports/PROJECT-AUDIT-2026-09-05.md)
 and `HANDOVER.md` entry 42 for current verification. Main has 87 passing tests;
 the real Stitch dashboard runs offline and visibly refuses without its validated
@@ -45,7 +52,7 @@ decision layer**. One learned component, three deterministic ones:
 
 | Stage | What it is | Learned? |
 |---|---|---|
-| 1. Segmentation | DeepLabv3+ResNet50 CNN, semantic segmentation, 5 classes | **Yes** - supervised |
+| 1. Segmentation | Torchvision DeepLabV3 with a ResNet-50 backbone, semantic segmentation, 5 classes | **Yes** - supervised |
 | 2. Modal mineralogy | Pixel counting + mineral-to-role lookup | No - arithmetic |
 | 2.5. Topology repair | Morphological opening, hole filling, watershed | No - classical image processing |
 | 3. Association index (apparent, 2D) | Connected components + particle composition | No - geometry |
@@ -123,7 +130,7 @@ analogue for the **assemblage and its optical appearance, not its abundance**.
 
 ### 2.2 Segmentation — meets the brief's floor
 
-Resize baseline, DeepLabv3+ResNet50, 12 epochs CPU, whole held-out sections:
+Resize baseline, torchvision DeepLabV3 with a ResNet-50 backbone, 12 epochs CPU, whole held-out sections:
 
 | Class | % test pixels | IoU |
 |---|---|---|
@@ -298,7 +305,7 @@ checkpoint is running now and is the figure that settles it.
 micrograph (3396x2547 reflected light, polished section)
         |
         v
-  SEGMENTATION            DeepLabv3+ResNet50, 5 classes
+  SEGMENTATION            DeepLabV3 + ResNet-50 backbone, 5 classes
         |                 src/segmentation/
         |                 two interchangeable paths:
         |                   - resize   (train_lumenstone.py)  mIoU 0.545

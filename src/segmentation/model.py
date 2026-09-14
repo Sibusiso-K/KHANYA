@@ -3,8 +3,12 @@ from torchvision.models.segmentation import deeplabv3_resnet50, DeepLabV3_ResNet
 
 
 def build_model(num_classes: int = 2, pretrained: bool = True):
-    """DeepLabv3+ResNet50, matching the method used in the published FeM paper
-    (Filippo et al. 2021) for reflected-light ore/resin segmentation."""
+    """Torchvision DeepLabV3 with a ResNet-50 backbone.
+
+    This calls ``torchvision.models.segmentation.deeplabv3_resnet50``. It is
+    DeepLabV3, not DeepLabV3+; keep the exact name consistent in the UI,
+    accuracy report and pitch.
+    """
     # aux_loss explicit and constant: torchvision only attaches the aux
     # classifier head when aux_loss is truthy, and its default depends on
     # `weights`, so pretrained=True vs False silently build different

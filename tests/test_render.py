@@ -86,6 +86,8 @@ def test_full_result_renders_the_actual_advisor_state(liberation, expected):
                          result, recommendation)
     assert expected in html
     assert recommendation.action in html
+    assert "DeepLabV3 · ResNet-50" in html
+    assert "LumenStone S2 v2 analogue · Bushveld validation pending" in html
     assert html.count('src="data:image/png;base64,') == 2
     # Check actual runtime asset references, including the Jinja/CSS layer.
     assert not re.search(r'(?:src|href)=[\"\'](?:https?:)?//', html)

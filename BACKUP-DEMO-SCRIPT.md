@@ -22,10 +22,11 @@ GIF - see WORKBOARD.md §2). This is KHANYA's equivalent.
    though it correctly is a held-out image the model never trained on):
    - `data/raw/lumenstone/S2_v2/imgs/test/test_01.jpg` -> confident state
    - `data/raw/lumenstone/S2_v2/imgs/test/test_04.jpg` -> marginal state
-   - `data/raw/lumenstone/S1_v2/imgs/test/test_02.jpg` -> refusal state
-     (this one is genuinely out-of-domain - a different LumenStone subset,
-     S1 not S2 - fed to the S2-trained model; it is not a corrupted or fake
-     image, and that distinction is worth saying on camera)
+   - `data/raw/lumenstone/S1_v2/imgs/test/test_02.jpg` -> low-payload refusal
+     challenge (this is a different LumenStone subset, S1 not S2, fed to the
+     S2-trained model; it is not a corrupted or fake image. KHANYA currently
+     has no validated image-level OOD detector, so do not call this an OOD
+     detection demonstration.)
 4. **Upload each once before recording**, so Streamlit's cache is warm and
    the recorded run doesn't sit on a multi-minute spinner. Confirm each
    produces the expected result below before recording starts.
@@ -48,17 +49,20 @@ before acting"**. Scroll to show the two-candidate breakdown ("if true
 liberation >= 50%" / "if true liberation < 50%") and the liberation-vs-
 threshold bar with the uncertainty band visible.
 
-### Beat 3 — the refusal (test_02.jpg, S1 on the S2 model)
+### Beat 3 — the low-payload refusal (test_02.jpg, S1 on the S2 model)
 
 **This is the beat the talk is built around (ENDGAME.md §5, beat 6).** Say
-out loud before uploading: "this next image is from a different LumenStone
-subset - not corrupted, not synthetic, genuinely a section the model was
-never trained on." Upload. Expected: **2% association index, 74% confidence,
+out loud before uploading: "this next image is a cross-dataset challenge from
+a different LumenStone subset. The model was not trained on it; the current
+prototype is testing the measured payload rule, not claiming OOD detection."
+Upload. Expected: **2% association index, 74% confidence,
 272 particles, amber "MEASUREMENT DECLINED" / REFUSAL, "Flag for manual
 review - low payload signal", "Payload phases occupy 0.296% of ore area,
 below the 0.300% floor."** The predicted-phase panel will show almost
-entirely black/background - point at it. This is the moment the system
-declines to guess rather than returning a confident wrong answer.
+entirely black/background - point at it. This is the moment the advisor
+declines to issue a normal recommendation because the model's predicted
+payload signal is below its configured floor. It does not prove that the
+model recognised the input as out of domain.
 
 ## What NOT to show live if the venue timing is tight
 
