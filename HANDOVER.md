@@ -19,6 +19,68 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-14 — Sibusiso (52) — all three verdict states confirmed by real browser upload; latency variance is real
+
+**Did:** Closed the two loose ends entry 51 left open.
+
+**All three verdict states now confirmed through the actual `st.file_uploader`
+widget**, not a direct render call: uploaded S1's `test_02.jpg` to the
+S2-trained model (the known real out-of-domain case from entry 46) via
+`claude-in-chrome`'s `file_upload` action. Result matched exactly: 2%
+association / 74% confidence / 272 particles, **"MEASUREMENT DECLINED" /
+REFUSAL**, text reading "Payload phases occupy 0.296% of ore area, below
+the 0.300% floor" - confirming, live in the running app, both the liberation
+rename (entry 48) and the 3-decimal precision fix (the same session's
+earlier commit `d37517c`, which exists specifically because 2-decimal
+rounding made this exact sentence self-contradictory). Confident (test_01),
+marginal (test_04, entry 51) and refusal (test_02, this entry) are now all
+three verified this way. First time this project's actual upload widget has
+carried all three states, not just the pipeline behind it.
+
+**Re-ran the latency benchmark on an otherwise-idle machine**, specifically
+to check entry 49's thermal-drift caveat. Result was not what was expected:
+the patch stage's drift pattern (monotonic 2.04s->3.70s climb) did not
+reproduce - but the whole-section stage came out *slower*, not faster
+(p95 195.7s vs 154.4s), despite no other load. Rather than treat either run
+as "the real number," pooled both (n=6 whole-section, n=60 patch) into
+`reports/segmentation_latency.json` with both runs' raw data kept
+separately and labelled. Pooled: patch p95 3.60s (unchanged), whole-section
+mean 162.3s / p95 195.7s. **The honest range across six real calls on this
+hardware is 131-196s** - the qualitative finding from entry 49 (roughly
+4-6x over the review's 30s target) holds regardless of which individual run
+gets quoted; "clean" conditions did not make the number better.
+
+**Also:** read Lethabo's issue #4 update - P5's registration search proved
+non-deterministic on real data (same inputs, two different offsets across
+runs; the naive/non-search condition matches bit-for-bit, so the search
+itself is the variable, not the data or decode path). Correctly not
+papered over on her side. Replied connecting this to the demo-scope
+question already flagged: both are really one decision about how the
+remaining days get spent, which needs Sibusiso and Lethabo together, not
+either AI session unilaterally. Noticed the exposed UNISA email on her
+latest commit (`25055682@mylife.unisa.ac.za`) is the concrete instance of
+WORKBOARD D6 (UNISA email on commits, Wits in docs) - flagged, not
+resolved; this is factual information about a real person's institutional
+affiliation that only the team can correct.
+
+**Verified:** 94/94 tests pass. Both latency runs' JSON valid strict JSON
+(checked with Node's `JSON.parse`, not just Python's lenient reader).
+
+**Changed:** `reports/segmentation_latency.json` (pooled).
+
+**Blocked on:** the live-demo/P5-scope decision (now doubly flagged, from
+both AI sessions, converging on the same "needs a human time-budget call"
+conclusion); D6 (UNISA/Wits, human-only); backup demo video (ENDGAME W7,
+not yet started by anyone).
+
+**Next:** at this point essentially every main-side action item from the
+2026-09-12 review and WORKBOARD.md that does not require new data, a
+domain-expert judgement call, or a decision only Sibusiso/Lethabo can make
+has been closed. What remains is the human layer: rehearse the demo,
+decide its scope given the real latency numbers, record the backup video,
+and have the UNISA/Wits and remaining-days conversations. Code is not the
+bottleneck anymore.
+
 ## 2026-09-13 — Sibusiso (51) — real browser upload, first time this project has been tested this way
 
 **Did:** Every prior verification this project has of the dashboard (mine and
