@@ -80,9 +80,11 @@ build had anyone called it. Widened to a `PERMITTED_BACKBONES` mapping including
 **This checks the library/architecture licence only.** The `DeepLabV3_ResNet50_Weights.DEFAULT`
 checkpoint's own permission chain — COCO (20-class VOC subset) → ImageNet-pretrained ResNet50
 backbone — is **not** cleared by torchvision's BSD-3-Clause code licence and is recorded honestly
-as **CONDITION**, not OK, in `SBOM.md`'s checkpoint table. **Still outstanding**: pre-uploading
-the checkpoint as a pinned Kaggle dataset (sha256 recorded) so `enable_gpu: true` training kernels
-— which run `enable_internet: false` — can construct the model at all.
+as **CONDITION**, not OK, in `SBOM.md`'s checkpoint table. **Uploaded 2026-09-15**:
+`lethabomh14/torchvision-deeplabv3-resnet50-coco` (private Kaggle dataset), sha256-verified
+against torchvision's own filename hash — full record in `SBOM.md`'s checkpoint table.
+`enable_gpu: true` training kernels (`enable_internet: false`) can now construct the model; the
+S1/S2 **data** (issue #5, Sibusiso) is the remaining prerequisite for J0/J1/J2 to actually run.
 
 ## 5. LLM tooling boundary (Workstream H)
 

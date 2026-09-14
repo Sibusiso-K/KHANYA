@@ -104,6 +104,20 @@ published → simulated setpoint moves → stale advisory refused, setpoint unch
 - The real, networked OPC UA round trip remains proven only by `tests/test_integrate.py`; nothing
   in this session changes that coverage, by design.
 
+**Follow-up, same day: Workstream F's remaining item — the COCO checkpoint is now pinned on
+Kaggle.** `enable_gpu: true` training kernels run `enable_internet: false`, so
+`DeepLabV3_ResNet50_Weights.DEFAULT` would fail to construct at all on Kaggle without the weight
+pre-staged. Downloaded `https://download.pytorch.org/models/deeplabv3_resnet50_coco-cd0a2569.pth`
+directly by HTTP (no `torch`/`torchvision` install needed locally — those are KHANYA's
+dependency, not REEFPRINT's, and pulling multi-GB packages into this environment just to fetch one
+160 MB file would have been the wrong tool). Verified: sha256
+`cd0a25694c4a0f7106b38f4938bf90a874f2f241cc410b8f63c7024399538f06`, matching the `cd0a2569` prefix
+torchvision embeds in its own filename as an integrity check — genuine, uncorrupted. Uploaded as a
+private Kaggle dataset, `lethabomh14/torchvision-deeplabv3-resnet50-coco`. `SBOM.md`'s checkpoint
+table updated with the full record. **This unblocks model construction on a training kernel; the
+S1/S2 data upload (issue #5, still open) is the separate, remaining prerequisite for J0/J1/J2 to
+actually run.**
+
 **Follow-up, same day:** the backup GIF was still two screens — `experiments/004-backup-video/run.py`
 only ever rendered `demo.gate` and `demo.refusal`, so it silently missed the new third panel.
 Fixed (`experiments/004-backup-video/`): now renders `demo.advisory` too. Regenerated and viewed
