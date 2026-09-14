@@ -19,6 +19,17 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-14 — Sibusiso (57) — tile-progress Streamlit container fix
+
+**Did:** Corrected the tile-progress callback to render through
+`with progress_slot.container(): st.components.v1.html(...)`; `st.empty()` has
+no `.components` attribute. Verified the real full-section run in the browser
+at 14/48 and 24/48 tiles and on the final result. 113/113 tests pass.
+
+**Changed:** `dashboard/app.py`.
+
+**Blocked on:** nothing.
+
 ## 2026-09-14 — Codex — separate held-out Evidence view
 
 **Did:** Added an explicitly separate Evidence mode to the dashboard. It

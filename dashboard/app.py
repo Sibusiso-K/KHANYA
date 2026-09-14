@@ -228,13 +228,19 @@ else:
                 progress_image = load_image(image_bytes)
 
                 def on_tile(completed, total, partial_labels, tile_box, tile_confidence):
-                    progress_slot.components.v1.html(
-                        render.render_progress(
-                            progress_image, partial_labels, completed,
-                            total, tile_box, tile_confidence,
-                        ),
-                        height=700, scrolling=False,
-                    )
+                    # st.empty() returns a DeltaGenerator, which has no
+                    # .components attribute - st.components.v1.html is a
+                    # module-level function, not a DeltaGenerator method.
+                    # Same pattern already used correctly for landing_slot
+                    # above (with landing_slot.container(): ...).
+                    with progress_slot.container():
+                        st.components.v1.html(
+                            render.render_progress(
+                                progress_image, partial_labels, completed,
+                                total, tile_box, tile_confidence,
+                            ),
+                            height=700, scrolling=False,
+                        )
 
                 image, labels, mean_confidence = predict_with_progress(
                     image_bytes, checkpoint_key, on_tile
