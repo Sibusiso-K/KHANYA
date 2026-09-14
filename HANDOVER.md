@@ -19,6 +19,55 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-14 — Sibusiso (58) — Evidence view verified live, no bug this time
+
+**Did:** Codex shipped `3f3f4cb` ("Add held-out ground truth evidence view")
+- a third `ANALYSIS MODE`, restricted to the real 12 held-out S2 test IDs
+from `ls.split_ids()`, showing input / expert-annotated ground truth /
+model prediction side by side, explicitly labelled as validation evidence
+("not a live or blind inference") and never reachable from the live-upload
+path. Their own report again said they had no runtime to verify with - so,
+same as entry 57, I ran it for real before trusting it.
+
+**This time it worked cleanly, first try.** Restarted the server clean,
+selected Evidence mode (note: the custom Streamlit radio needs the click on
+its text label/generic element, not the underlying native radio input -
+clicking the radio ref alone silently did nothing this session, twice),
+waited through the real ~2-3 minute native-resolution inference on the
+default test section, then verified via the actual rendered DOM
+(`iframe.contentDocument`), not just a screenshot:
+- Correct honest labelling: "EVIDENCE VIEW · HELD-OUT VALIDATION", "not a
+  live or blind inference", test section named (`test_01`).
+- Real measured confidence shown (78.1%) - matches every prior independent
+  verification of this exact image.
+- All three images (`<img>` elements) loaded at full native resolution
+  (3396x2547) with `complete: true` - not broken, not placeholder.
+- The test-section dropdown genuinely lists exactly 12 options - the real
+  held-out set, nothing fabricated or extra.
+
+**Verified:** 114/114 tests pass (113 + the new evidence render test). CI
+green on the merge commit. Full real-browser verification as above.
+
+**Changed:** nothing - Codex's implementation needed no fix this round.
+
+**Process note, not a code issue:** the merge that landed this
+(`152feb4`) condensed my own entry 57 down from a detailed multi-paragraph
+account to a 4-line summary, losing specifics (exact tile counts, the
+precise crash traceback, the multi-point verification detail) - HANDOVER is
+meant to be append-only, and a merge editing prior entries' content (even
+to summarise, even by the same author's account) works against that. Not
+reverting it - the summary is still accurate, just thinner - but flagging
+it so it doesn't become a habit; the full detail is recoverable from git
+history (`c89f260`) if it's ever needed.
+
+**Blocked on:** nothing - Evidence view closes clean.
+
+**Next:** with Live Field Mode, Full section, and Evidence all independently
+verified working end to end, the dashboard side of `JUDGE-READY-WORKPLAN.md`
+is in genuinely good shape. Remaining P0s are the OPC UA bridge (needs
+`reefprint`) and the accuracy-report baselines' locality intervals (still
+blocked on missing metadata, per entry 55).
+
 ## 2026-09-14 — Sibusiso (57) — tile-progress Streamlit container fix
 
 **Did:** Corrected the tile-progress callback to render through
