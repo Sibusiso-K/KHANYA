@@ -11,6 +11,7 @@ import pytest
 
 from reefprint.acquire.registration import (
     estimate_rotation_centre,
+    estimate_rotation_centre_sift_ransac,
     inscribed_region_mask,
     rotate_about,
 )
@@ -33,6 +34,23 @@ def _rotation_series_about(
     field: np.ndarray, angles_deg: list[float], centre_xy: tuple[float, float]
 ) -> list[np.ndarray]:
     return [rotate_about(field, angle, centre_xy) for angle in angles_deg]
+
+
+def _sift_texture(shape: tuple[int, int], *, seed: int) -> np.ndarray:
+    """Denser and more varied than :func:`_synthetic_field` — SIFT locates and describes local
+    extrema at multiple scales, and a handful of small blobs on flat noise (the correlation
+    estimator's own test fixture) gives it too few distinctive keypoints to match reliably.
+    Many blobs of varying radius and intensity give SIFT plenty of independent local structure to
+    key on, which is what this estimator actually depends on rather than raw pixel correlation.
+    """
+    rng = np.random.default_rng(seed)
+    field = rng.normal(0.0, 1.0, size=shape)
+    height, width = shape
+    for _ in range(max(30, height // 3)):
+        y, x = rng.integers(6, height - 6), rng.integers(6, width - 6)
+        radius = rng.integers(2, 6)
+        field[y - radius : y + radius, x - radius : x + radius] += rng.uniform(3.0, 8.0)
+    return field
 
 
 def test_rotate_about_is_its_own_inverse_by_the_opposite_angle() -> None:
@@ -207,3 +225,110 @@ def test_inscribed_region_is_always_inside_the_frame_bounds() -> None:
     assert mask.shape == shape
     assert mask.any()
     assert mask.sum() < shape[0] * shape[1]
+
+
+# --- SIFT + RANSAC estimator (CLAUDE.md Rule 10: the published method, tried alongside the
+# bespoke grid search above rather than instead of it) ---------------------------------------
+
+
+def test_sift_ransac_recovers_a_known_off_centre_rotation() -> None:
+    """Leg (a) for the published estimator, mirroring
+    ``test_recovers_a_known_off_centre_rotation`` above so the two methods are validated the
+    same way on the same kind of problem.
+    """
+    field = _sift_texture((160, 160), seed=0)
+    image_centre = (80.0, 80.0)
+    true_offset = (8.0, -5.0)
+    true_centre = (image_centre[0] + true_offset[0], image_centre[1] + true_offset[1])
+    angles = [5.0, 10.0, 20.0, 40.0, 70.0]
+
+    frames = _rotation_series_about(field, angles, true_centre)
+    reference = rotate_about(field, 0.0, true_centre)
+
+    estimate = estimate_rotation_centre_sift_ransac(reference, frames, angles)
+
+    assert estimate.offset_xy is not None
+    assert estimate.offset_xy[0] == pytest.approx(true_offset[0], abs=0.5)
+    assert estimate.offset_xy[1] == pytest.approx(true_offset[1], abs=0.5)
+    assert estimate.usable_frame_count == len(angles)
+
+
+def test_sift_ransac_a_correctly_centred_series_finds_near_zero_offset() -> None:
+    """The negative control, mirroring ``test_a_correctly_centred_series_finds_zero_offset``."""
+    field = _sift_texture((160, 160), seed=2)
+    image_centre = (80.0, 80.0)
+    angles = [5.0, 15.0, 45.0, 90.0]
+
+    frames = _rotation_series_about(field, angles, image_centre)
+
+    estimate = estimate_rotation_centre_sift_ransac(field, frames, angles)
+
+    assert estimate.offset_xy is not None
+    assert estimate.offset_xy[0] == pytest.approx(0.0, abs=1.0)
+    assert estimate.offset_xy[1] == pytest.approx(0.0, abs=1.0)
+
+
+def test_sift_ransac_per_frame_diagnostics_agree_with_the_known_answer() -> None:
+    """The property the grid search cannot offer: each frame's independently fitted rotation
+    should agree with its own known nominal angle, and each frame should report enough inliers
+    to be trusted — not just the combined offset, but *why* it should be trusted.
+    """
+    field = _sift_texture((160, 160), seed=1)
+    true_centre = (88.0, 75.0)
+    angles = [15.0, 35.0, 60.0]
+
+    frames = _rotation_series_about(field, angles, true_centre)
+    reference = rotate_about(field, 0.0, true_centre)
+
+    estimate = estimate_rotation_centre_sift_ransac(reference, frames, angles)
+
+    for nominal_angle, frame_estimate in zip(angles, estimate.per_frame, strict=True):
+        assert frame_estimate.centre_xy is not None
+        assert frame_estimate.fitted_angle_deg == pytest.approx(nominal_angle, abs=1.0)
+        assert frame_estimate.inlier_count >= 8
+        assert frame_estimate.residual_rms < 2.0
+
+
+def test_sift_ransac_is_deterministic_across_repeated_calls() -> None:
+    """The property this estimator exists to have and the grid search
+    (``experiments/010-s3test03-masked-rerun/README.md``) turned out to lack: identical input,
+    called twice, must return bit-for-bit identical output. This is the determinism test Rule 10
+    requires before any offset from either estimator is quoted.
+    """
+    field = _sift_texture((160, 160), seed=3)
+    true_centre = (91.0, 72.0)
+    angles = [8.0, 22.0, 51.0]
+
+    frames = _rotation_series_about(field, angles, true_centre)
+    reference = rotate_about(field, 0.0, true_centre)
+
+    first = estimate_rotation_centre_sift_ransac(reference, frames, angles)
+    second = estimate_rotation_centre_sift_ransac(reference, frames, angles)
+
+    assert first.offset_xy == second.offset_xy
+    for a, b in zip(first.per_frame, second.per_frame, strict=True):
+        assert a == b
+
+
+def test_sift_ransac_refuses_mismatched_input() -> None:
+    field = _sift_texture((60, 60), seed=4)
+    with pytest.raises(ValueError, match=r"frames.*angles"):
+        estimate_rotation_centre_sift_ransac(field, [field, field], [5.0])
+    with pytest.raises(ValueError, match="zero frames"):
+        estimate_rotation_centre_sift_ransac(field, [], [])
+
+
+def test_sift_ransac_reports_none_when_a_frame_has_too_few_matches() -> None:
+    """A frame with no matchable structure against the reference must not silently produce a
+    fabricated centre — ``centre_xy`` stays ``None`` and the diagnostic fields explain why,
+    rather than the estimator inventing a number rule 1 would refuse downstream anyway.
+    """
+    reference = _sift_texture((160, 160), seed=5)
+    rng = np.random.default_rng(99)
+    unrelated_frame = rng.normal(0.0, 1.0, size=(160, 160))  # shares no structure with reference
+
+    estimate = estimate_rotation_centre_sift_ransac(reference, [unrelated_frame], [30.0])
+
+    assert estimate.per_frame[0].centre_xy is None
+    assert estimate.usable_frame_count == 0
+    assert estimate.offset_xy is None

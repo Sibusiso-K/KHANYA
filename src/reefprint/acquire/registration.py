@@ -74,6 +74,21 @@ would need to happen before this is resolved. The ``roi_mask`` feature itself re
 and tested on controlled synthetic data
 (``test_roi_mask_excludes_a_non_rotating_corrupted_region_and_sharpens_discrimination``); it did
 not turn out to be the fix this particular real-data problem needed.
+
+**A second, published estimator, added per CLAUDE.md Rule 10.** Korshunov et al. 2025 (the
+LumenStone dataset authors; doi:10.17073/2500-0632-2025-05-416) register their XPL/PPL image
+pairs by SIFT keypoint matching followed by a RANSAC-fitted affine transform.
+:func:`estimate_rotation_centre_sift_ransac` is that method, adapted to this problem: fit an
+independent rigid (rotation + translation) transform per frame from SIFT-matched keypoints,
+recover each frame's implied rotation centre algebraically (the fixed point of the fitted
+rotation), and combine across frames with the median. Unlike the grid search above, this method
+is **diagnosable per frame** — inlier count, match count and residual RMS say *why* a frame's
+estimate should or should not be trusted, rather than only returning a number — and it is
+deterministic by construction: SIFT itself has no randomness, and :func:`skimage.measure.ransac`
+is seeded (``rng=``) rather than left to draw from unseeded global state, which is exactly what
+the grid search above lacks (no tie-break rule) and what made it non-reproducible on real data.
+A method that cannot pass the determinism test (:mod:`tests.test_registration`) does not get a
+verdict, whichever estimator it is — this one is not assumed better, only tried, per Rule 10.
 """
 
 from __future__ import annotations
@@ -83,7 +98,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
-from skimage.transform import AffineTransform, warp
+from skimage.feature import SIFT, match_descriptors
+from skimage.measure import ransac
+from skimage.transform import AffineTransform, EuclideanTransform, warp
 
 if TYPE_CHECKING:
     import numpy.typing as npt
@@ -93,7 +110,10 @@ if TYPE_CHECKING:
 __all__ = [
     "RegisteredFrame",
     "RotationCentreEstimate",
+    "SiftRansacCentreEstimate",
+    "SiftRansacFrameEstimate",
     "estimate_rotation_centre",
+    "estimate_rotation_centre_sift_ransac",
     "inscribed_region_mask",
     "rotate_about",
 ]
@@ -314,3 +334,193 @@ def inscribed_region_mask(
     half_side = radius / np.sqrt(2.0)
     y_grid, x_grid = np.ogrid[:height, :width]
     return (np.abs(x_grid - cx) <= half_side) & (np.abs(y_grid - cy) <= half_side)
+
+
+@dataclass(frozen=True, slots=True)
+class SiftRansacFrameEstimate:
+    """One frame's independent rotation-centre estimate from SIFT-matched keypoints + RANSAC.
+
+    :param angle_deg: the frame's nominal angle, read from acquisition metadata — recorded here
+        only for comparison against :attr:`fitted_angle_deg`, never used to constrain the fit.
+    :param fitted_angle_deg: the rotation RANSAC actually recovered from the matched keypoints,
+        independent of the nominal angle. A large disagreement with ``angle_deg`` is itself a
+        diagnostic the grid-search estimator has no equivalent of.
+    :param centre_xy: the true rotation centre implied by this frame's fitted transform, or
+        ``None`` if too few matches or inliers survived, or the fitted rotation was too close to
+        zero for the centre to be numerically recoverable (a near-identity rotation's fixed point
+        is ill-conditioned — see the module docstring's ``(I - R) c = t`` derivation).
+    :param inlier_count: RANSAC inliers. Low relative to :attr:`match_count` means the fitted
+        transform is trusted by few of its own candidate matches.
+    :param match_count: SIFT matches before RANSAC. Low in absolute terms means the frame had
+        little matchable texture against the reference at all.
+    :param residual_rms: RMS reprojection error of the inlier matches under the fitted transform,
+        in pixels. High alongside a high inlier count means the fit is systematically loose, not
+        merely short of data.
+    """
+
+    angle_deg: float
+    fitted_angle_deg: float
+    centre_xy: tuple[float, float] | None
+    inlier_count: int
+    match_count: int
+    residual_rms: float
+
+
+@dataclass(frozen=True, slots=True)
+class SiftRansacCentreEstimate:
+    """Rotation-centre offset from image centre, estimated by SIFT + RANSAC per frame and
+    combined by median across frames that produced a usable estimate.
+
+    :param offset_xy: ``(dx, dy)`` in pixels, same contract as
+        :attr:`RotationCentreEstimate.offset_xy` — the true rotation centre is the image centre
+        plus this offset. ``None`` if no frame produced a usable estimate.
+    :param per_frame: one :class:`SiftRansacFrameEstimate` per input frame, in input order —
+        the diagnostic this method exists to provide, unlike the grid search's single number.
+    """
+
+    offset_xy: tuple[float, float] | None
+    per_frame: tuple[SiftRansacFrameEstimate, ...]
+
+    @property
+    def usable_frame_count(self) -> int:
+        return sum(1 for frame in self.per_frame if frame.centre_xy is not None)
+
+
+def _rotation_centre_from_euclidean_transform(
+    transform: EuclideanTransform,
+) -> tuple[float, float] | None:
+    """Solve for the fixed point of a fitted rigid transform: ``c = R @ c + t`` rearranges to
+    ``(I - R) @ c = t``. Near a zero rotation, ``I - R`` is near-singular — a pure translation has
+    no well-defined centre at all — so this returns ``None`` rather than a numerically unstable
+    answer, exactly the discipline the coarse-to-fine search's ``NaN`` guard applies for the same
+    reason (module docstring, and CLAUDE.md Rule 5: no field should report a number the arithmetic
+    behind it cannot support).
+    """
+    rotation = np.array(
+        [
+            [np.cos(transform.rotation), -np.sin(transform.rotation)],
+            [np.sin(transform.rotation), np.cos(transform.rotation)],
+        ]
+    )
+    identity_minus_rotation = np.eye(2) - rotation
+    if abs(np.linalg.det(identity_minus_rotation)) < 1e-9:
+        return None
+    centre = np.linalg.solve(identity_minus_rotation, np.asarray(transform.translation))
+    return (float(centre[0]), float(centre[1]))
+
+
+def estimate_rotation_centre_sift_ransac(
+    reference: FloatArray,
+    frames: list[FloatArray],
+    angles_deg: list[float],
+    *,
+    min_matches: int = 8,
+    residual_threshold: float = 3.0,
+    max_trials: int = 2000,
+    rng: int = 0,
+) -> SiftRansacCentreEstimate:
+    """Find the ``(dx, dy)`` offset of the true rotation centre from the image centre, by SIFT
+    keypoint matching and RANSAC — the method Korshunov et al. 2025 publish for XPL/PPL
+    registration on this same dataset family (module docstring). See CLAUDE.md Rule 10.
+
+    :param reference: the frame at angle 0 (or whatever angle the others' ``angles_deg`` are
+        relative to). SIFT keypoints are detected here once and matched against every frame.
+    :param frames: the other frames in the series, same shape as ``reference``.
+    :param angles_deg: nominal angle of each entry in ``frames``, relative to ``reference`` —
+        used only as a diagnostic comparison against the independently fitted
+        :attr:`SiftRansacFrameEstimate.fitted_angle_deg`, never to constrain the fit. Unlike
+        :func:`estimate_rotation_centre`, this method does not need the angle to be tractable —
+        knowing it only sharpens the diagnostic.
+    :param min_matches: fewest SIFT matches (and RANSAC inliers) required to trust a frame's
+        transform. Below this, the frame contributes ``centre_xy=None`` rather than a fit RANSAC
+        found from too little evidence to mean anything.
+    :param residual_threshold: RANSAC's own inlier/outlier cutoff, in pixels of reprojection
+        error under a candidate transform.
+    :param max_trials: RANSAC's own trial cap. `skimage.measure.ransac`'s early-stopping
+        (``stop_probability``) is left at its default, so the search is not artificially
+        truncated for a genuinely hard frame.
+    :param rng: seed passed straight to :func:`skimage.measure.ransac`'s own ``rng`` argument.
+        SIFT itself draws no randomness; RANSAC's sample selection does, and leaving it unseeded
+        is exactly the kind of missing tie-break the grid-search estimator's non-reproducibility
+        finding (module docstring) turned out to hinge on. Fixed by default so two calls with
+        identical input are bit-for-bit identical — the determinism test this module requires of
+        either estimator before any offset from it is quoted.
+
+    :raises ValueError: if ``frames`` and ``angles_deg`` disagree in length, or ``frames`` is
+        empty — the same contract as :func:`estimate_rotation_centre`.
+    """
+    if len(frames) != len(angles_deg):
+        raise ValueError(
+            f"{len(frames)} frames but {len(angles_deg)} angles — one nominal angle per frame "
+            "is required for the diagnostic comparison, even though the fit itself does not "
+            "need it."
+        )
+    if len(frames) == 0:
+        raise ValueError("cannot estimate a rotation centre from zero frames")
+
+    reference_sift = SIFT()
+    reference_sift.detect_and_extract(np.asarray(reference, dtype=np.float64))
+    # SIFT reports keypoints as (row, col); this module's (x, y) convention throughout is
+    # (col, row) — image_centre above is built from (width, height), i.e. (x, y). Flipping here,
+    # once, is cheaper and less error-prone than carrying the wrong axis order through the fit.
+    reference_keypoints_xy = reference_sift.keypoints[:, ::-1]
+
+    per_frame: list[SiftRansacFrameEstimate] = []
+    centres: list[tuple[float, float]] = []
+    for angle, frame in zip(angles_deg, frames, strict=True):
+        frame_sift = SIFT()
+        frame_sift.detect_and_extract(np.asarray(frame, dtype=np.float64))
+        frame_keypoints_xy = frame_sift.keypoints[:, ::-1]
+
+        if len(reference_keypoints_xy) < 2 or len(frame_keypoints_xy) < 2:
+            per_frame.append(SiftRansacFrameEstimate(angle, float("nan"), None, 0, 0, float("nan")))
+            continue
+
+        matches = match_descriptors(
+            reference_sift.descriptors, frame_sift.descriptors, cross_check=True
+        )
+        if len(matches) < min_matches:
+            per_frame.append(
+                SiftRansacFrameEstimate(angle, float("nan"), None, 0, len(matches), float("nan"))
+            )
+            continue
+
+        src = reference_keypoints_xy[matches[:, 0]]
+        dst = frame_keypoints_xy[matches[:, 1]]
+        transform, inliers = ransac(
+            (src, dst),
+            EuclideanTransform,
+            min_samples=2,
+            residual_threshold=residual_threshold,
+            max_trials=max_trials,
+            rng=rng,
+        )
+        if transform is None or inliers is None or inliers.sum() < min_matches:
+            inlier_count = 0 if inliers is None else int(inliers.sum())
+            per_frame.append(
+                SiftRansacFrameEstimate(
+                    angle, float("nan"), None, inlier_count, len(matches), float("nan")
+                )
+            )
+            continue
+
+        residual_rms = float(np.sqrt(np.mean(transform.residuals(src[inliers], dst[inliers]) ** 2)))
+        centre_xy = _rotation_centre_from_euclidean_transform(transform)
+        fitted_angle_deg = float(np.degrees(transform.rotation))
+        per_frame.append(
+            SiftRansacFrameEstimate(
+                angle, fitted_angle_deg, centre_xy, int(inliers.sum()), len(matches), residual_rms
+            )
+        )
+        if centre_xy is not None:
+            centres.append(centre_xy)
+
+    if not centres:
+        return SiftRansacCentreEstimate(offset_xy=None, per_frame=tuple(per_frame))
+
+    image_centre = np.array([reference.shape[1] / 2.0, reference.shape[0] / 2.0])
+    median_centre = np.median(np.asarray(centres), axis=0)
+    offset = median_centre - image_centre
+    return SiftRansacCentreEstimate(
+        offset_xy=(float(offset[0]), float(offset[1])), per_frame=tuple(per_frame)
+    )

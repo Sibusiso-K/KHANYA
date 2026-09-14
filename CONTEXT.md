@@ -103,12 +103,20 @@ is missing — **the red test list is the backlog**, deliberately.
 
 **2026-09-14 update — read this line first, then the historical narrative below.** P1–P5 have all
 now run at least once (P5 with a real, escalated non-reproducibility finding —
-`experiments/010-s3test03-masked-rerun/README.md`). **The current next action is Workstream A/B of
-`docs/10-2026-09-14-literature-and-brief-plan.md`: `docs/09-brief-compliance.md` is now the
-requirements-traceability ledger** (`docs/07-audit-prompt.md:258` asked for one), and the stale
-`reports/benchmark_s1_patches.json` (0.3295) needs re-caching against the current checkpoint to
-show its real score (0.7116) — blocked on `best.pt`, not in this repo. The paragraphs below are the
-detailed history of how P1–P5 got here and remain accurate as history; they are not re-litigated.
+`experiments/010-s3test03-masked-rerun/README.md`). Workstreams A and I of
+`docs/10-2026-09-14-literature-and-brief-plan.md` are done: `docs/09-brief-compliance.md` is now the
+requirements-traceability ledger (`docs/07-audit-prompt.md:258` asked for one); `CLAUDE.md` carries
+the brief and a literature-derived Rule 10. **A second registration estimator,
+`reefprint.acquire.registration.estimate_rotation_centre_sift_ransac` (SIFT + RANSAC, the published
+method per Rule 10), is built and validated on synthetic data (6 new tests, `tests/test_registration.py`)
+but not yet run against the real S3 v2 archive** — that is the next action on P5 (Workstream G step
+2 of the plan): run it on the same five sections `experiments/010` found the grid search
+non-reproducible on, via a new Kaggle kernel (`experiments/011-...`), reusing the already-uploaded
+`lethabomh14/lumenstone-s3-v2-reefprint` dataset. Separately, **the stale
+`reports/benchmark_s1_patches.json` (0.3295) still needs re-caching** against the current checkpoint
+to show its real score (0.7116) — blocked on `best.pt`, not in this repo, and on Sibusiso supplying
+it (not yet asked — pending confirmation). The paragraphs below are the detailed history of how
+P1–P5 got here and remain accurate as history; they are not re-litigated.
 
 **2026-09-12 — the next action is tracked on [`WORKBOARD.md`](WORKBOARD.md) §3, queue P1 → P5.**
 D1 and D2 are closed (ADR-0004, ADR-0005). **P1 — the OPC UA advisory server — shipped the same
@@ -456,7 +464,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **339 passed, 4 deselected**. Anything less is a regression, not a quirk.
+Expect **345 passed, 4 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf

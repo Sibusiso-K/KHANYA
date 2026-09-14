@@ -22,6 +22,77 @@ it is a press release.
 
 ---
 
+## 2026-09-14 — session 28 · built the published SIFT+RANSAC registration estimator, per Rule 10
+
+### Attempted
+
+Session 27 wrote Rule 10 (check the published method before inventing one) into `CLAUDE.md`,
+motivated directly by `experiments/010`'s finding that the bespoke grid-search registration
+estimator is not reproducible run to run on real data. This session applies the rule to the case
+that motivated it: build Korshunov et al. 2025's published registration method — SIFT keypoint
+matching + a RANSAC-fitted rigid transform — as a second estimator, and validate it the same way
+the first one was validated, before running it on the real archive.
+
+### Worked
+
+- **`reefprint.acquire.registration.estimate_rotation_centre_sift_ransac`** — for each frame,
+  SIFT keypoints are matched against the reference frame, a RANSAC-fitted `EuclideanTransform`
+  (rotation + translation, no scale — appropriate for a rigid rotation) gives that frame's
+  independent estimate of the true rotation centre by solving for the transform's fixed point
+  (`c = R c + t` rearranges to `(I - R) c = t`), and the per-frame estimates are combined by
+  median. No new dependency — `scikit-image` (BSD-3-Clause) already declares `SIFT`,
+  `match_descriptors` and `ransac`.
+- **Deterministic by construction, unlike the estimator it complements.** SIFT itself draws no
+  randomness; `skimage.measure.ransac`'s sample selection does, and it takes an `rng` argument
+  that was previously left to its own unseeded default in every reference I checked online —
+  seeding it (`rng=0` by default) was the one-line fix the grid search's own missing tie-break
+  rule needed and did not get. Confirmed directly: three repeated calls on identical synthetic
+  input return bit-for-bit identical `offset_xy` and per-frame diagnostics.
+- **Diagnosable per frame, which the grid search is not.** Each `SiftRansacFrameEstimate` carries
+  `inlier_count`, `match_count`, `residual_rms`, and the independently fitted `fitted_angle_deg`
+  compared against the frame's known nominal angle — so a bad frame can be identified and reasoned
+  about, rather than only contributing silently to one combined number.
+- **Validated on synthetic data**, mirroring the existing suite's own leg-(a) discipline
+  (`tests/test_registration.py`, 6 new tests): recovers a known 8px/-5px off-centre offset to
+  well under a pixel; a correctly-centred negative control reads within a pixel of zero; per-frame
+  fitted angles agree with known nominal angles to within a degree with ≥8 inliers each; bit-for-
+  bit determinism across repeated calls; refuses mismatched/empty input with the same contract as
+  the existing estimator; and a frame sharing no structure with the reference correctly reports
+  `centre_xy=None` rather than fabricating a number (Rule 1's discipline, applied at the seam
+  where SIFT+RANSAC could otherwise return a low-confidence fit indistinguishable from a good one).
+- Suite: **345 passed, 4 deselected** (+6). `CONTEXT.md` §4 and §7 and `WORKBOARD.md`'s two count
+  lines updated in the same commit — the doc-count guard caught the stale 339 immediately, exactly
+  what it is for.
+
+### Did not work
+
+Nothing failed. `ruff check` initially flagged two unused `image_centre` locals in the new tests
+(left over from an earlier draft that computed `true_centre` relative to it) — removed.
+
+### Learned
+
+The synthetic test fixture already in this file (`_synthetic_field`: a flat noise field with 10
+sparse blobs) does not give SIFT enough distinctive local structure to match reliably — it was
+built for pixel correlation, a different kind of signal. A new fixture (`_sift_texture`: ~50 blobs
+of varying radius and intensity) was needed specifically for SIFT's keypoint detector. Worth
+remembering before reusing a synthetic fixture across estimators that work on genuinely different
+principles.
+
+### Left open
+
+- **Not yet run against the real S3 v2 archive.** The next action: a new Kaggle kernel
+  (`experiments/011-...`, following the `007`–`010` pattern) running this estimator on the same
+  five real sections `experiments/010` found the grid search non-reproducible on, reporting its
+  own determinism check on real data and comparing its offsets and per-frame diagnostics against
+  the grid search's.
+- Per Workstream G: if this estimator also disagrees or fails determinism on real data, the grid
+  search's own fix (pinned thread counts, a tie-break rule, a landscape diagnostic) is still
+  needed and has not been started.
+- Whether to promote this into the "official" P5 estimator, keep both, or use disagreement between
+  them as its own diagnostic is not yet decided — deferred until real-data results exist.
+
+---
+
 ## 2026-09-14 — session 27 · anchored the brief and a literature pass in `CLAUDE.md`; found the S1 benchmark number was stale
 
 ### Attempted

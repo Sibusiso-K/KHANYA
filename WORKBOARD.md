@@ -6,10 +6,10 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-14 — **brief and literature anchored in `CLAUDE.md`**; stale S1 benchmark number identified (0.3295 was a stale cached-prediction artefact, real figure 0.7116); ledger built at `docs/09-brief-compliance.md` |
+| **Last updated** | 2026-09-14 — **brief and literature anchored in `CLAUDE.md`**; stale S1 benchmark number identified (0.3295 was a stale cached-prediction artefact, real figure 0.7116); ledger built at `docs/09-brief-compliance.md`; **SIFT+RANSAC registration estimator added (Rule 10), validated on synthetic data, not yet run on the real archive** |
 | **Days to final** | **17** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
-| **REEFPRINT suite** | **339 passed, 4 deselected** — re-run and verified 2026-09-13 (+2 for the roi_mask feature's tests) |
+| **REEFPRINT suite** | **345 passed, 4 deselected** — re-run and verified 2026-09-14 (+6 for the SIFT+RANSAC estimator's tests) |
 | **KHANYA suite** | 87 passing (reported by main's audit; not re-run this session) |
 
 **Detail lives elsewhere, and this file says which of it to trust:**
@@ -136,7 +136,7 @@ unchanged. Never by copying code across branches.**
 |---|---|---|
 | Owns | Physics, measurement, trust layer, `integrate`, `heads` | Segmentation model, dashboard, modal mineralogy |
 | Person | **Lethabo** | **Sibusiso** |
-| State | 314 tests, CI, 3 ADRs, SBOM | 87 tests, Stitch dashboard, trained model |
+| State | 345 tests, CI, 5 ADRs, SBOM | 87 tests, Stitch dashboard, trained model |
 | Push | `git push khanya main:reefprint` | `git push khanya main` |
 
 **This file is edited on `reefprint` and mirrored to `main` by Sibusiso.** Do not edit it on both
@@ -353,6 +353,21 @@ of engineering work** (a determinism check on the search, a landscape diagnostic
 tie-break rule), not a quick follow-up, and it is the point ADR-0004's "P5 only if time exists"
 condition needs re-checking against.
 
+**2026-09-14 — a second, published estimator added, per Rule 10, before repairing the first.**
+`reefprint.acquire.registration.estimate_rotation_centre_sift_ransac` — SIFT keypoint matching +
+RANSAC-fitted rigid transform, per frame, the method Korshunov et al. 2025 (the LumenStone dataset
+authors) publish for XPL/PPL registration on this same dataset family. Validated on synthetic data
+the same way the grid search was (`tests/test_registration.py`, 6 new tests): recovers a known
+off-centre offset to well under a pixel, a correctly-centred negative control reads near zero,
+per-frame fitted angle agrees with the known nominal angle, and — **the property the grid search
+turned out to lack** — bit-for-bit identical output across repeated calls on identical input,
+because `skimage.measure.ransac`'s `rng` is seeded rather than left to draw from unseeded global
+state. No new dependency (`scikit-image` already declared). **Not yet run against the real S3 v2
+archive** — that is the next action: the same five sections `experiments/010` found the grid
+search non-reproducible on, compared against both the grid search's numbers and this estimator's
+own per-frame diagnostics (inlier count, residual RMS, fitted-vs-nominal angle), which the grid
+search has no equivalent of.
+
 ---
 
 ## 4. Open decisions — Lethabo's call, and the build waits on the first one
@@ -428,7 +443,7 @@ uv sync && uv run ruff check . && uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **339 passed, 4 deselected**. Anything less is a regression, not a quirk.
+Expect **345 passed, 4 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
