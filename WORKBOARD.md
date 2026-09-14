@@ -161,7 +161,7 @@ the source of truth. Update both in the same commit.**
 | Processability prediction | 🟡 **One head shipped** — fine-chromite entrainment risk, structural proxy with a worst-case bound; real literature constants still needed from the domain lead | `src/reefprint/heads/entrainment.py` | Lethabo |
 | Integrates with controls | ✅ **Real local OPC UA server + separate simulated control client**, acknowledgement/expiry contract demonstrated | ledger §1 row 5 | Lethabo |
 | Real-time | 🟡 **Two REEFPRINT-side stages benchmarked with a spread**, on named hardware — Stokes inversion and the OPC UA round trip. **Segmentation inference latency (KHANYA/main) is still unmeasured**; no end-to-end real-time claim exists yet | ledger §1 row 4 | Both |
-| Offline demo | 🟢 `reefprint.viz.demo`, now **three panels including the plant-parameter advisory/refusal** (Workstream E, shipped 2026-09-15) — **backup GIF (`experiments/004-backup-video`) still needs regenerating** to show it | ledger §1 row 6 | Lethabo |
+| Offline demo | 🟢 `reefprint.viz.demo`, **three panels including the plant-parameter advisory/refusal**; backup GIF regenerated 2026-09-15 and shows all three | ledger §1 row 6 | Lethabo |
 
 **Judged on:** Innovation · Feasibility · Impact · Technical Execution · Presentation Clarity.
 Winners announced only after MOTT's IP assessment on top-ranked entries; creators receive

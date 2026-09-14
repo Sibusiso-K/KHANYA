@@ -2,10 +2,14 @@
 
 This is the offline fallback recording for the talk. It is generated from the same deterministic
 `reefprint.viz.demo.offline_demo()` scene used by the Week-5 gate, so the recording cannot drift
-from the code that was verified. The two screens are:
+from the code that was verified. The three screens are:
 
-1. the three-panel Stokes/analyser physics gate; and
-2. the explicit refusal, conservative default, and reason.
+1. the three-panel Stokes/analyser physics gate;
+2. the explicit refusal, conservative default, and reason; and
+3. **(added 2026-09-15, Workstream E)** the plant-parameter advisory contract — an advisory
+   applied to a simulated setpoint, then a second, stale advisory explicitly refused, setpoint
+   unchanged. This is CLAUDE.md's brief deliverable ("demonstration of how the model's output can
+   be used to adjust plant parameters"), on screen for the first time.
 
 Generate it on a laptop with the normal project environment:
 

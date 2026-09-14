@@ -3,7 +3,10 @@
     uv run python experiments/004-backup-video/run.py
 
 The output is an animated GIF rather than an MP4 so the backup can be generated on a clean
-laptop without ffmpeg. It contains the physics gate followed by the visible refusal screen.
+laptop without ffmpeg. It contains the physics gate, the visible geometry refusal, and — added
+2026-09-15, Workstream E — the plant-parameter advisory screen: an advisory applied, then a
+second, stale one explicitly refused. Regenerated whenever `offline_demo()`'s scene changes;
+before this session the GIF only knew about the first two screens and silently missed the third.
 """
 
 from __future__ import annotations
@@ -39,7 +42,7 @@ def main() -> int:
         parser.error("--seconds-per-screen must be positive")
 
     demo = offline_demo()
-    screens = [_figure_image(demo.gate), _figure_image(demo.refusal)]
+    screens = [_figure_image(demo.gate), _figure_image(demo.refusal), _figure_image(demo.advisory)]
     # GIF frames share a canvas: preserve the taller refusal, including its reason.
     size = (max(screen.width for screen in screens), max(screen.height for screen in screens))
     padded = []

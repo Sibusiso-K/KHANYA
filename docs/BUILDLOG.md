@@ -101,11 +101,15 @@ published → simulated setpoint moves → stale advisory refused, setpoint unch
 
 ### Left open
 
-- **The backup GIF (`experiments/004-backup-video`) still shows only the old two-panel demo** —
-  needs regenerating to include the advisory panel before it can be trusted as the week-6/
-  Presentation-Clarity fallback.
 - The real, networked OPC UA round trip remains proven only by `tests/test_integrate.py`; nothing
   in this session changes that coverage, by design.
+
+**Follow-up, same day:** the backup GIF was still two screens — `experiments/004-backup-video/run.py`
+only ever rendered `demo.gate` and `demo.refusal`, so it silently missed the new third panel.
+Fixed (`experiments/004-backup-video/`): now renders `demo.advisory` too. Regenerated and viewed
+frame-by-frame — all three screens render correctly, including the setpoint moving 0.0 → 0.62 and
+the explicit refusal text (`fine_chromite_risk = 0.91 arrived 301s old, past its 300s validity
+window`).
 
 ---
 
