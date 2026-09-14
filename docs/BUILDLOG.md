@@ -22,6 +22,44 @@ it is a press release.
 
 ---
 
+## 2026-09-15 — session 31 · widened the backbone licence guard to match the actual model (Workstream F)
+
+### Attempted
+
+`reefprint.segment.backbone.require_permissive_backbone()` permitted only `timm`/Apache-2.0 —
+but KHANYA's real segmentation model (`khanya/main:src/segmentation/model.py`) is
+`torchvision.models.segmentation.deeplabv3_resnet50`. A guard that would refuse the actual build,
+had anyone called it, is a guard nobody trusts.
+
+### Worked
+
+- `PERMITTED_BACKBONES` replaces the single hardcoded pair — `timm`/Apache-2.0 and now
+  `torchvision`/BSD-3-Clause. The check is exact: name **and** licence must both match a known
+  entry, so a caller cannot satisfy it by passing the right name with a guessed licence string
+  (`tests/test_segment.py::test_backbone_licence_check_is_exact_not_just_the_name`).
+- **Read, not assumed**: torchvision's own `LICENSE` (BSD-3-Clause) covers the code and makes no
+  statement about distributed pretrained weights; `DeepLabV3_ResNet50_Weights.DEFAULT`
+  (`COCO_WITH_VOC_LABELS_V1`) is confirmed against torchvision's own model docs to be trained on a
+  COCO subset restricted to the 20 Pascal VOC categories, with the ResNet50 backbone itself
+  pretrained on ImageNet. Neither COCO nor ImageNet publish a blanket redistribution licence for
+  their underlying images. **The architecture is licence-clean; the specific checkpoint is not**,
+  and `SBOM.md`'s checkpoint table now says so as CONDITION, not OK — closing a row that
+  previously read `*(none selected yet)*` while a COCO-pretrained checkpoint was already in use.
+- Suite: 349 → 350 passed, 4 deselected (+1). `CONTEXT.md`/`WORKBOARD.md` counts and
+  `docs/09-brief-compliance.md` updated in the same commit.
+
+### Left open
+
+- **The checkpoint itself is not yet pre-uploaded as a pinned Kaggle dataset.** Training kernels
+  run `enable_internet: false`, so `DeepLabV3_ResNet50_Weights.DEFAULT` would fail at model
+  construction on Kaggle as things stand — this blocks J0/J1/J2 (Workstream C) starting, separate
+  from the S1/S2 data upload Sibusiso was asked for.
+- The checkpoint's permission-chain caveat is recorded, not resolved — resolving it (a written
+  clearance, or a decision to accept the risk and say so in the submission) is a domain-lead call,
+  not a code fix.
+
+---
+
 ## 2026-09-15 — session 30 · wired the plant-parameter advisory demo into the offline demo (Workstream E)
 
 ### Attempted

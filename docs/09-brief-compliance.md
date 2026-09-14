@@ -71,6 +71,19 @@ appropriate."* An explicit grant with a citation condition, not an OSI licence �
 **A skill (as in an AI coding assistant's packaged instruction set) is a development-time tool, not
 a dependency. It enters `SBOM.md` only if its code ships in the delivered system.**
 
+**Workstream F, backbone guard widened 2026-09-15.**
+`reefprint.segment.backbone.require_permissive_backbone()` previously permitted only
+`timm`/Apache-2.0, while KHANYA's actual model (`khanya/main:src/segmentation/model.py`) is
+`torchvision.models.segmentation.deeplabv3_resnet50` — a guard that would have refused the real
+build had anyone called it. Widened to a `PERMITTED_BACKBONES` mapping including
+`torchvision`/BSD-3-Clause (`src/reefprint/segment/backbone.py`, `tests/test_segment.py`).
+**This checks the library/architecture licence only.** The `DeepLabV3_ResNet50_Weights.DEFAULT`
+checkpoint's own permission chain — COCO (20-class VOC subset) → ImageNet-pretrained ResNet50
+backbone — is **not** cleared by torchvision's BSD-3-Clause code licence and is recorded honestly
+as **CONDITION**, not OK, in `SBOM.md`'s checkpoint table. **Still outstanding**: pre-uploading
+the checkpoint as a pinned Kaggle dataset (sha256 recorded) so `enable_gpu: true` training kernels
+— which run `enable_internet: false` — can construct the model at all.
+
 ## 5. LLM tooling boundary (Workstream H)
 
 - Kaggle's $10/day, $100/month AI quota applies to **Kaggle Benchmarks** (LLM evaluation), not to

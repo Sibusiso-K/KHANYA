@@ -47,7 +47,9 @@ licence here before any weight is used in a graded artefact.
 
 | Checkpoint | Licence | Status |
 |---|---|---|
-| *(none selected yet)* | — | — |
+| `torchvision.models.segmentation.deeplabv3_resnet50` architecture code | BSD-3-Clause | OK — `require_permissive_backbone("torchvision", "BSD-3-Clause")` |
+| `DeepLabV3_ResNet50_Weights.DEFAULT` (`COCO_WITH_VOC_LABELS_V1`) checkpoint | Not a clean single licence — read 2026-09-15 | **CONDITION.** Confirmed against torchvision's own model docs: trained on **a subset of COCO restricted to the 20 Pascal VOC categories**, with the ResNet50 backbone itself pretrained on **ImageNet** (`ResNet50_Weights.IMAGENET1K_V1`). torchvision's own `LICENSE` (BSD-3-Clause) covers the **code**, and — checked directly, not assumed — makes **no statement about the distributed pretrained weights**. Neither COCO nor ImageNet publish their underlying images under a blanket redistribution licence (COCO's own annotations are CC BY 4.0; the images are third-party-photographer copyright via Flickr). **Do not present this checkpoint as licence-clean** — the code is; the weight's own permission chain is not, and this row exists so nobody re-asks the question having forgotten the answer was "unresolved," not "fine." |
+| Kaggle-hosted pin of the above (Workstream F: pre-upload as a private dataset with a pinned sha256, since kernels run `enable_internet: false`) | as above | **Not yet uploaded** — needed before any J0/J1/J2 training kernel can construct the model at all |
 
 ## Shipped — integration
 

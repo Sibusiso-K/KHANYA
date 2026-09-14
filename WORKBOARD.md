@@ -9,7 +9,7 @@ replace the detail — it tells you which detail is still true and what is being
 | **Last updated** | 2026-09-14 — **brief and literature anchored in `CLAUDE.md`**; stale S1 benchmark number identified (0.3295 was a stale cached-prediction artefact, real figure 0.7116); ledger built at `docs/09-brief-compliance.md`; **SIFT+RANSAC registration estimator added (Rule 10), validated on synthetic data, not yet run on the real archive** |
 | **Days to final** | **17** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
-| **REEFPRINT suite** | **349 passed, 4 deselected** — re-run and verified 2026-09-14 (+6 for the SIFT+RANSAC estimator's tests) |
+| **REEFPRINT suite** | **350 passed, 4 deselected** — re-run and verified 2026-09-14 (+6 for the SIFT+RANSAC estimator's tests) |
 | **KHANYA suite** | 87 passing (reported by main's audit; not re-run this session) |
 
 **Detail lives elsewhere, and this file says which of it to trust:**
@@ -136,7 +136,7 @@ unchanged. Never by copying code across branches.**
 |---|---|---|
 | Owns | Physics, measurement, trust layer, `integrate`, `heads` | Segmentation model, dashboard, modal mineralogy |
 | Person | **Lethabo** | **Sibusiso** |
-| State | 349 tests, CI, 5 ADRs, SBOM | 87 tests, Stitch dashboard, trained model |
+| State | 350 tests, CI, 5 ADRs, SBOM | 87 tests, Stitch dashboard, trained model |
 | Push | `git push khanya main:reefprint` | `git push khanya main` |
 
 **This file is edited on `reefprint` and mirrored to `main` by Sibusiso.** Do not edit it on both
@@ -443,7 +443,7 @@ uv sync && uv run ruff check . && uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **349 passed, 4 deselected**. Anything less is a regression, not a quirk.
+Expect **350 passed, 4 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf

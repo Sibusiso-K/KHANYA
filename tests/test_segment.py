@@ -47,7 +47,19 @@ def test_trivial_baselines_are_reported_alongside_the_model():
 
 
 def test_backbone_licence_is_permissive():
-    """Gauntlet S3. timm (Apache-2.0), not DINOv3. Architecture and weights checked separately."""
+    """Gauntlet S3. timm (Apache-2.0) and torchvision (BSD-3-Clause) — not DINOv3. Architecture
+    and weights are checked separately (SBOM.md's checkpoint table, not this guard).
+    """
     require_permissive_backbone()
-    with pytest.raises(ValueError, match=r"Apache-2\.0"):
+    require_permissive_backbone("torchvision", "BSD-3-Clause")
+    with pytest.raises(ValueError, match=r"DINOv3"):
         require_permissive_backbone("DINOv3", "non-transferable")
+
+
+def test_backbone_licence_check_is_exact_not_just_the_name():
+    """A caller passing the right name with a wrong or invented licence string must be refused
+    just as loudly as an unlisted name — this cannot be satisfied by guessing a permissive-
+    sounding licence for a backbone actually shipped under a different one.
+    """
+    with pytest.raises(ValueError, match="torchvision"):
+        require_permissive_backbone("torchvision", "MIT")
