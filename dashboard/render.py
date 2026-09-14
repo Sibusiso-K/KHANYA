@@ -189,7 +189,8 @@ _VERDICT_CSS = {
 
 
 def render(image, labels, mean_confidence, result, recommendation,
-           mode_label="Full section, native resolution", elapsed_seconds=None):
+           mode_label="Full section, native resolution", elapsed_seconds=None,
+           opcua_status=None):
     """Render the dashboard for one measured field. Returns an HTML string.
 
     mode_label, elapsed_seconds: which analysis path produced this result
@@ -252,4 +253,5 @@ def render(image, labels, mean_confidence, result, recommendation,
         generated_at=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         mode_label=mode_label,
         elapsed_display=None if elapsed_seconds is None else f"{elapsed_seconds:.1f}",
+        opcua_status=opcua_status,
     )

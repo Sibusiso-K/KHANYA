@@ -19,6 +19,27 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-14 — Codex — live OPC UA publish/refusal and control restyle
+
+**Did:** Wired every Live Field and Full Section result through REEFPRINT's
+real `AdvisoryServer` and separate `SimulatedControlClient`. The dashboard now
+shows the publish event, consumer acknowledgement, or explicit refusal. A
+presenter button arms a stale-record refusal; segmentation refusals also emit
+an expired record so the consumer cannot apply them. Restyled native radio tabs,
+uploader drop zone, tooltip, and focus treatment using the existing tokens.
+
+**Changed:** `dashboard/opcua.py`, `dashboard/app.py`, `dashboard/render.py`,
+`dashboard/templates/khanya.html.jinja`, `requirements.txt`,
+`tests/test_render.py`.
+
+**Blocked on:** This checkout has no Python/Streamlit runtime, LumenStone
+checkpoint, or REEFPRINT source tree installed, so live browser and OPC UA
+execution could not be repeated here.
+
+**Next:** In the integrated demo environment, run one fresh result and one
+armed stale/refusal result, confirming the independent client acknowledgement
+and refusal are visible in the dashboard.
+
 ## 2026-09-14 — Sibusiso (58) — Evidence view verified live, no bug this time
 
 **Did:** Codex shipped `3f3f4cb` ("Add held-out ground truth evidence view")

@@ -186,6 +186,12 @@ body { background:#00131D; color:#E3EAEB; font-family:'Plus Jakarta Sans',sans-s
           <span class="text-on-surface font-bold">{{ mode_label }}</span>
           {% if elapsed_display %}<span> · measured, this run: {{ elapsed_display }}s end to end</span>{% endif %}
         </div>
+        {% if opcua_status %}
+        <div class="rounded-md {% if opcua_status.state == 'applied' %}bg-success-container border-success{% elif opcua_status.state == 'refused' %}bg-warning-container border-warning{% else %}bg-surface-container border-outline{% endif %} border px-3 py-2 font-mono text-[10px] leading-relaxed">
+          <span class="font-bold">OPC UA · {% if opcua_status.state == 'applied' %}PUBLISHED + ACKNOWLEDGED{% elif opcua_status.state == 'refused' %}CONSUMER REFUSED{% else %}UNAVAILABLE{% endif %}</span>
+          <span> · {{ opcua_status.message }}</span>
+        </div>
+        {% endif %}
       </div>
     </div>
 

@@ -38,12 +38,46 @@ UPLOAD_BRIDGE_CSS = """
   max-width: 1720px; margin: 0.85rem auto 1.1rem;
   color: #E3EAEB; font-family: "Segoe UI", sans-serif;
 }
+[data-testid="stRadio"] > label {
+  color: #8CA6AE; font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; margin-bottom: 0.35rem;
+}
+[data-testid="stRadio"] div[role="radiogroup"] {
+  display: flex; gap: 4px; padding: 4px; width: fit-content;
+  background: #000D14; border: 1px solid #1E3E4B; border-radius: 0.5rem;
+}
+[data-testid="stRadio"] div[role="radiogroup"] label {
+  margin: 0; padding: 0.55rem 0.8rem; border: 1px solid transparent;
+  border-radius: 0.3rem; color: #8CA6AE; background: #0B222E;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+[data-testid="stRadio"] div[role="radiogroup"] label:hover {
+  border-color: #194D5C; color: #E3EAEB; background: #102C3B;
+}
+[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
+  color: #E3EAEB; background: #194D5C; border-color: #2EA5BC;
+  box-shadow: 0 0 0 1px rgba(46,165,188,.18);
+}
+[data-testid="stRadio"] div[role="radiogroup"] input {
+  position: absolute; opacity: 0; width: 1px; height: 1px;
+}
 [data-testid="stFileUploader"] label p {
   color: #8CA6AE; font-family: Consolas, monospace;
   font-size: 0.76rem; font-weight: 700; letter-spacing: 0.12em;
 }
 [data-testid="stFileUploaderDropzone"] {
-  background: #071C27; border: 1px dashed #194D5C; border-radius: 0.5rem;
+  background: #071C27; border: 1px dashed #2EA5BC; border-radius: 0.5rem;
+  padding: 1.4rem 1rem; box-shadow: inset 0 0 0 1px rgba(46,165,188,.08);
+  transition: border-color .15s ease, background .15s ease;
+}
+[data-testid="stFileUploaderDropzone"]:hover {
+  background: #0B222E; border-color: #FFB539;
+}
+[data-testid="stFileUploader"] svg { color: #2EA5BC; }
+[data-testid="stTooltipIcon"] { color: #8CA6AE; }
+button:focus, input:focus, [role="radiogroup"] label:focus-within {
+  outline: 2px solid #FFB539 !important; outline-offset: 2px;
 }
 [data-testid="stFileUploaderDropzone"] span,
 [data-testid="stFileUploaderDropzone"] small { color: #8CA6AE; }
@@ -129,6 +163,7 @@ def predict_live_field(image_bytes, checkpoint_key):
 
 landing_slot = st.empty()
 progress_slot = st.empty()
+opcua_slot = st.empty()
 LIVE_FIELD_LABEL = "Live Field Mode — fast, 512×512 field, timed live"
 FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image"
 EVIDENCE_LABEL = "Evidence — held-out S2 test set"
@@ -146,6 +181,16 @@ mode = st.radio(
         "view over known held-out S2 test images and never uses live uploads."
     ),
 )
+
+if "force_stale_opcua" not in st.session_state:
+    st.session_state.force_stale_opcua = False
+stale_demo = st.button(
+    "TRIGGER STALE OPC UA REFUSAL",
+    help="The next live result is emitted with an expired validity window so the separate consumer must refuse it.",
+)
+if stale_demo:
+    st.session_state.force_stale_opcua = True
+    st.info("Stale refusal armed for the next live result. Upload or re-run the analysis to fire it.")
 
 def show_landing(reason=None):
     with landing_slot.container():
@@ -206,6 +251,7 @@ else:
         from src import modal
         from src.advisor import advise
         from src.segmentation import lumenstone as ls
+        from dashboard.opcua import publish_result
 
         # Changing a checkpoint must invalidate both model and prediction caches.
         stat = CKPT.stat()
@@ -250,11 +296,25 @@ else:
 
         result = modal.analyse(labels, ls.CLASS_NAMES, refine=True)
         recommendation = advise(result, mean_confidence)
+        opcua_values = {"model_confidence": float(mean_confidence * 100.0)}
+        if result.liberation is not None:
+            opcua_values["association_index"] = float(result.liberation * 100.0)
+        segmentation_refused = result.liberation is None
+        stale_requested = st.session_state.pop("force_stale_opcua", False)
+        opcua_status = publish_result(
+            opcua_values,
+            stale=stale_requested or segmentation_refused,
+            stale_reason=("segmentation refusal" if segmentation_refused
+                          else "presenter demonstration"),
+            on_event=lambda message: opcua_slot.info(message),
+        )
         html = render.render(image, labels, mean_confidence, result, recommendation,
-                             mode_label=mode_label, elapsed_seconds=elapsed)
+                             mode_label=mode_label, elapsed_seconds=elapsed,
+                             opcua_status=opcua_status)
     except (ImportError, OSError, RuntimeError, ValueError) as exc:
         show_landing(f"Analysis could not complete: {exc}")
     else:
         landing_slot.empty()
         progress_slot.empty()
+        opcua_slot.empty()
         st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)

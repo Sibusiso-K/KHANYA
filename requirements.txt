@@ -19,3 +19,4 @@ streamlit
 # dashboard does not start AT ALL. Verified working with 1.6.0.
 starlette>=1.6
 tqdm
+asyncua>=1.1  # REEFPRINT OPC UA transport; general-purpose plant IT hardware

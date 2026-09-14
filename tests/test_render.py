@@ -122,6 +122,25 @@ def test_live_field_mode_shows_its_measured_elapsed_time_not_a_fabricated_one():
     assert "end to end" not in without_timing  # no fabricated number when unmeasured
 
 
+def test_result_renders_opcua_publish_acknowledgement_and_refusal_states():
+    import numpy as np
+    from PIL import Image
+    from src.advisor import advise
+    from src.modal import ModalResult
+    from dashboard.opcua import PublishStatus
+
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.8, 0.95, 1, 64)
+    recommendation = advise(result, 0.95)
+    image = Image.new("RGB", (8, 8))
+    labels = np.ones((8, 8), dtype=np.int32)
+    applied = render.render(image, labels, 0.95, result, recommendation,
+                            opcua_status=PublishStatus("applied", "consumer acknowledged and applied"))
+    assert "OPC UA · PUBLISHED + ACKNOWLEDGED" in applied
+    refused = render.render(image, labels, 0.95, result, recommendation,
+                            opcua_status=PublishStatus("refused", "consumer refused stale record"))
+    assert "OPC UA · CONSUMER REFUSED" in refused
+
+
 def test_progress_render_marks_a_real_tile_and_reports_measured_state():
     import numpy as np
     from PIL import Image
