@@ -4,7 +4,12 @@ numpy
 pillow
 scikit-learn
 scipy          # connected components for liberation; src/modal.py falls back if absent
-opencv-python  # marker-controlled watershed for particle separation; falls back if absent
+opencv-python-headless  # marker-controlled watershed for particle separation; falls back if
+                        # absent. -headless, not opencv-python: this project never opens a
+                        # GUI window, and this host's environment already had -headless
+                        # installed rather than what this file previously named (SBOM.md) -
+                        # naming it explicitly avoids the unnecessary GUI-toolkit dependency
+                        # the plain package pulls in.
 matplotlib
 pandas
 streamlit
