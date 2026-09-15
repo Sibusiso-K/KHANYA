@@ -28,6 +28,7 @@ Khumalo, Lethabo Hoaeane, Ipeleng Modise (Team Sonar). Current plan of record:
 |---|---|
 | [`JUDGE-READY-WORKPLAN.md`](JUDGE-READY-WORKPLAN.md) | **Active presentation-readiness backlog:** Mintek/category fit, exact CV model, real-time live demo contract, industry applicability, judging criteria and production-readiness gates |
 | [`WORKBOARD.md`](WORKBOARD.md) | **Read this first.** The shared index and scoreboard — which of the other status docs to trust, who owns what, the open decisions. Authored on `reefprint`, mirrored here; edit it there, not on both branches |
+| [`reports/ADVERSARIAL-CRITIQUE-2026-09-15.md`](reports/ADVERSARIAL-CRITIQUE-2026-09-15.md) | **The case against this submission.** Where the brief is missed, the six questions a judge can ask that we currently cannot answer, and the unexamined risks (AI authorship, MOTT, contributor trail). Read before rehearsing |
 | [`reports/TECHNICAL-REVIEW-2026-09-12.md`](reports/TECHNICAL-REVIEW-2026-09-12.md) | Full adversarial technical review: evidence gaps, proposed redesign, accuracy report template, integration, IP/licensing and the 19-day submission plan — recommendations, not implemented fixes |
 | [`ENDGAME.md`](ENDGAME.md) | **The plan of record** — who we present to, how we are scored, what is left to build, who builds it |
 | [`STATUS.md`](STATUS.md) | What exists, what doesn't, what to build next — the current snapshot |

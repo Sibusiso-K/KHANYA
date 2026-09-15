@@ -19,6 +19,61 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-15 — Sibusiso (60) — the case against our own submission
+
+**Did:** Sibusiso asked for a hostile read of the project against Mintek's
+Problem 3 brief, explicitly "show no mercy", on the grounds that most teams
+will build something and Team Sonar needs a defensible differentiator.
+Published as `reports/ADVERSARIAL-CRITIQUE-2026-09-15.md` and linked from
+`README.md`'s doc index above the 12 September technical review.
+
+**The findings that matter most, none of which the 12 September review
+raised:**
+
+1. **Magnetite IoU 0.000 is not just a missing class - it is a failure in the
+   exact abundance regime we are pitching for.** Magnetite is 1.84% of train
+   pixels. UG2's base-metal sulphides are under 1 vol%. The payload we propose
+   to find in Bushveld ore is rarer than the one class the model completely
+   failed to find. The three working classes are 5%, 10% and 58% of pixels.
+2. **The dataset authors' own published benchmark is 0.88** (PSPNet+ResNet18,
+   S1+S2, `DATA-SOURCES.md` section 1) against our 0.5725. A competitor who
+   pip-installs `petroscope` and runs their baseline reports a number 54%
+   higher. We have a real answer; it is second-order and loses on a stage
+   unless we raise it first, ourselves.
+3. **Three of four advisor thresholds are unsourced placeholders** and the
+   refusal beat the talk is built around fires on one of them.
+4. **`LIBERATION_MARGIN = 0.335` spans 16.5-83.5%** around the floor, and is
+   calibrated leave-one-out on the same 12 sections used for evaluation. The
+   hostile read - "you are not abstaining selectively, you are so uncertain you
+   cannot answer half the time" - is fair.
+5. **The role mapping (`pyrrhotite -> reject` etc.) may violate the project's
+   own Rule 6.** It is a normative mineralogy judgement written from literature
+   by an AI agent with no metallurgist sign-off, and it is the foundation of
+   the entire decision layer.
+6. **The decision-gap headline is weaker than stated**: it compares our own
+   rule against itself on two masks, effective n is unknown (no locality
+   manifest), and topology repair confounds both sides.
+7. **AI authorship vs MOTT.** Every commit says `Co-Authored-By: Claude`. We do
+   not know whether the hackathon has an AI-assistance rule. That is the
+   highest-value unknown in the project.
+8. **Ipeleng Modise is named in `README.md` with no attributable contribution
+   anywhere in this repository**, and MOTT awards invention credits per person.
+
+**Also recorded in the document:** a correction to advice I gave earlier the
+same day. I had recommended leading the pitch with "better segmentation does
+not produce better plant decisions"; finding 6 is why that was too quick.
+
+**Changed:** `reports/ADVERSARIAL-CRITIQUE-2026-09-15.md` (new), `README.md`.
+
+**Blocked on:** findings 7 and 8 need Sibusiso, not code. Finding 5 needs a
+domain sign-off or an explicit "this mapping is a configurable assumption"
+statement. Findings 1-4 and 6 are answerable by framing and preparation.
+
+**Next:** Sibusiso's stated need is now understanding rather than more
+features - "I don't fundamentally understand it and that is bad". Nothing in
+the remaining sixteen days matters more than the team being able to answer the
+six questions in section 5 of the critique cold, without notes.
+
 ## 2026-09-15 — Sibusiso (59) — OPC UA integration verified live: real bug found, but not in the code
 
 **Did:** Codex shipped `d26a410` ("Wire dashboard results to OPC UA advisory
