@@ -164,6 +164,29 @@ abundance figures (1.58%, 1.84%, 0.792%) were circulating under one name; **0.79
 share — the number the model was actually scored against — and is the one that answers "have you
 tested below 1% abundance" honestly** (yes, and it failed completely there).
 
+**Follow-up, same thread: Sibusiso raised four process questions before writing this into
+`HANDOVER.md`.** Resolved:
+
+1. **Reproducibility of 0.7116**: `checkpoints/` is gitignored on both branches, so a fresh clone
+   of `main` cannot currently reproduce the headline number. **Recommended Git LFS on `main`**,
+   because it is the option that stays tied to the commit history — ADR-0003/Rule 8's argument
+   that the commit history *is* the MOTT originality defence breaks down for the one artifact the
+   headline number depends on if that artifact only exists as an external link. Kaggle hosting
+   continues in parallel for kernel-mounting (a different job — kernels can't use LFS natively and
+   need a dataset mount regardless of this decision).
+2. **`checkpoint_sha` + `generated_at` on every generated report**: agreed as a principle.
+   `reefprint` already has the generalised version — `reefprint.quantity.Quantity` refuses to
+   construct without a non-empty `source`, contagiously, through arithmetic. Worth stating in the
+   writeup as evidence the two branches converged on the same discipline independently.
+3. **Day-20 freeze vs an unresolved checkpoint-distribution problem**: agreed — settle
+   reproducibility first. Once it is, the same mechanism (LFS + recorded sha256) covers whatever
+   checkpoint J0/J1/J2 produces; the freeze then buys a locked, reproducible artifact, not just a
+   number.
+4. **Joint rehearsal slot**: **not this week** — revisit once J0/J1/J2 results exist. Rehearsing
+   the current draft risks practicing a version of the talk that is about to change.
+
+Full thread: [issue #5](https://github.com/Sibusiso-K/KHANYA/issues/5).
+
 ---
 
 ## 1. Lanes — who owns what

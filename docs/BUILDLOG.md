@@ -22,6 +22,43 @@ it is a press release.
 
 ---
 
+## 2026-09-15 — session 36 · four process questions from Sibusiso, before he writes issue #5 into HANDOVER.md
+
+### Attempted
+
+Sibusiso's follow-up on issue #5 raised four real questions rather than closing the thread:
+checkpoint reproducibility, a shared report-provenance schema, what the day-20 freeze actually
+buys given an unresolved checkpoint-distribution problem, and a joint rehearsal slot.
+
+### Worked
+
+- **Recommended Git LFS for `checkpoints/` on `main`**, and said why: it is the option that keeps
+  the checkpoint tied to the commit history, which is the actual mechanism ADR-0003/Rule 8 already
+  rely on as the MOTT originality defence. An external link (Kaggle, a plain download URL) breaks
+  that chain for the one artifact the headline accuracy number depends on. Kaggle hosting is not
+  wasted work either way — it answers a different question (kernel mounting under
+  `enable_internet: false`), not the judging-reproducibility one.
+- **Agreed to `checkpoint_sha` + `generated_at` as a shared convention**, and pointed out
+  `reefprint` already has the generalised version of the same idea: `reefprint.quantity.Quantity`
+  refuses to construct without a non-empty, contagious `source`. Worth stating in the eventual
+  writeup as evidence the two branches converged on the same discipline independently rather than
+  by copying — which is exactly the kind of thing that helps under MOTT's two-clean-histories
+  originality defence.
+- **Settled the ordering**: reproducibility (Q1) before scheduling any GPU time for J0/J1/J2,
+  since an unresolved distribution problem on the current checkpoint is the same problem on a
+  future one, just later.
+- **Rehearsal deferred, not declined** — asked the user directly rather than inventing a date;
+  answer was to hold off until J0/J1/J2 results exist, so there is something new to rehearse
+  rather than a draft about to change.
+
+### Left open
+
+- Sibusiso to actually decide and implement the LFS (or alternative) migration on `main` — this
+  session can recommend but not execute across the branch boundary (ADR-0003).
+- The rehearsal slot itself, once data lands.
+
+---
+
 ## 2026-09-15 — session 35 · sourced LumenStone V1 directly, closing the one open item left in session 34
 
 ### Attempted
