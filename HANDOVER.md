@@ -19,6 +19,66 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-15 — Sibusiso (66) — ask 4 settled: the real gap is worse than we were quoting
+
+**Did:** Downloaded LumenStone **S1 v1** (534,897,733 bytes, published 535 MB,
+sha256 `80940fb7...`, unpacks to exactly 59 train + 16 test) and settled issue #5
+ask 4 by content hashing rather than by filename.
+
+**Membership, proven:** all 16 v1 test images are **byte-identical** (sha256 over
+file bytes) to v2's `test_01`-`test_16`. **Zero** appear in v2's 64-image train
+split. That second check was not part of the original ask and is the one that
+mattered: our checkpoint trains on v2 train, so a v1 test image sitting there
+would have made the comparison leakage-contaminated. It is clean. The positional
+guess was right; it is now proven instead of assumed.
+
+**The like-for-like number, void-border protocol:**
+
+| | mean IoU | void-border | gap to published 0.8506 |
+|---|---:|---:|---:|
+| **v1 protocol, 16 images** | **0.6881** | **0.7224** | **-0.1282** |
+| our v2 test, 20 images | 0.7116 | 0.7481 | -0.1025 |
+
+**The gap is WORSE on the correct protocol.** The four extra v2 test images were
+flattering us by **+0.0257**. Every previous statement of the S1 gap used the
+20-image figure, which is not what the published number was measured on. **Use
+-0.1282 whenever 0.8373 is in the sentence.**
+
+**We match published on background (-0.0015) and BEAT it on bornite (+0.0020).**
+Pyrite and chalcopyrite are within 0.045. Three classes carry the whole gap.
+
+**Correcting entry 63 / `ca2e02f`:** "tennantite is 60.8% of the S1 gap" is true
+of the 20-image set. On the correct protocol it is **47.1%**, and **galena rises
+from 14.3% to 28.6%**. Together **75.7%**. The framing survives - the gap is
+concentrated in a few optically ambiguous phases, not spread across the model -
+but the figure 60.8% must not be repeated.
+
+**Galena joining tennantite strengthens the low-contrast reading.** Both are grey
+sulphides sitting close in reflectance to their neighbours, as magnetite does to
+the resin on S2. The classes we match or beat (bornite, pyrite, chalcopyrite) are
+the strongly coloured ones. Published detects all of them (tennantite 0.7601,
+galena 0.7464, magnetite 0.650), so the limit stays ours, not the modality's -
+still a training-budget claim, still what J0/J1/J2 tests. **The pre-registered
+scaling prediction should name galena alongside tennantite and magnetite.**
+
+**Also worth stating plainly:** the published model trained on v1's **59**
+images; ours trained on v2's **64**. More training data, worse result.
+
+**Changed:** `reports/S1-V1-LIKE-FOR-LIKE-2026-09-15.md` (new),
+`reports/benchmark_s1_v1_protocol.json` (new),
+`reports/s1_v1_v2_content_match.json` (new).
+
+**Blocked on:** Lethabo - still the A-or-B redistribution call (S1/S2 Kaggle
+upload paused), whether the illumination finding leads the abstention argument,
+and a rehearsal date. Issue #4's two items were both already done on 13 Sept and
+I have said so there.
+
+**Next:** Sibusiso - correct the 60.8% figure wherever it has propagated; LFS
+migration still outstanding. Lethabo - add galena to the pre-registered scaling
+prediction in `docs/11-...`, and note ask 4 is closed with a real number.
+
+---
+
 ## 2026-09-15 — Sibusiso (65) — the advice changes when only the light changes
 
 **Did:** Ran the V1 work Lethabo flagged as mine. It could not be done as

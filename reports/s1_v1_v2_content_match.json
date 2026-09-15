@@ -1,0 +1,98 @@
+[
+  {
+    "v1": "01.jpg",
+    "v2": "test/test_01.jpg",
+    "how": "bytes",
+    "corr": 0.9999971708879809
+  },
+  {
+    "v1": "02.jpg",
+    "v2": "test/test_02.jpg",
+    "how": "bytes",
+    "corr": 0.9999725139285937
+  },
+  {
+    "v1": "03.jpg",
+    "v2": "test/test_03.jpg",
+    "how": "bytes",
+    "corr": 1.0000247017380581
+  },
+  {
+    "v1": "04.jpg",
+    "v2": "test/test_04.jpg",
+    "how": "bytes",
+    "corr": 0.9999820022205487
+  },
+  {
+    "v1": "05.jpg",
+    "v2": "test/test_05.jpg",
+    "how": "bytes",
+    "corr": 0.9999987468584224
+  },
+  {
+    "v1": "06.jpg",
+    "v2": "test/test_06.jpg",
+    "how": "bytes",
+    "corr": 0.9999998976656177
+  },
+  {
+    "v1": "07.jpg",
+    "v2": "test/test_07.jpg",
+    "how": "bytes",
+    "corr": 0.9999627854920645
+  },
+  {
+    "v1": "08.jpg",
+    "v2": "test/test_08.jpg",
+    "how": "bytes",
+    "corr": 0.999990968798934
+  },
+  {
+    "v1": "09.jpg",
+    "v2": "test/test_09.jpg",
+    "how": "bytes",
+    "corr": 1.0000175525763564
+  },
+  {
+    "v1": "10.jpg",
+    "v2": "test/test_10.jpg",
+    "how": "bytes",
+    "corr": 0.9999791889078303
+  },
+  {
+    "v1": "11.jpg",
+    "v2": "test/test_11.jpg",
+    "how": "bytes",
+    "corr": 0.9999775348247574
+  },
+  {
+    "v1": "12.jpg",
+    "v2": "test/test_12.jpg",
+    "how": "bytes",
+    "corr": 1.000005434458362
+  },
+  {
+    "v1": "13.jpg",
+    "v2": "test/test_13.jpg",
+    "how": "bytes",
+    "corr": 1.0000005890329797
+  },
+  {
+    "v1": "14.jpg",
+    "v2": "test/test_14.jpg",
+    "how": "bytes",
+    "corr": 1.0000015042675865
+  },
+  {
+    "v1": "15.jpg",
+    "v2": "test/test_15.jpg",
+    "how": "bytes",
+    "corr": 1.000010776320105
+  },
+  {
+    "v1": "16.jpg",
+    "v2": "test/test_16.jpg",
+    "how": "bytes",
+    "corr": 0.9999958779796411
+  }
+]
