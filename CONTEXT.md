@@ -108,15 +108,19 @@ now run at least once (P5 with a real, escalated non-reproducibility finding —
 requirements-traceability ledger (`docs/07-audit-prompt.md:258` asked for one); `CLAUDE.md` carries
 the brief and a literature-derived Rule 10. **A second registration estimator,
 `reefprint.acquire.registration.estimate_rotation_centre_sift_ransac` (SIFT + RANSAC, the published
-method per Rule 10), is built and validated on synthetic data (6 new tests, `tests/test_registration.py`)
-but not yet run against the real S3 v2 archive** — that is the next action on P5 (Workstream G step
-2 of the plan): run it on the same five sections `experiments/010` found the grid search
-non-reproducible on, via a new Kaggle kernel (`experiments/011-...`), reusing the already-uploaded
-`lethabomh14/lumenstone-s3-v2-reefprint` dataset. Separately, **the stale
-`reports/benchmark_s1_patches.json` (0.3295) still needs re-caching** against the current checkpoint
-to show its real score (0.7116) — blocked on `best.pt`, not in this repo, and on Sibusiso supplying
-it (not yet asked — pending confirmation). The paragraphs below are the detailed history of how
-P1–P5 got here and remain accurate as history; they are not re-litigated.
+method per Rule 10), has now been run against the real S3 v2 archive**
+(`experiments/011-sift-ransac-registration/README.md`) — determinism confirmed on real data,
+close agreement with the grid search on 4/5 sections, and on `S3_test_03` (the section the grid
+search's retracted `FOURTH` verdict came from) an offset consistent with the other four and with
+the naive condition's own verdict. **Not yet a claim** — the next action on P5 is the same visual
+check `experiments/009-s3test03-visual-check/` ran on the grid search's offset, now needed on
+SIFT+RANSAC's. Separately, **the stale `reports/benchmark_s1_patches.json` (0.3295) still needs
+re-caching** against the current checkpoint to show its real score (0.7116) — blocked on
+`best.pt`, S1/S2 data, and LumenStone V1, all asked of Sibusiso in
+[issue #5](https://github.com/Sibusiso-K/KHANYA/issues/5), open as of 2026-09-15. The torchvision
+COCO checkpoint needed for training kernels is pre-staged on Kaggle (`SBOM.md`). The paragraphs
+below are the detailed history of how P1–P5 got here and remain accurate as history; they are not
+re-litigated.
 
 **2026-09-12 — the next action is tracked on [`WORKBOARD.md`](WORKBOARD.md) §3, queue P1 → P5.**
 D1 and D2 are closed (ADR-0004, ADR-0005). **P1 — the OPC UA advisory server — shipped the same

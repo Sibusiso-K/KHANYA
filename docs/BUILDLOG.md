@@ -22,6 +22,55 @@ it is a press release.
 
 ---
 
+## 2026-09-15 — session 32 · SIFT+RANSAC vs the grid search on the real archive: determinism confirmed, `S3_test_03` looks recoverable
+
+### Attempted
+
+Ran the fixed `experiments/011-sift-ransac-registration` kernel to completion — the comparison
+session 29's runtime fix made tractable. ~3 hours wall-clock, CPU only.
+
+### Worked
+
+- **Determinism confirmed on real data.** `S3_test_01` run twice in-process inside the kernel:
+  bit-for-bit identical `offset_xy` and per-frame diagnostics. This is the exact property
+  `experiments/010` proved the grid search does not have, now demonstrated on the estimator built
+  to replace it — the strongest evidence yet that Rule 10's premise was right for this case.
+- **Close agreement on 4 of 5 sections.** `S3_test_01/02/07/12`: grid and SIFT+RANSAC offsets
+  agree to within 3–8 px, and every harmonic verdict matches between the two methods.
+- **`S3_test_03` — the section that mattered most — SIFT+RANSAC's answer fits the pattern the
+  grid search's answer broke.** Grid search: offset (−397, 41), verdict `FOURTH`, already
+  retracted (`WORKBOARD.md` §0 C1, `experiments/009`'s visual check). SIFT+RANSAC: offset
+  (−111, 22) — sitting inside the same tight band ((−91 to −107, 21 to 75)) the other four
+  sections' offsets occupy — verdict `SECOND`, matching what the naive, zero-registration
+  condition on that same section already reads. **Not promoted to a claim**: the same visual
+  check that retracted the grid search's answer on this exact section has not yet been run on
+  this one, and this project has already been burned once by a "plausible-looking" offset here.
+- **A genuine, unexplained-until-now cost finding, reported per Rule 8/9 rather than buried.**
+  Per-section runtime did **not** track frame count: `S3_test_07`/`S3_test_12` (24 frames each)
+  took as long as `S3_test_01`/`S3_test_03` (71-72 frames). The per-frame diagnostics point at the
+  real driver — `match_descriptors(cross_check=True)` is brute-force, quadratic in keypoint
+  count, and `S3_test_03`'s richest frame pair matched **17,074 inliers**. Frame count was capped
+  (`MAX_SIFT_FRAMES`, session 29's fix); keypoint count per frame was not, and turned out to be
+  the actual unbounded dimension. Left unfixed — the current result is usable and a re-run costs
+  another ~3 hours — but recorded in `experiments/011-sift-ransac-registration/README.md` so the
+  next person to touch this estimator does not re-discover it from scratch.
+- Full table, caveats, and the cost analysis: `experiments/011-sift-ransac-registration/README.md`.
+  `WORKBOARD.md` §3 (P5), `CONTEXT.md` §3, and `docs/09-brief-compliance.md` updated in the same
+  session.
+
+### Left open
+
+- **The visual check on SIFT+RANSAC's `S3_test_03` offset** — the actual next action on P5, same
+  method as `experiments/009`.
+- **The grid search's own determinism on real data remains unchecked.** This run only checked
+  SIFT+RANSAC's determinism; whether the grid search's `S3_test_03` answer would reproduce on a
+  repeat run is exactly the question `experiments/010` left open, still open.
+- The keypoint-count cost driver is a real robustness gap in
+  `estimate_rotation_centre_sift_ransac` for future use (a texture-rich real section can make one
+  frame pair's matching arbitrarily expensive) — not fixed this session.
+
+---
+
 ## 2026-09-15 — session 31 · widened the backbone licence guard to match the actual model (Workstream F)
 
 ### Attempted

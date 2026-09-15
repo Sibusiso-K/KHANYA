@@ -6,7 +6,7 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-14 — **brief and literature anchored in `CLAUDE.md`**; stale S1 benchmark number identified (0.3295 was a stale cached-prediction artefact, real figure 0.7116); ledger built at `docs/09-brief-compliance.md`; **SIFT+RANSAC registration estimator added (Rule 10), validated on synthetic data, not yet run on the real archive** |
+| **Last updated** | 2026-09-15 — **SIFT+RANSAC run against the real S3 v2 archive**: determinism confirmed, agrees with the grid search on 4/5 sections, and on `S3_test_03` returns an offset consistent with the pattern the grid search's retracted answer broke — visual check still needed before it is a claim. Also: advisory demo panel shipped, backup GIF regenerated, backbone guard widened, COCO checkpoint pinned on Kaggle |
 | **Days to final** | **17** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
 | **REEFPRINT suite** | **350 passed, 4 deselected** — re-run and verified 2026-09-14 (+6 for the SIFT+RANSAC estimator's tests) |
@@ -362,11 +362,27 @@ off-centre offset to well under a pixel, a correctly-centred negative control re
 per-frame fitted angle agrees with the known nominal angle, and — **the property the grid search
 turned out to lack** — bit-for-bit identical output across repeated calls on identical input,
 because `skimage.measure.ransac`'s `rng` is seeded rather than left to draw from unseeded global
-state. No new dependency (`scikit-image` already declared). **Not yet run against the real S3 v2
-archive** — that is the next action: the same five sections `experiments/010` found the grid
-search non-reproducible on, compared against both the grid search's numbers and this estimator's
-own per-frame diagnostics (inlier count, residual RMS, fitted-vs-nominal angle), which the grid
-search has no equivalent of.
+state. No new dependency (`scikit-image` already declared).
+
+**2026-09-15 — run against the real archive (`experiments/011-sift-ransac-registration/`), and
+the determinism check passed on real data.** `S3_test_01`, run twice in-process, returned
+bit-for-bit identical output — the property `experiments/010` proved the grid search lacks. On
+four of five sections (`01`, `02`, `07`, `12`) SIFT+RANSAC and the grid search agree closely, both
+in offset (within ~3–8 px) and verdict. **On the fifth — `S3_test_03`, exactly the section the
+grid search's `FOURTH` verdict was already retracted on (§0 C1) — SIFT+RANSAC returns offset
+(−111, 22), sitting inside the same tight band the other four sections' offsets occupy, with
+verdict `SECOND`, matching the naive condition's own reading and `experiment 009`'s visual-check
+argument.** The grid search's own `S3_test_03` answer, (−397, 41), is the outlier against that
+pattern. **This is not yet a quotable `S3_test_03` claim** — the same visual check 009 ran on the
+grid search's offset has not yet been run on this one, and a "plausible" offset was already wrong
+once on this exact section. Full table, caveats, and a genuine cost finding (per-section runtime
+tracked inlier count, not frame count — up to 17,074 inliers on `S3_test_03`, driving ~40 min
+sections even at 24 frames) in `experiments/011-sift-ransac-registration/README.md`.
+
+**Next action on P5**: the visual check on SIFT+RANSAC's `S3_test_03` offset. If it survives,
+that becomes the reported offset for that section, with the grid search's determinism status on
+the other four still an open question `experiments/010` left unresolved (only SIFT+RANSAC's
+determinism was checked this run, not the grid search's).
 
 ---
 
