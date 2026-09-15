@@ -135,7 +135,13 @@ been corrected there. **LumenStone V1 (colour-adaptation subset) sourced 2026-09
 staged at `data/lumenstone/V1_v1.zip` and on Kaggle (`lethabomh14/lumenstone-v1-reefprint`), ready
 for Sibusiso to re-run `khanya/main:src/robustness.py` against real data whenever he gets to it.
 The torchvision COCO checkpoint needed for training
-kernels is pre-staged on Kaggle (`SBOM.md`).
+kernels is pre-staged on Kaggle (`SBOM.md`). **Preflight-checked 2026-09-15**
+(`experiments/014-coco-checkpoint-offline-preflight/`): `model.py`'s current construction call
+(`weights=DeepLabV3_ResNet50_Weights.DEFAULT`) **fails offline** with a name-resolution error —
+torchvision tries the network regardless of the mounted checkpoint. Two working fixes confirmed
+end-to-end (construction + a correct forward pass): pre-copy into torch's hub cache, or construct
+with `weights=None` and `load_state_dict` explicitly (cleaner, 0 key mismatches). Flagged to
+Sibusiso before J0/J1/J2 needs it, not after a GPU-hour discovers it.
 
 **2026-09-15, later still — `main`'s own hostile self-audit landed** (`WORKBOARD.md` §0 C5):
 `reports/ADVERSARIAL-CRITIQUE-2026-09-15.md`, `BUILD-REMEDIATION-PLAN-2026-09-15.md`,

@@ -87,8 +87,11 @@ backbone — is **not** cleared by torchvision's BSD-3-Clause code licence and i
 as **CONDITION**, not OK, in `SBOM.md`'s checkpoint table. **Uploaded 2026-09-15**:
 `lethabomh14/torchvision-deeplabv3-resnet50-coco` (private Kaggle dataset), sha256-verified
 against torchvision's own filename hash — full record in `SBOM.md`'s checkpoint table.
-`enable_gpu: true` training kernels (`enable_internet: false`) can now construct the model; the
-S1/S2 **data** (issue #5, Sibusiso) is the remaining prerequisite for J0/J1/J2 to actually run.
+**Correction, 2026-09-15**: "can now construct the model" was premature — checked, not assumed.
+`experiments/014-coco-checkpoint-offline-preflight/` found `model.py`'s current construction call
+fails offline (torchvision tries the network regardless of the mounted file); two fixes confirmed
+working end-to-end, flagged to Sibusiso before J0/J1/J2 needs them. S1/S2 **data** (issue #5,
+Sibusiso) remains the other prerequisite for J0/J1/J2 to actually run.
 
 ## 5. LLM tooling boundary (Workstream H)
 

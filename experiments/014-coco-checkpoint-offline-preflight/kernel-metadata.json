@@ -1,0 +1,15 @@
+{
+  "id": "lethabomh14/reefprint-coco-checkpoint-preflight",
+  "title": "reefprint coco checkpoint preflight",
+  "code_file": "kernel_entry.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": false,
+  "dataset_sources": [
+    "lethabomh14/torchvision-deeplabv3-resnet50-coco"
+  ],
+  "competition_sources": [],
+  "kernel_sources": []
+}

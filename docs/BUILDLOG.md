@@ -22,6 +22,49 @@ it is a press release.
 
 ---
 
+## 2026-09-15 — session 39 · found a real J0/J1/J2 blocker before it could burn a GPU-hour
+
+### Attempted
+
+S1/S2 data still not in from Sibusiso, so J0/J1/J2 cannot start — but the checkpoint construction
+step it depends on could be checked in isolation. `khanya/main:src/segmentation/model.py`
+constructs the model via `deeplabv3_resnet50(weights=DeepLabV3_ResNet50_Weights.DEFAULT, ...)`,
+and torchvision's weight-loading machinery is known to fall back to a network download unless the
+checkpoint is already in its own hub cache under an exact expected filename — mounting it as a
+Kaggle dataset at an arbitrary path does not satisfy that. Worth verifying directly rather than
+assuming either way, before it became the first thing to go wrong once real data landed.
+
+### Worked
+
+- `experiments/014-coco-checkpoint-offline-preflight/`: pushed to Kaggle (`enable_internet:
+  false`, matching every training kernel this project will run), completed in under a minute.
+- **Confirmed the risk was real.** `model.py`'s current construction call fails with
+  `URLError: Temporary failure in name resolution` — it would have crashed at the very first line
+  of any J0/J1/J2 kernel, discovered only after Sibusiso's data had already landed and a GPU-hour
+  had already started.
+- **Two fixes confirmed working, not just proposed** — each tested end-to-end (model construction
+  plus a real forward pass on a dummy tensor, checked for the correct output shape, not just "no
+  exception raised"): pre-copying the mounted checkpoint into torch's hub cache under the exact
+  filename torchvision expects, or constructing with `weights=None` and loading the state dict
+  explicitly (the cleaner of the two — 0 missing keys, 0 unexpected keys).
+- Also re-verified the checkpoint's sha256 against `SBOM.md`'s record on a live Kaggle kernel
+  independent of the machine that first staged it — matched.
+- **Corrected a premature claim this session had itself made** — `docs/09-brief-compliance.md`
+  said "training kernels can now construct the model" the moment the checkpoint was uploaded. It
+  could not, until this preflight found out and fixed it. Corrected in place rather than left to
+  stand on an assumption nobody had tested.
+- Flagged to Sibusiso via issue #5 with both fixes and a clear recommendation; his call which one
+  to take in `model.py`. `WORKBOARD.md` (new correction C6), `CONTEXT.md` updated. Suite: 368
+  passed, 4 deselected, unchanged (no library code touched — new experiment only).
+
+### Left open
+
+- `model.py` itself is unmodified — the fix is Sibusiso's to apply, on his branch.
+- J0/J1/J2 still cannot start until S1/S2 data lands; this preflight only clears one of the two
+  remaining blockers.
+
+---
+
 ## 2026-09-15 — session 38 · two pre-registered protocols, a seam-call correction, and the tennantite finding
 
 ### Attempted

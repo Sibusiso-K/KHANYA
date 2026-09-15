@@ -259,6 +259,23 @@ a unifying finding.**
 - **LFS migration is next on Sibusiso's side**, per Q1's recommendation — nothing further needed
   from this branch until it lands.
 
+### C6 — J0/J1/J2 preflight (2026-09-15): `model.py`'s weight loading does not work offline as written
+
+**Real bug found before it could burn a GPU-hour, not after.** While S1/S2 data is still incoming
+(§0 C5), checked whether the pre-staged COCO checkpoint (`SBOM.md`) actually lets the model
+construct on a genuine offline Kaggle kernel — `experiments/014-coco-checkpoint-offline-preflight/`.
+
+**It does not, as `model.py` currently calls it.** `deeplabv3_resnet50(weights=
+DeepLabV3_ResNet50_Weights.DEFAULT, ...)` tries `download.pytorch.org` regardless of whether the
+checkpoint is mounted elsewhere on disk, and fails with a name-resolution error under
+`enable_internet: false` — every kernel this project has run so far, and every J0/J1/J2 kernel
+planned. **Two fixes confirmed working end-to-end** (construction + a correct forward pass, not
+just "imports without erroring"): pre-copy the mounted file into torch's own hub cache under the
+exact expected filename, or construct with `weights=None` and load the state dict explicitly
+(cleaner — 0 missing/unexpected keys). Full detail:
+`experiments/014-coco-checkpoint-offline-preflight/README.md`. Flagged to Sibusiso; not yet
+applied to `model.py` — his call which fix to take.
+
 ---
 
 ## 1. Lanes — who owns what
