@@ -106,3 +106,64 @@ tennantite and magnetite.
 - Our checkpoint trained on v2's 64-image train split; the published model
   trained on v1's 59. **More training data, worse result** - which is a fact
   about our training budget, not about the data.
+
+---
+
+## 8. Everything the 60.8% figure took with it
+
+The retracted figure did not travel alone. `ca2e02f` published a decomposition
+of the **20-image v2 test set** and described it as the gap to published, and
+five derived numbers went with it. All five are superseded by the 16-image v1
+protocol, which is what the published 0.8373 was actually measured on.
+
+| Quantity | Published in `ca2e02f` (20-image) | Correct (v1 protocol, 16-image) |
+|---|---:|---:|
+| mean gap to published | -0.1025 | **-0.1282** |
+| tennantite share of gap | 60.8% | **47.1%** |
+| galena share of gap | 14.3% | **28.6%** |
+| gap excluding tennantite | -0.0469 (six classes) | **-0.0791** (six classes) |
+| classes "effectively matched" | three | **two** (background, bornite, within 0.01) |
+| tennantite IoU quoted | 0.3130 | **0.3247** plain / 0.3479 void |
+
+Two further figures that are *new* rather than corrected, and are the better
+ones to quote:
+
+- **Excluding tennantite and galena, the remaining five classes gap at
+  -0.0437.** That is the honest version of "most of the model is close".
+- **Four classes are within 0.05 of published**: background, bornite,
+  chalcopyrite, pyrite.
+
+### Where it propagated
+
+On `main`: nowhere outside `HANDOVER.md` entry 63, which is append-only history
+and is corrected by entry 66 directly above it. `PITCH.md`, `STATUS.md` and the
+research report were never updated with it, which is the one piece of luck here.
+
+On `reefprint`, six files carry it (ADR-0003: **not** ours to edit, flagged to
+Lethabo on issue #5):
+
+- `CLAUDE.md` line 89
+- `CONTEXT.md` line 165
+- `WORKBOARD.md` line 244
+- `docs/09-brief-compliance.md` line 22
+- `docs/11-pre-registered-morphology-sensitivity-and-scaling-predictions.md` line 97
+- `docs/BUILDLOG.md` line 100
+
+**`docs/11-...` is the urgent one.** It is the pre-registration for J0/J1/J2,
+and a scaling prediction keyed to the wrong decomposition predicts movement in
+the wrong classes. It names tennantite and magnetite; galena is the
+second-largest contributor to the gap and is absent from it.
+
+### The lesson, since this is the fourth of these today
+
+A number was published with a decomposition attached, the decomposition was
+correct for the set it was computed on, and nobody said which set that was. It
+then travelled into six documents on another branch within hours, including a
+pre-registration protocol.
+
+`main`'s own `WORKBOARD.md` mirror predates the figure and is therefore *stale
+but correct*, which is luck rather than process. The provenance convention
+agreed on issue #5 - `checkpoint_sha` and `generated_at` on every report - would
+not have caught this one, because the artifact was not stale: **it was correctly
+computed on an unnamed evaluation set.** The convention needs a third field:
+**which images the number is over.**
