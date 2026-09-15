@@ -148,8 +148,20 @@ Raised with Lethabo as issue #5 Q2; this is the third data point for it.
 
 1. **Sensitivity analysis on the three constants.** Perturb each, re-run the
    decision gap over cached predictions, report whether the headline finding
-   survives. No retraining, no GPU, one loop. This belongs on the REEFPRINT side
-   of the seam under ADR-0003 - it is a measurement question.
+   survives. No retraining, no GPU, one loop.
+
+   **This is KHANYA's to run, not REEFPRINT's** - corrected 2026-09-15, having
+   first said the opposite. `modal.py` exists only on `main`; `reefprint` has no
+   modal, liberation or morphology code at any path. Handing an audit of this
+   module across the seam would blur exactly the attribution boundary ADR-0003
+   exists to keep independently verifiable, which is the thing MOTT assesses.
+
+   The useful REEFPRINT role is **pre-registration**: fix the perturbation grid
+   and the falsification criterion *before* the run, so the author of the code
+   under test cannot tune the range until the finding survives. That is a
+   specification question, it is on the right side of the seam, and it is the
+   same discipline as `reefprint.quantity.Quantity` refusing to construct
+   without a source.
 2. **Fix the `modal.py:163` comment** to 78.32% and cite the patches report.
 3. **Document the resin-absorption judgement** in `modal.py`, either as
    metallurgically intended or as a known limitation.

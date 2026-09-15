@@ -80,9 +80,14 @@ a new checkpoint inherits the same reproducibility problem? (4) a joint rehearsa
 slot before day 20 - presentation clarity is the one judging criterion nobody has
 touched.
 
-**Next:** Lethabo - the sensitivity analysis on the three morphology constants
-belongs on your side of the seam under ADR-0003; it is a measurement question,
-costs no GPU, and is one loop over cached predictions. Until it returns, do not
+**Next:** Lethabo - **correction to what entry 62 first said:** the sensitivity
+analysis on the three morphology constants is **mine**, not yours. `modal.py`
+exists only on `main`; `reefprint` has no modal, liberation or morphology code at
+any path, so handing you an audit of my own module would blur the attribution
+boundary ADR-0003 keeps independently verifiable for MOTT. What is genuinely
+yours is **pre-registering the falsification criterion** - fix the perturbation
+grid and the kill condition before I run it, so the author of the code under test
+cannot widen the range until his finding survives. Until that returns, do not
 lead the pitch with the decision-gap finding (the retraction in
 `ADVERSARIAL-CRITIQUE` §7 stands, and this audit adds a second reason). S1
 benchmark re-cache was still running when this was written - the corrected
