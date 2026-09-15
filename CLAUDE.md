@@ -70,8 +70,25 @@ carries its source. Full working and per-experiment status:
 **The comparators, so nobody re-derives them:** petroscope's ResUNet on LumenStone **S1 v1**,
 7 classes — mIoU **0.8373** (0.8506 void-borders), per-class 0.7464 (galena) to 0.9628 (pyrite).
 Korshunov et al. on S1+S2, 10 classes — **magnetite 0.650, the worst of their ten**, pentlandite
-0.790, pyrite 0.964, PA 0.96. **Our magnetite problem is the literature's magnetite problem**, and
-saying so with the citation is stronger than hiding a per-class zero inside a mean.
+0.790, pyrite 0.964, PA 0.96.
+
+> ⚠️ **Corrected 2026-09-15 — "our magnetite problem is the literature's magnetite problem" was
+> too generous, and Sibusiso's own forensics (issue #5) are why we know that now.** Rebuilt
+> against the real patches checkpoint over all 12 S2 test sections: of **821,587** true magnetite
+> pixels, **0 are ever predicted as magnetite**, across **92.6 million** test pixels — a dead
+> output channel, not a weak score. Korshunov et al. get **0.650** on the same modality. Two
+> arguments rule out the easy excuses: rarity alone is not it (S1 chalcopyrite at a similarly low
+> train share still scores 0.8652), and it is not an optical limit of reflected-light imaging
+> (someone else detects it). **The honest reading is a training-budget or model-capacity gap on
+> our side, at a class that sits below 1% of test pixels** (0.792% — the *test* share, the number
+> the model was actually scored on, not the train share; three different abundance figures were
+> circulating under one name before this correction — always name which one). This is exactly what
+> Workstream C's scaling study (J0/J1/J2) is positioned to test, and a stronger reason to run it
+> than "see if the mean improves."
+
+Say the magnetite gap with the citation — Korshunov's number is still the field's own hard class,
+which is stronger than hiding a per-class zero inside a mean — but say the *size* of the gap
+honestly too, now that it is measured.
 
 > ⚠️ **Read before citing.** Korshunov et al. is CC BY 4.0 and fetchable in full. The Jiang et al.
 > ensemble figures came from a search summary because MDPI returned 403, and **petroscope's

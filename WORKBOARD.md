@@ -63,8 +63,10 @@ segmentation.** The brief requires *phase* identification. Quote these instead:
 | ~~Older binary ore/resin~~ | — | ~~0.8722~~ | ~~93.75%~~ |
 
 S2 per-class IoU: background 0.8709 · chalcopyrite 0.5755 · **magnetite 0.0000** · pyrrhotite
-0.8695 · pentlandite 0.5468. The magnetite zero is real and must be stated, not buried — three
-sulphides carry the "≥3 phases" deliverable, magnetite does not.
+0.8695 · pentlandite 0.5468. **§0 C4 sharpens this**: magnetite is not merely IoU 0 — Sibusiso's
+confusion-matrix rebuild found it is never predicted anywhere, on any of the 92.6M S2 test pixels.
+The magnetite failure is real and must be stated that way, not buried — three sulphides carry the
+"≥3 phases" deliverable, magnetite does not.
 
 ### C3 — RESOLVED 2026-09-12: the illumination is unpolarised, not crossed polars
 
@@ -123,6 +125,41 @@ premise entirely. Chromite does have electronic (crystal-field) absorption featu
 50–75 vol% of the ore — survives, and needs an ore-specific citation with a stated denominator
 (volume vs mass vs image-area fraction are not interchangeable).
 
+### C4 — Sibusiso's response to issue #5 (2026-09-15): the stale benchmark is his to fix, one plan item was unsound, magnetite is worse than "the field's own hard class"
+
+**All four asks answered.** [Issue #5](https://github.com/Sibusiso-K/KHANYA/issues/5) — read the
+full thread before repeating any of the plan items it changes.
+
+- **`best.pt` / stale benchmark**: Sibusiso already has the checkpoint and is regenerating
+  `reports/benchmark_s1_patches.json` himself — **not this side's action item any more.**
+  Independently confirmed the same diagnosis this side made: checkpoint modified 21 Aug, cache
+  17 Aug, cache predates the checkpoint by four days.
+- **The S1 v1 test-stem check (D2's cross-version-asterisk plan) is unsound, and withdrawn.**
+  `test_01.jpg`–`test_20.jpg` are **positional, not identity-bearing** — `set(v1_test) <=
+  set(v2_test)` on filenames alone is not a meaningful check if the authors renumbered when adding
+  images. The only sound version needs content-hashing the actual v1 image files, a separate
+  download neither side has. Caught before it produced a wrong "clean comparison" claim, not after.
+- **J0/J1/J2 framing confirmed, on the record**: a scaling study reported as evidence, not an
+  attempt to ship a better checkpoint before the 25 Sep freeze. Never touches the demo checkpoint,
+  `BACKUP-DEMO-SCRIPT.md`'s numbers, or the calibrated conformal band. Sibusiso sends S1+S2 on
+  this understanding.
+- **LumenStone V1 (the colour-adaptation subset)**: neither side has it. Needs a fresh download
+  from the dataset authors — open, unblocked action for whoever gets to it first.
+
+**The magnetite finding matters more than any of the above, and changes a claim in `CLAUDE.md`.**
+Rebuilt the confusion matrix against the real patches checkpoint (his first attempt used the
+superseded "resize baseline" pipeline by mistake — caught and corrected in his own next comment,
+kept visible rather than edited away). Result, all 12 S2 test sections: of **821,587** true
+magnetite pixels, **0 are ever predicted as magnetite**, across **92.6 million** test pixels — a
+dead output channel. Two things rule out the easy excuses: rarity alone is not it (S1 chalcopyrite
+at a similarly low train share scores 0.8652), and it is not an optical limit of the modality
+(Korshunov et al. detect it at 0.650 on the same modality). **Read as a training-budget or
+model-capacity gap, not a shared field-wide difficulty** — `CLAUDE.md`'s literature table said the
+gentler version before this and has been corrected. Also fixed: three different magnetite
+abundance figures (1.58%, 1.84%, 0.792%) were circulating under one name; **0.792% is the test
+share — the number the model was actually scored against — and is the one that answers "have you
+tested below 1% abundance" honestly** (yes, and it failed completely there).
+
 ---
 
 ## 1. Lanes — who owns what
@@ -156,8 +193,8 @@ the source of truth. Update both in the same commit.**
 
 | Requirement | Status | Evidence | Owner |
 |---|---|---|---|
-| ≥3 mineral phases | 🟡 S2 gives nonzero IoU for three sulphides — **locality separation unverified**, magnetite IoU 0.0000 | ledger §1 row 1 | Sibusiso |
-| Accuracy report | 🟡 **Bushveld chromite-composition result shipped, cross-checked bit-for-bit against an independent implementation.** Segmentation accuracy report (locality-disjoint IoU, CIs, baselines) still needs KHANYA's held-out predictions | ledger §1 row 2 | Both |
+| ≥3 mineral phases | 🟡 S2 gives nonzero IoU for three sulphides — **locality separation unverified**; magnetite is a dead output channel, never predicted on any of 92.6M S2 test pixels (§0 C4) | ledger §1 row 1 | Sibusiso |
+| Accuracy report | 🟡 **Bushveld chromite-composition result shipped, cross-checked bit-for-bit against an independent implementation.** Segmentation half: the stale `benchmark_s1_patches.json` is being regenerated by Sibusiso (§0 C4, no longer this side's blocker); locality-disjoint IoU/CIs/baselines still need KHANYA's held-out predictions | ledger §1 row 2 | Both |
 | Processability prediction | 🟡 **One head shipped** — fine-chromite entrainment risk, structural proxy with a worst-case bound; real literature constants still needed from the domain lead | `src/reefprint/heads/entrainment.py` | Lethabo |
 | Integrates with controls | ✅ **Real local OPC UA server + separate simulated control client**, acknowledgement/expiry contract demonstrated | ledger §1 row 5 | Lethabo |
 | Real-time | 🟡 **Two REEFPRINT-side stages benchmarked with a spread**, on named hardware — Stokes inversion and the OPC UA round trip. **Segmentation inference latency (KHANYA/main) is still unmeasured**; no end-to-end real-time claim exists yet | ledger §1 row 4 | Both |

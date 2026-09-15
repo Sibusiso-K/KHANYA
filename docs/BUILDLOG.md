@@ -22,6 +22,63 @@ it is a press release.
 
 ---
 
+## 2026-09-15 — session 34 · Sibusiso answered issue #5: one plan item retracted, magnetite is worse than reported
+
+### Attempted
+
+Read and acted on Sibusiso's full response to [issue #5](https://github.com/Sibusiso-K/KHANYA/issues/5)
+(three comments: the four asks answered, a self-correction of his own mislabelled model, and a
+sharpened magnetite finding). Replied confirming the one thing he asked this side to decide.
+
+### Worked
+
+- **The stale benchmark is fixed on the other side, not blocked here any more.** Sibusiso
+  independently confirmed the same diagnosis this session made (checkpoint 21 Aug, cache 17 Aug)
+  and is regenerating `reports/benchmark_s1_patches.json` himself.
+- **A real flaw in this session's own plan, caught before it produced a wrong claim.** The
+  S1 v1/v2 test-stem check (Workstream D2, `docs/10-2026-09-14-literature-and-brief-plan.md`)
+  assumed matching filenames meant matching images. Sibusiso: `test_01.jpg`–`test_20.jpg` are
+  **positional, not identity-bearing** — if the authors renumbered when adding images between
+  versions, the same filename in v1 and v2 is not provably the same photograph. The only sound
+  version needs content-hashing the actual v1 image files, a separate, currently unavailable
+  download. **Retracted rather than run** — exactly the kind of error Rule 1 exists to catch, and
+  this time a collaborator caught it first.
+- **J0/J1/J2 framing settled on the record**: replied confirming it is a scaling study reported
+  as evidence, never an attempt to ship a checkpoint that touches the demo or the 25 Sep freeze —
+  which is what the plan always meant, made explicit because he asked rather than assumed it.
+  He sends S1+S2 on this basis.
+- **The magnetite finding is the substantive result of this exchange, and it corrects a claim
+  this project had already published in `CLAUDE.md`.** Sibusiso rebuilt the confusion matrix
+  against the real patches checkpoint (catching and publicly correcting his own first attempt,
+  which used the superseded "resize baseline" pipeline by mistake — kept visible in the thread
+  rather than edited away, the same retraction discipline this project's own BUILDLOG runs on).
+  Result, all 12 S2 test sections: of 821,587 true magnetite pixels, **0 are ever predicted as
+  magnetite**, across 92.6 million test pixels — a dead output channel, not a weak score. Two
+  arguments rule out the easy excuses: S1 chalcopyrite, at a similarly low train share, scores
+  0.8652 (rarity alone is not it), and Korshunov et al. detect magnetite at 0.650 on the same
+  modality (it is not an optical limit). **`CLAUDE.md`'s "our magnetite problem is the
+  literature's magnetite problem" was too generous and has been corrected** — the honest reading
+  is a training-budget or model-capacity gap on our side, which is a stronger reason to run the
+  scaling study than "see if the mean improves."
+- **Fixed a three-numbers-one-name problem.** 1.58% (ledger), 1.84% (`STATUS.md`, train share),
+  0.792% (test share — the number the model was actually scored against) were all circulating as
+  "the magnetite abundance." Standardised on the test share and labelled it, per Sibusiso's own
+  argument: it is the stronger, more honest answer to "have you tested below 1% abundance" (yes,
+  and it failed completely there), where the train-share number would have understated the case.
+- `CLAUDE.md`, `WORKBOARD.md` §0 (new correction C4), `CONTEXT.md`, `docs/09-brief-compliance.md`
+  all updated in the same session to carry the corrected framing.
+
+### Left open
+
+- LumenStone V1 (the colour-adaptation subset) is unsourced by either side — worth trying to
+  fetch directly from the dataset authors rather than leaving it as a standing cross-person ask.
+- S1+S2 data still incoming from Sibusiso; J0/J1/J2 cannot start until it lands.
+- Whether magnetite's dead-channel failure is fixable by budget alone (this project's working
+  hypothesis) or needs something more (a loss-function or sampling change) is not yet tested —
+  the scaling study is designed to distinguish this, not assume it.
+
+---
+
 ## 2026-09-15 — session 33 · the S3_test_03 visual check ran, and it is genuinely inconclusive — a real finding, not a failure
 
 ### Attempted

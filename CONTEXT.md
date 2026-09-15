@@ -118,14 +118,23 @@ texture is self-similar enough that a human eye cannot decisively confirm or ref
 match, the same property that made the grid search unreliable here in the first place. **Still
 not a claim** — the evidence base for the SIFT+RANSAC offset stays non-visual (determinism,
 cross-section consistency, and up to 17,074 RANSAC-matched inliers per frame consistent with one
-transform at sub-1.5px residual). Separately, **the stale `reports/benchmark_s1_patches.json`
-(0.3295) still needs
-re-caching** against the current checkpoint to show its real score (0.7116) — blocked on
-`best.pt`, S1/S2 data, and LumenStone V1, all asked of Sibusiso in
-[issue #5](https://github.com/Sibusiso-K/KHANYA/issues/5), open as of 2026-09-15. The torchvision
-COCO checkpoint needed for training kernels is pre-staged on Kaggle (`SBOM.md`). The paragraphs
-below are the detailed history of how P1–P5 got here and remain accurate as history; they are not
-re-litigated.
+transform at sub-1.5px residual).
+
+**2026-09-15, later — Sibusiso answered [issue #5](https://github.com/Sibusiso-K/KHANYA/issues/5)
+in full; read `WORKBOARD.md` §0 C4 before touching any of the following.** The stale
+`reports/benchmark_s1_patches.json` re-cache is **his to fix, in progress on `main` — not this
+side's blocker any more.** The S1 v1 test-stem cross-version check (Workstream D2) is **retracted
+as unsound** — `test_01.jpg`–`test_20.jpg` are positional filenames, not stable image identities,
+so a filename-overlap check does not establish what it claimed to. **J0/J1/J2 framing confirmed
+on the record**: a scaling study reported as evidence, never touching the demo checkpoint or the
+25 Sep freeze — he sends S1/S2 on this understanding. **The magnetite finding is the substantive
+one**: rebuilt against the real checkpoint, magnetite is a dead output channel (0 of 821,587 true
+pixels ever predicted as magnetite, across 92.6M S2 test pixels) — `CLAUDE.md`'s literature-table
+framing ("our magnetite problem is the literature's magnetite problem") was too generous and has
+been corrected there. LumenStone V1 (colour-adaptation subset) remains unsourced by either side —
+open action for whoever gets to it first. The torchvision COCO checkpoint needed for training
+kernels is pre-staged on Kaggle (`SBOM.md`). The paragraphs below are the detailed history of how
+P1–P5 got here and remain accurate as history; they are not re-litigated.
 
 **2026-09-12 — the next action is tracked on [`WORKBOARD.md`](WORKBOARD.md) §3, queue P1 → P5.**
 D1 and D2 are closed (ADR-0004, ADR-0005). **P1 — the OPC UA advisory server — shipped the same
