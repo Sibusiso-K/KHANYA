@@ -227,6 +227,38 @@ comparison flags, not just how many, "because it is a measurement question." **D
 
 Full writeup: `experiments/013-decision-gap-refinement-sensitivity/README.md`.
 
+**Follow-up, same day — Sibusiso corrected the seam call, and delivered the S1 benchmark fix with
+a unifying finding.**
+
+- **The morphology-constants sensitivity analysis is `main`'s to run, not `reefprint`'s.** Checked
+  rather than assumed: `reefprint` has no `modal.py` or morphology code at any path, and running
+  an audit of a module only `main` contains would blur the attribution boundary ADR-0003 keeps
+  for MOTT. Reefprint's genuine role — **pre-registering the perturbation grid and falsification
+  criterion before Sibusiso runs it**, so the author of the code under test cannot widen the range
+  after seeing the result — is done:
+  [`docs/11-pre-registered-morphology-sensitivity-and-scaling-predictions.md`](docs/11-pre-registered-morphology-sensitivity-and-scaling-predictions.md).
+  14 configurations, one hard falsification criterion (any "unsafe" classification anywhere in
+  the grid kills the "driven to zero" claim).
+- **`reports/benchmark_s1_patches.json` corrected** (`ca2e02f`): **0.7116** plain / **0.7481**
+  void-border, against published 0.8373/0.8506. **Decomposed, and the decomposition is the real
+  finding**: tennantite alone is **60.8%** of the gap (IoU 0.3130 vs published 0.7601); excluding
+  it, the six-class gap is **-0.0469**, with background/bornite/chalcopyrite effectively matched.
+  Tennantite (3.917% train share) scores far worse than chalcopyrite (2.974%, 0.8652) — rarity
+  ruled out a second time, within one dataset. **Tennantite and magnetite are both
+  low-reflectance-contrast phases, both collapse, both are detected in the literature on this
+  modality** — `CLAUDE.md`'s literature table corrected again to name both, not just magnetite.
+- **A pre-registered, falsifiable prediction now locks in what the J0/J1/J2 scaling curve should
+  show** if the training-budget hypothesis is right: matched classes move ≤±0.03; tennantite and
+  magnetite each clear **+0.10 absolute** and **3× the matched classes' mean movement**, or the
+  causal claim reverts to "measured, unexplained." §2 of the same pre-registration document.
+- **⚠️ A doubt raised about a standing project claim, not yet resolved**: `CLAUDE.md`'s
+  "512→2,560 patches moved mIoU 0.33→0.71" line uses the *same* `benchmark_s1_patches.json` that
+  turned out to be a stale cache. Whether 0.3295 ever honestly measured the 512-patch checkpoint,
+  or was already stale when first read, is **unverified** — flagged in `CLAUDE.md`, asked of
+  Sibusiso directly rather than assumed either way.
+- **LFS migration is next on Sibusiso's side**, per Q1's recommendation — nothing further needed
+  from this branch until it lands.
+
 ---
 
 ## 1. Lanes — who owns what

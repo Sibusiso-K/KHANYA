@@ -148,7 +148,19 @@ changes which sections a decision-gap comparison flags) is answered:
 specific sections are not identical (n too small to resolve whether that is noise); and the
 headline S2 mIoU depends on averaging convention (0.5725 pooled vs 0.4671 per-section-averaged,
 10 of 12 sections below the pooled figure) — needs stating with the convention named, next time
-either number reaches a slide. The paragraphs below are the detailed history of how P1–P5 got
+either number reaches a slide.
+
+**2026-09-15, still later — Sibusiso re-scoped the sensitivity analysis, fixed the S1 benchmark,
+and found the tennantite finding.** `WORKBOARD.md` §0 C5's follow-up has the full detail. Key
+points: the morphology sensitivity analysis runs on `main`, not here — this branch's role is
+`docs/11-pre-registered-morphology-sensitivity-and-scaling-predictions.md`, locking the
+perturbation grid, falsification criterion, and a falsifiable J0/J1/J2 prediction *before* either
+run. `reports/benchmark_s1_patches.json` is now correct (0.7116 / 0.7481 void-border), and
+decomposed: **tennantite is 60.8% of the S1 gap**, the same low-reflectance-contrast/
+training-budget story as magnetite — `CLAUDE.md` corrected to name both. **One standing project
+claim is now flagged as unverified**: the "512→2,560 patches moved mIoU 0.33→0.71" line uses the
+same benchmark file that turned out to be a stale cache twice elsewhere — asked Sibusiso to
+confirm or deny, not yet resolved. The paragraphs below are the detailed history of how P1–P5 got
 here and remain accurate as history; they are not re-litigated.
 
 **2026-09-12 — the next action is tracked on [`WORKBOARD.md`](WORKBOARD.md) §3, queue P1 → P5.**

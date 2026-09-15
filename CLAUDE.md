@@ -65,28 +65,41 @@ carries its source. Full working and per-experiment status:
 | **Registration by SIFT + RANSAC affine** | The published method for aligning rotated/XPL frames (Korshunov 2025). `skimage.feature.SIFT` + `skimage.measure.ransac`, BSD-3, already a dependency | ❌ we use a bespoke correlation grid search that `experiments/010` proved **non-reproducible run to run** |
 | **Ensembling** | A weighted-voting Res-UNet ensemble beats every single member, and beats DeepLabV3 and PSPNet (Jiang 2024) | ❌ and `trust/ensemble` does not exist despite the repo map below |
 | **Loss for rare classes** | Dice **+ Focal** (Jiang 2024). Dice alone is unstable while predictions are diffuse | 🟡 CE and CE+Dice tried; **Focal untried** |
-| **Patch size and budget** | 256–384 px at ×50 (Korshunov 2025); ~3 h on one A6000 is the published compute budget | 🟡 we use 512; our own 512→2,560-patch step moved mIoU 0.33 → 0.71 |
+| **Patch size and budget** | 256–384 px at ×50 (Korshunov 2025); ~3 h on one A6000 is the published compute budget | 🟡 we use 512; our own 512→2,560-patch step **was read as** mIoU 0.33 → 0.71 — ⚠️ **now in question, 2026-09-15**: the 0.3295 side of this claim is the *same* `benchmark_s1_patches.json` that turned out to be a stale cache (`ca2e02f`), and the pattern has now recurred twice elsewhere in this file (magnetite, tennantite) as "a number nobody checked which checkpoint it actually scored." Whether 0.3295 was ever an honest, contemporaneous measurement of the 512-patch checkpoint, or was already stale when first read, is unverified — asked Sibusiso directly rather than assume either way |
 
 **The comparators, so nobody re-derives them:** petroscope's ResUNet on LumenStone **S1 v1**,
 7 classes — mIoU **0.8373** (0.8506 void-borders), per-class 0.7464 (galena) to 0.9628 (pyrite).
 Korshunov et al. on S1+S2, 10 classes — **magnetite 0.650, the worst of their ten**, pentlandite
 0.790, pyrite 0.964, PA 0.96.
 
-> ⚠️ **Corrected 2026-09-15 — "our magnetite problem is the literature's magnetite problem" was
-> too generous, and Sibusiso's own forensics (issue #5) are why we know that now.** Rebuilt
-> against the real patches checkpoint over all 12 S2 test sections: of **821,587** true magnetite
-> pixels, **0 are ever predicted as magnetite**, across **92.6 million** test pixels — a dead
-> output channel, not a weak score. Korshunov et al. get **0.650** on the same modality. Two
-> arguments rule out the easy excuses: rarity alone is not it (S1 chalcopyrite at a similarly low
-> train share still scores 0.8652), and it is not an optical limit of reflected-light imaging
-> (someone else detects it). **The honest reading is a training-budget or model-capacity gap on
-> our side, at a class that sits below 1% of test pixels** (0.792% — the *test* share, the number
-> the model was actually scored on, not the train share; three different abundance figures were
-> circulating under one name before this correction — always name which one). This is exactly what
-> Workstream C's scaling study (J0/J1/J2) is positioned to test, and a stronger reason to run it
-> than "see if the mean improves."
+> ⚠️ **Corrected 2026-09-15, twice.** First correction: "our magnetite problem is the literature's
+> magnetite problem" was too generous, and Sibusiso's own forensics (issue #5) are why we know
+> that now. Rebuilt against the real patches checkpoint over all 12 S2 test sections: of
+> **821,587** true magnetite pixels, **0 are ever predicted as magnetite**, across **92.6
+> million** test pixels — a dead output channel, not a weak score. Korshunov et al. get **0.650**
+> on the same modality. Rarity alone does not explain it (S1 chalcopyrite at a similarly low train
+> share still scores 0.8652), and it is not an optical limit of reflected-light imaging (someone
+> else detects it) — the test-set abundance is **0.792%**, the number the model was actually
+> scored on (three different abundance figures were circulating under one name before this
+> correction — always name which one).
+>
+> **Second correction, same day**: the same S1 re-cache that fixed the stale 0.3295 benchmark
+> (`ca2e02f`, khanya/main; corrected to **0.7116** plain / **0.7481** void-border, against
+> published ResUNet S1v1 **0.8373 / 0.8506**) decomposed the S1 gap per class and found
+> **tennantite alone is 60.8% of it** (IoU 0.3130 vs published 0.7601) — excluding tennantite the
+> S1 gap is **-0.0469 across six classes**, with background/bornite/chalcopyrite effectively
+> matched to published. Tennantite (3.917% of S1 train pixels) scores far worse than chalcopyrite
+> (2.974%, IoU 0.8652) — rarity ruled out a second time, more cleanly, within one dataset rather
+> than across two. **The class to name alongside magnetite is tennantite, and it is the larger
+> effect of the two.** Both are low-reflectance-contrast phases against their neighbours
+> (tennantite grey against other sulphides, magnetite dark against the mounting resin), both
+> collapse, both are detected in the literature on this same modality — **the honest reading is a
+> training-budget or model-capacity gap on low-reflectance-contrast phases specifically, not a
+> per-class curiosity.** This is exactly what Workstream C's scaling study (J0/J1/J2) is
+> positioned to test, with a falsifiable, pre-registered prediction now locked in before the run:
+> `docs/11-pre-registered-morphology-sensitivity-and-scaling-predictions.md` §2.
 
-Say the magnetite gap with the citation — Korshunov's number is still the field's own hard class,
+Say the magnetite/tennantite gap with the citation — Korshunov's number is still the field's own hard class,
 which is stronger than hiding a per-class zero inside a mean — but say the *size* of the gap
 honestly too, now that it is measured.
 

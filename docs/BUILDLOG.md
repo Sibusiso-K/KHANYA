@@ -22,6 +22,63 @@ it is a press release.
 
 ---
 
+## 2026-09-15 — session 38 · two pre-registered protocols, a seam-call correction, and the tennantite finding
+
+### Attempted
+
+Checked `khanya/main` and issue #5 for new activity after session 37's push and found three real
+threads: Sibusiso corrected the sensitivity-analysis seam call from session 37 (it belongs on
+`main`, not here), delivered the corrected S1 benchmark with a decomposition that changes the
+project's own causal story, and made a substantive case for reversing the rehearsal-deferral
+decision from session 36.
+
+### Worked
+
+- **Absorbed a correction to session 37's own work, not just to something upstream.** Sibusiso
+  checked rather than assumed: `reefprint` has no `modal.py` or morphology code at any path, so
+  the refinement audit's "this belongs on the REEFPRINT side" framing (which session 37 took at
+  face value and I did too) was itself wrong — running a parameter-perturbation audit of code
+  that only exists on `main` would have blurred the ADR-0003 attribution boundary MOTT assesses.
+  Recorded plainly rather than defended.
+- **Built the pre-registration protocol instead** — the genuinely REEFPRINT-shaped role Sibusiso
+  proposed: fix the perturbation grid and falsification criterion for his morphology-constants
+  sweep *before* he runs it, so the author of the code under test does not set the bar after
+  seeing the result. `docs/11-pre-registered-morphology-sensitivity-and-scaling-predictions.md`
+  §1: 14 configurations (one-factor-at-a-time over `SPECKLE_KERNEL`, `SEED_MIN_DISTANCE`,
+  `PEAK_FOOTPRINT`, plus two joint extremes), with a hard falsification line — any configuration
+  producing even one "unsafe" severity classification (currently zero under the shipped
+  constants) kills the "driven to zero" claim, no averaging or cherry-picking allowed.
+- **Same document, §2**: a falsifiable, pre-registered prediction for the J0/J1/J2 scaling curve,
+  formalising the threshold Sibusiso proposed in prose (matched classes move ≤±0.03; tennantite
+  and magnetite must each clear +0.10 absolute *and* 3× the matched classes' movement, or the
+  training-budget causal claim reverts to "measured, unexplained").
+- **Absorbed the S1 benchmark fix and its real finding.** `reports/benchmark_s1_patches.json`
+  corrected to 0.7116 plain / 0.7481 void-border (`ca2e02f`). The decomposition matters more than
+  the number: tennantite alone is 60.8% of the gap to published; excluding it, six classes gap at
+  only -0.0469 with three effectively matched. Tennantite is *more* abundant than chalcopyrite in
+  train pixels yet scores far worse — rarity ruled out a second time, within one dataset this
+  time. `CLAUDE.md` corrected to name tennantite alongside magnetite as the same
+  low-reflectance-contrast/training-budget failure mode, not magnetite alone.
+- **Raised a doubt about a standing claim rather than let a pattern go unchecked a third time.**
+  The project's own "512→2,560 patches moved mIoU 0.33→0.71" line rests on the *same*
+  `benchmark_s1_patches.json` that has now been shown stale twice. Whether 0.3295 ever honestly
+  measured the 512-patch checkpoint is unverified — flagged in `CLAUDE.md` and `WORKBOARD.md`
+  rather than left standing on an assumption the same file has already broken twice elsewhere.
+- Suite unaffected — no library code touched this session, docs and one new pre-registration file
+  only.
+
+### Left open
+
+- **Whether the 0.33→0.71 patch-budget claim survives** — asked Sibusiso directly; not yet
+  answered.
+- **The rehearsal-deferral reversal** — Sibusiso made a substantive case (a first rehearsal's job
+  is discovery, not polish, and does not depend on numbers that have not landed yet) and proposed
+  one unpolished timed run-through this week. This reverses guidance already relayed to Lethabo on
+  their behalf; surfaced back to them rather than decided here.
+- Neither pre-registered protocol has been run yet — both are locked, not executed.
+
+---
+
 ## 2026-09-15 — session 37 · `main`'s hostile self-audit, and the sensitivity analysis it assigned to this side
 
 ### Attempted
