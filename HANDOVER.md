@@ -19,6 +19,49 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-15 — Sibusiso (61) — build remediation plan, published to be attacked
+
+**Did:** Published `reports/BUILD-REMEDIATION-PLAN-2026-09-15.md` as the
+companion to entry 60's critique. The critique says what is wrong; this says
+what to do about it. **Status is PROPOSED, not decided** - it is deliberately
+published before anyone builds from it so Lethabo, Codex, or a fresh session
+can attack it first.
+
+**Five items, priority ordered:** an input eligibility gate (converts the worst
+live-demo vulnerability into a beat); settling whether magnetite fails on
+rarity or on reflectance contrast (an hour of work against existing S1 results,
+and it is the thing that most weakens the critique's sharpest attack); a
+preflight check (three environment failures in seven days, all detectable in
+seconds); separating the topology-repair confound from the decision-gap finding
+before it reaches a slide; and three cheap wins (warm model start, per-phase
+confidence, bootstrap intervals).
+
+**Every item carries a kill criterion** - the specific evidence that would mean
+"do not do this". P1's is the important one: a gate that refuses legitimate S2
+inputs is worse than no gate. P2's is that the contrast hypothesis must not be
+claimed if S1's rare classes also fail.
+
+**Section 4 lists five assumptions the plan makes that nobody has verified**,
+including the one P2 depends on entirely: that S1 contains a rare but optically
+bright class. The per-class S1 numbers are already in the repository and nobody
+has read them against the class pixel shares. That check has not been done.
+
+**Explicitly not doing:** new demo features, retraining (a new checkpoint nine
+days from freeze invalidates the pitch numbers, the backup script, the conformal
+band and the baselines), ONNX/INT8, further polarimetry, refactoring.
+
+**Changed:** `reports/BUILD-REMEDIATION-PLAN-2026-09-15.md` (new), `README.md`.
+
+**Blocked on:** nothing technical. The plan needs a human to accept, amend or
+reject it before work starts.
+
+**Next:** the cheapest item is P2's hour-long check against
+`reports/lumenstone_s1_patches_test_metrics.json`, and it may change what the
+pitch leads with, so it should probably go first regardless of the priority
+order above. Section 3 of the plan is the part most likely to be ignored and
+most likely to matter: rehearsal, the backup video and the human items from
+entry 60 outrank every line of code in section 1.
+
 ## 2026-09-15 — Sibusiso (60) — the case against our own submission
 
 **Did:** Sibusiso asked for a hostile read of the project against Mintek's
