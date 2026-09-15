@@ -22,6 +22,70 @@ it is a press release.
 
 ---
 
+## 2026-09-15 — session 37 · `main`'s hostile self-audit, and the sensitivity analysis it assigned to this side
+
+### Attempted
+
+Checked `khanya/main` for new activity beyond issue #5 and found three documents Sibusiso
+published independently: a hostile critique of the whole submission against Problem 3's brief, a
+proposed remediation plan responding to it, and an audit of the topology-refinement code every
+reported number rests on. The audit's own §5 assigned one item explicitly to "the REEFPRINT side
+of the seam under ADR-0003": a sensitivity analysis on whether refinement changes which sections
+a decision-gap comparison flags, not just how many.
+
+### Worked
+
+- **Read all three documents in full before acting** — the critique's six cold-answer questions
+  are sharper than this branch's own prior assessment: the model fails at 1.84% abundance on the
+  one rare phase tested, and UG2's actual payload is rarer still; the published benchmark on this
+  data is 0.88, not the 0.8373 this branch had been anchoring on; three of four decision
+  thresholds in `advisor.py` are unsourced placeholders; the conformal band spans two-thirds of
+  the possible range and is calibrated on the same 12 sections it is evaluated on.
+- **Built the tool the audit's item needed and the plan had specified but never built.**
+  `reefprint.trust.bootstrap` — `cluster_bootstrap_ci` (percentile bootstrap over independent
+  units, seeded per Rule 5, predeclared 2000 resamples per the plan's own spec) and
+  `paired_exact_test` (exact McNemar on paired binary outcomes, not the chi-squared
+  approximation, which is untrustworthy at hackathon-scale n). 18 tests,
+  `tests/test_trust_bootstrap.py`, including a known textbook reference case (10 discordant
+  pairs split 9-1 gives p ≈ 0.02148) to check the exact-test arithmetic independently of the
+  real data it was about to be pointed at.
+- **Applied it to `main`'s own already-committed evidence, no cross-branch code import, no data
+  transfer** — `experiments/013-decision-gap-refinement-sensitivity/` reads three small JSONs via
+  `git show khanya/main:...` at run time, reproducible by anyone with this repo alone.
+- **Answered the assigned question, both ways.** The aggregate decision-gap flip rate (0.50) is
+  not an artefact of refinement — real evidence in the finding's favour, clearing the confound
+  the audit worried about. But raw and refined predictions do **not** flag the same six sections
+  (4 agree, 2 flip only under raw, 2 only under refined); an exact McNemar test on the 4
+  discordant pairs gives p = 1.0, which at this sample size is "cannot tell," not "confirmed the
+  same" — reported that way explicitly, via `PairedDisagreement.describe()`'s own low-power note,
+  rather than let a non-significant p-value be misread as a clean result.
+- **Found something nobody had asked for and verified it twice before trusting it.** The
+  headline S2 mIoU (0.5725, `reports/lumenstone_s2_patches_test_metrics.json`) is pooled across
+  all 12 sections' pixels; averaging each section's own `mean_iou` instead gives **0.4671**,
+  bootstrap 95% CI [0.4116, 0.5362] — computed once inside the experiment, once independently in
+  a standalone check against the raw JSON, both agreeing to the same fifteen significant figures.
+  **Ten of twelve sections score below the reported 0.5725.** Same shape of problem as the
+  1.58%/1.84%/0.792% magnetite-abundance mixup C4 already found: two legitimate conventions, no
+  stated label, and a large enough gap between them (0.57 vs 0.47) that a judge reading both
+  numbers in the same repository could read the gap as evasion rather than as two valid
+  statistics — unless the convention is named next to whichever one reaches a slide.
+- `WORKBOARD.md` (new correction C5), `docs/09-brief-compliance.md`, `CONTEXT.md` updated in the
+  same session. Suite: 350 → 368 passed, 4 deselected (+18).
+
+### Left open
+
+- The same pooled-vs-per-section-averaged check on S1 — not run this session, a five-minute
+  follow-up if it turns out to matter there too.
+- Whether the raw-vs-refined section disagreement (`test_10`/`test_11` vs `test_06`/`test_08`) is
+  a real effect or noise remains genuinely unresolved at n=12 — flagged honestly rather than
+  guessed at either way.
+- The rest of the critique's findings (invented thresholds, the wide conformal band, the wrong-
+  customer cost anchoring, AI-authorship/MOTT risk, the unattributed third team member) are
+  `main`-side or human items this branch cannot act on directly — read `WORKBOARD.md` §0 C5 and
+  the source documents before the pitch.
+
+---
+
 ## 2026-09-15 — session 36 · four process questions from Sibusiso, before he writes issue #5 into HANDOVER.md
 
 ### Attempted

@@ -135,8 +135,21 @@ been corrected there. **LumenStone V1 (colour-adaptation subset) sourced 2026-09
 staged at `data/lumenstone/V1_v1.zip` and on Kaggle (`lethabomh14/lumenstone-v1-reefprint`), ready
 for Sibusiso to re-run `khanya/main:src/robustness.py` against real data whenever he gets to it.
 The torchvision COCO checkpoint needed for training
-kernels is pre-staged on Kaggle (`SBOM.md`). The paragraphs below are the detailed history of how
-P1–P5 got here and remain accurate as history; they are not re-litigated.
+kernels is pre-staged on Kaggle (`SBOM.md`).
+
+**2026-09-15, later still — `main`'s own hostile self-audit landed** (`WORKBOARD.md` §0 C5):
+`reports/ADVERSARIAL-CRITIQUE-2026-09-15.md`, `BUILD-REMEDIATION-PLAN-2026-09-15.md`,
+`REFINEMENT-AUDIT-2026-09-15.md` on `main`. **Read these before the pitch** — six questions the
+critique says the team must answer cold, sharper than anything this branch had found on its own.
+The one item assigned to this branch (a sensitivity analysis on whether topology refinement
+changes which sections a decision-gap comparison flags) is answered:
+`experiments/013-decision-gap-refinement-sensitivity/`, plus a new reusable tool,
+`reefprint.trust.bootstrap`. Two findings: the flip rate is stable under refinement but the
+specific sections are not identical (n too small to resolve whether that is noise); and the
+headline S2 mIoU depends on averaging convention (0.5725 pooled vs 0.4671 per-section-averaged,
+10 of 12 sections below the pooled figure) — needs stating with the convention named, next time
+either number reaches a slide. The paragraphs below are the detailed history of how P1–P5 got
+here and remain accurate as history; they are not re-litigated.
 
 **2026-09-12 — the next action is tracked on [`WORKBOARD.md`](WORKBOARD.md) §3, queue P1 → P5.**
 D1 and D2 are closed (ADR-0004, ADR-0005). **P1 — the OPC UA advisory server — shipped the same
@@ -484,7 +497,7 @@ uv run ruff check . ; uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **350 passed, 4 deselected**. Anything less is a regression, not a quirk.
+Expect **368 passed, 4 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf

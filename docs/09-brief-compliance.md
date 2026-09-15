@@ -103,3 +103,14 @@ S1/S2 **data** (issue #5, Sibusiso) is the remaining prerequisite for J0/J1/J2 t
 - **We deliberately kept the LLM out of the measurement loop.** Stated here as a design decision,
   because it is the kind of thing that plays well with an audience that values auditability over
   cleverness — and because Rule 6 is otherwise just a constraint nobody gets credit for following.
+
+## 6. `main`'s hostile self-audit (2026-09-15) — read before the pitch
+
+`reports/ADVERSARIAL-CRITIQUE-2026-09-15.md`, `reports/BUILD-REMEDIATION-PLAN-2026-09-15.md`,
+`reports/REFINEMENT-AUDIT-2026-09-15.md` — full detail and the six questions the pitch must
+survive: `WORKBOARD.md` §0 C5. The item the refinement audit assigned to this branch is answered:
+`experiments/013-decision-gap-refinement-sensitivity/`. Two findings — the decision-gap flip rate
+is refinement-invariant in aggregate but not in which sections flip (n too small to say if that
+matters), and the headline S2 mIoU depends on averaging convention (0.5725 pooled vs 0.4671
+per-section, 10 of 12 sections below the pooled figure) — both need to reach the pitch stated with
+their caveats attached, not silently.

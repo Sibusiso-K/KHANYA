@@ -1,0 +1,35 @@
+{
+  "s2_mean_iou_bootstrap": {
+    "point_estimate": 0.46714846233419455,
+    "ci_low": 0.4115560449842847,
+    "ci_high": 0.536161742165394,
+    "n_sections": 12,
+    "n_resamples": 2000
+  },
+  "flip_rate_raw_bootstrap": {
+    "point_estimate": 0.5,
+    "ci_low": 0.25,
+    "ci_high": 0.75
+  },
+  "flip_rate_refined_bootstrap": {
+    "point_estimate": 0.5,
+    "ci_low": 0.25,
+    "ci_high": 0.75
+  },
+  "raw_only_flips": [
+    "test_10",
+    "test_11"
+  ],
+  "refined_only_flips": [
+    "test_06",
+    "test_08"
+  ],
+  "both_flip": [
+    "test_03",
+    "test_04",
+    "test_05",
+    "test_09"
+  ],
+  "mcnemar_exact_p_value": 1.0,
+  "n_discordant": 4
+}

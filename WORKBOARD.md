@@ -9,7 +9,7 @@ replace the detail — it tells you which detail is still true and what is being
 | **Last updated** | 2026-09-15 — **SIFT+RANSAC run against the real archive; the follow-up visual check on `S3_test_03` is genuinely inconclusive**, not a confirmation — the evidence for its offset remains non-visual (determinism, cross-section consistency, RANSAC inlier count). Also: advisory demo panel shipped, backup GIF regenerated, backbone guard widened, COCO checkpoint pinned on Kaggle |
 | **Days to final** | **17** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
-| **REEFPRINT suite** | **350 passed, 4 deselected** — re-run and verified 2026-09-14 (+6 for the SIFT+RANSAC estimator's tests) |
+| **REEFPRINT suite** | **368 passed, 4 deselected** — re-run and verified 2026-09-14 (+6 for the SIFT+RANSAC estimator's tests) |
 | **KHANYA suite** | 87 passing (reported by main's audit; not re-run this session) |
 
 **Detail lives elsewhere, and this file says which of it to trust:**
@@ -187,6 +187,46 @@ tested below 1% abundance" honestly** (yes, and it failed completely there).
 
 Full thread: [issue #5](https://github.com/Sibusiso-K/KHANYA/issues/5).
 
+### C5 — `main`'s own hostile self-audit (2026-09-15): read it before the pitch, and the one item it assigned to this side is now answered
+
+Sibusiso, independent of issue #5, ran a genuinely hostile review of the whole submission against
+Problem 3's brief and published three documents on `main`:
+[`reports/ADVERSARIAL-CRITIQUE-2026-09-15.md`](https://github.com/Sibusiso-K/KHANYA/blob/main/reports/ADVERSARIAL-CRITIQUE-2026-09-15.md),
+[`reports/BUILD-REMEDIATION-PLAN-2026-09-15.md`](https://github.com/Sibusiso-K/KHANYA/blob/main/reports/BUILD-REMEDIATION-PLAN-2026-09-15.md),
+[`reports/REFINEMENT-AUDIT-2026-09-15.md`](https://github.com/Sibusiso-K/KHANYA/blob/main/reports/REFINEMENT-AUDIT-2026-09-15.md).
+**Read all three before touching the pitch.** Six questions the critique says the team must be
+able to answer cold: (1) the model scores 0.000 on the one rare phase it was given, and UG2's
+payload is rarer still — why should this transfer; (2) the published benchmark on this dataset is
+0.88, we report 0.57; (3) three of four decision thresholds in `advisor.py` are invented
+placeholders; (4) the uncertainty band spans two-thirds of the possible range, calibrated on the
+same 12 sections it is evaluated on; (5) the system recommends from one polished section, a real
+grind setpoint moves once a shift; (6) no South African ore, no flotation outcomes, no locality
+metadata — what has actually been validated.
+
+**The refinement audit assigned one item explicitly to this side**: a sensitivity analysis on
+whether topology refinement (`modal.refine_ore_mask`) changes *which* sections the decision-gap
+comparison flags, not just how many, "because it is a measurement question." **Done, same day**
+(`experiments/013-decision-gap-refinement-sensitivity/`), reading three already-committed
+`main` JSONs via `git show` — no cross-branch code import, no data transfer:
+
+- The aggregate flip rate (0.50, both conditions) is **not** an artefact of refinement — a real
+  point in the decision-gap finding's favour, clearing the confound the audit worried about.
+- **But raw and refined do not flag the same six sections** — 4 agree, 2 flip only under raw
+  (`test_10`, `test_11`), 2 only under refined (`test_06`, `test_08`). An exact McNemar test on
+  the 4 discordant pairs gives p = 1.0 — **cannot reject "no difference," which at n = 4 is "not
+  enough data to tell," not "confirmed the same."** Report both facts, not just the first.
+- **A second, unplanned finding**: the headline S2 mIoU depends on which averaging convention is
+  used. The reported **0.5725** is pooled across all 12 sections' pixels; averaging each
+  section's own mIoU instead gives **0.4671**, bootstrap 95% CI **[0.4116, 0.5362]** — and **10 of
+  12 sections score below the reported 0.5725**. Neither number is wrong; nowhere states which
+  convention is meant, which is the same shape of problem as the abundance-percentage mixup C4
+  already fixed. State the convention next to any mIoU that reaches a slide.
+- Built alongside this: `reefprint.trust.bootstrap` (`cluster_bootstrap_ci`, `paired_exact_test`)
+  — the section-level cluster bootstrap the plan specified and never built until a concrete need
+  from `main` produced it. 18 tests, `tests/test_trust_bootstrap.py`.
+
+Full writeup: `experiments/013-decision-gap-refinement-sensitivity/README.md`.
+
 ---
 
 ## 1. Lanes — who owns what
@@ -200,7 +240,7 @@ unchanged. Never by copying code across branches.**
 |---|---|---|
 | Owns | Physics, measurement, trust layer, `integrate`, `heads` | Segmentation model, dashboard, modal mineralogy |
 | Person | **Lethabo** | **Sibusiso** |
-| State | 350 tests, CI, 5 ADRs, SBOM | 87 tests, Stitch dashboard, trained model |
+| State | 368 tests, CI, 5 ADRs, SBOM | 87 tests, Stitch dashboard, trained model |
 | Push | `git push khanya main:reefprint` | `git push khanya main` |
 
 **This file is edited on `reefprint` and mirrored to `main` by Sibusiso.** Do not edit it on both
@@ -542,7 +582,7 @@ uv sync && uv run ruff check . && uv run ruff format --check .
 uv run pytest -m "not placeholder" -q
 ```
 
-Expect **350 passed, 4 deselected**. Anything less is a regression, not a quirk.
+Expect **368 passed, 4 deselected**. Anything less is a regression, not a quirk.
 
 ```bash
 uv run pytest -m placeholder -q --no-header -rf
