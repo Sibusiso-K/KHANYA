@@ -22,6 +22,38 @@ it is a press release.
 
 ---
 
+## 2026-09-15 — session 35 · sourced LumenStone V1 directly, closing the one open item left in session 34
+
+### Attempted
+
+`CONTEXT.md`/`WORKBOARD.md` §0 C4 left LumenStone V1 (the colour-adaptation subset) as unsourced
+by either side. Rather than leave it as a standing cross-person ask, tried fetching it directly
+from the dataset's own page.
+
+### Worked
+
+- The dataset's own summary table (`imaging.cs.msu.ru/en/research/geology/lumenstone`) names a
+  direct Yandex Disk link for V1 (100 MB). Yandex Disk's public API
+  (`cloud-api.yandex.net/v1/disk/public/resources/download`) converts a shared-folder URL into a
+  real download URL without needing an account. Downloaded `V1_v1.zip`, 104,705,467 bytes,
+  matching the published 100 MB exactly.
+- **Verified, not assumed**: unzipped and counted — exactly 30 `.jpg` files (`001.jpg`… `010.jpg`,
+  each with `a`/`b` variants), matching "10 samples × 3 imaging variations" precisely.
+- Staged at `data/lumenstone/V1_v1.zip` (gitignored, same DVC-tracked convention as `S3_v2.zip`)
+  and uploaded as a private Kaggle dataset, `lethabomh14/lumenstone-v1-reefprint`, so either
+  branch's kernels can mount it the same way `lumenstone-s3-v2-reefprint` already is.
+- `SBOM.md`, `docs/03-free-stack.md`, `WORKBOARD.md` §0 C4, `CONTEXT.md` updated. This closes the
+  one item session 34 left open after Sibusiso's response.
+
+### Left open
+
+- Still needs someone (most naturally Sibusiso, since `robustness.py` lives on `khanya/main`) to
+  actually re-run the robustness sweep against this real data and replace the synthetic
+  white-balance/exposure numbers `robustness.py`'s own docstring already flags as the weaker
+  evidence.
+
+---
+
 ## 2026-09-15 — session 34 · Sibusiso answered issue #5: one plan item retracted, magnetite is worse than reported
 
 ### Attempted
@@ -70,8 +102,6 @@ sharpened magnetite finding). Replied confirming the one thing he asked this sid
 
 ### Left open
 
-- LumenStone V1 (the colour-adaptation subset) is unsourced by either side — worth trying to
-  fetch directly from the dataset authors rather than leaving it as a standing cross-person ask.
 - S1+S2 data still incoming from Sibusiso; J0/J1/J2 cannot start until it lands.
 - Whether magnetite's dead-channel failure is fixable by budget alone (this project's working
   hypothesis) or needs something more (a loss-function or sampling change) is not yet tested —

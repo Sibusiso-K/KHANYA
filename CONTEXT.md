@@ -131,8 +131,10 @@ on the record**: a scaling study reported as evidence, never touching the demo c
 one**: rebuilt against the real checkpoint, magnetite is a dead output channel (0 of 821,587 true
 pixels ever predicted as magnetite, across 92.6M S2 test pixels) — `CLAUDE.md`'s literature-table
 framing ("our magnetite problem is the literature's magnetite problem") was too generous and has
-been corrected there. LumenStone V1 (colour-adaptation subset) remains unsourced by either side —
-open action for whoever gets to it first. The torchvision COCO checkpoint needed for training
+been corrected there. **LumenStone V1 (colour-adaptation subset) sourced 2026-09-15** — 30 images,
+staged at `data/lumenstone/V1_v1.zip` and on Kaggle (`lethabomh14/lumenstone-v1-reefprint`), ready
+for Sibusiso to re-run `khanya/main:src/robustness.py` against real data whenever he gets to it.
+The torchvision COCO checkpoint needed for training
 kernels is pre-staged on Kaggle (`SBOM.md`). The paragraphs below are the detailed history of how
 P1–P5 got here and remain accurate as history; they are not re-litigated.
 

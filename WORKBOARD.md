@@ -143,8 +143,12 @@ full thread before repeating any of the plan items it changes.
   attempt to ship a better checkpoint before the 25 Sep freeze. Never touches the demo checkpoint,
   `BACKUP-DEMO-SCRIPT.md`'s numbers, or the calibrated conformal band. Sibusiso sends S1+S2 on
   this understanding.
-- **LumenStone V1 (the colour-adaptation subset)**: neither side has it. Needs a fresh download
-  from the dataset authors — open, unblocked action for whoever gets to it first.
+- **LumenStone V1 (the colour-adaptation subset): sourced 2026-09-15**, directly from the
+  dataset's own download link — 30 images (10 samples × 3 imaging variations), matching the
+  published description exactly. Staged at `data/lumenstone/V1_v1.zip` and uploaded as a private
+  Kaggle dataset, `lethabomh14/lumenstone-v1-reefprint`, so either branch's kernels can use it.
+  `khanya/main:src/robustness.py`'s own docstring already names this as the fix for its synthetic
+  perturbations — ready for that re-run whenever Sibusiso can get to it.
 
 **The magnetite finding matters more than any of the above, and changes a claim in `CLAUDE.md`.**
 Rebuilt the confusion matrix against the real patches checkpoint (his first attempt used the
