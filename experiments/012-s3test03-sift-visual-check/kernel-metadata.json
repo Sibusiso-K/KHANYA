@@ -1,0 +1,16 @@
+{
+  "id": "lethabomh14/reefprint-p5-sift-visual-check",
+  "title": "reefprint p5 sift visual check",
+  "code_file": "kernel_entry.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": false,
+  "dataset_sources": [
+    "lethabomh14/lumenstone-s3-v2-reefprint",
+    "lethabomh14/reefprint-code"
+  ],
+  "competition_sources": [],
+  "kernel_sources": []
+}
