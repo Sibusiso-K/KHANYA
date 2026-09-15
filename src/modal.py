@@ -160,9 +160,21 @@ class ModalResult:
 #                -> morphological opening
 #   holes        a phase predicted as background INSIDE a grain punches a hole
 #                that can split one particle into two. This is not hypothetical
-#                here: magnetite is predicted as background 92.3% of the time,
-#                so every magnetite inclusion becomes a hole
+#                here: magnetite is predicted as background 78.3% of the time
+#                (reports/magnetite_confusion_patches.json, current patches
+#                checkpoint; the 92.3% this comment carried until 2026-09-15 was
+#                the superseded resize baseline), so magnetite inclusions become
+#                holes
 #                -> binary hole filling
+#
+#                MEASURED 2026-09-15, and it is not mainly about magnetite: of
+#                the 3,518,530 pixels hole filling adds to the ore mask, only
+#                3.7% are true magnetite and 83.5% are true background - i.e.
+#                enclosed resin and pore space absorbed into the particle
+#                envelope. Whether that absorption is metallurgically right is
+#                an open judgement, not a settled one. See
+#                reports/REFINEMENT-AUDIT-2026-09-15.md and
+#                `python -m src.refinement_audit`.
 #   merging      genuinely separate grains that touch are read as one particle,
 #                whose composition is then an average of both
 #                -> marker-controlled watershed on the distance transform
@@ -170,6 +182,12 @@ class ModalResult:
 # Applied identically to ground-truth and predicted masks. The estimator is what
 # is being changed, so both sides must use it or the comparison is meaningless.
 
+# NOT TUNED. These three integers are hand-set and no sensitivity analysis has
+# been run on them, yet the refinement they parameterise is load-bearing for
+# every number this project reports: on 3 of 12 S2 test sections it moves
+# liberation from ~0.00 to ~0.75-0.80 (reports/refinement_audit.json). Before
+# the decision-gap result is presented as a finding, perturb these and confirm
+# it survives. Tracked in reports/REFINEMENT-AUDIT-2026-09-15.md §5.1.
 SPECKLE_KERNEL = 3
 SEED_MIN_DISTANCE = 5   # px; distance-transform peaks closer to an edge than
                         # this are noise, not particle centres

@@ -19,6 +19,77 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-15 — Sibusiso (62) — audited the layer every number rests on
+
+**Did:** Answered Lethabo's issue #5 (all four asks), then audited
+`modal.refine_ore_mask` + `watershed_particles` - the morphological layer
+underneath the decision-gap result, the conformal band and the dashboard's
+association index. Nobody had measured what it does. Now measured, reproducibly:
+`python -m src.refinement_audit` regenerates every figure in seconds from cached
+predictions.
+
+**Two hypotheses formed and both killed by measurement, which is the good news:**
+(A) "the repair is compensating for the dead magnetite channel" - REJECTED, only
+**3.7%** of the 3,518,530 pixels it adds are true magnetite. (B) "the repair
+biases liberation conservative, which is why unsafe errors hit zero" - REJECTED,
+mean delta **+0.0840**, direction mixed 5 down / 3 up / 4 unchanged. **The
+decision-gap finding survived two confounds that would have invalidated it.**
+
+**What did land:** the refinement is a *replacement*, not a correction - on 3 of
+12 sections it moves liberation from ~0.00 to ~0.75-0.80 (test_09: 0.0000 ->
+0.8024). It is load-bearing and necessary (raw connected components are
+degenerate; speckle fuses the field into one blob). By area it is **83.5% true
+background** - enclosed resin and pore space absorbed into particle envelopes, a
+metallurgical judgement that is nowhere documented. And it rests on three
+hand-set constants (`SPECKLE_KERNEL=3`, `SEED_MIN_DISTANCE=5`,
+`PEAK_FOOTPRINT=9`) with **no sensitivity analysis**. A judge who opens
+`modal.py` reaches this in five minutes and "we tuned them on held-out data" is
+not an available answer.
+
+**Third stale artifact of the day, this one in source code.** `modal.py` had
+justified hole filling with "magnetite predicted as background 92.3% of the
+time" - that is the *resize baseline*; the shipping checkpoint is **78.32%**.
+Preceded by `benchmark_s1_patches.json` (reported S1 mIoU 0.3295 against a real
+0.7116; its prediction cache is four days older than the checkpoint - Lethabo
+caught this) and `magnetite_confusion.json` (labelled `"resize baseline"` but
+cited as current *by me*, in the comment crediting him for catching the first
+one; corrected publicly rather than edited away). Three in one day is not
+coincidence - every generated artifact needs `checkpoint_sha` + `generated_at`,
+and preflight should refuse to start on a mismatch.
+
+**Also settled the magnetite abundance mess:** S2 **train** share 1.841%, S2
+**test** share **0.792%**, Lethabo's ledger 1.58% is the pooled figure. Three
+correct quantities under one name. Use the **test** share - it is what the model
+was scored on, it is already below 1%, and it kills the "you have not tested
+below 1%" reply. Across 92.6M test pixels the model predicts magnetite **exactly
+zero times** - a dead output channel, not a rounding artifact
+(`reports/magnetite_confusion_patches.json`).
+
+**Changed:** `src/refinement_audit.py` (new), `reports/refinement_audit.json`
+(new), `reports/magnetite_confusion_patches.json` (new),
+`reports/REFINEMENT-AUDIT-2026-09-15.md` (new), `src/modal.py` (corrected the
+92.3% comment, flagged the three constants as untuned).
+
+**Blocked on:** Lethabo, four questions on issue #5, none yet answered:
+(1) how anyone but Sibusiso reproduces 0.7116 - `checkpoints/` is gitignored and
+`git ls-files` confirms no checkpoint is tracked, so the corrected number is not
+reproducible by him, a judge, or MOTT; LFS, off-repo host, or accept local-only?
+(2) `checkpoint_sha` + `generated_at` on every report - worth a shared schema?
+(3) does scheduling the day-20 scaling run make sense before (1) is settled, since
+a new checkpoint inherits the same reproducibility problem? (4) a joint rehearsal
+slot before day 20 - presentation clarity is the one judging criterion nobody has
+touched.
+
+**Next:** Lethabo - the sensitivity analysis on the three morphology constants
+belongs on your side of the seam under ADR-0003; it is a measurement question,
+costs no GPU, and is one loop over cached predictions. Until it returns, do not
+lead the pitch with the decision-gap finding (the retraction in
+`ADVERSARIAL-CRITIQUE` §7 stands, and this audit adds a second reason). S1
+benchmark re-cache was still running when this was written - the corrected
+`benchmark_s1_patches.json` lands in a follow-up commit.
+
+---
+
 ## 2026-09-15 — Sibusiso (61) — build remediation plan, published to be attacked
 
 **Did:** Published `reports/BUILD-REMEDIATION-PLAN-2026-09-15.md` as the

@@ -1,0 +1,140 @@
+{
+  "subset": "S2",
+  "model": "patches (current shipping checkpoint)",
+  "n_test_sections": 12,
+  "pred_dir": "data/derived/preds_s2_patches",
+  "class_names": [
+    "background",
+    "chalcopyrite",
+    "magnetite",
+    "pyrrhotite",
+    "pentlandite"
+  ],
+  "hole_filling": {
+    "pixels_added_to_ore": 3518530,
+    "true_composition_of_added": [
+      2937987,
+      21513,
+      131644,
+      367873,
+      59513
+    ],
+    "share_truly_background": 0.8350041068287041,
+    "share_truly_ore": 0.16499589317129595,
+    "share_truly_magnetite": 0.03741448843693247,
+    "magnetite_recovered_of_all_magnetite": 0.1602313571173838
+  },
+  "liberation": {
+    "per_section": [
+      {
+        "section": "test_01",
+        "liberation_raw": 1.0,
+        "liberation_refined": 0.9504596789423985,
+        "delta": -0.04954032105760153,
+        "particles_raw": 109,
+        "particles_refined": 181
+      },
+      {
+        "section": "test_02",
+        "liberation_raw": 0.0,
+        "liberation_refined": 0.0,
+        "delta": 0.0,
+        "particles_raw": 2,
+        "particles_refined": 19
+      },
+      {
+        "section": "test_03",
+        "liberation_raw": 0.9999942566923892,
+        "liberation_refined": 0.8073569772822219,
+        "delta": -0.19263727941016728,
+        "particles_raw": 92,
+        "particles_refined": 135
+      },
+      {
+        "section": "test_04",
+        "liberation_raw": 0.925980241731078,
+        "liberation_refined": 0.744539519080954,
+        "delta": -0.181440722650124,
+        "particles_raw": 62,
+        "particles_refined": 170
+      },
+      {
+        "section": "test_05",
+        "liberation_raw": 0.7862408206738046,
+        "liberation_refined": 0.5245447021232396,
+        "delta": -0.26169611855056507,
+        "particles_raw": 114,
+        "particles_refined": 188
+      },
+      {
+        "section": "test_06",
+        "liberation_raw": 0.023626282567548316,
+        "liberation_refined": 0.196612106881079,
+        "delta": 0.17298582431353068,
+        "particles_raw": 124,
+        "particles_refined": 262
+      },
+      {
+        "section": "test_07",
+        "liberation_raw": 0.0,
+        "liberation_refined": 0.0,
+        "delta": 0.0,
+        "particles_raw": 5,
+        "particles_refined": 19
+      },
+      {
+        "section": "test_08",
+        "liberation_raw": 0.00014252718072794144,
+        "liberation_refined": 0.7267714216614498,
+        "delta": 0.7266288944807219,
+        "particles_raw": 3,
+        "particles_refined": 31
+      },
+      {
+        "section": "test_09",
+        "liberation_raw": 0.0,
+        "liberation_refined": 0.8024300734007296,
+        "delta": 0.8024300734007296,
+        "particles_raw": 1,
+        "particles_refined": 38
+      },
+      {
+        "section": "test_10",
+        "liberation_raw": 0.0,
+        "liberation_refined": 0.0,
+        "delta": 0.0,
+        "particles_raw": 3,
+        "particles_refined": 21
+      },
+      {
+        "section": "test_11",
+        "liberation_raw": 0.0,
+        "liberation_refined": 0.0,
+        "delta": 0.0,
+        "particles_raw": 4,
+        "particles_refined": 38
+      },
+      {
+        "section": "test_12",
+        "liberation_raw": 0.009672141611710044,
+        "liberation_refined": 0.00040650543071098135,
+        "delta": -0.009265636180999064,
+        "particles_raw": 4,
+        "particles_refined": 38
+      }
+    ],
+    "mean_delta": 0.0839553928621271,
+    "n_measurable": 12,
+    "n_lowered": 5,
+    "n_raised": 3,
+    "n_unchanged": 4,
+    "max_abs_delta": 0.8024300734007296
+  },
+  "morphology_constants": {
+    "SPECKLE_KERNEL": 3,
+    "SEED_MIN_DISTANCE": 5,
+    "PEAK_FOOTPRINT": 9,
+    "LIBERATION_THRESHOLD": 0.5,
+    "MIN_PARTICLE_PIXELS": 64
+  }
+}

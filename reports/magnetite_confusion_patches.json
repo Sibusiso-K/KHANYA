@@ -1,0 +1,49 @@
+{
+  "confusion": [
+    [
+      23818553,
+      211987,
+      0,
+      1477476,
+      388149
+    ],
+    [
+      83863,
+      3777020,
+      0,
+      164868,
+      1248469
+    ],
+    [
+      643451,
+      673,
+      0,
+      138272,
+      39191
+    ],
+    [
+      648978,
+      984808,
+      0,
+      56571212,
+      2342447
+    ],
+    [
+      77203,
+      91370,
+      0,
+      2735419,
+      8351935
+    ]
+  ],
+  "class_names": [
+    "background",
+    "chalcopyrite",
+    "magnetite",
+    "pyrrhotite",
+    "pentlandite"
+  ],
+  "model": "patches (current shipping checkpoint)",
+  "subset": "S2",
+  "n_test_images": 12
+}
