@@ -23,3 +23,6 @@ reports/*.png
 !reports/figures/
 !reports/figures/*.png
 reports/*.csv
+
+# Claude Code machine-local settings (permissions, not project config)
+.claude/settings.local.json

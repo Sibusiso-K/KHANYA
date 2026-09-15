@@ -19,6 +19,76 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-15 — Sibusiso (65) — the advice changes when only the light changes
+
+**Did:** Ran the V1 work Lethabo flagged as mine. It could not be done as
+`robustness.py` intended, and what replaced it found something worse than a
+robustness number.
+
+**V1 has no masks.** Read the dataset's own distribution table directly: S1 and
+S2 ship "images + masks + visualizations", V1 ships "images (3 variations)".
+`robustness.py` scores IoU against ground truth, so its docstring's "real V1
+evidence should replace this" is not executable. Built
+`src/v1_consistency.py` instead - self-consistency needs no labels, because the
+same section must give the same answer twice.
+
+**The finding, from two independent in-domain routes:**
+
+| | n | mean mask IoU, same field twice | recommendation changed |
+|---|---|---|---|
+| V1, real re-imaging (S1 ckpt) | 10 | **0.3213** | **5/10** |
+| S2 held-out, synthetic -35 RGB | 12 | **0.4597** | **8/12** |
+
+Nothing about the rock changed. V1 sample 005 liberation **0.941 -> 0.001**; S2
+`test_05` **0.941 -> unmeasurable**. **On half to two thirds of sections the
+plant recommendation changes because the illumination changed.** The advisor
+refuses on low payload and hedges near the liberation threshold; it has no
+notion of "imaged under conditions I cannot vouch for", so it does not refuse
+here - it confidently changes its mind.
+
+**A mistake that nearly shipped, logged not buried.** The first run used the
+**S2** checkpoint and gave 8/10 and 35.23 pp drift. The dataset page says *"V1:
+the same samples as for S1"* - S1 is Berezovskoe, S2 is Norilsk. That run was
+the cross-dataset out-of-domain case `BACKUP-DEMO-SCRIPT.md` already uses as its
+refusal beat, and it inflated the effect by about 2x. Retracted in the report.
+The dramatic first number was the wrong number, which is exactly when this
+project is supposed to go looking for the bug.
+
+**Verified rather than assumed:** V1's `NNN`/`NNNb` pairs are pixel-registered
+(NCC **0.99 at zero shift**, all ten); `NNNa` is a different camera and field,
+peaking at **0.27** over a full scale/offset sweep, so it is **excluded** - ten
+valid pairs, not fifteen. This check was run because the S3 rotation series was
+assumed registered and was not. Archive is 104,705,467 bytes, sha256
+`499c625a...`, byte-identical to REEFPRINT's copy.
+
+**Also found, and it reopens a closed ask:** the **S1 v1** archive (535 MB,
+images + masks) is publicly downloadable from the same page. Issue #5 ask 4 was
+retracted as unsound because positional filenames cannot establish the v1/v2
+subset relation - the sound check is content hashing, and those images are one
+download away. That restores the like-for-like comparison against the published
+**0.8373** at zero GPU cost. Not downloaded yet.
+
+**Changed:** `src/v1_consistency.py` (new), `src/exposure_control.py` (new),
+`reports/ILLUMINATION-STABILITY-2026-09-15.md` (new),
+`reports/V1-ROBUSTNESS-PLAN-2026-09-15.md` (new, superseded by the above),
+`reports/v1_consistency.json`, `reports/exposure_control_s2.json`,
+`.claude/settings.local.json` (gitignored), `.gitignore`.
+
+**Blocked on:** the S1/S2 Kaggle upload is still paused on Lethabo's A-or-B call
+about the redistribution contradiction (entry in
+`REDISTRIBUTION-CONTRADICTION-2026-09-15.md`).
+
+**Next:** Sibusiso - (1) decide whether the illumination finding goes in the
+pitch; my read is that it should lead the abstention argument, since it is the
+strongest evidence we have for the central claim and we found it against
+ourselves; (2) run `--full` to check the finding survives full-section
+inference; (3) LFS migration still outstanding. Lethabo - V1 is S1's samples,
+which means it is usable from your side for colour-adaptation work against the
+S1 checkpoint, and the registration result (b registered, a not) is the kind of
+thing your SIFT+RANSAC estimator could verify independently.
+
+---
+
 ## 2026-09-15 — Sibusiso (64) — the stale S1 cache had inverted a claim in the pitch
 
 **Did:** Followed Lethabo's doubt (reefprint `70400db`) that claims resting on

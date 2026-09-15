@@ -1,0 +1,92 @@
+{
+  "control": "S2 held-out test, synthetic -35 RGB exposure shift",
+  "n": 12,
+  "mean_mask_iou": 0.459747702649439,
+  "n_action_changed": 8,
+  "rows": [
+    {
+      "section": "test_01",
+      "mask_iou": 0.3040821168873286,
+      "action_changed": false,
+      "lib_orig": 0.9890379629125424,
+      "lib_dark": 0.9783657722699812
+    },
+    {
+      "section": "test_02",
+      "mask_iou": 0.6873855433638043,
+      "action_changed": false,
+      "lib_orig": null,
+      "lib_dark": null
+    },
+    {
+      "section": "test_03",
+      "mask_iou": 0.6207569691420426,
+      "action_changed": false,
+      "lib_orig": 0.49242281908706065,
+      "lib_dark": 0.5988750940407052
+    },
+    {
+      "section": "test_04",
+      "mask_iou": 0.2914427321046221,
+      "action_changed": true,
+      "lib_orig": 0.677860696517413,
+      "lib_dark": null
+    },
+    {
+      "section": "test_05",
+      "mask_iou": 0.22682957482110253,
+      "action_changed": true,
+      "lib_orig": 0.9407393953403893,
+      "lib_dark": null
+    },
+    {
+      "section": "test_06",
+      "mask_iou": 0.4072834587442881,
+      "action_changed": false,
+      "lib_orig": 0.9607788567120223,
+      "lib_dark": 0.9590445541862546
+    },
+    {
+      "section": "test_07",
+      "mask_iou": 0.5684893049986428,
+      "action_changed": true,
+      "lib_orig": null,
+      "lib_dark": null
+    },
+    {
+      "section": "test_08",
+      "mask_iou": 0.2215407783918858,
+      "action_changed": true,
+      "lib_orig": 0.8225668915706208,
+      "lib_dark": null
+    },
+    {
+      "section": "test_09",
+      "mask_iou": 0.35703816579867675,
+      "action_changed": true,
+      "lib_orig": null,
+      "lib_dark": null
+    },
+    {
+      "section": "test_10",
+      "mask_iou": 0.6166148699354396,
+      "action_changed": true,
+      "lib_orig": null,
+      "lib_dark": null
+    },
+    {
+      "section": "test_11",
+      "mask_iou": 0.6084290968719314,
+      "action_changed": true,
+      "lib_orig": 0.0,
+      "lib_dark": null
+    },
+    {
+      "section": "test_12",
+      "mask_iou": 0.6070798207335031,
+      "action_changed": true,
+      "lib_orig": null,
+      "lib_dark": null
+    }
+  ]
+}
