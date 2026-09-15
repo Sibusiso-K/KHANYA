@@ -19,6 +19,65 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-15 — Sibusiso (63) — corrected S1 benchmark: the gap is one class
+
+**Did:** Finished the re-cache entry 62 promised (20/20 sections, ~2.5 min each
+on CPU, consistent with the measured 162.3s in `segmentation_latency.json`) and
+re-ran `src.benchmark` against the current checkpoint.
+
+**`reports/benchmark_s1_patches.json`: 0.3295 -> 0.7116** (plain), **0.7481**
+under the void-border protocol petroscope actually publishes. Against published
+ResUNet S1v1 0.8373 / 0.8506. The stale file had been misreporting our S1 result
+by **+0.38 mIoU** since 21 August. Lethabo found it from a branch that has
+neither the checkpoint nor the data.
+
+**The finding is the decomposition, not the number.** The 0.1025 void-border gap
+is not diffuse - it is **one class**:
+
+| class | gap vs published | share of total gap |
+|---|---|---|
+| tennantite | **-0.4361** | **60.8%** |
+| galena | -0.1029 | 14.3% |
+| sphalerite | -0.0962 | 13.4% |
+| pyrite | -0.0483 | 6.7% |
+| chalcopyrite | -0.0199 | 2.7% |
+| bornite | -0.0119 | 1.7% |
+| background | -0.0023 | 0.3% |
+
+**Excluding tennantite the gap is -0.0469 across six classes**, and background /
+bornite / chalcopyrite are effectively matched to published.
+
+**This unifies with the magnetite result into one characterisable failure mode.**
+Both tennantite (grey, optically close to the other sulphides) and magnetite
+(dark, optically close to the mounting resin) are **low-reflectance-contrast
+phases**, and both are detected by published work on the same modality
+(tennantite 0.7601, magnetite 0.650 per Korshunov). Rarity is again not the
+driver: tennantite is 3.917% of S1 train pixels and scores 0.3130, while
+chalcopyrite at a *lower* 2.974% scores 0.8652.
+
+So the honest characterisation is: **this model loses specifically on phases with
+low reflectance contrast against their neighbours, and the literature shows that
+is a capacity/training-budget limit rather than a limit of the modality.** That
+is a claim J0/J1/J2 measures directly - it is the strongest argument yet for
+Lethabo's scaling study framed as evidence.
+
+**Changed:** `reports/benchmark_s1_patches.json`,
+`reports/decision_gap_s1_patches.json`, `data/derived/preds_s1_patches/`
+(regenerated, gitignored).
+
+**Blocked on:** nothing new. Issue #5 Q1-Q4 all answered by Lethabo (Git LFS for
+the checkpoint - his reasoning beat mine, it keeps the binary bound to the commit
+history MOTT assesses; `checkpoint_sha`+`generated_at` agreed; reproducibility
+before GPU time; rehearsal date deferred to Sibusiso).
+
+**Next:** Sibusiso - the LFS migration is now the highest-value unblocked item,
+because it is what makes 0.7116 reproducible by anyone other than this machine.
+Lethabo - the pre-registered kill criterion for the morphology sensitivity
+analysis (see entry 62's correction), and note this benchmark decomposition
+strengthens the J0/J1/J2 evidence framing you already set.
+
+---
+
 ## 2026-09-15 — Sibusiso (62) — audited the layer every number rests on
 
 **Did:** Answered Lethabo's issue #5 (all four asks), then audited
