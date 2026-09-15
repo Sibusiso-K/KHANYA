@@ -151,6 +151,20 @@ avoidance of the question, for three concrete reasons:
    trained weights derived from it, are present in the public repository
    that Mintek's Office of Technology Transfer will review. Verified:
    `git ls-files | grep "^data/raw\|^checkpoints/"` returns nothing.
+
+   > **CONTESTED 2026-09-15 - DO NOT SHIP THIS SENTENCE AS WRITTEN.** It is
+   > true of the git repository and false of the project. Two LumenStone
+   > subsets have been mirrored to private Kaggle datasets from `reefprint`
+   > (`lethabomh14/lumenstone-s3-v2-reefprint`,
+   > `lethabomh14/lumenstone-v1-reefprint`) so offline training kernels can
+   > mount them, and a request to mirror S1 and S2 the same way is open. A
+   > claim that survives only on the reading "not redistributed *in the repo*"
+   > should not go into an IP assessment whose assessor can check Kaggle.
+   > Resolution options and the actual licence text (it is a use-and-cite
+   > grant, silent on redistribution - and it is **not** CC BY-NC-SA, that is
+   > LITHOS-DATASET) are in
+   > `reports/REDISTRIBUTION-CONTRADICTION-2026-09-15.md`. The S1/S2 upload is
+   > paused pending that decision.
 2. **What we do is unambiguously "your own research work."** Private
    training, reporting derived metrics (with citation, per the terms), and a
    live academic demonstration at a university-affiliated hackathon are the
