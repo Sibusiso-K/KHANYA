@@ -14,9 +14,19 @@ GIF - see WORKBOARD.md §2). This is KHANYA's equivalent.
 
 1. `cd KHANYA && .venv\Scripts\python.exe -m streamlit run dashboard\app.py --server.port 8501`
    (same command as `.claude/launch.json`'s `khanya-advisor` config).
-2. Confirm the venue laptop's wifi is OFF before starting - this is the actual
+2. **Before anything else, confirm `asyncua` actually imports in THIS
+   venv**: `.venv\Scripts\python.exe -c "import asyncua"`. `requirements.txt`
+   listing a package is not the same as the venv the demo command runs
+   under actually having it installed (entry 59 found exactly this gap on
+   2026-09-14 - `pip install` into the wrong Python left the dashboard
+   showing "OPC UA · UNAVAILABLE" live). If it fails: `.venv\Scripts\
+   python.exe -m pip install -r requirements.txt` into this exact venv,
+   then re-check. Confirm by uploading one test image and reading the OPC
+   UA line on the result - it must say "PUBLISHED + ACKNOWLEDGED", not
+   "UNAVAILABLE".
+3. Confirm the venue laptop's wifi is OFF before starting - this is the actual
    claim being demonstrated (`STATUS.md`, the offline-network CI guard).
-3. Have these three files ready in one folder, already renamed something a
+4. Have these three files ready in one folder, already renamed something a
    viewer will recognise as arbitrary (not `test_01.jpg` - a judge should not
    read that as "cherry-picked from the training author's own test set" even
    though it correctly is a held-out image the model never trained on):
@@ -27,7 +37,7 @@ GIF - see WORKBOARD.md §2). This is KHANYA's equivalent.
      S2-trained model; it is not a corrupted or fake image. KHANYA currently
      has no validated image-level OOD detector, so do not call this an OOD
      detection demonstration.)
-4. **Upload each once before recording**, so Streamlit's cache is warm and
+5. **Upload each once before recording**, so Streamlit's cache is warm and
    the recorded run doesn't sit on a multi-minute spinner. Confirm each
    produces the expected result below before recording starts.
 

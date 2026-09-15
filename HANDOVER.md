@@ -19,6 +19,73 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-15 — Sibusiso (59) — OPC UA integration verified live: real bug found, but not in the code
+
+**Did:** Codex shipped `d26a410` ("Wire dashboard results to OPC UA advisory
+flow") - every KHANYA result now auto-publishes to `reefprint`'s real
+`AdvisoryServer`, is read back by a separate `SimulatedControlClient`, and
+both the fresh-apply and stale-refuse cases show live in the dashboard
+(the second wired to fire automatically whenever segmentation itself
+refuses, plus a presenter button to trigger it on demand). Also shipped the
+CSS restyle of the mode selector and uploader. Same pattern as the last two
+rounds: Codex's own report said they had no runtime to verify with, so I
+did before trusting it.
+
+**Checked the API against the real `reefprint` source first** (`AdvisoryRecord`,
+`AdvisoryServer`, `SimulatedControlClient` - read directly from the updated
+`REEFPRINT` worktree, not assumed): every field name, method signature, and
+async context-manager usage in the new `dashboard/opcua.py` matches exactly.
+No API-mismatch bug this time - a real improvement in how carefully the
+cross-branch seam was built.
+
+**The real bug wasn't in the code - it was the environment.** `pytest`
+passed clean (116/116) because the new OPC UA test only exercises the pure
+`record_parameters()` dict logic, never a real server. Ran `publish_result()`
+directly first: worked perfectly (a real local `asyncua` server actually
+spun up, a real client connected, fresh-apply and stale-refuse both behaved
+correctly). But the live dashboard showed **"OPC UA · UNAVAILABLE · No
+module named 'asyncua'"** - because Streamlit runs under `.venv\Scripts\
+python.exe` (per `.claude/launch.json`), a *different* interpreter from the
+one my shell's `pip install` and manual test used. `requirements.txt`
+correctly lists `asyncua>=1.1`; the actual venv just hadn't been synced to it.
+
+**This is a real, practical risk for the actual presentation laptop, not
+just this host**: whoever sets it up must run `pip install -r
+requirements.txt` into the *exact* venv the demo command uses, or this
+same silent-seeming "UNAVAILABLE" state happens live on stage during what's
+now supposed to be the memorable escalating-refusal beat. Installed
+`asyncua` into `.venv` here and re-verified.
+
+**After the fix, verified both cases live in the browser, not just via the
+direct script:**
+- Fresh result (`test_01.jpg`, Live Field Mode): **"OPC UA · PUBLISHED +
+  ACKNOWLEDGED · Published model_confidence, association_index · consumer
+  acknowledged and applied."**
+- Stale case (via the presenter button, same image, re-run): the live
+  transaction message **"Consumer refused stale record: model_confidence"**
+  fired during the run, and the final rendered result showed **"OPC UA ·
+  CONSUMER REFUSED · ... model_confidence age 5.3s > validity 0.5s ·
+  nothing applied."**
+- UI restyle: confirmed visually - the mode selector now renders as real
+  tabs matching the design tokens, the uploader has a proper dashed-border
+  drop-zone treatment. Genuinely less bolted-on than before.
+
+**Verified:** 116/116 tests pass. Live browser verification of the full
+OPC UA round trip (both outcomes) via `iframe.contentDocument`, not
+screenshots alone - same discipline as entries 57-58.
+
+**Changed:** nothing in the repo - the fix was a local pip install into
+`.venv`, not a code change. `requirements.txt` was already correct.
+
+**Blocked on:** nothing for the feature itself. The environment-sync risk
+above is real for whoever preps the actual demo hardware - flagging it
+loudly rather than assuming it'll be remembered.
+
+**Next:** `BACKUP-DEMO-SCRIPT.md` should get an explicit step confirming
+`asyncua` is importable in the demo venv before recording or presenting -
+"pip install -r requirements.txt" alone doesn't catch a venv mismatch, only
+actually running the app and checking the OPC UA line does.
+
 ## 2026-09-14 — Codex — live OPC UA publish/refusal and control restyle
 
 **Did:** Wired every Live Field and Full Section result through REEFPRINT's
