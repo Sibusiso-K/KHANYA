@@ -112,9 +112,14 @@ method per Rule 10), has now been run against the real S3 v2 archive**
 (`experiments/011-sift-ransac-registration/README.md`) — determinism confirmed on real data,
 close agreement with the grid search on 4/5 sections, and on `S3_test_03` (the section the grid
 search's retracted `FOURTH` verdict came from) an offset consistent with the other four and with
-the naive condition's own verdict. **Not yet a claim** — the next action on P5 is the same visual
-check `experiments/009-s3test03-visual-check/` ran on the grid search's offset, now needed on
-SIFT+RANSAC's. Separately, **the stale `reports/benchmark_s1_patches.json` (0.3295) still needs
+the naive condition's own verdict. **The follow-up visual check (`experiments/012-...`) ran and
+is genuinely inconclusive** — not a confirmation, and the reason is informative: this section's
+texture is self-similar enough that a human eye cannot decisively confirm or refute a landmark
+match, the same property that made the grid search unreliable here in the first place. **Still
+not a claim** — the evidence base for the SIFT+RANSAC offset stays non-visual (determinism,
+cross-section consistency, and up to 17,074 RANSAC-matched inliers per frame consistent with one
+transform at sub-1.5px residual). Separately, **the stale `reports/benchmark_s1_patches.json`
+(0.3295) still needs
 re-caching** against the current checkpoint to show its real score (0.7116) — blocked on
 `best.pt`, S1/S2 data, and LumenStone V1, all asked of Sibusiso in
 [issue #5](https://github.com/Sibusiso-K/KHANYA/issues/5), open as of 2026-09-15. The torchvision

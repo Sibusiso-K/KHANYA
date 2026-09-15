@@ -6,7 +6,7 @@ replace the detail — it tells you which detail is still true and what is being
 
 | | |
 |---|---|
-| **Last updated** | 2026-09-15 — **SIFT+RANSAC run against the real S3 v2 archive**: determinism confirmed, agrees with the grid search on 4/5 sections, and on `S3_test_03` returns an offset consistent with the pattern the grid search's retracted answer broke — visual check still needed before it is a claim. Also: advisory demo panel shipped, backup GIF regenerated, backbone guard widened, COCO checkpoint pinned on Kaggle |
+| **Last updated** | 2026-09-15 — **SIFT+RANSAC run against the real archive; the follow-up visual check on `S3_test_03` is genuinely inconclusive**, not a confirmation — the evidence for its offset remains non-visual (determinism, cross-section consistency, RANSAC inlier count). Also: advisory demo panel shipped, backup GIF regenerated, backbone guard widened, COCO checkpoint pinned on Kaggle |
 | **Days to final** | **17** — final 1 October 2026, 13:00 hard submission, 10-minute pitch |
 | **Freeze date** | **25 September** (feature freeze) · **30 September** (dry-run submission) |
 | **REEFPRINT suite** | **350 passed, 4 deselected** — re-run and verified 2026-09-14 (+6 for the SIFT+RANSAC estimator's tests) |
@@ -379,10 +379,29 @@ once on this exact section. Full table, caveats, and a genuine cost finding (per
 tracked inlier count, not frame count — up to 17,074 inliers on `S3_test_03`, driving ~40 min
 sections even at 24 frames) in `experiments/011-sift-ransac-registration/README.md`.
 
-**Next action on P5**: the visual check on SIFT+RANSAC's `S3_test_03` offset. If it survives,
-that becomes the reported offset for that section, with the grid search's determinism status on
-the other four still an open question `experiments/010` left unresolved (only SIFT+RANSAC's
-determinism was checked this run, not the grid search's).
+**2026-09-15 — the visual check ran, and it is genuinely inconclusive, not a confirmation.**
+`experiments/012-s3test03-sift-visual-check/`: `experiment 009`'s exact method, extended to three
+candidates (naive/grid/sift) instead of one. Full-frame overlays for all three read the same way
+`009`'s naive/grid pair already did — broadly similar yellow-green coverage, no candidate
+obviously more coherent. A zoomed, programmatically-selected landmark did not resolve it either.
+**A raw correlation re-check was tried and rejected as circular** — it favours the grid search's
+own offset, unsurprising since whole-frame correlation is literally that search's optimisation
+objective, so it cannot arbitrate between the two candidates. **The working explanation is the
+same self-similarity `experiments/010` already named**: a texture rich enough to give a
+correlation search multiple near-tied optima is rich enough that a human eye cannot always
+distinguish a genuine grain match from a coincidental one either. `009`'s own check worked because
+that section had one unusually distinctive, trackable grain; this landmark did not.
+
+**What still favours SIFT+RANSAC's offset, none of it visual:** determinism on real data
+(`experiments/011`), cross-section offset-magnitude consistency (011's four other sections),
+harmonic-verdict agreement with the naive condition, and — the argument this experiment actually
+adds — **up to 17,074 independently RANSAC-matched keypoint inliers in a single frame, all
+consistent with one rigid transform at under 1.5 px residual**, a form of internal cross-check the
+grid search has no equivalent of. Full writeup: `experiments/012-.../README.md`.
+
+**Still not promoted to a claim.** The grid search's determinism status on the other four sections
+remains the open question `experiments/010` left it as — only SIFT+RANSAC's determinism has been
+checked, not the grid search's, on any run to date.
 
 ---
 

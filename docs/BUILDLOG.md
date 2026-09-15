@@ -22,6 +22,63 @@ it is a press release.
 
 ---
 
+## 2026-09-15 — session 33 · the S3_test_03 visual check ran, and it is genuinely inconclusive — a real finding, not a failure
+
+### Attempted
+
+The next action session 32 left open: the visual check `experiments/009-s3test03-visual-check/`
+ran on the grid search's `S3_test_03` offset, now owed to SIFT+RANSAC's offset before it can be
+called a claim. Built `experiments/012-s3test03-sift-visual-check/`, extending 009's exact method
+(same section, same sample-frame indices, same red/green overlay convention) to three candidates
+side by side — naive, grid, SIFT+RANSAC.
+
+### Worked (in the sense of "produced a real, checkable result" — not "confirmed the hoped-for answer")
+
+- **Full-frame overlays for all three candidates read the same way 009's original naive/grid pair
+  did**: broadly similar yellow-green coverage across the specimen interior, no candidate
+  obviously more internally coherent by eye. This reproduces 009's own finding on the same
+  section with a third candidate added, rather than contradicting it.
+- **A zoomed, programmatically-selected landmark check** (local-variance maximum, chosen without
+  looking first, to avoid picking a spot that happens to flatter one candidate) also did not
+  resolve it — none of the three conditions showed an unambiguous, confidently-matched landmark
+  against the reference.
+- **A pixel-correlation re-check was tried and explicitly rejected as circular**: it favoured the
+  grid search's own offset, which is exactly what should happen and proves nothing, since
+  whole-frame correlation is literally `estimate_rotation_centre`'s own optimisation objective. A
+  metric cannot arbitrate between two candidates when one of them was chosen to maximise it.
+- **The working explanation is the one already on record**: `experiments/010`'s hypothesis that
+  real mineral texture's self-similarity gives the correlation search multiple near-tied optima
+  applies just as much to a human eye trying to match a grain by sight. `009`'s check worked
+  because that section had one unusually distinctive, trackable grain (dark inclusion, fine
+  internal cracks); this landmark, on this section, did not offer an equally decisive feature.
+- **A new, non-visual argument surfaced by looking closely at numbers already in hand, not by
+  anything visual**: `S3_test_03`'s SIFT-matched frame pairs found up to **17,074 inliers in a
+  single frame**, every one independently required by RANSAC to be consistent with **one** rigid
+  transform at under 1.5 px average residual. Thousands of independently-matched point
+  correspondences agreeing with each other is a real cross-check the grid search has no
+  equivalent of, and it does not depend on a human eye resolving a self-similar texture.
+
+### Did not work
+
+The visual check itself did not settle the question, which is the honest result to report — not
+a confirmation dressed up as one, and not a retraction either. Full account, including the images
+looked at and the reasoning for rejecting the correlation re-check:
+`experiments/012-s3test03-sift-visual-check/README.md`.
+
+### Left open
+
+- **`S3_test_03`'s SIFT+RANSAC offset is still not a claim.** The case for it rests on
+  determinism, cross-section consistency, harmonic-verdict agreement, and RANSAC inlier
+  consistency — not on visual confirmation, which turned out not to be available on this section.
+- The grid search's own determinism on real data remains unchecked, as it has been since
+  `experiments/010`.
+- `experiments/012`'s own recommendation, if more confidence than this is needed: check whether
+  the RANSAC inlier-consistency argument holds on a second, independently-chosen frame pair not
+  already used in the reported estimate — not another visual check, since this one showed that
+  path does not resolve anything further on this section.
+
+---
+
 ## 2026-09-15 — session 32 · SIFT+RANSAC vs the grid search on the real archive: determinism confirmed, `S3_test_03` looks recoverable
 
 ### Attempted
