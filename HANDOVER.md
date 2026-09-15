@@ -19,6 +19,82 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-15 — Sibusiso (64) — the stale S1 cache had inverted a claim in the pitch
+
+**Did:** Followed Lethabo's doubt (reefprint `70400db`) that claims resting on
+`benchmark_s1_patches.json` were suspect. He was right, and it was worse than he
+thought. Ran a full provenance audit of every report against checkpoint mtimes,
+then regenerated everything downstream of the stale S1 cache.
+
+**The bad find: `PITCH.md` and the research report carried a factually inverted
+claim.** Both said the S1 generalisation test failed because *"the S1
+segmentation is much weaker (mean IoU 0.33 against 0.57, two classes at
+effectively zero)"*, and used that as the confound - no coherent structure left
+to repair. Corrected: **S1 is 0.7116, S2 is 0.5725.** S1 is the *stronger*
+segmentation. **No S1 class is near zero** (lowest tennantite 0.3130); the class
+at zero is magnetite, in S2. The confound was not weak, it was backwards.
+
+**The good find, and it is a better result than the one it replaces.** The old
+decision-gap table reported flips only, and its S2 refined row (2/12, 1 unsafe)
+did not match its own JSON. Regenerated all four runs with severity counts:
+
+| | Flips | Unsafe | Conservative | Flagged | Errors |
+|---|---|---|---|---|---|
+| S2 raw | 6/12 | 2 | 3 | 1 | **5** |
+| S2 refined | 6/12 | **0** | **0** | 6 | **0** |
+| S1 raw | 4/20 | 0 | 1 | 3 | **1** |
+| S1 refined | 14/20 | **0** | **0** | 14 | **0** |
+
+**Topology repair does not reduce how often the system disagrees with ground
+truth** - identical on S2 (6/12), and it *increases* disagreement on S1 (4/20 to
+14/20). What it does is convert disagreements from **silent errors into explicit
+hedges**: unsafe and conservative go to zero on both datasets and everything
+becomes a request for manual verification. Lethabo reached the same place
+independently from his side (`42118c1`: "the aggregate flip rate 0.50 is not an
+artefact of refinement", and raw/refined do not flag the same sections).
+
+So the finding **does** replicate on S1 - the old framing said it did not, because
+it was measured on flip rate, which is the wrong metric. New line for the pitch:
+*"repairing particle topology did not make the system more accurate - it made it
+stop being confidently wrong."* S1 remains weak evidence (its raw run had one
+error to remove and no unsafe ones) and that is stated.
+
+**Provenance audit result, and it bounds the damage:** every S2 artifact
+postdates its checkpoint (S2 patches checkpoint 16 Aug; S2 reports 16-18 Aug and
+13-14 Sep). **Only the S1 artifacts were stale**, plus `magnetite_confusion.json`
+which was correctly labelled `"resize baseline"` and miscited by me. The S2
+headline numbers stand.
+
+**On Lethabo's `ae5f749` (COCO checkpoint fails offline):** the bug is real but
+the description is off and the scope is narrower than stated. `main`'s
+`model.py` does **not** use `.DEFAULT` - it pins
+`DeepLabV3_ResNet50_Weights.COCO_WITH_VOC_LABELS_V1` explicitly, with a comment
+saying why. The offline failure is identical either way, so his finding holds.
+But **every inference path already passes `pretrained=False`** (dashboard,
+decision_gap, robustness, latency_benchmark, both evaluates, all tests) - only
+the four *training* entry points pass `pretrained=True`. **The stage demo is not
+affected and the offline claim is safe.** It affects J0/J1/J2 training kernels
+only. Preferred fix of his two: `weights=None` + explicit `load_state_dict`
+(0 missing/unexpected keys); not applied yet, it is a training-path change.
+
+**Changed:** `PITCH.md`, `reports/KHANYA-01-research-phase.md`,
+`reports/decision_gap_patches.json`, `reports/decision_gap_s1_patches.json`,
+`reports/decision_gap_s1_patches_refined.json`.
+
+**Blocked on:** nothing.
+
+**Next:** Sibusiso - (1) LFS migration, still the highest-value unblocked item;
+(2) apply the `weights=None` fix to `model.py` for the training path; (3) the
+morphology sensitivity sweep, now that Lethabo has pre-registered its kill
+criterion (14 configs; any config producing one unsafe classification kills the
+"driven to zero" claim - `docs/11-...` on reefprint). Lethabo - his unplanned
+S2 pooling finding (headline 0.5725 pooled across pixels vs 0.4671 averaging
+per-section means, 10 of 12 sections below 0.5725) is **not yet independently
+verified on this side**; it is the same two-conventions-one-name shape as the
+abundance mix-up and should be settled before either number reaches a slide.
+
+---
+
 ## 2026-09-15 — Sibusiso (63) — corrected S1 benchmark: the gap is one class
 
 **Did:** Finished the re-cache entry 62 promised (20/20 sections, ~2.5 min each

@@ -658,23 +658,57 @@ The central claim from section 5.0.5 was that repairing particle topology matter
 more than raising segmentation accuracy. S1 was chosen specifically to test
 whether that holds on a different ore genesis. It did not.
 
-| | Flips | Liberation correlation | MAE | Unsafe |
-|---|---|---|---|---|
-| S2 patch, raw components | 6/12 (50%) | -0.079 | 46.7% | 0 |
-| **S2 patch, refined** | **2/12 (17%)** | **+0.947** | **8.9%** | 1 |
-| S1 patch, raw components | 15/20 (75%) | +0.295 | 29.7% | 1 |
-| **S1 patch, refined** | **15/20 (75%)** | +0.198 | 20.3% | 2 |
+**Table regenerated 2026-09-15 against the current checkpoints.** The previous
+version of this table reported S2 refined as 2/12 flips with 1 unsafe, and both
+S1 rows as 15/20; none of those matched the evidence JSONs they cited. The S1
+rows were computed from a prediction cache four days older than the S1
+checkpoint. Severity is the count of sections whose recommendation differed from
+the ground-truth-mask run, classified by consequence: **unsafe** = confidently
+told the plant to continue while payload is locked; **conservative** = wasted
+energy, no metal lost; **flagged** = hedged to manual review, which is the
+system declining to make a confident call rather than making a wrong one.
 
-On S1, topology repair changed the recommendation error rate **not at all**. Mean
-absolute error on liberation improved (29.7% to 20.3%) but correlation fell
-slightly and unsafe errors rose from one to two.
+| | Flips | Unsafe | Conservative | Flagged | Errors (unsafe+cons.) |
+|---|---|---|---|---|---|
+| S2 patch, raw components | 6/12 (50%) | 2 | 3 | 1 | **5** |
+| **S2 patch, refined** | **6/12 (50%)** | **0** | **0** | **6** | **0** |
+| S1 patch, raw components | 4/20 (20%) | 0 | 1 | 3 | **1** |
+| **S1 patch, refined** | **14/20 (70%)** | **0** | **0** | **14** | **0** |
 
-**What we can and cannot conclude.** There is a confound we cannot resolve with
-the runs we have: the S1 segmentation is far weaker than the S2 segmentation
-(mean IoU 0.33 against 0.57), with two classes at effectively zero. Below some
-quality floor there is no coherent particle structure left for morphological
-repair to recover — you cannot fix the topology of a mask that is mostly wrong.
-So the honest reading is:
+Source: `reports/decision_gap_patches{,_refined}.json`,
+`reports/decision_gap_s1_patches{,_refined}.json`.
+
+**This changes what the finding is.** Topology repair does **not** reduce how
+often the predicted-mask run disagrees with the ground-truth-mask run. On S2 the
+flip count is identical either way (6/12), and on S1 repair *increases* it
+(4/20 to 14/20). What it changes is the **character** of the disagreements: on
+both datasets it drives unsafe and conservative errors to zero and converts them
+into explicit hedges to manual review.
+
+So the honest claim is not "fewer errors" but **"no silent errors"** - the
+system stops making confident wrong calls and starts asking for verification
+instead. On S2 that is a strong result (5 errors, 2 of them unsafe, to 0). On S1
+it is directionally consistent but weakly evidenced, because the raw run had
+only one error to remove and no unsafe ones to begin with.
+
+**What we can and cannot conclude. RETRACTED AND REPLACED 2026-09-15.** This
+paragraph previously named a confound that does not exist: "the S1 segmentation
+is far weaker than the S2 segmentation (mean IoU 0.33 against 0.57), with two
+classes at effectively zero", and concluded that below some quality floor there
+is no coherent particle structure left for morphological repair to recover.
+
+Both figures were read from `reports/benchmark_s1_patches.json` while its
+prediction cache was four days older than the S1 checkpoint it claimed to score.
+Corrected: **S1 mean IoU is 0.7116, against S2's 0.5725** — S1 is the *stronger*
+segmentation, not the weaker one — and **no S1 class sits near zero** (lowest is
+tennantite, 0.3130). The class at zero is magnetite, and it is in S2.
+
+The confound is therefore inverted rather than merely unsupported, and the
+quality-floor explanation is withdrawn. Topology repair helped decisions on the
+*worse* segmentation and did not help on the *better* one. Regenerated against
+the current checkpoint, S1 repair raises disagreement with the ground-truth-mask
+run from 4/20 sections to 14/20, with every additional flip a hedge to manual
+review and **zero unsafe errors either way**. So the honest reading is:
 
 - **Confirmed:** on S2, repairing topology transformed decision quality while
   raising IoU did not.

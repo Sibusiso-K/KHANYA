@@ -47,12 +47,43 @@ The mechanism is clean and explains itself in one line: IoU rewards getting grai
 independent axes.
 
 **Scope this claim carefully — we tested it on a second dataset and it did not
-reproduce.** On LumenStone S1, topology repair changed the flip rate not at all
-(15/20 either way). The S1 segmentation is much weaker (mean IoU 0.33 against
-0.57, two classes at effectively zero), so we cannot separate "the method does
-not generalise" from "there was no coherent particle structure left to repair".
-Say **"on this dataset, topology mattered more than accuracy"** and describe S1 as
-the open question. Do not claim a general law about image-based mineralogy.
+reproduce.** On LumenStone S1, topology repair did not reduce disagreement with
+the ground-truth-mask run; it raised it, from 4/20 sections to 14/20
+(`reports/decision_gap_s1_patches{,_refined}.json`, regenerated 2026-09-15).
+Every one of those additional flips is a hedge to manual review, and **unsafe
+errors are zero on S1 both with and without repair**.
+
+**Corrected 2026-09-15 — the previous version of this paragraph was wrong in a
+way that made the result look weaker than it is.** It said S1 segmentation was
+"much weaker (mean IoU 0.33 against 0.57, two classes at effectively zero)" and
+used that as a confound: no coherent structure left to repair. Both figures came
+from a prediction cache four days older than the S1 checkpoint. The real numbers
+invert the argument: **S1 mean IoU is 0.7116 against S2's 0.5725** — S1 is the
+*stronger* segmentation — and **no S1 class is near zero** (lowest is tennantite
+at 0.313). It is S2 that carries a class at zero, magnetite.
+
+So the quality-floor escape hatch is gone. But regenerating the severity counts
+alongside the flip counts showed the flip rate was the wrong metric to judge this
+on, and the finding **does** replicate once the right one is used:
+
+| | Flips | Unsafe | Conservative | Flagged |
+|---|---|---|---|---|
+| S2 raw | 6/12 | **2** | 3 | 1 |
+| **S2 refined** | 6/12 | **0** | **0** | 6 |
+| S1 raw | 4/20 | 0 | 1 | 3 |
+| **S1 refined** | 14/20 | **0** | **0** | 14 |
+
+Topology repair does not make the system disagree with ground truth less often.
+It converts the disagreements from **silent errors into explicit hedges** - on
+both datasets, unsafe and conservative errors go to zero and everything becomes a
+request for manual verification.
+
+**Say this, not the old line:** *"repairing particle topology did not make the
+system more accurate - it made it stop being confidently wrong. Every error
+became a request for a human to look."* That is the refusal thesis, measured, on
+two datasets. State plainly that S1 is weak evidence for it (the raw S1 run had
+only one error to remove and no unsafe ones), and do not claim a general law
+about image-based mineralogy.
 
 Handled well this is a strength rather than a retreat: we ran the generalisation
 test that nobody asked us to run, reported that it failed, and can name the
