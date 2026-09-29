@@ -1,0 +1,8 @@
+# The demo runs with the venue wifi off.
+[browser]
+# Streamlit's usage statistics would try to reach the network.
+gatherUsageStats = false
+
+[client]
+# Hide the developer toolbar and the "Deploy" button from the room.
+toolbarMode = "minimal"

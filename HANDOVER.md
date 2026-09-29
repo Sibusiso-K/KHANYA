@@ -19,6 +19,43 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (77) — fewer spinners: faster live path, instant evidence, offline config (PR D)
+
+**Profiled first:** of a live six-field pass, the model's six forward passes
+took 15.3 s, but the **progress frames took 5.2 s each (31 s)**: full-size PNG
+encoding of a preview. Batching two fields per forward saves only 2% on this
+CPU, so that was not done.
+
+**Did:**
+- **Progress frames at screen size, with fast PNG compression**: 5.16 -> 0.41 s
+  per frame. Measurement still runs on full-resolution labels.
+- **The lighting pass runs only when there is a confident instruction to
+  protect.** The gate leaves abstentions untouched, so a second pass could not
+  change them.
+- **Model warmed once at startup**, before any upload.
+- `.streamlit/config.toml`: toolbar hidden (no "Deploy" button), and
+  **`gatherUsageStats = false`**. Streamlit's usage statistics would otherwise
+  try the network, a hole in the offline claim.
+- **Evidence view** loads the cached prediction only when its stored checkpoint
+  stamp equals this checkpoint's file stamp (otherwise it runs live), says which
+  on screen, and adds a scorecard: the section's own IoU, the model's
+  whole-section advice and the expert annotation's advice.
+
+**Measured live (this CPU, single runs, not distributions):**
+- test_01, two passes: model part **49.0 s** (was 71-74 s), ~58 s upload to
+  result.
+- test_04, one pass: 32.2 s, ~50 s upload to result.
+- Evidence: **13.5 s** (was ~3 min).
+
+**Still slow and not fixed:** forward passes dominate now, and they ran slower
+tonight than in the earlier profile. The ~8-18 s after inference is mostly two
+OPC UA transactions, each starting a fresh local server. GPU timing is
+Lethabo's (entry 72).
+
+**Next:** Lethabo - judge review of #10-#13.
+
+---
+
 ## 2026-09-30 — Sibusiso (76) — control-room screen: decision, evidence, plant in one row (PR C)
 
 **Did:**
