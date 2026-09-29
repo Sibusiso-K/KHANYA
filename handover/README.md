@@ -6,12 +6,12 @@ Read in this order:
 
 1. [BUILD-PLAN.md](BUILD-PLAN.md) — problem, product, innovation, pitch and visual experience.
 2. [EVIDENCE-REGISTER.md](EVIDENCE-REGISTER.md) — defensible claims, real data and limitations.
-3. [KAGGLE-TRAINING.md](KAGGLE-TRAINING.md) — active private Kaggle run status, trainer notebook, recovery steps and model-switch guidance. The runnable template is [`training/kaggle_s2_train.ipynb`](../training/kaggle_s2_train.ipynb).
+3. [KAGGLE-TRAINING.md](KAGGLE-TRAINING.md) — private S2 run status, output checklist and next-run guidance. The runnable template is [`training/kaggle_s2_train.ipynb`](../training/kaggle_s2_train.ipynb). The completed baseline results are in [S2-BASELINE-2026-09-29.md](S2-BASELINE-2026-09-29.md).
 4. [IMPLEMENTATION.md](IMPLEMENTATION.md) — ordered tasks, contracts, acceptance checks and prompt for Codex Luna or Claude Sonnet.
 5. [SETUP-AND-ASSETS.md](SETUP-AND-ASSETS.md) — actual machine readiness, downloads, accounts and training commands.
 6. [PILOT-AND-BUSINESS.md](PILOT-AND-BUSINESS.md) — people, tests, budget, commercial assumptions and scale.
 
-The older dated KHANYA documents remain detailed research context. These current documents take priority where schedules or recommendations differ. None constitutes a new accuracy result or a production deployment claim.
+The older dated KHANYA documents remain detailed research context. These current documents take priority where schedules or recommendations differ. The S2 baseline report records the measured result; planning and business documents remain proposals, and nothing here claims production readiness.
 
 ## Repository state
 
