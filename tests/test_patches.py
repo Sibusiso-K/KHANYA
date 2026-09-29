@@ -73,3 +73,38 @@ def test_sliding_window_reports_only_completed_tiles(untrained_model):
         left, top, right, bottom = box
         assert 0 <= left < right <= 700
         assert 0 <= top < bottom <= 600
+
+
+def test_field_boxes_are_inside_the_image_and_do_not_overlap():
+    from src.segmentation.patches import field_boxes
+    boxes = field_boxes(3396, 2547)
+    assert len(boxes) == 6
+    for left, top, right, bottom in boxes:
+        assert 0 <= left < right <= 3396 and 0 <= top < bottom <= 2547
+        assert (right - left, bottom - top) == (512, 512)
+    for i, a in enumerate(boxes):
+        for b in boxes[i + 1:]:
+            assert a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1]
+
+
+def test_mosaic_keeps_fields_apart_so_particles_cannot_merge():
+    import torch
+    from src.segmentation.patches import FIELD_GAP, multi_field_predict
+
+    class AllOre(torch.nn.Module):
+        def forward(self, x):
+            logits = torch.zeros(1, ls.NUM_CLASSES, x.shape[2], x.shape[3])
+            logits[:, 1] = 1.0  # every pixel predicted as class 1
+            return {"out": logits}
+
+    seen = []
+    labels, confidence, mosaic, boxes = multi_field_predict(
+        AllOre(), Image.new("RGB", (3396, 2547)), torch.device("cpu"),
+        progress_callback=lambda *args: seen.append(args[0]))
+    assert seen == [1, 2, 3, 4, 5, 6]
+    assert labels.shape == (2 * 512 + FIELD_GAP, 3 * 512 + 2 * FIELD_GAP)
+    assert mosaic.size == (labels.shape[1], labels.shape[0])
+    assert (labels[:, 512:512 + FIELD_GAP] == 0).all()   # vertical gap is background
+    assert (labels[512:512 + FIELD_GAP, :] == 0).all()   # horizontal gap is background
+    from src import modal
+    assert modal.liberation_stats(labels, labels == 1)[1] == 6  # six separate particles

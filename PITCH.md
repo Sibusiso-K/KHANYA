@@ -79,10 +79,15 @@ both datasets, unsafe and conservative errors go to zero and everything becomes 
 request for manual verification.
 
 **Say this, not the old line:** *"repairing particle topology did not make the
-system more accurate. On the 12 held-out S2 sections, every confident error it
-made - five of them, two unsafe - became a request for a human to look. We saw
-none left, which on 12 sections is an observation, not a guarantee."* That is
-the refusal thesis, measured, on two datasets.
+system more accurate. On the 12 held-out S2 sections, the raw pipeline made
+confident errors, two of them unsafe; with repair, and with the rule that it
+will not advise on fewer than nine payload particles, every one became a request
+for a human to look. We saw none left, which on 12 sections is an observation,
+not a guarantee."* That is the refusal thesis, measured, on two datasets.
+
+**Updated 30 September (PR #9):** before the evidence gate the raw pipeline made
+five confident errors (2 unsafe, 3 conservative); the gate turned the three
+conservative ones into refusals. Figures: `reports/ACCURACY-REPORT.md` section 7.
 
 **Corrected 29 September, after Lethabo's PR #7 review.** This line previously
 said repair *"made it stop being confidently wrong"*. Zero confident errors in 12

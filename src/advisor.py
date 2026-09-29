@@ -85,6 +85,17 @@ LIBERATION_MARGIN = 0.335
 # from it is derived from too few ore pixels to act on.
 MIN_ORE_AREA = 0.05
 
+# Fewest payload-bearing particles an association index may be acted on from.
+# DERIVED, not tuned: treating each particle as one yes/no observation of
+# "liberated", the worst-case (p = 0.5) 95% interval on a proportion from n
+# particles is +/-1.96 * 0.5 / sqrt(n). Below this n that interval is wider than
+# LIBERATION_MARGIN, the band the advisor already decides against, so the field
+# cannot tell the two sides of the threshold apart. It follows the margin when
+# the margin is re-derived. Approximate by construction: liberation weights
+# particles by payload area rather than one vote each, and neighbouring
+# particles are not independent.
+MIN_PAYLOAD_PARTICLES = math.ceil((1.96 * 0.5 / LIBERATION_MARGIN) ** 2)
+
 
 @dataclass
 class Recommendation:
@@ -173,6 +184,20 @@ def advise(result, mean_confidence: float,
             "Payload is present but no particle cleared the minimum size for "
             "an association-index measurement. Reported as unmeasured rather "
             "than as a number we cannot defend.",
+            confidence,
+        )
+
+    n_payload = result.n_payload_particles
+    if n_payload is None or n_payload < MIN_PAYLOAD_PARTICLES:
+        counted = "an unmeasured number of" if n_payload is None else f"only {n_payload}"
+        return Recommendation(
+            "No recommendation - too few payload particles",
+            f"The association index here rests on {counted} payload-bearing "
+            f"particle(s). Below {MIN_PAYLOAD_PARTICLES}, even a perfect "
+            "segmentation cannot place association on one side of the "
+            f"{LOW_LIBERATION:.0%} floor within the +/-{LIBERATION_MARGIN:.1%} "
+            "band this advisor decides against, so no instruction is issued. "
+            "Measure more fields or the whole section.",
             confidence,
         )
 

@@ -290,3 +290,79 @@ def single_field_predict(model, image, dev, patch=PATCH):
     labels = probabilities.argmax(0).numpy()
     mean_confidence = probabilities.max(0).values.mean().item()
     return labels, mean_confidence, Image.fromarray(tile)
+
+
+# Six fields spread across the section, three across and two down, which
+# matches the 4:3 frame. The count is set by a latency budget (six forward
+# passes at the measured 2.64 s mean, reports/segmentation_latency.json), not
+# by accuracy on any evaluation set, so it has not been tuned on test data.
+FIELD_GRID = (3, 2)
+FIELD_GAP = 2  # px of background between fields in the mosaic
+
+
+def field_boxes(width, height, grid=FIELD_GRID, patch=PATCH):
+    """(left, top, right, bottom) of each field, centred in an even grid."""
+    columns, rows = grid
+    boxes = []
+    for row in range(rows):
+        for column in range(columns):
+            centre_x = round(width * (column + 0.5) / columns)
+            centre_y = round(height * (row + 0.5) / rows)
+            left = min(max(centre_x - patch // 2, 0), width - patch)
+            top = min(max(centre_y - patch // 2, 0), height - patch)
+            boxes.append((left, top, left + patch, top + patch))
+    return boxes
+
+
+def multi_field_predict(model, image, dev, grid=FIELD_GRID, patch=PATCH,
+                        progress_callback=None):
+    """Several native-resolution fields across the section, one forward pass each.
+
+    A single centre field can hold two particles: on the held-out S2 test set
+    its recommendation matched the whole section's on only 4 of 12 sections
+    (reports/s2_section_stats.json). Sampling fields across the whole section
+    keeps the live path fast while measuring enough of the section to decide.
+
+    Returns (mosaic_labels, mean_confidence, mosaic_image, boxes). The mosaic
+    places the fields side by side in their grid order, separated by FIELD_GAP
+    px of background, so particles in different fields can never merge and the
+    whole existing measurement chain runs unchanged. The gap pixels count as
+    resin in the ore-area fraction: under 0.5% of mosaic pixels at 3x2.
+
+    progress_callback(completed, total, full_size_labels, box, field_confidence)
+    has the same shape as sliding_window_predict's, so the dashboard's tile
+    animation can show each field as it is classified.
+    """
+    array = np.array(image.convert("RGB"))
+    height, width = array.shape[:2]
+    if height < patch or width < patch:
+        raise ValueError(
+            f"image is {width}x{height}, smaller than one {patch}x{patch} field; "
+            "use the full-section path instead."
+        )
+    columns, rows = grid
+    boxes = field_boxes(width, height, grid, patch)
+    step = patch + FIELD_GAP
+    mosaic_labels = np.zeros((rows * step - FIELD_GAP, columns * step - FIELD_GAP), dtype=np.int64)
+    mosaic_pixels = np.zeros(mosaic_labels.shape + (3,), dtype=np.uint8)
+    full_labels = np.zeros((height, width), dtype=np.int64)
+    confidences = []
+    for index, (left, top, right, bottom) in enumerate(boxes):
+        tile = array[top:bottom, left:right]
+        tensor = TF.normalize(
+            TF.to_tensor(np.ascontiguousarray(tile)),
+            (0.485, 0.456, 0.406), (0.229, 0.224, 0.225),
+        ).unsqueeze(0).to(dev)
+        probabilities = model(tensor)["out"][0].cpu().softmax(0)
+        labels = probabilities.argmax(0).numpy()
+        confidence = probabilities.max(0).values.mean().item()
+        confidences.append(confidence)
+        row, column = divmod(index, columns)
+        y, x = row * step, column * step
+        mosaic_labels[y:y + patch, x:x + patch] = labels
+        mosaic_pixels[y:y + patch, x:x + patch] = tile
+        full_labels[top:bottom, left:right] = labels
+        if progress_callback is not None:
+            progress_callback(index + 1, len(boxes), full_labels.copy(),
+                              (left, top, right, bottom), confidence)
+    return mosaic_labels, float(np.mean(confidences)), Image.fromarray(mosaic_pixels), boxes

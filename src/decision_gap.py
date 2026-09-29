@@ -50,7 +50,10 @@ def ground_truth_labels(stem, subdir="test", match_prediction_size=True):
 # confident wrong instruction would understate the uncertainty band, whose
 # entire purpose is to convert the former into the latter.
 UNSAFE_ACTIONS = ("Continue at current setpoint",)
-HEDGED_ACTIONS = ("Marginal - verify before acting", "Flag for manual review")
+# Every abstention the advisor can issue, taken from the advisor itself so a new
+# refusal cannot be scored as a confident error. Before 2026-09-30 this listed
+# only Marginal and Flag, so "No recommendation" would have counted as wrong.
+HEDGED_ACTIONS = advisor.ABSTAINING_PREFIXES
 
 
 def classify(truth_action, predicted_action):

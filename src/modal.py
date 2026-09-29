@@ -142,6 +142,10 @@ class ModalResult:
     liberation: float | None  # None means no measurable payload particles
     n_particles: int
     payload_pixels: int
+    # Retained particles that contain any payload: the particles the liberation
+    # figure is actually computed over. None means not measured, and the advisor
+    # treats that as too few rather than as enough.
+    n_payload_particles: int | None = None
 
     @property
     def has_payload(self) -> bool:
@@ -311,7 +315,21 @@ def liberation_index(labels, payload_mask, background_index=0,
                      refine: bool = False):
     """Share of payload area sitting in particles that are >=threshold payload.
 
-    Returns (liberation, n_particles). Liberation is None when there is no
+    Returns (liberation, n_particles); see liberation_stats for the payload
+    particle count as well."""
+    liberation, kept, _ = liberation_stats(
+        labels, payload_mask, background_index, threshold, min_pixels, refine
+    )
+    return liberation, kept
+
+
+def liberation_stats(labels, payload_mask, background_index=0,
+                     threshold: float = LIBERATION_THRESHOLD,
+                     min_pixels: int = MIN_PARTICLE_PIXELS,
+                     refine: bool = False):
+    """Share of payload area sitting in particles that are >=threshold payload.
+
+    Returns (liberation, n_particles, n_payload_particles). Liberation is None when there is no
     payload in a retained particle - that is "no measurement", which is a
     different statement from "zero liberation", and the advisor must not
     conflate them. Payload outside retained particles stays in the denominator
@@ -325,7 +343,7 @@ def liberation_index(labels, payload_mask, background_index=0,
         particles, _ = _connected_components(ore)
     payload_total = int(payload_mask.sum())
     if payload_total == 0:
-        return None, 0
+        return None, 0, 0
 
     ids, counts = np.unique(particles[particles > 0], return_counts=True)
     if not len(ids):
@@ -334,25 +352,26 @@ def liberation_index(labels, payload_mask, background_index=0,
         # measurable" rather than crashing on an empty reduction, which is the
         # same distinction the advisor draws between an unmeasured field and a
         # barren one. Reachable from the dashboard on a sparse upload.
-        return None, 0
+        return None, 0, 0
 
     payload_counts = np.bincount(
         particles[payload_mask & (particles > 0)], minlength=int(ids.max()) + 1
     )
 
-    liberated_payload, measured_payload, kept = 0, 0, 0
+    liberated_payload, measured_payload, kept, with_payload = 0, 0, 0, 0
     for particle_id, size in zip(ids, counts):
         if size < min_pixels:
             continue
         kept += 1
         payload_in_particle = int(payload_counts[particle_id])
         measured_payload += payload_in_particle
+        with_payload += payload_in_particle > 0
         if payload_in_particle and payload_in_particle / size >= threshold:
             liberated_payload += payload_in_particle
 
     if measured_payload == 0:
-        return None, kept
-    return liberated_payload / payload_total, kept
+        return None, kept, 0
+    return liberated_payload / payload_total, kept, with_payload
 
 
 def analyse(labels, class_names, roles=None, background_index=0,
@@ -384,7 +403,7 @@ def analyse(labels, class_names, roles=None, background_index=0,
         i for i, name in enumerate(class_names) if roles.get(name) == "payload"
     ]
     payload_mask = np.isin(labels, payload_indices)
-    liberation, n_particles = liberation_index(
+    liberation, n_particles, n_payload_particles = liberation_stats(
         labels, payload_mask, background_index, refine=refine
     )
 
@@ -395,4 +414,5 @@ def analyse(labels, class_names, roles=None, background_index=0,
         liberation=liberation,
         n_particles=n_particles,
         payload_pixels=int(payload_mask.sum()),
+        n_payload_particles=n_payload_particles,
     )

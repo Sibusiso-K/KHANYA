@@ -2,12 +2,12 @@
   "model": "patches",
   "refine": false,
   "n_sections": 12,
-  "n_recommendation_flips": 6,
-  "flip_rate": 0.5,
+  "n_recommendation_flips": 7,
+  "flip_rate": 0.5833333333333334,
   "severity_counts": {
     "unsafe": 2,
-    "conservative": 3,
-    "flagged": 1
+    "conservative": 0,
+    "flagged": 5
   },
   "rows": [
     {
@@ -17,9 +17,9 @@
       "payload_truth": 0.9094413311340954,
       "payload_predicted": 0.8848371498584928,
       "action_truth": "Continue at current setpoint",
-      "action_predicted": "Continue at current setpoint",
-      "flipped": false,
-      "severity": "none"
+      "action_predicted": "No recommendation - too few payload particles",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_02",
@@ -27,8 +27,8 @@
       "liberation_predicted": 0.0,
       "payload_truth": 0.009857085424990305,
       "payload_predicted": 0.007648905725736079,
-      "action_truth": "Grind finer",
-      "action_predicted": "Grind finer",
+      "action_truth": "No recommendation - too few payload particles",
+      "action_predicted": "No recommendation - too few payload particles",
       "flipped": false,
       "severity": "none"
     },
@@ -82,8 +82,8 @@
       "liberation_predicted": 0.0,
       "payload_truth": 0.02435575621944218,
       "payload_predicted": 0.020246235630568224,
-      "action_truth": "Grind finer",
-      "action_predicted": "Grind finer",
+      "action_truth": "No recommendation - too few payload particles",
+      "action_predicted": "No recommendation - too few payload particles",
       "flipped": false,
       "severity": "none"
     },
@@ -93,8 +93,8 @@
       "liberation_predicted": 0.00014252718072794144,
       "payload_truth": 0.2510733220345496,
       "payload_predicted": 0.2442964365603603,
-      "action_truth": "Grind finer",
-      "action_predicted": "Grind finer",
+      "action_truth": "No recommendation - too few payload particles",
+      "action_predicted": "No recommendation - too few payload particles",
       "flipped": false,
       "severity": "none"
     },
@@ -104,10 +104,10 @@
       "liberation_predicted": 0.0,
       "payload_truth": 0.698757358457898,
       "payload_predicted": 0.458536500534903,
-      "action_truth": "Continue at current setpoint",
-      "action_predicted": "Grind finer",
-      "flipped": true,
-      "severity": "conservative"
+      "action_truth": "No recommendation - too few payload particles",
+      "action_predicted": "No recommendation - too few payload particles",
+      "flipped": false,
+      "severity": "none"
     },
     {
       "id": "test_10",
@@ -116,9 +116,9 @@
       "payload_truth": 0.027110078444163015,
       "payload_predicted": 0.010469759246272328,
       "action_truth": "Adjust reagent dosage - depress reject phase",
-      "action_predicted": "Grind finer",
+      "action_predicted": "No recommendation - too few payload particles",
       "flipped": true,
-      "severity": "conservative"
+      "severity": "flagged"
     },
     {
       "id": "test_11",
@@ -127,9 +127,9 @@
       "payload_truth": 0.03192265318973586,
       "payload_predicted": 0.014301445300588512,
       "action_truth": "Adjust reagent dosage - depress reject phase",
-      "action_predicted": "Grind finer",
+      "action_predicted": "No recommendation - too few payload particles",
       "flipped": true,
-      "severity": "conservative"
+      "severity": "flagged"
     },
     {
       "id": "test_12",
@@ -138,9 +138,9 @@
       "payload_truth": 0.04673791092794252,
       "payload_predicted": 0.03574322097144411,
       "action_truth": "Grind finer",
-      "action_predicted": "Grind finer",
-      "flipped": false,
-      "severity": "none"
+      "action_predicted": "No recommendation - too few payload particles",
+      "flipped": true,
+      "severity": "flagged"
     }
   ]
 }
