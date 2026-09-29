@@ -19,6 +19,34 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-29 — Sibusiso (69) — two corrections, and the CE+Dice run is a repeat
+
+**Correcting entry 68.** It said validation patch mIoU was "similar in both
+(~0.47), so validation did not catch it". Wrong. The existing checkpoint
+validated at **0.5384** (`STATUS.md` line 221); the Kaggle baseline at 0.4705.
+0.4739 was the August CE+Dice run, which I conflated. So validation **did**
+separate the two models, which is good news: validation-only selection tracks
+the test result here.
+
+**Root cause of the 0.12 gap, found by Lethabo's session:**
+`src/segmentation/patches.py:156` samples training patches with
+`random.Random(None)`, so no two training runs see the same patches. The recipe
+is non-reproducible by construction. Real bug, in KHANYA's code, mine to fix -
+after the deadline, since fixing it does not change the existing checkpoint.
+
+**The CE+Dice validation run launched at 21:39 repeats a settled experiment.**
+It was run on 16 August at the same budget: best val patch mIoU 0.4739 against
+CE's 0.5384, magnetite IoU 0.0000 every epoch (`STATUS.md` line 220). Its
+checkpoint is on this machine at `checkpoints/lumenstone_s2_patches_dice/best.pt`,
+the same path the new run writes to. Magnetite is also not one of the three
+phases the brief requires.
+
+**Next:** Lethabo - no further training before submission; the model is done.
+The remaining work is the plant-parameter wiring, the deck, the backup video and
+a rehearsal.
+
+---
+
 ## 2026-09-29 — Sibusiso (68) — the Kaggle retrain scored 0.4543; keep the existing checkpoint
 
 **Did:** Reviewed Lethabo's two later commits on `codex/khanya-build-plan`
