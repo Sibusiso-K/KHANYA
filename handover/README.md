@@ -20,7 +20,7 @@ The older dated KHANYA documents remain detailed research context. These current
 
 - Repository: https://github.com/Sibusiso-K/KHANYA
 - Inspected application main: `9181668cffd9350211a9a8a2cf0b44c80f8deaee`.
-- Planning branch: `codex/khanya-build-plan`, based on that main.
+- Planning/training branch: `codex/khanya-build-plan`, now brought forward to current KHANYA `main` (merge commit `f463864`).
 - Managed application worktree on this computer: `C:\Users\USER\.codex\worktrees\khanya-build-plan\REEFPRINT`.
 - Research/physics checkout: `C:\Users\USER\Desktop\REEFPRINT`. Its branch called main is a different history. Do not merge these histories or start application changes there by mistake.
 - No app code, model weights, raw datasets or credentials are included in this planning change.
@@ -31,7 +31,7 @@ The older dated KHANYA documents remain detailed research context. These current
 
 Sibusiso's simulated plant-parameter PR [#6](https://github.com/Sibusiso-K/KHANYA/pull/6) was reviewed and squash-merged after tests and security checks passed. Its simulator-only scope and the recommended mobile/desktop tool workflow are documented in [PR-6-REVIEW-2026-09-29.md](PR-6-REVIEW-2026-09-29.md).
 
-The challenge floor is supported by the historical S2 patch report (three nonzero sulphide IoUs, with magnetite failed); the fresh Kaggle baseline is a separate, lower-scoring result. The old planning branch does not contain PR #6's simulator change, so stage from updated main and match the model hash to its report/preflight. See [responsive app and deliverables](RESPONSIVE-APP-AND-DELIVERABLES-2026-09-29.md).
+The challenge floor is supported by the historical S2 patch report (three nonzero sulphide IoUs, with magnetite failed); the fresh Kaggle baseline is a separate, lower-scoring result. This branch now contains PR #6's simulator change from current `main`; match the chosen model hash to its report/preflight before staging. See [responsive app and deliverables](RESPONSIVE-APP-AND-DELIVERABLES-2026-09-29.md).
 
 The organiser's supplied email confirms a ten-minute PowerPoint due 1 October 2026. Its six themes are covered below. The repository separately says 13:00; the supplied email does not establish that time. Treat 30 September as the internal freeze and verify the organiser's exact time through the team.
 

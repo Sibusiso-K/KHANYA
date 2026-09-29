@@ -25,9 +25,9 @@ Entry format:
 
 **Changed:** `STATUS.md`, `handover/RESPONSIVE-APP-AND-DELIVERABLES-2026-09-29.md`, `HANDOVER.md`.
 
-**Blocked on:** No Cloudflare Pages project is connected yet; no Azure deployment is needed for the stage demo. The Kaggle CLI login is present, but checking an unverified candidate slug returned a private/permission error; the new candidate has not been uploaded or trained. Do not place credentials in chat or Git. The dedicated Supabase schema remains empty until the app data contract is implemented.
+**Blocked on:** No Cloudflare Pages project is connected yet; no Azure deployment is needed for the stage demo. The existing private Kaggle CE+Dice kernel was located and is complete; the new version has not been uploaded or trained. Do not place credentials in chat or Git. The dedicated Supabase schema remains empty until the app data contract is implemented.
 
-**Next:** First fix the staged PR blockers, then align the stage branch with current KHANYA main and confirm the exact Kaggle kernel slug. Keep Cloudflare login in the dashboard or `npx wrangler login --use-keyring`; use `az login` only if a container-hosting test is needed. For a future hosted prototype, apply a versioned RLS-first Supabase migration, connect Cloudflare Pages to the KHANYA GitHub repo, and add FastAPI only after the inference API contract is ready. See the responsive-app handoff for commands, UI data provenance, and acceptance gates.
+**Next:** The stage branch is now aligned with current KHANYA main. Fix the staged PR blockers, launch the next private validation version on `lethabomh14/reefprint-s2-ce-dice-validation-only-experiment`, then review full-section validation and class failures. Keep Cloudflare login in the dashboard or `npx wrangler login --use-keyring`; use `az login` only if a container-hosting test is needed. For a future hosted prototype, apply a versioned RLS-first Supabase migration, connect Cloudflare Pages to the KHANYA GitHub repo, and add FastAPI only after the inference API contract is ready. See the responsive-app handoff for commands, UI data provenance, and acceptance gates.
 
 ---
 
@@ -3693,4 +3693,3 @@ per team decision to wait on official acceptance.
 **Next:** Lethabo — accept the GitHub invite (check email/GitHub notifications).
 Once accepted, pull `main` and read `DATA-SOURCES.md` + `reports/KHANYA-01-research-phase.md`
 before touching code.
-
