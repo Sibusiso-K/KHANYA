@@ -7,6 +7,8 @@ is the constitution — *what is true and what the rules are*. This file is the 
 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
+**Latest implementation specification:** [model, live UI, reports and spatial build spec](docs/14-model-ui-report-and-spatial-build-spec.md), grounded in KHANYA main `57a6b66`. Next application tickets are P0 (fix `random.Random(None)`, reproducible resume, full-section validation) and U0 (API/schema/auth fixtures), followed by the real inference → reviewed simulator command → report path. This is a plan; no improved training result or PWA deployment has been produced by this update.
+
 - **Last updated:** 2026-09-30 (new product handoff; older technical narrative below is historical)
 - **Current planning decision:** Supabase + Cloudflare Pages + FastAPI PWA, with private Kaggle model experiments. See [`docs/12-pwa-phase-identification-roadmap-2026-09-30.md`](docs/12-pwa-phase-identification-roadmap-2026-09-30.md) and the [cloud connection runbook](docs/13-cloudflare-azure-fastapi-connection-2026-09-30.md). Supabase is user-reported connected; Cloudflare CLI and Azure account selection have not been verified in this environment. The working 1 October demo still takes priority.
 - **Read [`WORKBOARD.md`](WORKBOARD.md) first.** It is the shared board Lethabo and Sibusiso both read: what in

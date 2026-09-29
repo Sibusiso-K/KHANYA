@@ -22,6 +22,30 @@ it is a press release.
 
 ---
 
+## 2026-09-30 — grounded model improvement and live product specification
+
+### Attempted
+
+Turn the user's accuracy, live UI, professional reports, plant demonstration and 3D requirements into an implementable sequence aligned with the judging brief.
+
+### Worked
+
+- Inspected KHANYA main `57a6b665a5370e5d8ba49a16ffaf95451538bc1e`, including the accuracy report, trainer/sampler, Stitch-derived Jinja dashboard and OPC UA regrind command module.
+- Identified `random.Random(None)` as an explicit training reproducibility defect and balanced-patch checkpoint selection as a validation/deployment mismatch. The new specification makes deterministic sampling/resume and whole-section validation the first ticket.
+- Added `docs/14-model-ui-report-and-spatial-build-spec.md`: staged run budgets and promotion gates; UI/data/state contracts; separate sample/accuracy reports; approved and acknowledged simulated plant commands; honest assay/geographical 3D boundaries; Figma/reference design workflow, acceptance tests and implementation prompt.
+- Verified primary references for Petroscope, ZEISS, Leapfrog, QGIS, Carbon Figma kits, Supabase Realtime, OpenSeadragon and deck.gl. Read the existing dashboard's explicit removal of fabricated accreditation, recovery and plant-connection claims; retain those corrections in the PWA.
+
+### Did not work
+
+- Original generated mockup images were not located in the searched workspace/repo paths. The existing Stitch-derived template is available as the initial visual reference. The public Figma preview did not fetch; no Figma design was inspected or modified. The UI Skills catalogue CLI stalled and was stopped; local baseline UI guidance was read.
+- No training run or deployed UI is claimed from this planning change. Better accuracy remains an experimental outcome, subject to frozen validation gates.
+
+### Left open
+
+Implement P0/U0 in the application history, then train the staged candidates and complete one real inference→reviewed simulator action→report path. Exact mockup comparison needs the original assets or Figma node URLs. External South African specimens and plant trials are still needed for generalisation and impact claims.
+
+---
+
 ## 2026-09-30 — cloud CLI and FastAPI connection handoff
 
 ### Attempted
