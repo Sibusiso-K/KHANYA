@@ -29,6 +29,16 @@ Entry format:
 
 **Next:** User starts private Kaggle S2 training, records dataset/source, config, code/model hashes, GPU, validation and held-out metrics, and shares run URL/output. Review metrics before local offline integration and simulated parameter control work.
 
+## 2026-09-29 — Codex — Kaggle CLI authentication guide
+
+**Did:** Answered the user's question about the Kaggle API Tokens settings page. Checked local Kaggle CLI 2.2.4 and the official current authentication reference. Browser OAuth with `kaggle auth login` is recommended; a named access token can alternatively be entered via a hidden PowerShell prompt into the current process environment. Legacy credentials are unnecessary on this CLI.
+
+**Changed:** Expanded `handover/KAGGLE-TRAINING.md` with the Windows login choices and secret-handling steps.
+
+**Blocked on:** None for CLI authentication. No Kaggle credentials were viewed or configured in this task.
+
+**Next:** User completes Kaggle login in their browser/local terminal.
+
 ## 2026-09-15 — Sibusiso (66) — ask 4 settled: the real gap is worse than we were quoting
 
 **Did:** Downloaded LumenStone **S1 v1** (534,897,733 bytes, published 535 MB,

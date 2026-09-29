@@ -15,6 +15,30 @@ The publisher download is the source of truth. First inspect your Kaggle account
 
 Linking Kaggle to Codex is **optional for training**. You can run an interactive Kaggle notebook in the browser, attach data and inspect outputs without MCP or CLI. An MCP connection is useful for an agent to inspect resources; the CLI is the reliable path for scripted notebook versioning, status and output retrieval. Neither connection grants dataset rights, attaches the dataset automatically, chooses a GPU or validates the model.
 
+## Authenticate the Kaggle CLI on this Windows computer
+
+The installed CLI was checked in this workspace: **Kaggle CLI 2.2.4**, which supports browser OAuth. Recommended: use the CLI login; it opens a Kaggle browser approval flow and stores the resulting CLI credential locally. You do not copy a token into Codex or a source file.
+
+```powershell
+kaggle auth login
+kaggle --version
+```
+
+Finish the approval in the browser opened by the CLI, then return to the same terminal. Do not run `kaggle auth print-access-token` just to check login; it prints a secret. If login reports that credentials already exist, continue with that account or deliberately use `kaggle auth login --force` to switch accounts.
+
+If you specifically want to use the named **Access token** in the screenshot, choose **Generate New Token** in the upper “API Tokens” section. Do not use **Create Legacy API Key**; that is a separate compatibility method and Kaggle recommends access tokens. In PowerShell, enter the token through a hidden prompt for this terminal session only:
+
+```powershell
+$kaggleSecret = Read-Host 'Paste the Kaggle access token here' -AsSecureString
+$env:KAGGLE_API_TOKEN = [System.Net.NetworkCredential]::new('', $kaggleSecret).Password
+Remove-Variable kaggleSecret
+kaggle --version
+```
+
+Paste it only at the PowerShell prompt that appears after the first line. That command does not echo the token or place the token text in the command-history line. The environment variable lasts only for that PowerShell session; close the terminal when finished. Do not save the token in a notebook, `.env` file, chat message, repository file, screenshot, or Kaggle dataset. For routine use, browser OAuth login is simpler than keeping a long-lived token in the environment.
+
+The CLI also supports a token file at `%USERPROFILE%\.kaggle\access_token`, but that stores a reusable credential on disk. Prefer OAuth or the temporary session variable above. Legacy `kaggle.json` credentials are only needed for older clients that do not support the current token/OAuth login methods.
+
 ## Browser-first run
 
 1. Sign in to [Kaggle](https://www.kaggle.com/), create a **private notebook**, and enable a GPU in its settings. Kaggle documents free GPU access but availability is limited; check the machine assigned to the actual session [Kaggle Notebooks](https://www.kaggle.com/docs/notebooks).
@@ -34,7 +58,6 @@ The [official Kaggle CLI](https://github.com/Kaggle/kaggle-cli) documents `kaggl
 
 ```powershell
 kaggle --version
-kaggle auth login
 kaggle kernels init -p .\training\kaggle_s2
 # Edit kernel-metadata.json: your notebook ID, private=true, GPU=true,
 # the approved S2 dataset source, and the real code_file.
