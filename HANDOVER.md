@@ -19,6 +19,61 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-29 — Sibusiso (70) — the plant parameter now moves on the advisory (PR for review)
+
+**Did:** Built P3 and P0 from Lethabo's plan (`codex/khanya-build-plan`,
+`handover/IMPLEMENTATION.md`), on a branch for his review rather than straight
+to `main`.
+
+**P3, the brief's plant-parameter deliverable.** New `dashboard/control.py`: the
+advisor's action commands one explicitly simulated tag, `regrind_enabled`, over a
+real local OPC UA exchange through REEFPRINT's `AdvisoryServer` /
+`SimulatedControlClient`, imported unchanged through the existing bridge
+(ADR-0003). *Grind finer* -> 1, *Continue* -> 0; every abstaining action issues
+**no command** so the setting holds; reagent actions do not touch regrind. State
+persists across uploads, with before/after, a reason and a command log on screen.
+The consumer is seeded with the plant's actual value, so the before/after is real
+state, not a fresh 0.0.
+
+**Verified in the running dashboard with the real held-out files:** test_11 0->1
+APPLIED; test_03 1->1 HELD; stale armed with test_03 on screen -> nothing fired;
+test_01 while armed -> REFUSED ("regrind_enabled=0 ... setting unchanged", stays
+1); Reset with an image on screen -> stays 0; test_11 again 0->1.
+
+**Two stage bugs the live probe caught, both fixed:** (1) the stale button fired
+immediately on the image already on screen, because the arming click itself
+reruns the script; its message said "next upload". (2) Every rerun re-sent the
+command, so Reset re-commanded the loaded image straight back to 1. Commands are
+now tied to (upload, mode).
+
+**P0, `python -m src.preflight`:** checks the S2 checkpoint sha256 (`de7135a9`),
+the 12 test sections, a strict model load and an OPC UA command round trip;
+prints `READY TO PRESENT` or refuses. Probed: the August Dice checkpoint has the
+**same byte size** (168,313,587) as the real one and is caught only by its hash.
+
+**Also found:** Live Field and full-section recommendations differ on **8 of 12**
+held-out sections, and `BACKUP-DEMO-SCRIPT.md` Beat 2's test_04 is *No
+recommendation* in Live Field, not *Marginal*. Script updated with the preflight
+step and a new Beat 4.
+
+**Note on the plan's reading of `advisory_influenced`:** it treats `False` as
+"not a plant-parameter change". In REEFPRINT's `advisory.py` the field records
+whether the *sampled material* was already affected by an earlier advisory
+(blind spot 10), so `False` is correct on a command about an untouched held-out
+section.
+
+**Changed:** `dashboard/control.py` (new), `dashboard/app.py`,
+`src/preflight.py` (new), `tests/test_control.py` (new, 6 tests incl. 3 real
+OPC UA exchanges), `BACKUP-DEMO-SCRIPT.md`. Suite 122 passed; CI offline guard
+clean.
+
+**Blocked on:** Lethabo's review of the PR.
+
+**Next:** Lethabo - review and critique. Sibusiso - deck, backup video, timed
+rehearsal.
+
+---
+
 ## 2026-09-29 — Sibusiso (69) — two corrections, and the CE+Dice run is a repeat
 
 **Correcting entry 68.** It said validation patch mIoU was "similar in both

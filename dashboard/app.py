@@ -7,6 +7,7 @@ with linked assets: a venue laptop may have no network access.
 """
 import os
 import sys
+import time
 from pathlib import Path
 
 import streamlit as st
@@ -190,7 +191,19 @@ stale_demo = st.button(
 )
 if stale_demo:
     st.session_state.force_stale_opcua = True
-    st.info("Stale refusal armed for the next live result. Upload or re-run the analysis to fire it.")
+    st.info("Stale refusal armed for the next upload. It is not applied to a result already on screen.")
+
+# The simulated plant outlives a single upload, so a command's before/after is real state.
+# A command belongs to one upload in one mode: Streamlit reruns the whole script on every
+# click, and without `commanded` a Reset would immediately re-command the image on screen.
+reset_plant = st.button(
+    "RESET SIMULATED PLANT",
+    help="Return the simulated regrind tag to 0 (bypass) and clear the command log.",
+)
+if "plant" not in st.session_state:
+    st.session_state.plant = {"regrind_enabled": 0.0, "log": [], "commanded": None, "status": None}
+if reset_plant:
+    st.session_state.plant.update(regrind_enabled=0.0, log=[], status=None)
 
 def show_landing(reason=None):
     with landing_slot.container():
@@ -252,6 +265,7 @@ else:
         from src.advisor import advise
         from src.segmentation import lumenstone as ls
         from dashboard.opcua import publish_result
+        from dashboard.control import REGRIND_HEAD, send_command
 
         # Changing a checkpoint must invalidate both model and prediction caches.
         stat = CKPT.stat()
@@ -300,7 +314,8 @@ else:
         if result.liberation is not None:
             opcua_values["association_index"] = float(result.liberation * 100.0)
         segmentation_refused = result.liberation is None
-        stale_requested = st.session_state.pop("force_stale_opcua", False)
+        # The run the arming click itself triggers must not consume it.
+        stale_requested = False if stale_demo else st.session_state.pop("force_stale_opcua", False)
         opcua_status = publish_result(
             opcua_values,
             stale=stale_requested or segmentation_refused,
@@ -308,6 +323,23 @@ else:
                           else "presenter demonstration"),
             on_event=lambda message: opcua_slot.info(message),
         )
+        plant = st.session_state.plant
+        command_key = (uploaded.file_id, mode)
+        if command_key != plant["commanded"] or stale_requested:
+            command = send_command(
+                recommendation.action, plant[REGRIND_HEAD], stale=stale_requested,
+                on_event=lambda message: opcua_slot.info(message),
+            )
+            plant.update({REGRIND_HEAD: command.after, "commanded": command_key, "status": command})
+            plant["log"].append({
+                "time": time.strftime("%H:%M:%S"),
+                "image": uploaded.name,
+                "advisory": recommendation.action,
+                "command": command.state,
+                "regrind_enabled": f"{command.before:g} → {command.after:g}",
+                "reason": command.reason,
+            })
+        command = plant["status"]
         html = render.render(image, labels, mean_confidence, result, recommendation,
                              mode_label=mode_label, elapsed_seconds=elapsed,
                              opcua_status=opcua_status)
@@ -318,3 +350,20 @@ else:
         progress_slot.empty()
         opcua_slot.empty()
         st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
+        st.subheader("Simulated plant response")
+        st.caption(
+            "One illustrative tag, regrind_enabled (1 = regrind, 0 = bypass), commanded "
+            "over a real local OPC UA exchange. Simulated: no real plant or PLC is connected."
+        )
+        if command is None:
+            st.write(f"Simulated plant reset: regrind_enabled = "
+                     f"{st.session_state.plant['regrind_enabled']:g}. Upload an image to command it.")
+        else:
+            before_col, after_col, state_col = st.columns(3)
+            before_col.metric("regrind_enabled before", f"{command.before:g}")
+            after_col.metric("regrind_enabled after", f"{command.after:g}",
+                             delta=(f"{command.after - command.before:+g}"
+                                    if command.after != command.before else None))
+            state_col.metric("command", command.state.upper())
+            st.write(command.reason)
+        st.dataframe(st.session_state.plant["log"], use_container_width=True, hide_index=True)
