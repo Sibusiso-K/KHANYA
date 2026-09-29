@@ -175,7 +175,7 @@ metallurgical correctness.
 | With topology refinement (shipped) | 8/12 | **0** | **0** | 8 |
 
 These figures include the evidence-sufficiency gate added on 30 September
-(PR #9): no advice from fewer than 9 payload-bearing particles. Before it, the
+(PR #10): no advice from fewer than 9 payload-bearing particles. Before it, the
 raw pipeline made 5 confident errors (2 unsafe, 3 conservative) and the refined
 one disagreed on 6/12, all hedges. The gate turned the three conservative errors
 into refusals. On the refined pipeline it refused two more sections, test_02 and

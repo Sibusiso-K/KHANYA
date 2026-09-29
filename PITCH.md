@@ -85,7 +85,7 @@ will not advise on fewer than nine payload particles, every one became a request
 for a human to look. We saw none left, which on 12 sections is an observation,
 not a guarantee."* That is the refusal thesis, measured, on two datasets.
 
-**Updated 30 September (PR #9):** before the evidence gate the raw pipeline made
+**Updated 30 September (PR #10):** before the evidence gate the raw pipeline made
 five confident errors (2 unsafe, 3 conservative); the gate turned the three
 conservative ones into refusals. Figures: `reports/ACCURACY-REPORT.md` section 7.
 
