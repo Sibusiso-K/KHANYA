@@ -29,7 +29,8 @@ html, body { margin:0; background:#00131D; color:#E3EAEB; font-family:'Plus Jaka
   <section class="max-w-[1720px] mx-auto rounded-lg bg-surface border border-outline shadow-elevation-2 p-5 md:p-6 animate-fade-up">
     <div class="flex flex-col gap-3">
       <span class="font-mono text-[10px] tracking-[0.25em] text-primary uppercase font-bold">Ore processability advisor</span>
-      <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-on-surface">{{ 'Analysis unavailable' if refusal_reason else 'Awaiting a reflected-light micrograph' }}</h1>
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-on-surface">{{ 'Analysis unavailable' if refusal_reason else 'Plants learn what is in their ore days too late.' }}</h1>
+      {% if not refusal_reason %}<p class="text-sm text-on-surface max-w-2xl leading-relaxed">KHANYA reads a polished-section micrograph, turns it into a processing advisory and a simulated plant command, and <strong>refuses to advise</strong> when the evidence is too thin or changes with the lighting.</p>{% endif %}
       {% if refusal_reason %}
       <p role="alert" class="text-sm text-warning max-w-2xl leading-relaxed">{{ refusal_reason }} No recommendation has been issued.</p>
       {% else %}

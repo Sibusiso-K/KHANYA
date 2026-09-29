@@ -214,6 +214,20 @@ if "plant" not in st.session_state:
     st.session_state.plant = {"regrind_enabled": 0.0, "log": [], "commanded": None, "status": None}
 if reset_plant:
     st.session_state.plant.update(regrind_enabled=0.0, log=[], status=None)
+# A declared starting state, so a stable "Continue" can visibly switch regrind
+# off. On the held-out set no "Grind finer" survives the lighting check in live
+# mode (reports/LIGHTING-CHECK-2026-09-30.md), so the plant is never switched on
+# by a live reading here; it is set up, logged as such, and said out loud.
+if presenter.button(
+    "START WITH REGRIND ON (declared setup)",
+    help="Sets regrind_enabled = 1 as the scene's starting state and logs it as a manual setup, not an advisory.",
+):
+    st.session_state.plant.update(regrind_enabled=1.0, status=None)
+    st.session_state.plant["log"].append({
+        "time": time.strftime("%H:%M:%S"), "image": "-", "advisory": "-",
+        "command": "manual setup", "regrind_enabled": "set to 1",
+        "reason": "presenter's declared starting state, not a model output",
+    })
 
 def show_landing(reason=None):
     with landing_slot.container():

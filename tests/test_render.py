@@ -45,7 +45,9 @@ def test_dashboard_can_show_stitch_before_the_model_stack_is_loaded():
 def test_pre_upload_state_is_stitch_rendered_without_fabricated_claims():
     html = render.render_landing()
 
-    assert "Awaiting a reflected-light micrograph" in html
+    assert "Plants learn what is in their ore days too late." in html
+    assert "refuses to advise" in html
+    assert "in seconds" not in html   # not true while the lighting check doubles the live pass
     assert "REEFPRINT :: KHANYA" in html
     assert "No network required" in html
     assert "Dr. K. Vance" not in html
