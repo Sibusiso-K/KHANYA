@@ -19,6 +19,55 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-29 — Sibusiso (68) — the Kaggle retrain scored 0.4543; keep the existing checkpoint
+
+**Did:** Reviewed Lethabo's two later commits on `codex/khanya-build-plan`
+(`1bbc33a`, `263939a`, 20:57 and 21:18). His Kaggle run (`20260929-185547`,
+started 18:55, before entry 67 was pushed) retrained S2 on a T4 and scored
+**0.4543 mean IoU / 0.7716 pixel accuracy**. The existing checkpoint, reproduced
+today, scores **0.5725 / 0.8914**.
+
+| Class | existing `de7135a9` | Kaggle `fb78727d` |
+|---|---:|---:|
+| chalcopyrite | 0.5755 | 0.3537 |
+| pyrrhotite | 0.8695 | 0.6866 |
+| pentlandite | 0.5468 | 0.3555 |
+| magnetite | 0.0000 | 0.0000 |
+
+**Same recipe, run twice.** Data is byte-identical (sha256 `64aebd10...`,
+418,742,024 bytes, checked against this machine's archive). Code is main's.
+Split is seed 42, 31/6/12. Budget is the default 8 epochs x 64 patches, which is
+what the existing checkpoint was trained with (entry near line 3153). What
+differs is hardware (CPU vs T4), library versions and sampling randomness. So a
+second run of the identical recipe landed **0.12 mIoU lower**. That is n=2, but
+it means 0.5725 describes **this checkpoint**, not the method. It also fits the
+training-budget reading: 512 patches in total is starved enough that which
+patches get sampled decides the result. Validation patch mIoU was similar in
+both (~0.47), so validation did not catch it.
+
+**What this means for the build:**
+- Demo and report stay on `de7135a9`. Every current number (illumination 8/12,
+  severity table, 0.335 band, backup-script values) belongs to it.
+- **Both files are named `checkpoints/lumenstone_s2_patches/best.pt`** and the
+  dashboard loads whatever is at that path. On Lethabo's machine it is now the
+  weaker one. Check the sha256 on the presenting laptop before the talk.
+- Say it on stage if asked: the checkpoint reproduces bit-for-bit; the recipe
+  does not, and a second run scored 0.4543.
+
+**Credit where due:** the run fetched S2 from the publisher inside the kernel
+(`enable_internet: true`, `dataset_sources: []`), so no Kaggle mirror of S2 was
+created. That sidesteps the redistribution problem cleanly. Test set untouched
+for tuning; limits stated honestly.
+
+**Branches:** `fix/geometry-guard-before-inversion` is already in `main`'s
+history and `fix/pool-signatures-not-raw-frames` is already in `reefprint`'s.
+Both are dead and safe to delete. Lethabo's call, they are his.
+
+**Next:** Lethabo - keep `fb78727d` as a recorded run, not the demo model.
+Sibusiso - copy `de7135a9` to the presenting laptop and verify its sha256.
+
+---
+
 ## 2026-09-29 — Sibusiso (67) — the S2 model is not missing; do not retrain
 
 **Did:** Reviewed `codex/khanya-build-plan` (three docs-only commits today,
