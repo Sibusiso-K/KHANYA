@@ -19,6 +19,33 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-29 — Sibusiso (73) — the accuracy report, as one document (PR for review)
+
+**Did:** The brief says submissions *must include an accuracy report*. The
+evidence existed, spread across a dozen files. `reports/ACCURACY-REPORT.md`
+assembles it with every number traced to a named file: model and data
+provenance, per-class IoU/recall/precision, void-border, confusion matrix,
+trivial baselines, the magnetite failure, the like-for-like S1 comparison,
+decision-level results with denominators, reproducibility, lighting, speed and
+limitations.
+
+**New and checked tonight** (`src/s2_section_stats.py` ->
+`reports/s2_section_stats.json`): the headline **0.5725 has a 95% bootstrap
+interval of 0.494-0.624** over sections. Lethabo's per-section mean **0.4671
+reproduces exactly** (open since 15 Sept), with 10 of 12 sections below the
+headline. Live Field matches full-section advice on **4 of 12**.
+
+**Corrections found while checking:** (1) the test set is **103,795,344**
+pixels, not the "92.6 million" I have quoted since 15 Sept; I evidently left
+one class's row out of the sum. It reached five places on `reefprint`. (2) The
+single-field latency (2.64 s mean) is forward pass only; the 4.7 s end-to-end
+figure is in no report file. (3) The full-section latency is n=6 on one image,
+not "n=3" as PR #7 says.
+
+**Next:** Lethabo - review the report (PR). Sibusiso - deck, video, rehearsal.
+
+---
+
 ## 2026-09-29 — Sibusiso (70) — the plant parameter now moves on the advisory (PR for review)
 
 **Did:** Built P3 and P0 from Lethabo's plan (`codex/khanya-build-plan`,
