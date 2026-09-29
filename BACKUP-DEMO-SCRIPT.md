@@ -85,7 +85,8 @@ The brief asks to see the model's output adjust a plant parameter. Below the
 result is **Simulated plant response**: one illustrative tag, `regrind_enabled`
 (1 = regrind, 0 = bypass), commanded over a real local OPC UA exchange. The live
 mode samples **six 512 px fields** across the section, and the advisor will not
-advise on fewer than **9 payload-bearing particles**. Expected values from
+advise on fewer than **9 payload-bearing particles**, a provisional operating
+floor, never to be called a statistical bound on stage. Expected values from
 `reports/field_sampling_s2.json`; steps 2 and 3 verified in the running
 dashboard on 2026-09-30.
 
