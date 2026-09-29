@@ -24,6 +24,8 @@ Khumalo, Lethabo Hoaeane, Ipeleng Modise (Team Sonar). Current plan of record:
 
 ## Start here
 
+**29 September planning update:** [Build and pitch handover](handover/README.md) covers the organiser's six pitch themes, evidence, retraining setup, implementation tickets, chemistry/3D scope and pilot economics. The user has approved S2 retraining; this planning update does not change application code or claim new model results.
+
 | Doc | Answers |
 |---|---|
 | [`JUDGE-READY-WORKPLAN.md`](JUDGE-READY-WORKPLAN.md) | **Active presentation-readiness backlog:** Mintek/category fit, exact CV model, real-time live demo contract, industry applicability, judging criteria and production-readiness gates |
