@@ -14,6 +14,20 @@ phases identified on held-out data (reproduced 29 September, sha256
 driven over real OPC UA. The team wants more than a demo: a solution that is
 one credible step from a pilot. These are the gaps between the two.
 
+## Decisions agreed, 29 September (Lethabo's review of this PR)
+
+| # | Decision |
+|---|---|
+| 1 | **On stage, claim only** that the research prototype identifies the labelled S2 phases with the reported held-out accuracy, and demonstrates a simulator-only advisory-to-parameter path. **Do not claim** reduced reagent use, higher recovery, or faster sample-to-answer. |
+| 1 | **Shadow pilot measures:** specimen-level agreement with expert labels; coverage and abstention; unsafe-advisory count *with its denominator*; repeatability; paired sample-to-reviewed-result turnaround. Plant reagent and recovery records are for exploratory association only while no commands are sent. **8-12 weeks is a planning estimate** that depends on partner access, not a commitment. |
+| 2 | **The pitch's primary ask:** a partner lab supplying representative labelled South African polished sections, with expert phase labels, specimen identity and acquisition metadata; holdout grouped by specimen. USGS imagery is a qualitative stability check only, and only if acquisition is comparable. No accuracy claims from it, and it must not delay submission. |
+| 3 | **First customer:** a lab that already prepares and images suitable sections. We have not shown removal of an SEM/XRD queue or measured turnaround, and we do not remove preparation. No verified lab contact or turnaround figure exists. |
+| 4 | **Decision-level reporting alongside IoU**, with the unsafe criterion defined and thresholds locked *before* evaluation. Zero unsafe in 12 is not a zero rate (see gap 4's correction). **Seed fix and J0/J1/J2 after the freeze**, train/validation only, never tuned on the 12 test sections. CE+Dice (0.5300 val) does not replace the stage checkpoint. |
+| 5 | **Reflectance calibration is not ready** to sit in front of the current model (see gap 5). **For this submission, disclose the lighting fragility**; do not add an unvalidated gate. The consistency gate is a future experiment with predefined perturbations on V1 and train/validation images only. |
+
+Still open: the five clause-plan questions in `CHALLENGE-CLAUSES-2026-09-29.md`,
+added after this review.
+
 ---
 
 ## 1. No evidence it reduces chemical use or raises yield
@@ -84,8 +98,15 @@ budget-scaling runs (J0/J1/J2, `docs/11` on `reefprint`); multiple seeds with th
 spread reported; then site fine-tuning. The bar should arguably be
 **decision-level, not IoU**. On S2 the refined pipeline had zero unsafe
 advisories out of 12 (`reports/decision_gap_patches_refined.json`), even at
-moderate IoU. For a screening advisory, "never confidently wrong" may matter
-more than a few IoU points.
+moderate IoU.
+
+> **Corrected after Lethabo's review.** This paragraph first ended: *"For a
+> screening advisory, 'never confidently wrong' may matter more than a few IoU
+> points."* That overclaims. Zero unsafe advisories in 12 sections is an
+> observation, not a rate: with 0 events in n=12, the exact one-sided 95% upper
+> bound on the unsafe rate is **22.1%** (1 − 0.05^(1/12)). The honest statement
+> is "0 of 12 observed; consistent with an unsafe rate of up to about 22%".
+> "Never confidently wrong" must not be used.
 
 **Question for Lethabo.** Do we agree that the pilot's accuracy bar is
 decision-level (unsafe rate and coverage), with IoU reported alongside? And do
@@ -106,6 +127,12 @@ S2 sections under a measured exposure shift
   normally removes exposure and lamp drift. It needs a standard imaged each
   session, which LumenStone and V1 do not have. That makes it pilot work, not a
   demo feature.
+
+  > **Not ready, per Lethabo's review.** The module outputs calibrated R%;
+  > KHANYA's model was trained on RGB images with its own normalisation.
+  > Putting calibration in front of it changes the model's input distribution,
+  > so it needs paired calibrated training and evaluation before it can be
+  > claimed. It is a pilot research item, not a drop-in fix.
 - **Catch what calibration misses.** Run each field twice, original and one
   fixed perturbed copy, and hold if the advice flips. It needs no training, and
   its validation evidence must come from V1 pairs and train/validation images,

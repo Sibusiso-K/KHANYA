@@ -79,9 +79,15 @@ both datasets, unsafe and conservative errors go to zero and everything becomes 
 request for manual verification.
 
 **Say this, not the old line:** *"repairing particle topology did not make the
-system more accurate - it made it stop being confidently wrong. Every error
-became a request for a human to look."* That is the refusal thesis, measured, on
-two datasets. State plainly that S1 is weak evidence for it (the raw S1 run had
+system more accurate. On the 12 held-out S2 sections, every confident error it
+made - five of them, two unsafe - became a request for a human to look. We saw
+none left, which on 12 sections is an observation, not a guarantee."* That is
+the refusal thesis, measured, on two datasets.
+
+**Corrected 29 September, after Lethabo's PR #7 review.** This line previously
+said repair *"made it stop being confidently wrong"*. Zero confident errors in 12
+sections is not a zero rate: with 0 of 12 the exact one-sided 95% upper bound is
+22.1% (0 of 20 on S1: 13.9%). Say what was observed, with its denominator. State plainly that S1 is weak evidence for it (the raw S1 run had
 only one error to remove and no unsafe ones), and do not claim a general law
 about image-based mineralogy.
 
