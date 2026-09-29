@@ -1,4 +1,4 @@
-# Luna implementation contract
+# Implementation contract for Codex Luna or Claude Sonnet
 
 ## Start here
 
@@ -96,13 +96,14 @@ Store raw assay and inferred phase output separately. Percent image area, elemen
 
 These dates define priority, not a promise that unmeasured training will finish. Total estimates overlap only if team members actually work independently. A single implementer must cut P6 and optional P4 features first. Do not substitute mock predictions if P1 fails.
 
-## Copy-paste prompt for Luna
+## Copy-paste prompt for Codex Luna or Claude Sonnet
 
 ```text
 Continue KHANYA for Mintek Problem 3. Start in the managed application worktree
 C:\Users\USER\.codex\worktrees\khanya-build-plan\REEFPRINT
 on codex/khanya-build-plan, checking branch/status and any newer user changes.
-Read handover/README.md, LUNA-IMPLEMENTATION.md, SETUP-AND-ASSETS.md,
+Read handover/README.md, handover/IMPLEMENTATION.md,
+handover/KAGGLE-TRAINING.md, handover/SETUP-AND-ASSETS.md,
 EVIDENCE-REGISTER.md, BUILD-PLAN.md and PILOT-AND-BUSINESS.md.
 
 I explicitly approve retraining the missing S2 model. Implement the ordered
@@ -114,8 +115,8 @@ observation acknowledgment is not enough. Keep all historical results and
 do not reuse them as the new model's scores. Run appropriate tests.
 
 Keep the current Streamlit application. No paid APIs, purchases, quantum
-integration or framework rewrite. Use a free GPU runtime only if available
-and needed; measure training time before promising a deadline. Preserve
+integration or framework rewrite. The user intends to start training on Kaggle;
+inspect their actual run and use the Kaggle guide. Measure training time before promising a deadline. Preserve
 licences/provenance, never publish raw restricted data/weights or secrets.
 Do not merge the separate REEFPRINT physics history. Inspect and reuse its
 pinned integration dependency through the documented seam.
@@ -123,8 +124,8 @@ pinned integration dependency through the documented seam.
 Then prepare the ten-minute PowerPoint, sources appendix, offline release and
 truthful backup demo. Chemistry-to-3D is P6 only after the core works. Do not
 invent coordinates, link unrelated assays to images, call a 2D proxy true
-liberation, or claim simulated recovery as plant evidence. Use LITHOVANT only
-as a provisional presentation name, retaining KHANYA/REEFPRINT in code.
+liberation, or claim simulated recovery as plant evidence. Keep the established
+presentation and code names REEFPRINT (aka KHANYA).
 
 Keep the handover current, commit and push completed source/docs to the
 planning/implementation branch without force-pushing or merging main.

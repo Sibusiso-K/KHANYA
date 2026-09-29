@@ -4,7 +4,7 @@
 
 Retain the existing microscopy pipeline and build an **evidence-linked mineral-to-process workstation**. Show three sulphide phases, image-quality checks, a processability proxy, and an observable simulated control change. Add a small chemistry/sample-location view only after this complete path works. The user has authorised retraining the missing model. No switch to quantum, hyperspectral acquisition, or a new web framework is required for the deadline.
 
-Suggested external working name: **LITHOVANT**, with the descriptor **Mineral intelligence for process decisions**. Keep KHANYA/REEFPRINT as code and contribution identities. An exact web search on 29 September returned no clear Lithovant result; that is only a preliminary screen, not trademark/domain/company clearance. Check CIPC, WIPO and relevant national classes before commercial branding. OreVia is already Molycop's product; Strataverra/Stratavera also have existing businesses. Do not rename the repo or package imports during the sprint.
+Use the team's existing name **REEFPRINT (aka KHANYA)**, with the optional descriptor **Mineral intelligence for process decisions**. Keep both names and their existing contribution identities. No rebrand, new domain or trademark search is needed for this hackathon build.
 
 ## The clear problem statement
 

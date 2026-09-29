@@ -19,6 +19,16 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-29 — Codex — Kaggle handoff and names
+
+**Did:** Updated the planning branch for the user's confirmed name, REEFPRINT (aka KHANYA). Added a browser-first Kaggle S2 training guide and clarified that Codex Luna or Claude Sonnet can implement/review the plan; the Kaggle GPU performs training. Checked current official Kaggle CLI/notebook/MCP documentation.
+
+**Changed:** `handover/BUILD-PLAN.md`, `README.md`, `SETUP-AND-ASSETS.md`, `KHANYA-CONTINUATION-PROMPT.md`, `KHANYA-RESEARCH-HANDOVER-2026-09-29.md`; renamed `LUNA-IMPLEMENTATION.md` to `IMPLEMENTATION.md`; added `KAGGLE-TRAINING.md`. No model or dataset was uploaded, and no training was run.
+
+**Blocked on:** Kaggle is not yet linked to this chat; S2 access and the project's existing Kaggle redistribution decision remain to be settled before attaching a new S2 mirror. The current branch still has no trained local checkpoint.
+
+**Next:** User starts private Kaggle S2 training, records dataset/source, config, code/model hashes, GPU, validation and held-out metrics, and shares run URL/output. Review metrics before local offline integration and simulated parameter control work.
+
 ## 2026-09-15 — Sibusiso (66) — ask 4 settled: the real gap is worse than we were quoting
 
 **Did:** Downloaded LumenStone **S1 v1** (534,897,733 bytes, published 535 MB,

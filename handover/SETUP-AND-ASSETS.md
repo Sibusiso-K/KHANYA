@@ -37,7 +37,7 @@ The default patch trainer currently uses 512-pixel patches, batch 2, 64 training
 | Python, PyTorch, Streamlit, scientific packages | No paid account | Local train/infer/UI |
 | LumenStone publisher download | Public publisher link; no new account expected, verify link availability | Research data; cite source and retain terms |
 | Google Colab | Google account, optional free interactive GPU | Contingency if local training is too slow; resources not guaranteed [FAQ](https://research.google.com/colaboratory/faq.html) |
-| Kaggle | Optional account; not required | Avoid adding new dataset mirrors in this sprint |
+| Kaggle | User intends to train there; account required, free GPU subject to availability | Use [KAGGLE-TRAINING.md](KAGGLE-TRAINING.md). Dataset access, GPU setting and output download remain separate steps. New S2 mirror was paused in the repo's rights report. |
 | QGIS / QField | No paid cloud signup needed for local files | Optional field/GIS tooling |
 | CesiumJS | No account for self-hosted library/local assets | ion-hosted services are a separate choice and not required |
 | USGS | Public data route; inspect chosen record/download | Optional real geolocated sample demo |
@@ -46,7 +46,7 @@ The default patch trainer currently uses 512-pixel patches, batch 2, 64 training
 
 No new accounts have been created, and no paid service is authorised by this document. Existing laptop/power/internet/labour are still costs, even if incremental software/API fees are zero.
 
-## Installation and reproduction runbook for Luna
+## Installation and reproduction runbook for the implementer
 
 Run inside the managed KHANYA worktree. These are **planned commands**, not commands already executed successfully for the application:
 

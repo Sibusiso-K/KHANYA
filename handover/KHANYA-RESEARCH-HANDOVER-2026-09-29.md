@@ -37,7 +37,7 @@ The repository records an **October 1, 2026, 13:00** submission deadline, an off
 
 ## September 29 build-plan update
 
-Read [README.md](README.md) and its five linked planning documents before continuing. The user supplied the organiser's six pitch themes and ten-minute PowerPoint deadline, requested a build-ready plan and repository push, and explicitly approved retraining because S2 data/weights are absent locally. A separate managed KHANYA application worktree now exists at `C:\Users\USER\.codex\worktrees\khanya-build-plan\REEFPRINT`, with `codex/khanya-build-plan` based on live main `9181668`. Application implementation is for the next Luna stage. Historical findings below remain useful but do not override the new asset audit or priority order.
+Read [README.md](README.md) and its five linked planning documents before continuing. The user supplied the organiser's six pitch themes and ten-minute PowerPoint deadline, requested a build-ready plan and repository push, and explicitly approved retraining because S2 data/weights are absent locally. A separate managed KHANYA application worktree now exists at `C:\Users\USER\.codex\worktrees\khanya-build-plan\REEFPRINT`, with `codex/khanya-build-plan` based on live main `9181668`. Application implementation is for the next implementation stage. Historical findings below remain useful but do not override the new asset audit or priority order.
 
 ## Recommended direction — original research proposal
 

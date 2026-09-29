@@ -1,6 +1,6 @@
 # Copy-paste prompt for a new chat
 
-**September 29 update:** the build-ready plan is now [README.md](README.md), and the current implementation prompt is at the end of [LUNA-IMPLEMENTATION.md](LUNA-IMPLEMENTATION.md). The user explicitly approved retraining the missing S2 model. Use that newer prompt for Luna. The investigation prompt below is retained as historical context.
+**September 29 update:** the build-ready plan is now [README.md](README.md). Use [KAGGLE-TRAINING.md](KAGGLE-TRAINING.md) to start retraining and the prompt at the end of [IMPLEMENTATION.md](IMPLEMENTATION.md) for Codex Luna or Claude Sonnet. The user explicitly approved retraining the missing S2 model and retained REEFPRINT (aka KHANYA) as the name. The investigation prompt below is retained as historical context.
 
 ```text
 Continue my KHANYA / REEFPRINT investigation for the Mintek SCi hackathon, Problem 3: Computer Vision for Real-Time Mineralogical Characterisation.
