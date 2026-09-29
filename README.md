@@ -24,7 +24,7 @@ Khumalo, Lethabo Hoaeane, Ipeleng Modise (Team Sonar). Current plan of record:
 
 ## Start here
 
-**29 September planning update:** [Build and pitch handover](handover/README.md) covers the organiser's six pitch themes, evidence, retraining setup, implementation tickets, chemistry/3D scope and pilot economics. The user has approved S2 retraining; this planning update does not change application code or claim new model results.
+**29 September planning and training update:** [Build and pitch handover](handover/README.md) covers the organiser's six pitch themes, evidence, implementation tickets, chemistry/3D scope and pilot economics. The user approved private S2 v2 retraining; see [Kaggle runbook](handover/KAGGLE-TRAINING.md) for the live run status and runnable notebook. No new model results are claimed until the run completes and is evaluated.
 
 | Doc | Answers |
 |---|---|

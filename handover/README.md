@@ -6,7 +6,7 @@ Read in this order:
 
 1. [BUILD-PLAN.md](BUILD-PLAN.md) — problem, product, innovation, pitch and visual experience.
 2. [EVIDENCE-REGISTER.md](EVIDENCE-REGISTER.md) — defensible claims, real data and limitations.
-3. [KAGGLE-TRAINING.md](KAGGLE-TRAINING.md) — immediate S2 retraining path, output checklist and model-switch guidance.
+3. [KAGGLE-TRAINING.md](KAGGLE-TRAINING.md) — active private Kaggle run status, trainer notebook, recovery steps and model-switch guidance. The runnable template is [`training/kaggle_s2_train.ipynb`](../training/kaggle_s2_train.ipynb).
 4. [IMPLEMENTATION.md](IMPLEMENTATION.md) — ordered tasks, contracts, acceptance checks and prompt for Codex Luna or Claude Sonnet.
 5. [SETUP-AND-ASSETS.md](SETUP-AND-ASSETS.md) — actual machine readiness, downloads, accounts and training commands.
 6. [PILOT-AND-BUSINESS.md](PILOT-AND-BUSINESS.md) — people, tests, budget, commercial assumptions and scale.

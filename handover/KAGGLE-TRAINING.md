@@ -1,17 +1,23 @@
 # Kaggle S2 retraining: operator checklist
 
-This is the next action for **REEFPRINT (aka KHANYA)**. The user will start a Kaggle run; either Codex Luna or Claude Sonnet can prepare/review code and results. Kaggle's GPU performs the numerical training. The chat model choice does not itself improve accuracy.
+The private **REEFPRINT (aka KHANYA)** Kaggle run is underway. Either Codex Luna or Claude Sonnet can review code and results; Kaggle's GPU performs the numerical training. The chat model choice does not itself improve accuracy.
 
 ## What is already true
 
 - The active application branch is [`codex/khanya-build-plan`](https://github.com/Sibusiso-K/KHANYA/tree/codex/khanya-build-plan). The code is in `src/segmentation/`; main training entry point is `python -m src.segmentation.train_patches` and full-section evaluation is `python -m src.segmentation.train_patches --eval`.
 - The three required S2 mineral phases are chalcopyrite, pyrrhotite and pentlandite. The model also predicts background and magnetite. The old patch model had magnetite IoU 0; retain that failure if repeated.
 - Official [LumenStone S2 v2](https://imaging.cs.msu.ru/en/research/geology/lumenstone) has 37 publisher training and 12 publisher test image/mask pairs. The repo carves six validation images from the 37 with seed 42. Run a new experiment ID and preserve the published test set until the model is frozen.
-- S2 is not staged locally; no active Kaggle connection is visible to this Codex chat yet. The existing project's `reports/REDISTRIBUTION-CONTRADICTION-2026-09-15.md` says S1/S2 Kaggle upload was paused because the publisher's terms grant research use but do not explicitly address redistribution. Do not assume an existing S2 Kaggle mirror.
+- The user authorized a **private** Kaggle S2 v2 training run. This is an operational instruction, not a legal conclusion about commercial redistribution. The notebook fetches the cited official archive at runtime; no Kaggle dataset mirror was created. Keep the notebook and outputs private.
 
-## Choose the data route before starting
+## Current authenticated run (29 September 2026)
 
-The publisher download is the source of truth. First inspect your Kaggle account for an S2 v2 dataset already legitimately staged by the team. If it exists, check it is private, documented with LumenStone attribution and accessible to your notebook. Do not describe it as publisher-hosted data. If it does not exist, download from the publisher into an authorised research workspace and decide with Sibusiso which Kaggle staging approach is acceptable under the project's existing rights/representation decision. A private Kaggle dataset is still a third-party hosted copy. The existing report lays out the choices. We should not silently create a new S2 mirror while the repository explicitly calls that action paused.
+The Kaggle CLI is authenticated as `lethabomh14`. The account has private S1 v1 and S3 v2 datasets, but no S2 v2 dataset. The 418,742,024-byte official publisher archive is staged locally at ignored path `data/lumenstone/kaggle_s2_training_input/S2_v2.zip`; SHA-256 is `64aebd108b3306a8b2e83a945c01f2779bbfd1abeb187b1e2cedcac96cf40c1d`, ZIP CRC passed and the 37/12 paired files were confirmed. A Kaggle dataset upload was stopped at 2% because the observed throughput implied an impractical transfer. The private notebook instead fetches the official archive from the publisher at runtime, validates the same SHA-256 and expected 37/12 pairs, then proceeds. No dataset was created in Kaggle. Kernel v1 could not clone the private GitHub repo without credentials. V2 used an embedded, hash-verified source snapshot and confirmed CUDA on a Tesla T4, but exposed a missing data-link step before training. V3 restores and asserts the trainer path before training. The source bundle SHA-256 is `1bf02ae874ca1da61f84e05d7a86d4fd3254b93ae2bea2267c6e8ced31f4c775` and commit is `ac7c058e9a52b9ea1004925085e38071e2892b16`.
+
+**Run launched:** [REEFPRINT S2 v2 private baseline training](https://www.kaggle.com/code/lethabomh14/reefprint-s2-v2-private-baseline-training), private kernel, version 3, GPU and Internet enabled. Poll with `kaggle kernels status lethabomh14/reefprint-s2-v2-private-baseline-training`. It remains in progress until that command reports completion; no score is available yet.
+
+## Data and privacy decision
+
+The S2 v2 source is the [LumenStone publisher page](https://imaging.cs.msu.ru/en/research/geology/lumenstone). The active private notebook downloads the official archive over Kaggle Internet, checks the known SHA-256 and ZIP integrity, then requires exactly 37 train and 12 test paired image/mask files before training. This avoids an extra persistent Kaggle dataset mirror. The held-out test split remains frozen for evaluation. The user authorized this private run; that instruction does not establish commercial redistribution rights. Do not publish the source data, notebook outputs, or checkpoint.
 
 Linking Kaggle to Codex is **optional for training**. You can run an interactive Kaggle notebook in the browser, attach data and inspect outputs without MCP or CLI. An MCP connection is useful for an agent to inspect resources; the CLI is the reliable path for scripted notebook versioning, status and output retrieval. Neither connection grants dataset rights, attaches the dataset automatically, chooses a GPU or validates the model.
 
@@ -39,13 +45,27 @@ Paste it only at the PowerShell prompt that appears after the first line. That c
 
 The CLI also supports a token file at `%USERPROFILE%\.kaggle\access_token`, but that stores a reusable credential on disk. Prefer OAuth or the temporary session variable above. Legacy `kaggle.json` credentials are only needed for older clients that do not support the current token/OAuth login methods.
 
+## Optional private dataset upload route (not used)
+
+If the notebook cannot reach the publisher, create a private dataset from the staged official archive:
+
+```powershell
+kaggle datasets create -p .\data\lumenstone\kaggle_s2_training_input --dir-mode skip
+```
+
+The folder includes `dataset-metadata.json` with the owner's Kaggle slug and source citation. The CLI creates privately by default; **never add `--public`**. Then attach its returned slug in the private training notebook. This fallback was not used for the active run.
+
+The checked-in notebook at `training/kaggle_s2_train.ipynb` fetches and verifies the publisher archive at runtime. The private kernel manifest lives at `training/kaggle_s2/kernel-metadata.json`. Review its `id`, `title`, privacy, GPU and Internet settings before a future push. Check `kaggle kernels status <username>/<slug>` until complete; pull output only after success. Never commit Kaggle credentials or downloaded data.
+
 ## Browser-first run
 
-1. Sign in to [Kaggle](https://www.kaggle.com/), create a **private notebook**, and enable a GPU in its settings. Kaggle documents free GPU access but availability is limited; check the machine assigned to the actual session [Kaggle Notebooks](https://www.kaggle.com/docs/notebooks).
-2. Attach the permitted S2 v2 dataset. Confirm the notebook sees the four folders `imgs/train`, `imgs/test`, `masks/train`, `masks/test` under one `S2_v2` root. Count 37 and 12 image/mask pairs. Record the source URL, dataset version and archive hash.
+The repository contains [`training/kaggle_s2_train.ipynb`](../training/kaggle_s2_train.ipynb), a private-run template. It fetches the source archive from LumenStone at runtime, clones the public code branch into `/kaggle/working`, and never includes Kaggle credentials. The active run is already launched at [Kaggle](https://www.kaggle.com/code/lethabomh14/reefprint-s2-v2-private-baseline-training).
+
+1. Sign in to [Kaggle](https://www.kaggle.com/), upload the template as a **private notebook**, and enable a GPU and Internet in its settings. Kaggle documents free GPU access but availability is limited; check the machine assigned to the actual session [Kaggle Notebooks](https://www.kaggle.com/docs/notebooks).
+2. Allow the notebook to download the official S2 v2 archive. Confirm its SHA-256, ZIP CRC and exactly 37/12 paired files. Stop if any check differs.
 3. Pull the exact Git branch into `/kaggle/working`, or attach a source snapshot. Confirm `git rev-parse HEAD` and `torch.cuda.is_available()` in the notebook. Install only dependencies missing from Kaggle's environment; check compatible PyTorch/torchvision imports before training.
-4. Place or link the attached S2 root at `/kaggle/working/KHANYA/data/raw/lumenstone/S2_v2` (substitute the actual clone folder). The training code expects `imgs/train`, `imgs/test`, `masks/train`, `masks/test` immediately underneath that path. `/kaggle/input` is read-only; `/kaggle/working` stores outputs.
-5. Run a **smoke training step** with a separate output directory/run ID, record GPU name, first-epoch time and memory use. Then select the full budget from validation results and time available. The code's default is 8 epochs, 64 sampled patches per training epoch, 32 validation patches, 512-pixel native patches, batch 2 and learning rate `2e-4`. Do not assume the old numbers will reproduce on a different environment.
+4. The notebook links the verified extracted `S2_v2` root at the project snapshot's `data/raw/lumenstone/S2_v2` path. The training code expects `imgs/train`, `imgs/test`, `masks/train`, `masks/test` immediately underneath it.
+5. Run the controlled baseline exactly as configured; record the GPU, epoch times, memory use and validation trend. Use validation only to plan any later candidate. The code's default is 8 epochs, 64 sampled patches per training epoch, 32 validation patches, 512-pixel native patches, batch 2 and learning rate `2e-4`. Do not assume the old numbers will reproduce on a different environment.
 6. Freeze configuration and checkpoint. Run the official 12-image test **once for that frozen candidate**, including per-class IoU, precision/recall, pooled mIoU, confusion matrix and examples. A benchmark set already used during prior development is not a new external validation set.
 7. Save `best.pt`, optional `last.pt`, fresh test JSON, training log, manifest (Git SHA, versions, split IDs, settings, seed, source/data/model hashes) and at least one real predicted-mask image under Kaggle outputs. Download these to an ignored local `checkpoints/`/run-artifact folder; share the run URL and non-secret summary with Sibusiso. Keep old reports untouched.
 8. Check the downloaded checkpoint locally in the Streamlit pipeline. GPU success on Kaggle does not establish that the offline laptop can load or run it.
@@ -66,7 +86,7 @@ kaggle kernels status YOUR_USERNAME/YOUR_NOTEBOOK_SLUG
 kaggle kernels output YOUR_USERNAME/YOUR_NOTEBOOK_SLUG -p .\training\outputs
 ```
 
-The placeholder directory is a **proposed** local notebook folder, not already present in this repository. The browser-first workflow needs no CLI setup. Authentication must be completed through Kaggle's own flow; never paste an API token, `kaggle.json`, or notebook secret into chat or Git. On 29 September this Codex session exposes **no Kaggle MCP tool**. Kaggle's [official remote MCP server](https://www.kaggle.com/docs/mcp) advertises `https://www.kaggle.com/mcp`; if you connect it in Codex, we can test its actual tool permissions then. The CLI and MCP may have different capabilities; do not infer that a connected MCP can manage long-running training.
+The CLI notebook folder `training/kaggle_s2` is now present in this repository. The browser-first workflow needs no CLI setup. Authentication must be completed through Kaggle's own flow; never paste an API token, `kaggle.json`, or notebook secret into chat or Git. On 29 September this Codex session exposes **no Kaggle MCP tool**. Kaggle's [official remote MCP server](https://www.kaggle.com/docs/mcp) advertises `https://www.kaggle.com/mcp`; if you connect it in Codex, we can test its actual tool permissions then. The CLI and MCP may have different capabilities; do not infer that a connected MCP can manage long-running training.
 
 ## Review the output before changing the build
 
