@@ -24,6 +24,16 @@ prototype*. Meeting clauses 3 and 4 in the real-world sense needs a site. That
 is the pilot, and it should be presented as a specific next step, not as
 "future work".
 
+## Decisions agreed, 29 September (Lethabo's answers on PR #7)
+
+| # | Decision |
+|---|---|
+| 1 | **The split stands.** Deck, backup video and rehearsal come first. After that, only the smallest evidence-backed prototype gaps. GPU timing is an experiment if time permits; multi-field mode is last. The shadow pilot, South African validation, preparation and sample-to-reviewed-result turnaround are pilot work. |
+| 2 | **Lethabo will run GPU timing on a Kaggle T4**, behind the presentation backup. Protocol: the frozen `de7135a9` checkpoint on the full 3396x2547 image, with warm-up and repeated runs; load time reported separately from inference; device and software versions, n, mean and p95. **Until it is measured, full-section inference must not be called real time.** |
+| 3 | **The fine-chromite entrainment head is not claimed or demonstrated** as a second processability output. It needs representative South African sections, paired expert labels and independent validation, so it is a pilot and research extension. |
+| 4 | **Thresholds live in KHANYA**, as an explicit, versioned site configuration set and signed off by a metallurgist. A shared REEFPRINT config only after a tested schema/API contract. The current unsourced values **are placeholders, not operational thresholds**, and must be described that way. |
+| 5 | **FloatStar is asked about, never claimed.** There is no confirmed FloatStar interface or interoperability. The concrete prototype seam is the existing simulated OPC UA advisory, which does not control a plant. |
+
 ---
 
 ## Clause 2: identify mineral phases in real time
