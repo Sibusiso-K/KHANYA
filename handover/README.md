@@ -11,6 +11,7 @@ Read in this order:
 5. [SETUP-AND-ASSETS.md](SETUP-AND-ASSETS.md) — actual machine readiness, downloads, accounts and training commands.
 6. [PILOT-AND-BUSINESS.md](PILOT-AND-BUSINESS.md) — people, tests, budget, commercial assumptions and scale.
 7. [PR-6-REVIEW-2026-09-29.md](PR-6-REVIEW-2026-09-29.md) — review/merge record and how REEFPRINT fits with FieldMove Clino, QGIS/QField and Leapfrog Geo.
+8. [PR-7-REVIEW-2026-09-29.md](PR-7-REVIEW-2026-09-29.md) — review position on the proposed shadow pilot, domain transfer, metrics and reflectance calibration.
 
 The older dated KHANYA documents remain detailed research context. These current documents take priority where schedules or recommendations differ. The S2 baseline report records the measured result; planning and business documents remain proposals, and nothing here claims production readiness.
 
