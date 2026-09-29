@@ -19,6 +19,25 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-29 — Sibusiso (71) — from demo to pilot: five gaps, for Lethabo
+
+**Did:** PR #6 approved and merged by Lethabo (`ced0ca8`); all three literal
+deliverables are now demonstrable. The team wants more than a demo: a solution
+one credible step from a pilot. Wrote `reports/PILOT-GAPS-2026-09-29.md`, built
+on Lethabo's own stage table: what we have, what a pilot needs and a question
+for each of five gaps. The gaps are outcome evidence (no plant data), ore domain
+(Norilsk, not South African), preparation time (unmeasured; "hours" was my
+unsourced figure), moderate accuracy (non-reproducible recipe), and lighting
+(disclosed, not gated).
+
+**Also noted from his Dice result:** 0.5300 validation has not beaten the
+existing checkpoint's 0.5384. The demo model stays `de7135a9`.
+
+**Next:** Lethabo - answer the five questions on the PR, especially whether
+`reefprint.calibrate.reflectance` can sit in front of KHANYA in a pilot.
+
+---
+
 ## 2026-09-29 — Sibusiso (70) — the plant parameter now moves on the advisory (PR for review)
 
 **Did:** Built P3 and P0 from Lethabo's plan (`codex/khanya-build-plan`,
