@@ -19,6 +19,29 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-29 — Sibusiso (72) — clause-by-clause completion plan, added to PR #7
+
+**Did:** Added `reports/CHALLENGE-CLAUSES-2026-09-29.md` to PR #7, alongside the
+pilot-gaps document. It takes the challenge's own wording clause by clause and
+says what can be closed before 1 October (with owner and estimate), and what
+only a pilot can finish.
+
+**Where each stands:** clause 1 met. Clauses 2-4 are met at prototype level:
+real-time only for analysing the image (full section 162.3 s mean on CPU,
+n=3); processability is a proxy with three of four advisor thresholds
+UNSOURCED; control integration is simulated, read only by our own client.
+
+**Proposed before the deadline, after the deck, video and rehearsal:** show
+processability as a named quantity with its ±33.5% band; make the unsourced
+thresholds site-configurable; add an operator-facing OPC UA tag and have a
+third-party client read it; GPU timing on Kaggle (Lethabo). Each is a separate
+PR.
+
+**Next:** Lethabo - the five questions at the end of the new document, plus
+PR #7's original five.
+
+---
+
 ## 2026-09-29 — Sibusiso (71) — from demo to pilot: five gaps, for Lethabo
 
 **Did:** PR #6 approved and merged by Lethabo (`ced0ca8`); all three literal
