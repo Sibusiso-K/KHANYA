@@ -19,6 +19,42 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-29 — Sibusiso (67) — the S2 model is not missing; do not retrain
+
+**Did:** Reviewed `codex/khanya-build-plan` (three docs-only commits today,
+1,249 lines, authored from Lethabo's account on a machine at `C:/Users/USER`).
+Its plan rests on one audit finding: S2 weights and data "not found", so retrain
+on Kaggle. **That audit ran on the wrong machine.** On this one the checkpoint
+(sha256 `de7135a9...`) and S2 data (37/12) both exist, and a fresh full-section
+evaluation today reproduced **0.5725 mean IoU, bit-for-bit identical** to the
+committed report, every class included. See
+`reports/S2-REPRODUCTION-2026-09-29.md`.
+
+**Why it matters two days out:** retraining would make every current S2 number
+historical, including the illumination finding the new plan builds its demo
+around (its own evidence item E6). It also needs S2 on Kaggle, which is the
+unresolved redistribution decision. The real gap is the one from issue #5 Q1:
+`checkpoints/` is gitignored, so the presenting laptop does not have the file.
+
+**What the branch gets right, and should be kept:** OPC UA currently publishes
+observations with `advisory_influenced=False`, which is not a plant-parameter
+change, so its P3 simulator regrind state closes a real deliverable gap; the
+lighting-change-then-hold demo beat; the evidence register and "claims to
+replace" table; and flagging that the organiser email confirms 1 October but
+not 13:00.
+
+**Changed:** `reports/S2-REPRODUCTION-2026-09-29.md` (new, `1a22051`). Metrics
+JSON regenerated and unchanged.
+
+**Blocked on:** a decision on which laptop presents.
+
+**Next:** Lethabo - drop P1 (retrain) and P0's download/train steps; copy this
+checkpoint to the presenting machine and check its sha256. Then P3 simulator
+state, the P4 hold on the lighting stress test, the PowerPoint (none exists
+yet), the backup recording and a timed rehearsal. Cut P6 (chemistry/3D).
+
+---
+
 ## 2026-09-15 — Sibusiso (66) — ask 4 settled: the real gap is worse than we were quoting
 
 **Did:** Downloaded LumenStone **S1 v1** (534,897,733 bytes, published 535 MB,
