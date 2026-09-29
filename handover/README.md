@@ -24,6 +24,6 @@ The older dated KHANYA documents remain detailed research context. These current
 
 ## Current readiness
 
-**Planning and first baseline complete; validation-only candidate in progress.** The CE baseline completed a private Kaggle run and was smoke-loaded locally. A separate private CE+Dice run has been launched for validation-only comparison; it intentionally does not touch the frozen test split. See the dated experiment log for live status and next steps.
+**Planning and first baseline complete; CE+Dice validation experiment complete.** The private candidate improves the balanced-patch validation mIoU in one stochastic run, but magnetite remains missed and the sealed test set was not re-evaluated. Repeat validation-only runs and dashboard integration remain. See the dated experiment log for results and next steps.
 
 The organiser's supplied email confirms a ten-minute PowerPoint due 1 October 2026. Its six themes are covered below. The repository separately says 13:00; the supplied email does not establish that time. Treat 30 September as the internal freeze and verify the organiser's exact time through the team.

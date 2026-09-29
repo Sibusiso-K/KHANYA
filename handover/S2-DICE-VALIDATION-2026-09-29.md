@@ -1,6 +1,6 @@
 # S2 CE+Dice validation-only experiment — 29 September 2026
 
-**Status: launched on Kaggle; outcome pending.** This run is an exploratory training comparison. It deliberately omits all test evaluation so the existing 12-image test result remains frozen.
+**Status: complete; exploratory validation result recorded.** This run deliberately omitted all test evaluation so the existing 12-image test result remains frozen.
 
 ## Why this experiment
 
@@ -20,14 +20,28 @@ The completed CE baseline scored 0.4543 pooled native-resolution test mIoU, but 
 
 ## Live status and next action
 
-At the time this report was written, Kaggle returned `KernelWorkerStatus.RUNNING`; the CLI logs were not yet available. Do not treat the experiment as completed until status is complete and the private output bundle has been downloaded and hash-checked. Do not launch duplicate runs or inspect/use test masks.
+Kaggle run [REEFPRINT S2 CE+Dice validation-only experiment](https://www.kaggle.com/code/lethabomh14/reefprint-s2-ce-dice-validation-only-experiment) completed with run ID `20260929-193456` on a Tesla T4 (PyTorch 2.10.0+cu128, torchvision 0.25.0+cu128, CUDA 12.8). The publisher ZIP hash and source bundle hash match the baseline verification. The private result ZIP passed CRC verification. The checkpoint hash in the manifest was independently verified: `cb5ccc21753b8036149a0e203b32c6c17ec0549a9f78ff66e0391c08ee28e26a` (168,318,771 bytes). It is stored locally at the gitignored `checkpoints/lumenstone_s2_patches_dice/best.pt` and strict-loaded with all 370 keys matching.
+
+Best validation result occurred at epoch 5:
+
+| Phase | Validation patch IoU | Recall | Precision |
+|---|---:|---:|---:|
+| Background | 0.8795 | 0.9600 | 0.9129 |
+| Chalcopyrite | 0.6001 | 0.9089 | 0.6386 |
+| Magnetite | 0.0000 | 0.0000 | undefined |
+| Pyrrhotite | 0.7131 | 0.7531 | 0.9307 |
+| Pentlandite | 0.4572 | 0.6393 | 0.6162 |
+
+Best balanced-patch validation mIoU was `0.5300`, versus the CE baseline's `0.4705` on the same fixed validation patch protocol (+0.0595 absolute). Validation pixel accuracy was `0.8428`. These are patch-level scores, not full-section measurements. Training patch sampling uses unseeded Python randomness, so this one-run gain is promising but not a controlled multi-seed result. Magnetite remains entirely missed. The manifest explicitly states `test_evaluation_performed: false` and `test_metrics: null`; the frozen baseline test score remains the only test result.
+
+The local private bundle and extracted checkpoint are in the ignored `checkpoints/kaggle_runs/s2_dice_20260929/` and `checkpoints/lumenstone_s2_patches_dice/` paths. Do not commit either. No test masks or images were opened for this run or the post-run verification.
 
 After completion:
 
-1. Retrieve only the private `khanya-s2-dice-validation-*.zip` output bundle. Verify its ZIP CRC, checkpoint hash, source/data hashes, manifest, and full training log.
-2. Record the observed best validation patch mIoU and per-class validation patch metrics, then compare only to the baseline's comparable validation patch metric (`0.4705`). State that these are small fixed validation patches; report the stochastic-run caveat.
-3. If no candidate checkpoint was saved, record the failure. If the candidate appears better, repeat the run with new run IDs/seeds using validation only. Do not evaluate this exploratory checkpoint on the test split.
-4. Keep model weights and raw data in ignored local storage; commit this report and any summary, not the large artifacts.
+1. Repeat CE+Dice with at least two independent training seeds on train/validation only; improve seed control first if possible so Python patch sampling, Torch and loader workers are all recorded and reproducible.
+2. Investigate magnetite label frequency and validation coverage; do not claim the Dice loss fixed it.
+3. If repeated runs support the change, select and freeze one candidate using validation only, then decide whether a single full-section evaluation on the frozen 12-image test set is justified. Never repeatedly tune against that test split.
+4. Connect the candidate to an actual dashboard training-image inference and render the accuracy report; keep test and validation provenance visible.
 
 ## Repository artifact
 
