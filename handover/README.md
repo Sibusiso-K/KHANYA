@@ -10,6 +10,7 @@ Read in this order:
 4. [IMPLEMENTATION.md](IMPLEMENTATION.md) — ordered tasks, contracts, acceptance checks and prompt for Codex Luna or Claude Sonnet.
 5. [SETUP-AND-ASSETS.md](SETUP-AND-ASSETS.md) — actual machine readiness, downloads, accounts and training commands.
 6. [PILOT-AND-BUSINESS.md](PILOT-AND-BUSINESS.md) — people, tests, budget, commercial assumptions and scale.
+7. [PR-6-REVIEW-2026-09-29.md](PR-6-REVIEW-2026-09-29.md) — review/merge record and how REEFPRINT fits with FieldMove Clino, QGIS/QField and Leapfrog Geo.
 
 The older dated KHANYA documents remain detailed research context. These current documents take priority where schedules or recommendations differ. The S2 baseline report records the measured result; planning and business documents remain proposals, and nothing here claims production readiness.
 
@@ -25,5 +26,7 @@ The older dated KHANYA documents remain detailed research context. These current
 ## Current readiness
 
 **Planning and first baseline complete; CE+Dice validation experiment complete.** The private candidate improves the balanced-patch validation mIoU in one stochastic run, but magnetite remains missed and the sealed test set was not re-evaluated. Repeat validation-only runs and dashboard integration remain. See the dated experiment log for results and next steps.
+
+Sibusiso's simulated plant-parameter PR [#6](https://github.com/Sibusiso-K/KHANYA/pull/6) was reviewed and squash-merged after tests and security checks passed. Its simulator-only scope and the recommended mobile/desktop tool workflow are documented in [PR-6-REVIEW-2026-09-29.md](PR-6-REVIEW-2026-09-29.md).
 
 The organiser's supplied email confirms a ten-minute PowerPoint due 1 October 2026. Its six themes are covered below. The repository separately says 13:00; the supplied email does not establish that time. Treat 30 September as the internal freeze and verify the organiser's exact time through the team.
