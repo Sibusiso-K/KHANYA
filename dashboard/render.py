@@ -188,9 +188,21 @@ _VERDICT_CSS = {
 }
 
 
+def _thumbnail_b64(image, width=160):
+    """A small inline PNG for the control strip's lighting comparison."""
+    small = image.convert("RGB").copy()
+    small.thumbnail((width, width), Image.Resampling.LANCZOS)
+    return _image_png_b64(small)
+
+
+def _first_sentence(text):
+    head, dot, _ = text.partition(". ")
+    return head + ("." if dot else "")
+
+
 def render(image, labels, mean_confidence, result, recommendation,
            mode_label="Full section, native resolution", elapsed_seconds=None,
-           opcua_status=None):
+           opcua_status=None, plant=None, lighting=None, evidence_scope=None):
     """Render the dashboard for one measured field. Returns an HTML string.
 
     mode_label, elapsed_seconds: which analysis path produced this result
@@ -254,4 +266,18 @@ def render(image, labels, mean_confidence, result, recommendation,
         mode_label=mode_label,
         elapsed_display=None if elapsed_seconds is None else f"{elapsed_seconds:.1f}",
         opcua_status=opcua_status,
+        # Control-room strip: decision, evidence and simulated plant in one row.
+        action_headline=recommendation.action.replace(" - ", " — "),
+        reason_first_sentence=_first_sentence(recommendation.reason),
+        state_label=state_label,
+        verdict_class=css_class,
+        n_payload_particles=result.n_payload_particles,
+        min_payload_particles=advisor_module.MIN_PAYLOAD_PARTICLES,
+        evidence_scope=evidence_scope or mode_label,
+        plant=plant,
+        lighting=None if lighting is None else {
+            **{k: lighting[k] for k in ("stable", "abstained", "as_imaged", "after_shift")},
+            "as_imaged_b64": _thumbnail_b64(lighting["image"]),
+            "shifted_b64": _thumbnail_b64(lighting["shifted_image"]),
+        },
     )

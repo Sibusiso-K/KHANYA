@@ -187,3 +187,28 @@ def test_candidates_are_shown_only_for_marginal_verdicts(action, expected_count)
             "Continue at current setpoint",
             "Grind finer",
         }
+
+
+def test_control_strip_shows_decision_evidence_and_plant_state():
+    import numpy as np
+    from PIL import Image
+
+    from dashboard.control import CommandStatus
+    from src.advisor import advise
+    from src.modal import ModalResult
+
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.8, 0.95, 12, 64,
+                         n_payload_particles=4)
+    recommendation = advise(result, 0.95)
+    lighting = {"stable": False, "abstained": False, "as_imaged": "Grind finer",
+                "after_shift": "Marginal - verify before acting",
+                "image": Image.new("RGB", (64, 64)), "shifted_image": Image.new("RGB", (64, 64))}
+    plant = CommandStatus("held", 1.0, 1.0, "advisory is abstaining")
+    html = render.render(Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
+                         result, recommendation, plant=plant, lighting=lighting,
+                         evidence_scope="six 512 px fields")
+    assert "No recommendation — too few payload particles" in html
+    assert "need ≥ 9" in html and "six 512 px fields" in html
+    assert "LIGHTING UNSTABLE" in html
+    assert "PLANT · SIMULATED CIRCUIT" in html and ">HELD<" in html
+    assert "no plant connected" in html

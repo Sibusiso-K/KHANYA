@@ -194,18 +194,19 @@ mode = st.radio(
 
 if "force_stale_opcua" not in st.session_state:
     st.session_state.force_stale_opcua = False
-stale_demo = st.button(
+presenter = st.expander("Presenter controls", expanded=False)
+stale_demo = presenter.button(
     "TRIGGER STALE OPC UA REFUSAL",
     help="The next live result is emitted with an expired validity window so the separate consumer must refuse it.",
 )
 if stale_demo:
     st.session_state.force_stale_opcua = True
-    st.info("Stale refusal armed for the next upload. It is not applied to a result already on screen.")
+    presenter.info("Stale refusal armed for the next upload. It is not applied to a result already on screen.")
 
 # The simulated plant outlives a single upload, so a command's before/after is real state.
 # A command belongs to one upload in one mode: Streamlit reruns the whole script on every
 # click, and without `commanded` a Reset would immediately re-command the image on screen.
-reset_plant = st.button(
+reset_plant = presenter.button(
     "RESET SIMULATED PLANT",
     help="Return the simulated regrind tag to 0 (bypass) and clear the command log.",
 )
@@ -381,9 +382,12 @@ else:
                 "reason": command.reason,
             })
         command = plant["status"]
+        evidence_scope = ("six 512 px fields, 18% of the section"
+                          if mode == LIVE_FIELD_LABEL else "whole section, native resolution")
         html = render.render(image, labels, mean_confidence, result, recommendation,
                              mode_label=mode_label, elapsed_seconds=elapsed,
-                             opcua_status=opcua_status)
+                             opcua_status=opcua_status, plant=command,
+                             lighting=lighting, evidence_scope=evidence_scope)
     except (ImportError, OSError, RuntimeError, ValueError) as exc:
         show_landing(f"Analysis could not complete: {exc}")
     else:
@@ -391,41 +395,15 @@ else:
         progress_slot.empty()
         opcua_slot.empty()
         st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
-        if lighting is not None:
-            st.subheader("Lighting check")
-            st.caption(
-                "The same six fields re-measured after the lighting shift measured "
-                "between real re-imagings of the same sections (LumenStone V1, median "
-                "of ten pairs). A confident instruction that changes with the lamp "
-                "is not issued."
-            )
-            imaged_col, shifted_col = st.columns(2)
-            imaged_col.image(lighting["image"], caption=f"As imaged: {lighting['as_imaged']}",
-                             use_container_width=True)
-            shifted_col.image(lighting["shifted_image"],
-                              caption=f"After the re-imaging shift: {lighting['after_shift']}",
-                              use_container_width=True)
-            if lighting["stable"]:
-                st.success("STABLE: the advice does not depend on the lighting.")
-            elif lighting["abstained"]:
-                st.info("The advice was already a refusal, so there was no instruction to protect.")
-            else:
-                st.error("UNSTABLE: the advice changes with the lighting. "
-                         "No instruction issued; the plant is held.")
-        st.subheader("Simulated plant response")
-        st.caption(
-            "One illustrative tag, regrind_enabled (1 = regrind, 0 = bypass), commanded "
-            "over a real local OPC UA exchange. Simulated: no real plant or PLC is connected."
-        )
-        if command is None:
-            st.write(f"Simulated plant reset: regrind_enabled = "
-                     f"{st.session_state.plant['regrind_enabled']:g}. Upload an image to command it.")
-        else:
-            before_col, after_col, state_col = st.columns(3)
-            before_col.metric("regrind_enabled before", f"{command.before:g}")
-            after_col.metric("regrind_enabled after", f"{command.after:g}",
-                             delta=(f"{command.after - command.before:+g}"
-                                    if command.after != command.before else None))
-            state_col.metric("command", command.state.upper())
-            st.write(command.reason)
-        st.dataframe(st.session_state.plant["log"], use_container_width=True, hide_index=True)
+        with st.expander("Command log and lighting-check detail", expanded=False):
+            if lighting is not None:
+                imaged_col, shifted_col = st.columns(2)
+                imaged_col.image(lighting["image"], caption=f"As imaged: {lighting['as_imaged']}",
+                                 use_container_width=True)
+                shifted_col.image(lighting["shifted_image"],
+                                  caption=f"After the re-imaging shift: {lighting['after_shift']}",
+                                  use_container_width=True)
+            if command is None:
+                st.write(f"Simulated plant reset: regrind_enabled = "
+                         f"{st.session_state.plant['regrind_enabled']:g}. Upload an image to command it.")
+            st.dataframe(st.session_state.plant["log"], use_container_width=True, hide_index=True)
