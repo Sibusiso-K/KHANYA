@@ -7,11 +7,11 @@ is the constitution — *what is true and what the rules are*. This file is the 
 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
-- **Last updated:** 2026-09-12
-- **Last commit at time of writing:** S3 v2's rotation frames are not registered — N3 and the extinction result both measured nothing
+- **Last updated:** 2026-09-30 (new product handoff; older technical narrative below is historical)
+- **Current planning decision:** Supabase + Cloudflare Pages + FastAPI PWA, with private Kaggle model experiments. See [`docs/12-pwa-phase-identification-roadmap-2026-09-30.md`](docs/12-pwa-phase-identification-roadmap-2026-09-30.md). The working 1 October demo still takes priority.
 - **Read [`WORKBOARD.md`](WORKBOARD.md) first.** It is the shared board Lethabo and Sibusiso both read: what in
   here is superseded, the scoreboard against the brief, the work queue, and the open decisions.
-- **Days to final:** 19 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
+- **Final:** 1 October 2026, 10-minute presentation. The repository says 13:00 submission; the organiser email supplied by the user confirms the date but not the hour, so the team should verify the time.
 - **Abstract deadline: 30 August 2026 — submitted and complete.** Drafted and rendered:
   [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
   [`docs/06-abstract.pdf`](docs/06-abstract.pdf) is what was sent. **The submission packet is
@@ -100,6 +100,14 @@ hardware-facing half of `acquire` (which, per ADR-0002, has no rig to drive). Ea
 is missing — **the red test list is the backlog**, deliberately.
 
 ### The single next action
+
+**2026-09-30 update:** freeze and rehearse the current KHANYA three-phase/report/simulated-control
+demo for 1 October. Then implement the selected hosted PWA in KHANYA's application history, using
+the milestones and acceptance checks in `docs/12-pwa-phase-identification-roadmap-2026-09-30.md`.
+For model work, reproduce the existing checkpoint/report first and improve magnetite on
+training/validation data; do not tune against the examined 12-section publisher test. This
+planning update does not claim the PWA or improved model is built. The text below records earlier
+technical investigations and remains useful only with its dates and corrections.
 
 **2026-09-14 update — read this line first, then the historical narrative below.** P1–P5 have all
 now run at least once (P5 with a real, escalated non-reproducibility finding —

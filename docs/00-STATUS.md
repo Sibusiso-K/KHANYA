@@ -21,6 +21,7 @@ CLAUDE.md  >  docs/01-design-v3.md  >  docs/02-gauntlet-findings.md  >  everythi
 | [`../CLAUDE.md`](../CLAUDE.md) | Project constitution. Outranks everything here. |
 | [`../CONTEXT.md`](../CONTEXT.md) | **Situation report.** Where we are, the single next action, and the five things that have already bitten us. Read second, after CLAUDE.md. |
 | [`BUILDLOG.md`](BUILDLOG.md) | Append-only record of what was tried, what worked, what failed. Rule 8 — the commit history is the originality defence and this is its prose companion. |
+| [`12-pwa-phase-identification-roadmap-2026-09-30.md`](12-pwa-phase-identification-roadmap-2026-09-30.md) | User-selected Supabase / Cloudflare Pages / FastAPI application handoff and controlled phase-improvement queue. A plan for KHANYA's separate application history; no hosted app or improved checkpoint is claimed. |
 | [`05-toolchain.md`](05-toolchain.md) | Every piece of software we install, when, and what we deliberately do not. Supersedes `03-free-stack.md` §3. |
 | [`01-design-v3.md`](01-design-v3.md) | **The current design** for everything except the instrument. Computational ore microscope: quantitative reflectance + full linear Stokes polarimetry. Its 0.2–1.6 µm/px is now a *design target*, not something that will be measured — see ADR-0002 below. |
 | [`02-gauntlet-findings.md`](02-gauntlet-findings.md) | Adversarial review findings and dispositions. **Why the design is what it is.** Read before proposing anything. |

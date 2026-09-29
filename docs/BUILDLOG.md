@@ -22,6 +22,38 @@ it is a press release.
 
 ---
 
+## 2026-09-30 — product stack and phase-identification implementation handoff
+
+### Attempted
+
+Turn the user's Supabase + Cloudflare Pages + FastAPI decision into a build sequence that Luna or
+Claude Sonnet can execute, while preserving the 1 October evidence-backed demo and the separate
+REEFPRINT/KHANYA histories.
+
+### Worked
+
+- Added `docs/12-pwa-phase-identification-roadmap-2026-09-30.md` with the service boundaries,
+  sample/inference API contracts, phone and desktop user journeys, UI states, mineral experiment
+  queue, acceptance gates, source anchors and a copy-paste implementation prompt.
+- Checked the existing local handover and S2 baseline. The private Kaggle retrain reports 0.4543
+  pooled five-class mIoU and misses magnetite; the stronger KHANYA checkpoint's merged accuracy
+  report remains separate. The plan requires model/report hashes and does not transfer one run's
+  scores to another.
+
+### Did not work
+
+- No cloud account or model service was provisioned in this planning step; the new stack has no
+  observed deployment or latency result yet. The current local checkout is the REEFPRINT
+  measurement history, whereas the application code is on KHANYA's separate history.
+
+### Left open
+
+Implement the authenticated app skeleton and real pinned-checkpoint path on KHANYA after the pitch
+freeze; run the reproducibility and rare-class experiments on training/validation data; acquire
+independent South African expert-labelled sections before any site-performance claim.
+
+---
+
 ## 2026-09-15 — session 39 · found a real J0/J1/J2 blocker before it could burn a GPU-hour
 
 ### Attempted
