@@ -86,15 +86,15 @@ LIBERATION_MARGIN = 0.335
 MIN_ORE_AREA = 0.05
 
 # Fewest payload-bearing particles an association index may be acted on from.
-# DERIVED, not tuned: treating each particle as one yes/no observation of
-# "liberated", the worst-case (p = 0.5) 95% interval on a proportion from n
-# particles is +/-1.96 * 0.5 / sqrt(n). Below this n that interval is wider than
-# LIBERATION_MARGIN, the band the advisor already decides against, so the field
-# cannot tell the two sides of the threshold apart. It follows the margin when
-# the margin is re-derived. Approximate by construction: liberation weights
-# particles by payload area rather than one vote each, and neighbouring
-# particles are not independent.
-MIN_PAYLOAD_PARTICLES = math.ceil((1.96 * 0.5 / LIBERATION_MARGIN) ** 2)
+# PROVISIONAL OPERATIONAL FLOOR, NOT A STATISTICAL BOUND. The value came from a
+# worst-case binomial calculation (1.96 * 0.5 / sqrt(n) <= LIBERATION_MARGIN
+# gives n = 9), but that calculation does not describe this estimator: the
+# association index is an area-weighted ratio over connected particles, and
+# neighbouring particles are not independent (Lethabo, PR #10 review). So 9 is a
+# conservative policy choice, not an interval. It should be replaced by an
+# uncertainty estimate derived for this estimator on training/validation data;
+# the 12 held-out test sections must not be used to set it.
+MIN_PAYLOAD_PARTICLES = 9
 
 
 @dataclass
@@ -193,11 +193,10 @@ def advise(result, mean_confidence: float,
         return Recommendation(
             "No recommendation - too few payload particles",
             f"The association index here rests on {counted} payload-bearing "
-            f"particle(s). Below {MIN_PAYLOAD_PARTICLES}, even a perfect "
-            "segmentation cannot place association on one side of the "
-            f"{LOW_LIBERATION:.0%} floor within the +/-{LIBERATION_MARGIN:.1%} "
-            "band this advisor decides against, so no instruction is issued. "
-            "Measure more fields or the whole section.",
+            f"particle(s), below the provisional floor of {MIN_PAYLOAD_PARTICLES}. "
+            "That is too few particles to act on, so no instruction is issued. "
+            "Measure more fields or the whole section. (The floor is a "
+            "conservative operating policy, not a statistical bound.)",
             confidence,
         )
 

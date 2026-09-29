@@ -114,10 +114,12 @@ class TestConfidenceReporting:
 class TestEvidenceSufficiency:
     """An association index from a handful of particles cannot decide a plant action."""
 
-    def test_threshold_is_derived_from_the_margin_not_chosen(self):
-        import math
-        expected = math.ceil((1.96 * 0.5 / advisor.LIBERATION_MARGIN) ** 2)
-        assert advisor.MIN_PAYLOAD_PARTICLES == expected == 9
+    def test_floor_is_a_provisional_policy_and_says_so(self):
+        assert advisor.MIN_PAYLOAD_PARTICLES == 9
+        rec = advisor.advise(_result(liberation=0.0, n_payload_particles=2), 0.99)
+        assert "provisional floor of 9" in rec.reason
+        assert "not a statistical bound" in rec.reason
+        assert "perfect segmentation" not in rec.reason
 
     @pytest.mark.parametrize("liberation", [0.0, 0.95])
     def test_too_few_payload_particles_refuses_either_way(self, liberation):
