@@ -19,6 +19,44 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Codex Luna — UI handoff, Supabase project and stacked PR reviews
+
+**Did:** Synthesised the four UI references into one workflow: mobile sample capture, desktop three-panel image/evidence workbench, separate evidence-backed spatial view, and a traceable model → human-reviewed advisory → simulator path. Updated the cloud handoff for the dedicated Supabase project created after the user approved its $0/month estimate (`eu-west-2`, ref `uwdrfmwoivibnhpccwxe`; project healthy, empty `public` schema). Reviewed Sibusiso PRs #10–#12 in parallel: added a distinct duplicate-field/evidence-count finding to #10; posted review comments on #11 (synthetic lighting perturbation, metrology wording, latency) and #12 (Continue incorrectly changes setpoint, threshold/field-count claims, mobile layout). All three have passing CI/security checks, but none is merge-eligible: #10 has unresolved changes requested, and #11/#12 are stacked on it.
+
+**Changed:** `STATUS.md`, `handover/RESPONSIVE-APP-AND-DELIVERABLES-2026-09-29.md`, `HANDOVER.md`.
+
+**Blocked on:** No Cloudflare Pages project is connected yet; no Azure deployment is needed for the stage demo. The Kaggle CLI login is present, but checking an unverified candidate slug returned a private/permission error; the new candidate has not been uploaded or trained. Do not place credentials in chat or Git. The dedicated Supabase schema remains empty until the app data contract is implemented.
+
+**Next:** First fix the staged PR blockers, then align the stage branch with current KHANYA main and confirm the exact Kaggle kernel slug. Keep Cloudflare login in the dashboard or `npx wrangler login --use-keyring`; use `az login` only if a container-hosting test is needed. For a future hosted prototype, apply a versioned RLS-first Supabase migration, connect Cloudflare Pages to the KHANYA GitHub repo, and add FastAPI only after the inference API contract is ready. See the responsive-app handoff for commands, UI data provenance, and acceptance gates.
+
+---
+
+## 2026-09-30 — Codex Luna — Reproducible S2 validation candidate
+
+**Did:** Made training patch sampling repeatable by seed and epoch; added deterministic run setup and whole-section validation checkpoint selection. Updated the private Kaggle CE+Dice generator to embed a deterministic, SHA-256-pinned source snapshot, retain the verified S2 archive link, use a unique run directory, record full-section validation history and hashes, and keep the 12-image held-out split sealed. Generated notebook code cells parse and the configured checkpoint path matches the trainer.
+
+**Changed:** `src/segmentation/patches.py`, `src/segmentation/train_patches.py`, `training/kaggle_s2/make_dice_validation_notebook.py`, `training/kaggle_s2/kaggle_s2_dice_validation.ipynb`, `training/kaggle_s2/kernel-metadata-dice-validation.json`.
+
+**Not done:** No GPU run has been started and no new model accuracy is claimed. The generated notebook is configured private with GPU and Internet enabled. The existing 0.5300 balanced-patch CE+Dice value is not comparable to the new full-section checkpoint-selection metric.
+
+**Next:** Commit and publish this candidate branch, run the private Kaggle notebook, review its full-section validation history and class-level failures, then repeat the leading recipe across seeds before freezing a candidate for any previously examined test-set regression check. Continue to keep the S2 archive, outputs and weights private.
+
+---
+
+## 2026-09-29 — Codex — Responsive app and deliverables
+
+**Did:** Mapped the Mintek three-phase/model-report/plant-parameter floor to repository files and distinguished three different artifacts: historical S2 checkpoint report (pooled patch mIoU 0.5725; nonzero chalcopyrite, pyrrhotite and pentlandite IoUs; magnetite 0), the fresh Kaggle CE baseline (mIoU 0.4543; pixel accuracy 0.7716; magnetite 0), and the CE+Dice validation-only candidate (patch validation mIoU 0.5300, no test evaluation). Confirmed the present app is an offline Streamlit browser UI with responsive evidence cards, not a PWA/backend. Confirmed simulator PR #6 lives in updated main and this planning branch is behind it; do not present the old observation-only adapter as the changed-parameter demo. Compared Supabase, Firebase, Azure, QGIS/QField, Figma and Lovable using official current source pages. Wrote `handover/RESPONSIVE-APP-AND-DELIVERABLES-2026-09-29.md` with a product decision, free-first stack, deliverable map and acceptance gates.
+
+**Decision:** Keep inference and OPC UA simulation local/offline for the hackathon; retain Streamlit for stage stability and make one responsive browser app the product direction. After the pitch, use React/Vite PWA + existing Python/FastAPI inference boundary if justified. For cloud prototype, Supabase is the best fit for relational sample/assay/spatial data; Firebase is a viable auth-first alternative; Azure is conditional on student eligibility and cost controls. Use QGIS/QField for free GIS workflows; do not try to reproduce Leapfrog as part of this deliverable.
+
+**Not done:** No PWA, FastAPI, hosted backend, authentication, XRF hardware connection, or 3D geological volume was implemented in this documentation pass. A mock/UI rewrite is not evidence for the trained model or plant-parameter deliverable. Need updated main and one frozen checkpoint/report pairing before the final stage demo.
+
+**Next:** Align the app work with current main containing PR #6. Freeze the exact report/checkpoint pair; if using current Kaggle CE, show its 0.4543 report and disclose weak per-class performance. Then verify model overlay and the real local OPC UA simulator command/refusal on the same clean stage checkout. Keep documentation changes on the planning branch unless the team merges them through review.
+
+**Changed:** `handover/RESPONSIVE-APP-AND-DELIVERABLES-2026-09-29.md`, `handover/README.md`, `HANDOVER.md`.
+
+---
+
 ## 2026-09-29 — Codex — Kaggle handoff and names
 
 **Did:** Updated the planning branch for the user's confirmed name, REEFPRINT (aka KHANYA). Added a browser-first Kaggle S2 training guide and clarified that Codex Luna or Claude Sonnet can implement/review the plan; the Kaggle GPU performs training. Checked current official Kaggle CLI/notebook/MCP documentation.

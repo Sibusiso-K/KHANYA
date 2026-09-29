@@ -1,7 +1,7 @@
 {
-  "id": "lethabomh14/reefprint-s2-ce-dice-validation-only-experiment",
-  "title": "REEFPRINT S2 CE+Dice whole-section validation-selection experiment",
-  "code_file": "kaggle_s2_dice_validation.ipynb",
+  "id": "lethabomh14/reefprint-s2-v2-private-baseline-training",
+  "title": "REEFPRINT S2 v2 private baseline training",
+  "code_file": "kaggle_s2_train.ipynb",
   "language": "python",
   "kernel_type": "notebook",
   "is_private": "true",
