@@ -1,0 +1,213 @@
+{
+  "checkpoint_sha256": "de7135a96541a46dc0981a991cb954186c7cd669ea1c1b33914d1929ae9b1357",
+  "eval_set": [
+    "test_01",
+    "test_02",
+    "test_03",
+    "test_04",
+    "test_05",
+    "test_06",
+    "test_07",
+    "test_08",
+    "test_09",
+    "test_10",
+    "test_11",
+    "test_12"
+  ],
+  "class_names": [
+    "background",
+    "chalcopyrite",
+    "magnetite",
+    "pyrrhotite",
+    "pentlandite"
+  ],
+  "pooled_mean_iou": 0.5725330422082483,
+  "pooled_mean_iou_bootstrap_95": [
+    0.49450465634003027,
+    0.6236668570615078
+  ],
+  "per_section_mean_iou_mean": 0.46714846233419444,
+  "per_section_mean_iou_bootstrap_95": [
+    0.4117235335290705,
+    0.5344211484979114
+  ],
+  "per_section_convention": "each section's IoU averaged over classes present in its ground truth or prediction",
+  "n_sections_below_pooled": 10,
+  "bootstrap": {
+    "unit": "section",
+    "resamples": 2000,
+    "seed": 42,
+    "method": "percentile"
+  },
+  "live_vs_full_advice_agree": 4,
+  "rows": [
+    {
+      "section": "test_01",
+      "mean_iou_present_classes": 0.41268630181957455,
+      "iou_per_class": [
+        0.9438935142022996,
+        0.5619048474713704,
+        0.0,
+        0.0492024188522243,
+        0.5084307285719784
+      ],
+      "full_section_advice": "Continue at current setpoint",
+      "live_field_advice": "Continue at current setpoint",
+      "advice_agrees": true
+    },
+    {
+      "section": "test_02",
+      "mean_iou_present_classes": 0.7275274428174575,
+      "iou_per_class": [
+        0.7833949005604892,
+        null,
+        null,
+        0.9870395287964328,
+        0.4121478990954505
+      ],
+      "full_section_advice": "Grind finer",
+      "live_field_advice": "Flag for manual review - no payload detected",
+      "advice_agrees": false
+    },
+    {
+      "section": "test_03",
+      "mean_iou_present_classes": 0.6587706958559052,
+      "iou_per_class": [
+        0.8238443607522111,
+        0.872231440392332,
+        null,
+        0.5385234353505041,
+        0.4004835469285736
+      ],
+      "full_section_advice": "Marginal - verify before acting",
+      "live_field_advice": "Marginal - verify before acting",
+      "advice_agrees": true
+    },
+    {
+      "section": "test_04",
+      "mean_iou_present_classes": 0.46622722670413685,
+      "iou_per_class": [
+        0.974203286229924,
+        0.20789160249531244,
+        0.0,
+        0.7760953637181743,
+        0.37294588107727344
+      ],
+      "full_section_advice": "Marginal - verify before acting",
+      "live_field_advice": "No recommendation - insufficient ore in field",
+      "advice_agrees": false
+    },
+    {
+      "section": "test_05",
+      "mean_iou_present_classes": 0.4716363940122831,
+      "iou_per_class": [
+        0.9374019813150608,
+        0.3692048583865645,
+        0.0,
+        0.6512985915410866,
+        0.4002765388187031
+      ],
+      "full_section_advice": "Marginal - verify before acting",
+      "live_field_advice": "Continue at current setpoint",
+      "advice_agrees": false
+    },
+    {
+      "section": "test_06",
+      "mean_iou_present_classes": 0.34003999021870773,
+      "iou_per_class": [
+        0.6248488800234899,
+        0.37572476615809247,
+        0.0,
+        0.6996263049119561,
+        0.0
+      ],
+      "full_section_advice": "Marginal - verify before acting",
+      "live_field_advice": "Continue at current setpoint",
+      "advice_agrees": false
+    },
+    {
+      "section": "test_07",
+      "mean_iou_present_classes": 0.4534058308390551,
+      "iou_per_class": [
+        0.7722491930211127,
+        0.0,
+        0.0,
+        0.9758445912238342,
+        0.5189353699503287
+      ],
+      "full_section_advice": "Grind finer",
+      "live_field_advice": "Flag for manual review - association index not measurable",
+      "advice_agrees": false
+    },
+    {
+      "section": "test_08",
+      "mean_iou_present_classes": 0.5037905112277657,
+      "iou_per_class": [
+        0.6382338489192015,
+        0.0,
+        0.0,
+        0.9629998807231639,
+        0.9177188264964637
+      ],
+      "full_section_advice": "Marginal - verify before acting",
+      "live_field_advice": "Marginal - verify before acting",
+      "advice_agrees": true
+    },
+    {
+      "section": "test_09",
+      "mean_iou_present_classes": 0.37485468547319645,
+      "iou_per_class": [
+        0.6952067229013298,
+        0.0,
+        0.0,
+        0.5399652589586161,
+        0.6391014455060361
+      ],
+      "full_section_advice": "Marginal - verify before acting",
+      "live_field_advice": "Flag for manual review - association index not measurable",
+      "advice_agrees": false
+    },
+    {
+      "section": "test_10",
+      "mean_iou_present_classes": 0.3774570629545869,
+      "iou_per_class": [
+        0.5925137701537684,
+        0.0,
+        0.0,
+        0.9578225729600665,
+        0.3369489716590996
+      ],
+      "full_section_advice": "Grind finer",
+      "live_field_advice": "Flag for manual review - low payload signal",
+      "advice_agrees": false
+    },
+    {
+      "section": "test_11",
+      "mean_iou_present_classes": 0.3768701920082118,
+      "iou_per_class": [
+        0.611425203703323,
+        0.0,
+        0.0,
+        0.9511166503700593,
+        0.3218091059676769
+      ],
+      "full_section_advice": "Grind finer",
+      "live_field_advice": "Grind finer",
+      "advice_agrees": true
+    },
+    {
+      "section": "test_12",
+      "mean_iou_present_classes": 0.44251521407945227,
+      "iou_per_class": [
+        0.6162101917401086,
+        0.06782751390281704,
+        0.0,
+        0.9582168636189226,
+        0.5703215011354129
+      ],
+      "full_section_advice": "Grind finer",
+      "live_field_advice": "Flag for manual review - association index not measurable",
+      "advice_agrees": false
+    }
+  ]
+}

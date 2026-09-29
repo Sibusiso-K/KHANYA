@@ -43,6 +43,243 @@ Entry format:
 
 ---
 
+## 2026-09-29 — Sibusiso (73) — the accuracy report, as one document (PR for review)
+
+**Did:** The brief says submissions *must include an accuracy report*. The
+evidence existed, spread across a dozen files. `reports/ACCURACY-REPORT.md`
+assembles it with every number traced to a named file: model and data
+provenance, per-class IoU/recall/precision, void-border, confusion matrix,
+trivial baselines, the magnetite failure, the like-for-like S1 comparison,
+decision-level results with denominators, reproducibility, lighting, speed and
+limitations.
+
+**New and checked tonight** (`src/s2_section_stats.py` ->
+`reports/s2_section_stats.json`): the headline **0.5725 has a 95% bootstrap
+interval of 0.494-0.624** over sections. Lethabo's per-section mean **0.4671
+reproduces exactly** (open since 15 Sept), with 10 of 12 sections below the
+headline. Live Field matches full-section advice on **4 of 12**.
+
+**Corrections found while checking:** (1) the test set is **103,795,344**
+pixels, not the "92.6 million" I have quoted since 15 Sept; I evidently left
+one class's row out of the sum. It reached five places on `reefprint`. (2) The
+single-field latency (2.64 s mean) is forward pass only; the 4.7 s end-to-end
+figure is in no report file. (3) The full-section latency is n=6 on one image,
+not "n=3" as PR #7 says.
+
+**Next:** Lethabo - review the report (PR). Sibusiso - deck, video, rehearsal.
+
+---
+
+## 2026-09-29 — Sibusiso (72) — clause-by-clause completion plan, added to PR #7
+
+**Did:** Added `reports/CHALLENGE-CLAUSES-2026-09-29.md` to PR #7, alongside the
+pilot-gaps document. It takes the challenge's own wording clause by clause and
+says what can be closed before 1 October (with owner and estimate), and what
+only a pilot can finish.
+
+**Where each stands:** clause 1 met. Clauses 2-4 are met at prototype level:
+real-time only for analysing the image (full section 162.3 s mean on CPU,
+n=3); processability is a proxy with three of four advisor thresholds
+UNSOURCED; control integration is simulated, read only by our own client.
+
+**Proposed before the deadline, after the deck, video and rehearsal:** show
+processability as a named quantity with its ±33.5% band; make the unsourced
+thresholds site-configurable; add an operator-facing OPC UA tag and have a
+third-party client read it; GPU timing on Kaggle (Lethabo). Each is a separate
+PR.
+
+**Next:** Lethabo - the five questions at the end of the new document, plus
+PR #7's original five.
+
+---
+
+## 2026-09-29 — Sibusiso (71) — from demo to pilot: five gaps, for Lethabo
+
+**Did:** PR #6 approved and merged by Lethabo (`ced0ca8`); all three literal
+deliverables are now demonstrable. The team wants more than a demo: a solution
+one credible step from a pilot. Wrote `reports/PILOT-GAPS-2026-09-29.md`, built
+on Lethabo's own stage table: what we have, what a pilot needs and a question
+for each of five gaps. The gaps are outcome evidence (no plant data), ore domain
+(Norilsk, not South African), preparation time (unmeasured; "hours" was my
+unsourced figure), moderate accuracy (non-reproducible recipe), and lighting
+(disclosed, not gated).
+
+**Also noted from his Dice result:** 0.5300 validation has not beaten the
+existing checkpoint's 0.5384. The demo model stays `de7135a9`.
+
+**Next:** Lethabo - answer the five questions on the PR, especially whether
+`reefprint.calibrate.reflectance` can sit in front of KHANYA in a pilot.
+
+---
+
+## 2026-09-29 — Sibusiso (70) — the plant parameter now moves on the advisory (PR for review)
+
+**Did:** Built P3 and P0 from Lethabo's plan (`codex/khanya-build-plan`,
+`handover/IMPLEMENTATION.md`), on a branch for his review rather than straight
+to `main`.
+
+**P3, the brief's plant-parameter deliverable.** New `dashboard/control.py`: the
+advisor's action commands one explicitly simulated tag, `regrind_enabled`, over a
+real local OPC UA exchange through REEFPRINT's `AdvisoryServer` /
+`SimulatedControlClient`, imported unchanged through the existing bridge
+(ADR-0003). *Grind finer* -> 1, *Continue* -> 0; every abstaining action issues
+**no command** so the setting holds; reagent actions do not touch regrind. State
+persists across uploads, with before/after, a reason and a command log on screen.
+The consumer is seeded with the plant's actual value, so the before/after is real
+state, not a fresh 0.0.
+
+**Verified in the running dashboard with the real held-out files:** test_11 0->1
+APPLIED; test_03 1->1 HELD; stale armed with test_03 on screen -> nothing fired;
+test_01 while armed -> REFUSED ("regrind_enabled=0 ... setting unchanged", stays
+1); Reset with an image on screen -> stays 0; test_11 again 0->1.
+
+**Two stage bugs the live probe caught, both fixed:** (1) the stale button fired
+immediately on the image already on screen, because the arming click itself
+reruns the script; its message said "next upload". (2) Every rerun re-sent the
+command, so Reset re-commanded the loaded image straight back to 1. Commands are
+now tied to (upload, mode).
+
+**P0, `python -m src.preflight`:** checks the S2 checkpoint sha256 (`de7135a9`),
+the 12 test sections, a strict model load and an OPC UA command round trip;
+prints `READY TO PRESENT` or refuses. Probed: the August Dice checkpoint has the
+**same byte size** (168,313,587) as the real one and is caught only by its hash.
+
+**Also found:** Live Field and full-section recommendations differ on **8 of 12**
+held-out sections, and `BACKUP-DEMO-SCRIPT.md` Beat 2's test_04 is *No
+recommendation* in Live Field, not *Marginal*. Script updated with the preflight
+step and a new Beat 4.
+
+**Note on the plan's reading of `advisory_influenced`:** it treats `False` as
+"not a plant-parameter change". In REEFPRINT's `advisory.py` the field records
+whether the *sampled material* was already affected by an earlier advisory
+(blind spot 10), so `False` is correct on a command about an untouched held-out
+section.
+
+**Changed:** `dashboard/control.py` (new), `dashboard/app.py`,
+`src/preflight.py` (new), `tests/test_control.py` (new, 6 tests incl. 3 real
+OPC UA exchanges), `BACKUP-DEMO-SCRIPT.md`. Suite 122 passed; CI offline guard
+clean.
+
+**Blocked on:** Lethabo's review of the PR.
+
+**Next:** Lethabo - review and critique. Sibusiso - deck, backup video, timed
+rehearsal.
+
+---
+
+## 2026-09-29 — Sibusiso (69) — two corrections, and the CE+Dice run is a repeat
+
+**Correcting entry 68.** It said validation patch mIoU was "similar in both
+(~0.47), so validation did not catch it". Wrong. The existing checkpoint
+validated at **0.5384** (`STATUS.md` line 221); the Kaggle baseline at 0.4705.
+0.4739 was the August CE+Dice run, which I conflated. So validation **did**
+separate the two models, which is good news: validation-only selection tracks
+the test result here.
+
+**Root cause of the 0.12 gap, found by Lethabo's session:**
+`src/segmentation/patches.py:156` samples training patches with
+`random.Random(None)`, so no two training runs see the same patches. The recipe
+is non-reproducible by construction. Real bug, in KHANYA's code, mine to fix -
+after the deadline, since fixing it does not change the existing checkpoint.
+
+**The CE+Dice validation run launched at 21:39 repeats a settled experiment.**
+It was run on 16 August at the same budget: best val patch mIoU 0.4739 against
+CE's 0.5384, magnetite IoU 0.0000 every epoch (`STATUS.md` line 220). Its
+checkpoint is on this machine at `checkpoints/lumenstone_s2_patches_dice/best.pt`,
+the same path the new run writes to. Magnetite is also not one of the three
+phases the brief requires.
+
+**Next:** Lethabo - no further training before submission; the model is done.
+The remaining work is the plant-parameter wiring, the deck, the backup video and
+a rehearsal.
+
+---
+
+## 2026-09-29 — Sibusiso (68) — the Kaggle retrain scored 0.4543; keep the existing checkpoint
+
+**Did:** Reviewed Lethabo's two later commits on `codex/khanya-build-plan`
+(`1bbc33a`, `263939a`, 20:57 and 21:18). His Kaggle run (`20260929-185547`,
+started 18:55, before entry 67 was pushed) retrained S2 on a T4 and scored
+**0.4543 mean IoU / 0.7716 pixel accuracy**. The existing checkpoint, reproduced
+today, scores **0.5725 / 0.8914**.
+
+| Class | existing `de7135a9` | Kaggle `fb78727d` |
+|---|---:|---:|
+| chalcopyrite | 0.5755 | 0.3537 |
+| pyrrhotite | 0.8695 | 0.6866 |
+| pentlandite | 0.5468 | 0.3555 |
+| magnetite | 0.0000 | 0.0000 |
+
+**Same recipe, run twice.** Data is byte-identical (sha256 `64aebd10...`,
+418,742,024 bytes, checked against this machine's archive). Code is main's.
+Split is seed 42, 31/6/12. Budget is the default 8 epochs x 64 patches, which is
+what the existing checkpoint was trained with (entry near line 3153). What
+differs is hardware (CPU vs T4), library versions and sampling randomness. So a
+second run of the identical recipe landed **0.12 mIoU lower**. That is n=2, but
+it means 0.5725 describes **this checkpoint**, not the method. It also fits the
+training-budget reading: 512 patches in total is starved enough that which
+patches get sampled decides the result. Validation patch mIoU was similar in
+both (~0.47), so validation did not catch it.
+
+**What this means for the build:**
+- Demo and report stay on `de7135a9`. Every current number (illumination 8/12,
+  severity table, 0.335 band, backup-script values) belongs to it.
+- **Both files are named `checkpoints/lumenstone_s2_patches/best.pt`** and the
+  dashboard loads whatever is at that path. On Lethabo's machine it is now the
+  weaker one. Check the sha256 on the presenting laptop before the talk.
+- Say it on stage if asked: the checkpoint reproduces bit-for-bit; the recipe
+  does not, and a second run scored 0.4543.
+
+**Credit where due:** the run fetched S2 from the publisher inside the kernel
+(`enable_internet: true`, `dataset_sources: []`), so no Kaggle mirror of S2 was
+created. That sidesteps the redistribution problem cleanly. Test set untouched
+for tuning; limits stated honestly.
+
+**Branches:** `fix/geometry-guard-before-inversion` is already in `main`'s
+history and `fix/pool-signatures-not-raw-frames` is already in `reefprint`'s.
+Both are dead and safe to delete. Lethabo's call, they are his.
+
+**Next:** Lethabo - keep `fb78727d` as a recorded run, not the demo model.
+Sibusiso - copy `de7135a9` to the presenting laptop and verify its sha256.
+
+---
+
+## 2026-09-29 — Sibusiso (67) — the S2 model is not missing; do not retrain
+
+**Did:** Reviewed `codex/khanya-build-plan` (three docs-only commits today,
+1,249 lines, authored from Lethabo's account on a machine at `C:/Users/USER`).
+Its plan rests on one audit finding: S2 weights and data "not found", so retrain
+on Kaggle. **That audit ran on the wrong machine.** On this one the checkpoint
+(sha256 `de7135a9...`) and S2 data (37/12) both exist, and a fresh full-section
+evaluation today reproduced **0.5725 mean IoU, bit-for-bit identical** to the
+committed report, every class included. See
+`reports/S2-REPRODUCTION-2026-09-29.md`.
+
+**Why it matters two days out:** retraining would make every current S2 number
+historical, including the illumination finding the new plan builds its demo
+around (its own evidence item E6). It also needs S2 on Kaggle, which is the
+unresolved redistribution decision. The real gap is the one from issue #5 Q1:
+`checkpoints/` is gitignored, so the presenting laptop does not have the file.
+
+**What the branch gets right, and should be kept:** OPC UA currently publishes
+observations with `advisory_influenced=False`, which is not a plant-parameter
+change, so its P3 simulator regrind state closes a real deliverable gap; the
+lighting-change-then-hold demo beat; the evidence register and "claims to
+replace" table; and flagging that the organiser email confirms 1 October but
+not 13:00.
+
+**Changed:** `reports/S2-REPRODUCTION-2026-09-29.md` (new, `1a22051`). Metrics
+JSON regenerated and unchanged.
+
+**Blocked on:** a decision on which laptop presents.
+
+**Next:** Lethabo - drop P1 (retrain) and P0's download/train steps; copy this
+checkpoint to the presenting machine and check its sha256. Then P3 simulator
+state, the P4 hold on the lighting stress test, the PowerPoint (none exists
+yet), the backup recording and a timed rehearsal. Cut P6 (chemistry/3D).
+
+---
+
 ## 2026-09-29 — Codex — Responsive app and deliverables
 
 **Did:** Mapped the Mintek three-phase/model-report/plant-parameter floor to repository files and distinguished three different artifacts: historical S2 checkpoint report (pooled patch mIoU 0.5725; nonzero chalcopyrite, pyrrhotite and pentlandite IoUs; magnetite 0), the fresh Kaggle CE baseline (mIoU 0.4543; pixel accuracy 0.7716; magnetite 0), and the CE+Dice validation-only candidate (patch validation mIoU 0.5300, no test evaluation). Confirmed the present app is an offline Streamlit browser UI with responsive evidence cards, not a PWA/backend. Confirmed simulator PR #6 lives in updated main and this planning branch is behind it; do not present the old observation-only adapter as the changed-parameter demo. Compared Supabase, Firebase, Azure, QGIS/QField, Figma and Lovable using official current source pages. Wrote `handover/RESPONSIVE-APP-AND-DELIVERABLES-2026-09-29.md` with a product decision, free-first stack, deliverable map and acceptance gates.
@@ -3456,3 +3693,4 @@ per team decision to wait on official acceptance.
 **Next:** Lethabo — accept the GitHub invite (check email/GitHub notifications).
 Once accepted, pull `main` and read `DATA-SOURCES.md` + `reports/KHANYA-01-research-phase.md`
 before touching code.
+
