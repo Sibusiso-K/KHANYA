@@ -22,6 +22,27 @@ it is a press release.
 
 ---
 
+## 2026-09-30 — cloud CLI and FastAPI connection handoff
+
+### Attempted
+
+Translate the chosen Supabase + Cloudflare Pages + FastAPI stack into exact login, Git integration, local API and optional Azure steps without assuming a cloud deployment already exists.
+
+### Worked
+
+- Added `docs/13-cloudflare-azure-fastapi-connection-2026-09-30.md` with the service boundaries, CLI commands, Git-integrated Pages setup, configuration names, acceptance checks and official docs.
+- Checked the local toolchain: Node 24.18.0, npm 11.16.0, Python 3.11.9, uv 0.9.30 and Azure CLI are present. The application folders and Wrangler are not present in this checkout.
+
+### Did not work
+
+- The restricted Codex shell cannot read the user's existing Azure CLI profile (`PermissionError` on `.azure/azureProfile.json`). A clean temporary Azure config says `Please run 'az login'`; this is not evidence about the normal terminal's login state. No Cloudflare or Azure resources were created.
+
+### Left open
+
+Confirm the intended Cloudflare account and Azure student subscription in the user's normal terminal, create the KHANYA app skeleton after the pitch freeze, then test a real authenticated fixture path locally before any optional paid API deployment.
+
+---
+
 ## 2026-09-30 — product stack and phase-identification implementation handoff
 
 ### Attempted

@@ -8,7 +8,7 @@ is the constitution — *what is true and what the rules are*. This file is the 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
 - **Last updated:** 2026-09-30 (new product handoff; older technical narrative below is historical)
-- **Current planning decision:** Supabase + Cloudflare Pages + FastAPI PWA, with private Kaggle model experiments. See [`docs/12-pwa-phase-identification-roadmap-2026-09-30.md`](docs/12-pwa-phase-identification-roadmap-2026-09-30.md). The working 1 October demo still takes priority.
+- **Current planning decision:** Supabase + Cloudflare Pages + FastAPI PWA, with private Kaggle model experiments. See [`docs/12-pwa-phase-identification-roadmap-2026-09-30.md`](docs/12-pwa-phase-identification-roadmap-2026-09-30.md) and the [cloud connection runbook](docs/13-cloudflare-azure-fastapi-connection-2026-09-30.md). Supabase is user-reported connected; Cloudflare CLI and Azure account selection have not been verified in this environment. The working 1 October demo still takes priority.
 - **Read [`WORKBOARD.md`](WORKBOARD.md) first.** It is the shared board Lethabo and Sibusiso both read: what in
   here is superseded, the scoreboard against the brief, the work queue, and the open decisions.
 - **Final:** 1 October 2026, 10-minute presentation. The repository says 13:00 submission; the organiser email supplied by the user confirms the date but not the hour, so the team should verify the time.
