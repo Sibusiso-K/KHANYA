@@ -28,12 +28,16 @@ is the pilot, and it should be presented as a specific next step, not as
 
 ## Clause 2: identify mineral phases in real time
 
-**Where we are.** One 512 px field: 4.7 s warm. A full section: 162.3 s mean,
-195.7 s p95, on a CPU, from only n=3 whole-section runs
-(`reports/segmentation_latency.json`, whose own note records unresolved
-run-to-run variance). The single field's
-recommendation disagrees with the full section's on **8 of 12** held-out
-sections (entry 70). Section preparation is not included.
+**Where we are.** One 512 px field: 2.64 s mean, 3.60 s p95 for the **model
+forward pass only** (n=60); the ~4.7 s end-to-end figure seen in the dashboard
+is not recorded in any report file. A full section: 162.3 s mean, 195.7 s p95 on
+a CPU, from **n=6 runs on a single image** (`test_01`, two runs of three;
+`reports/segmentation_latency.json`, whose own note records unresolved
+run-to-run variance). The single field's recommendation disagrees with the full
+section's on **8 of 12** held-out sections (`reports/s2_section_stats.json`,
+PR #8). Section preparation is not included.
+
+> Corrected 29 September: this paragraph first said "4.7 s warm" and "n=3".
 
 **Before the deadline:**
 
