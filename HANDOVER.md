@@ -46,6 +46,48 @@ not "n=3" as PR #7 says.
 
 ---
 
+## 2026-09-29 — Sibusiso (72) — clause-by-clause completion plan, added to PR #7
+
+**Did:** Added `reports/CHALLENGE-CLAUSES-2026-09-29.md` to PR #7, alongside the
+pilot-gaps document. It takes the challenge's own wording clause by clause and
+says what can be closed before 1 October (with owner and estimate), and what
+only a pilot can finish.
+
+**Where each stands:** clause 1 met. Clauses 2-4 are met at prototype level:
+real-time only for analysing the image (full section 162.3 s mean on CPU,
+n=3); processability is a proxy with three of four advisor thresholds
+UNSOURCED; control integration is simulated, read only by our own client.
+
+**Proposed before the deadline, after the deck, video and rehearsal:** show
+processability as a named quantity with its ±33.5% band; make the unsourced
+thresholds site-configurable; add an operator-facing OPC UA tag and have a
+third-party client read it; GPU timing on Kaggle (Lethabo). Each is a separate
+PR.
+
+**Next:** Lethabo - the five questions at the end of the new document, plus
+PR #7's original five.
+
+---
+
+## 2026-09-29 — Sibusiso (71) — from demo to pilot: five gaps, for Lethabo
+
+**Did:** PR #6 approved and merged by Lethabo (`ced0ca8`); all three literal
+deliverables are now demonstrable. The team wants more than a demo: a solution
+one credible step from a pilot. Wrote `reports/PILOT-GAPS-2026-09-29.md`, built
+on Lethabo's own stage table: what we have, what a pilot needs and a question
+for each of five gaps. The gaps are outcome evidence (no plant data), ore domain
+(Norilsk, not South African), preparation time (unmeasured; "hours" was my
+unsourced figure), moderate accuracy (non-reproducible recipe), and lighting
+(disclosed, not gated).
+
+**Also noted from his Dice result:** 0.5300 validation has not beaten the
+existing checkpoint's 0.5384. The demo model stays `de7135a9`.
+
+**Next:** Lethabo - answer the five questions on the PR, especially whether
+`reefprint.calibrate.reflectance` can sit in front of KHANYA in a pilot.
+
+---
+
 ## 2026-09-29 — Sibusiso (70) — the plant parameter now moves on the advisory (PR for review)
 
 **Did:** Built P3 and P0 from Lethabo's plan (`codex/khanya-build-plan`,
