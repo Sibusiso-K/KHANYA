@@ -6,7 +6,7 @@ Read in this order:
 
 1. [BUILD-PLAN.md](BUILD-PLAN.md) — problem, product, innovation, pitch and visual experience.
 2. [EVIDENCE-REGISTER.md](EVIDENCE-REGISTER.md) — defensible claims, real data and limitations.
-3. [KAGGLE-TRAINING.md](KAGGLE-TRAINING.md) — private S2 run status, output checklist and next-run guidance. The runnable template is [`training/kaggle_s2_train.ipynb`](../training/kaggle_s2_train.ipynb). The completed baseline results are in [S2-BASELINE-2026-09-29.md](S2-BASELINE-2026-09-29.md).
+3. [KAGGLE-TRAINING.md](KAGGLE-TRAINING.md) — private S2 run status, output checklist and next-run guidance. The baseline result is in [S2-BASELINE-2026-09-29.md](S2-BASELINE-2026-09-29.md); the test-sealed CE+Dice validation experiment is in [S2-DICE-VALIDATION-2026-09-29.md](S2-DICE-VALIDATION-2026-09-29.md).
 4. [IMPLEMENTATION.md](IMPLEMENTATION.md) — ordered tasks, contracts, acceptance checks and prompt for Codex Luna or Claude Sonnet.
 5. [SETUP-AND-ASSETS.md](SETUP-AND-ASSETS.md) — actual machine readiness, downloads, accounts and training commands.
 6. [PILOT-AND-BUSINESS.md](PILOT-AND-BUSINESS.md) — people, tests, budget, commercial assumptions and scale.
@@ -24,6 +24,6 @@ The older dated KHANYA documents remain detailed research context. These current
 
 ## Current readiness
 
-**Planning ready; model execution not ready yet.** Python, Node, Git and repository push access were verified. The existing physics environment has pytest and asyncua, but lacks torch, torchvision, pandas and Streamlit. S2 images and trained weights were not found in either supplied project folder, GitHub releases or workflow artifacts. Retraining is explicitly accepted by the user. The first implementation task is a reproducible S2 training and evaluation run on Kaggle, followed by a local offline model check.
+**Planning and first baseline complete; validation-only candidate in progress.** The CE baseline completed a private Kaggle run and was smoke-loaded locally. A separate private CE+Dice run has been launched for validation-only comparison; it intentionally does not touch the frozen test split. See the dated experiment log for live status and next steps.
 
 The organiser's supplied email confirms a ten-minute PowerPoint due 1 October 2026. Its six themes are covered below. The repository separately says 13:00; the supplied email does not establish that time. Treat 30 September as the internal freeze and verify the organiser's exact time through the team.

@@ -15,6 +15,8 @@ The Kaggle CLI is authenticated as `lethabomh14`. The account has private S1 v1 
 
 **Run completed:** [REEFPRINT S2 v2 private baseline training](https://www.kaggle.com/code/lethabomh14/reefprint-s2-v2-private-baseline-training), private kernel, version 3, GPU and Internet enabled. Status is `COMPLETE`. The measured held-out mIoU is 0.4543; see [full baseline report](S2-BASELINE-2026-09-29.md) for per-class and per-image results, hashes, limitations and next steps.
 
+**Next experiment launched:** [private CE+Dice validation-only run](https://www.kaggle.com/code/lethabomh14/reefprint-s2-ce-dice-validation-only-experiment). It uses the existing combined loss and the same six validation images, but its notebook has no test-evaluation cell and records no test metric. At handover update time it was still `RUNNING` and logs were not yet available. See [S2-DICE-VALIDATION-2026-09-29.md](S2-DICE-VALIDATION-2026-09-29.md) for the method, safeguards, and output checklist. This one run is exploratory because training patch sampling is not fully seeded; any apparent improvement requires repeated validation-only runs before a new frozen candidate is considered.
+
 ## Data and privacy decision
 
 The S2 v2 source is the [LumenStone publisher page](https://imaging.cs.msu.ru/en/research/geology/lumenstone). The active private notebook downloads the official archive over Kaggle Internet, checks the known SHA-256 and ZIP integrity, then requires exactly 37 train and 12 test paired image/mask files before training. This avoids an extra persistent Kaggle dataset mirror. The held-out test split has now been evaluated once and must remain frozen for future tuning. The user authorized this private run; that instruction does not establish commercial redistribution rights. Do not publish the source data, notebook outputs, or checkpoint.
@@ -55,7 +57,7 @@ kaggle datasets create -p .\data\lumenstone\kaggle_s2_training_input --dir-mode 
 
 The folder includes `dataset-metadata.json` with the owner's Kaggle slug and source citation. The CLI creates privately by default; **never add `--public`**. Then attach its returned slug in the private training notebook. This fallback was not used for the active run.
 
-The checked-in notebook at `training/kaggle_s2_train.ipynb` fetches and verifies the publisher archive at runtime. The private kernel manifest lives at `training/kaggle_s2/kernel-metadata.json`. Review its `id`, `title`, privacy, GPU and Internet settings before a future push. Check `kaggle kernels status <username>/<slug>` until complete; pull output only after success. Never commit Kaggle credentials or downloaded data.
+The checked-in baseline notebook at `training/kaggle_s2/kaggle_s2_train.ipynb` fetches and verifies the publisher archive at runtime. The validation-only candidate is `training/kaggle_s2/kaggle_s2_dice_validation.ipynb`; its saved metadata is `kernel-metadata-dice-validation.json`. The generic `kernel-metadata.json` is the Kaggle CLI's active metadata and must be restored to the baseline after pushing the candidate. Review the actual kernel `id`, `title`, privacy, GPU and Internet settings before a future push. Check `kaggle kernels status <username>/<slug>` until complete; pull output only after success. Never commit Kaggle credentials or downloaded data.
 
 ## Browser-first run
 
