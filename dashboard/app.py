@@ -535,6 +535,8 @@ else:
             scope_note=("The six analysed fields (each 512 px), shown side by side; grains are "
                         "measured within each field." if mode == LIVE_FIELD_LABEL
                         else "The whole section at native resolution."))
+        payload_names = [n for n in ls.CLASS_NAMES if modal.LUMENSTONE_ROLES.get(n) == "payload"]
+        view3d_html = render.render_section3d(labels, grain_report, payload_names)
         report_html = render.render_report(
             grain_report, result.phase_fractions, file_name=uploaded.name,
             file_sha=hashlib.sha256(image_bytes).hexdigest(), sample_stem=sample_stem,
@@ -549,8 +551,10 @@ else:
         progress_slot.empty()
         opcua_slot.empty()
         result_view = result_slot.container()
-        decision_tab, explore_tab, report_tab = result_view.tabs(
-            ["Decision", "Explore grains", "Report"])
+        decision_tab, explore_tab, view3d_tab, report_tab = result_view.tabs(
+            ["Decision", "Explore grains", "3D view", "Report"])
+        with view3d_tab:
+            st.components.v1.html(view3d_html, height=760, scrolling=True)
         with explore_tab:
             st.components.v1.html(explore_html, height=900, scrolling=True)
         with report_tab:

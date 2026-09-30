@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{# 3D view of the analysed section. Our own renderer: plain 2D canvas, painter's
+   order (far columns first), orthographic camera with turn and tilt. Tapping
+   redraws the scene off-screen with each column in a unique colour and reads the
+   pixel under the pointer, the same technique the Explore view uses for grains.
+   Inline and offline. #}
+<style>
+:root { --bg:#00131D; --panel:#0B2230; --line:#1E3E4B; --text:#E3EAEB; --muted:#8CA6AE; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 'Segoe UI', system-ui, sans-serif; }
+.wrap { padding:14px; display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:16px; }
+@media (max-width: 900px) { .wrap { grid-template-columns:1fr; } }
+.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+h2 { font:700 12px/1.2 Consolas, monospace; letter-spacing:.16em; color:var(--muted); margin:0 0 10px; text-transform:uppercase; }
+#view { width:100%; aspect-ratio:3 / 2; min-height:300px; max-height:620px; display:block; border-radius:6px; background:#021018; touch-action:none; cursor:grab; }
+#view:active { cursor:grabbing; }
+.controls { display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; margin-top:10px; font-size:13px; color:var(--muted); }
+button { font:600 13px 'Segoe UI', sans-serif; padding:7px 11px; border-radius:6px; border:1px solid #2EA5BC; background:#0e3342; color:var(--text); cursor:pointer; }
+.legend { display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:10px; font-size:13px; }
+.sw { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+.hint, .note { color:var(--muted); font-size:13px; } .note { font-size:12px; margin-top:8px; }
+.tag { font:700 12px Consolas, monospace; letter-spacing:.1em; padding:2px 8px; border-radius:4px; color:#00131D; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="panel">
+    <h2>3D view of the analysed section</h2>
+    <canvas id="view" aria-label="3D view of the analysed section: columns coloured by main mineral, height by valuable-mineral share"></canvas>
+    <div class="controls">
+      <button id="b_top">Top view</button>
+      <button id="b_tilt">Tilted view</button>
+      <label>Tower height <input id="exag" type="range" min="30" max="300" value="150"></label>
+    </div>
+    <div class="legend">
+      {% for p in phases %}<span><i class="sw" style="background:{{ p.colour }}"></i>{{ p.name|capitalize }}</span>{% endfor %}
+    </div>
+    <p class="note">Not a 3D reconstruction: a polished section is a flat slice. Each column is a {{ block }} px block of it; colour is the block's main mineral and height is the share of it that is valuable mineral ({{ payload_names }}), so towers mark where the valuable minerals are. Drag to turn and tilt, scroll or pinch to zoom, tap a column.</p>
+  </section>
+  <section class="panel" id="card">
+    <h2>Selected block</h2>
+    <p class="hint">Tap any column to see its main mineral, how much of it is valuable mineral, and the grain it belongs to.</p>
+  </section>
+</div>
+<script>
+(function () {
+  var B = {{ blocks_json|safe }}, GRAINS = {{ grains_json|safe }};
+  var NAMES = {{ names_json|safe }}, COLOURS = {{ colours_json|safe }};
+  var N = B.x.length, canvas = document.getElementById("view"), ctx = canvas.getContext("2d");
+  var cam = { yaw: -0.5, tilt: 0.95, zoom: 1, panX: 0, panY: 0 }, exag = 1.5, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var half = B.block * 0.46, cxW = B.width / 2, cyH = B.height / 2;
+  var rgb = COLOURS.map(function (h) { h = h.replace("#", ""); return [parseInt(h.substr(0, 2), 16), parseInt(h.substr(2, 2), 16), parseInt(h.substr(4, 2), 16)]; });
+  function shade(c, f) { return "rgb(" + Math.round(c[0] * f) + "," + Math.round(c[1] * f) + "," + Math.round(c[2] * f) + ")"; }
+  var TOP = rgb.map(function (c) { return shade(c, 1); }), SIDE_A = rgb.map(function (c) { return shade(c, 0.72); }), SIDE_B = rgb.map(function (c) { return shade(c, 0.52); });
+  var W = 0, H = 0, fit = 1;
+
+  function resize() {
+    // the CSS sets the box (3:2, 300-620 px tall); the drawing buffer follows it
+    var w = canvas.clientWidth || 600, h = canvas.clientHeight || 400;
+    canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+    W = w; H = h; fit = Math.min(W, H * 1.35) / (Math.sqrt(B.width * B.width + B.height * B.height) * 1.02);
+    draw();
+  }
+  // world (image px, z up) -> screen, and the depth used for painter's order
+  function project(u, v, z, s, cs, sn, ct, st) {
+    var ur = u * cs - v * sn, vr = u * sn + v * cs;
+    return [W / 2 + cam.panX + s * ur, H / 2 + cam.panY + s * (vr * ct - z * st), vr];
+  }
+  function order(cs, sn) {
+    var depth = new Float64Array(N), idx = new Uint32Array(N);
+    for (var i = 0; i < N; i++) { depth[i] = (B.x[i] - cxW) * sn + (B.y[i] - cyH) * cs; idx[i] = i; }
+    return Array.prototype.slice.call(idx).sort(function (a, b) { return depth[a] - depth[b]; });
+  }
+  function paint(target, pick) {
+    var s = fit * cam.zoom, cs = Math.cos(cam.yaw), sn = Math.sin(cam.yaw), ct = Math.cos(cam.tilt), st = Math.sin(cam.tilt);
+    target.setTransform(dpr, 0, 0, dpr, 0, 0);
+    target.fillStyle = pick ? "#000" : "#021018"; target.fillRect(0, 0, W, H);
+    // which faces point toward the viewer (their rotated normal has +v component)
+    var faces = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(function (n) { return n[0] * sn + n[1] * cs; });
+    var seq = order(cs, sn);
+    for (var k = 0; k < seq.length; k++) {
+      var i = seq[k], u = B.x[i] - cxW, v = B.y[i] - cyH, z = B.h[i] * exag, p = B.phase[i];
+      var c = [[u - half, v - half], [u + half, v - half], [u + half, v + half], [u - half, v + half]];
+      var bot = c.map(function (q) { return project(q[0], q[1], 0, s, cs, sn, ct, st); });
+      var top = c.map(function (q) { return project(q[0], q[1], z, s, cs, sn, ct, st); });
+      var id = pick ? "rgb(" + ((i + 1) & 255) + "," + (((i + 1) >> 8) & 255) + "," + (((i + 1) >> 16) & 255) + ")" : null;
+      // side faces: +x is corners 1-2, -x is 3-0, +v is 2-3, -v is 0-1
+      var sides = [[1, 2, faces[0], SIDE_A], [3, 0, faces[1], SIDE_A], [2, 3, faces[2], SIDE_B], [0, 1, faces[3], SIDE_B]];
+      for (var f = 0; f < 4; f++) {
+        if (sides[f][2] <= 0.02 || st < 0.05) continue;
+        var a = sides[f][0], b = sides[f][1];
+        target.beginPath(); target.moveTo(bot[a][0], bot[a][1]); target.lineTo(bot[b][0], bot[b][1]);
+        target.lineTo(top[b][0], top[b][1]); target.lineTo(top[a][0], top[a][1]); target.closePath();
+        target.fillStyle = id || sides[f][3][p]; target.fill();
+      }
+      target.beginPath(); target.moveTo(top[0][0], top[0][1]);
+      for (var t = 1; t < 4; t++) target.lineTo(top[t][0], top[t][1]);
+      target.closePath(); target.fillStyle = id || TOP[p]; target.fill();
+    }
+  }
+  function draw() { paint(ctx, false); }
+  function pickAt(x, y) {
+    var off = document.createElement("canvas"); off.width = canvas.width; off.height = canvas.height;
+    var octx = off.getContext("2d", { willReadFrequently: true }); paint(octx, true);
+    var px = Math.round(x * dpr), py = Math.round(y * dpr);
+    // edges are anti-aliased: take the most common exact id in a small window
+    var d = octx.getImageData(Math.max(0, px - 2), Math.max(0, py - 2), 5, 5).data, votes = {};
+    for (var j = 0; j < d.length; j += 4) { var id = d[j] + 256 * d[j + 1] + 65536 * d[j + 2]; if (id > 0 && id <= N) votes[id] = (votes[id] || 0) + 1; }
+    var best = 0, n = 0; for (var key in votes) if (votes[key] > n) { n = votes[key]; best = +key; }
+    return best - 1;   // -1: nothing there
+  }
+  function show(i) {
+    var card = document.getElementById("card");
+    if (i < 0) { card.innerHTML = '<h2>Selected block</h2><p class="hint">No ore here. Tap a column.</p>'; return; }
+    var g = GRAINS[B.grain[i]], name = NAMES[B.phase[i]];
+    var tag = !g ? "" : g.state === "FREE" ? '<span class="tag" style="background:#2EA043">FREE</span>'
+      : g.state === "LOCKED" ? '<span class="tag" style="background:#D29922">LOCKED</span>' : '<span class="tag" style="background:#8CA6AE">NO VALUABLE MINERALS</span>';
+    card.innerHTML = '<h2>Selected block</h2><p style="margin:0 0 6px"><i class="sw" style="background:' + COLOURS[B.phase[i]] + '"></i><b>' +
+      name.charAt(0).toUpperCase() + name.slice(1) + '</b> is the main mineral · valuable minerals ' + B.valuable[i] + '% of the block</p>' +
+      (g ? '<p style="margin:10px 0 6px">Part of <b>grain ' + B.grain[i] + '</b> ' + tag + '</p><p class="hint" style="margin:0">' + g.text + '</p>'
+         : '<p class="hint">Not part of a counted grain (resin edge or a fragment below 64 px).</p>');
+    window.khanyaLastPick = i;
+  }
+  // pointer control: drag turns (horizontal) and tilts (vertical); two pointers pinch-zoom; a tap picks
+  var pointers = {}, start = null, moved = false, pinch = null;
+  canvas.addEventListener("pointerdown", function (e) { canvas.setPointerCapture(e.pointerId); pointers[e.pointerId] = [e.offsetX, e.offsetY]; start = [e.offsetX, e.offsetY, cam.yaw, cam.tilt]; moved = false; pinch = null; });
+  canvas.addEventListener("pointermove", function (e) {
+    if (!(e.pointerId in pointers)) return;
+    pointers[e.pointerId] = [e.offsetX, e.offsetY];
+    var ids = Object.keys(pointers);
+    if (ids.length === 2) {
+      var a = pointers[ids[0]], b = pointers[ids[1]], dist = Math.hypot(a[0] - b[0], a[1] - b[1]);
+      if (pinch) cam.zoom = Math.min(8, Math.max(0.3, cam.zoom * dist / pinch)); pinch = dist; moved = true; draw(); return;
+    }
+    var dx = e.offsetX - start[0], dy = e.offsetY - start[1];
+    if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+    if (moved) { cam.yaw = start[2] + dx * 0.008; cam.tilt = Math.min(1.35, Math.max(0, start[3] + dy * 0.006)); draw(); }
+  });
+  function end(e) { var wasTap = !moved && Object.keys(pointers).length === 1; delete pointers[e.pointerId]; if (wasTap) show(pickAt(e.offsetX, e.offsetY)); }
+  canvas.addEventListener("pointerup", end); canvas.addEventListener("pointercancel", function (e) { delete pointers[e.pointerId]; });
+  canvas.addEventListener("wheel", function (e) { e.preventDefault(); cam.zoom = Math.min(8, Math.max(0.3, cam.zoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12))); draw(); }, { passive: false });
+  document.getElementById("b_top").addEventListener("click", function () { cam.tilt = 0; cam.yaw = 0; draw(); });
+  document.getElementById("b_tilt").addEventListener("click", function () { cam.tilt = 0.95; cam.yaw = -0.5; draw(); });
+  document.getElementById("exag").addEventListener("input", function () { exag = this.value / 100; draw(); });
+  window.addEventListener("resize", resize);
+  try { new ResizeObserver(resize).observe(canvas); } catch (e) {}
+  window.khanya3d = { pickAt: pickAt, show: show, cam: cam, draw: draw, n: N };   // used by the test harness
+  resize();
+})();
+</script>
+{% with bring_into_view=false %}{% include "_fit_frame.html.jinja" %}{% endwith %}
+</body>
+</html>

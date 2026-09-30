@@ -508,3 +508,29 @@ def render_report(report, phase_fractions, *, file_name, file_sha, sample_stem, 
         phases=tables["phases"], association=tables["association"], by_size=tables["by_size"],
         size_unit=tables["size_unit"], unit_note=tables["unit_note"], n_grains=report.n_grains,
     )
+
+
+def render_section3d(labels, report, payload_names):
+    """The 3D tab: columns by block, coloured by main mineral, height = valuable share."""
+    import json
+
+    from dashboard import section3d
+    from src.segmentation import lumenstone as ls
+
+    data = section3d.blocks(labels, ls.CLASS_NAMES, payload_names, report.grain_map)
+    grains = {}
+    for g in report.grains:
+        parts = ", ".join(f"{n} {100 * v:.0f}%" for n, v in sorted(g.phases.items(), key=lambda kv: -kv[1])[:3]
+                          if v >= 0.005)
+        state = "none" if g.payload_fraction == 0 else ("FREE" if g.liberated else "LOCKED")
+        valuable = (f"valuable minerals {100 * g.payload_fraction:.1f}% of the grain · "
+                    if g.payload_fraction > 0 else "")
+        grains[g.id] = {"state": state, "text": valuable + parts}
+    colours = dict(zip(ls.CLASS_NAMES, ls.CLASS_COLORS))
+    template = _env.get_template("section3d.html.jinja")
+    return template.render(
+        blocks_json=json.dumps(data), grains_json=json.dumps(grains),
+        names_json=json.dumps(ls.CLASS_NAMES), colours_json=json.dumps(ls.CLASS_COLORS),
+        phases=[{"name": n, "colour": colours[n]} for n in ls.CLASS_NAMES if n != "background"],
+        block=data["block"], payload_names=", ".join(payload_names),
+    )
