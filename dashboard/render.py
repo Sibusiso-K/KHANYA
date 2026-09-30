@@ -551,3 +551,20 @@ def render_section3d(labels, report, payload_names):
         phases=[{"name": n, "colour": colours[n]} for n in ls.CLASS_NAMES if n != "background"],
         block=data["block"], payload_names=", ".join(payload_names),
     )
+
+
+def render_geology():
+    """The geology context view: public site map and Bushveld seam logs (src/geology_context.py)."""
+    import json
+
+    data = json.loads((Path(__file__).parent / "data" / "geology_context.json").read_text(encoding="utf-8"))
+    sources = data["sources"]
+    template = _env.get_template("geology.html.jinja")
+    return template.render(
+        data_json=(json.dumps({"deposits": data["deposits"], "holes": data["holes"]})
+                   .replace("<", "\u003c").replace(">", "\u003e").replace("&", "\u0026")),
+        n_deposits=len(data["deposits"]), n_holes=len(data["holes"]), seams=data["seams"],
+        deposits_note=f"Source: {sources['deposits']['name']}. {sources['deposits']['note']}",
+        holes_note=sources["holes"]["note"],
+        holes_doi=sources["holes"]["doi"], holes_licence=sources["holes"]["licence"],
+    )

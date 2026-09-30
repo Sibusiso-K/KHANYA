@@ -205,9 +205,10 @@ advanced = st.expander("Advanced: presenter and diagnostic controls", expanded=F
 LIVE_FIELD_LABEL = "Quick — six fields across the section (about 35 s)"
 FULL_SECTION_LABEL = "Whole section — slow, advisory only"
 EVIDENCE_LABEL = "Evidence — the 12 held-out test sections"
+GEOLOGY_LABEL = "Geology — Bushveld context (public data)"
 mode = mode_area.radio(
     "ANALYSIS MODE",
-    [LIVE_FIELD_LABEL, FULL_SECTION_LABEL, EVIDENCE_LABEL],
+    [LIVE_FIELD_LABEL, FULL_SECTION_LABEL, EVIDENCE_LABEL, GEOLOGY_LABEL],
     horizontal=True,
     help=(
         "Live sampled fields analyses six 512×512 fields spread across the "
@@ -269,6 +270,13 @@ def show_landing(reason=None):
             render.render_landing(reason), height=LANDING_FRAME_HEIGHT, scrolling=True
         )
 
+
+if mode == GEOLOGY_LABEL:
+    # Public context data only: no model, no upload, no plant. Map of South African
+    # mineral sites (USGS MRDS) and Bushveld chromitite seam logs (Thaba, CC BY 4.0).
+    with result_slot.container():
+        st.components.v1.html(render.render_geology(), height=1400, scrolling=True)
+    st.stop()
 
 reason = unavailable_reason(SUBSET, CKPT)
 if not reason:

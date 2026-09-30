@@ -120,3 +120,41 @@ path. 161 tests pass.
 | Field value | 15 | 3 | 3 | the claim is now correct, which is not the same as a demonstrated saving |
 | Others | | | unchanged | |
 | **Total** | | **40.5** | **49.5** | |
+
+---
+
+## Addendum 2: the visualisation build (PRs #19-#22), 30 September, afternoon
+
+| Asked for | Built | Measured |
+|---|---|---|
+| Click something, see its mineral composition | **Explore grains**: tap any grain for composition, size, FREE/LOCKED; ore tables beside it | 200/200 sampled points and 8/8 in-app taps selected the right grain; grain counts match the advisor exactly (test_11 98/98, 66/66) |
+| A 3D render | **3D view**: the section as columns (colour = main mineral, height = valuable share), turn, tilt, zoom, tap a column. Labelled "not a 3D reconstruction" | 7,920 columns redraw in ~21 ms (desktop) and ~23 ms (phone width); 20/20 taps correct; ~205 KB; offline |
+| The model working live | **Live mineral mix** in every progress frame | test_11 frames 1/6 to 6/6 end at pyrrhotite 99.1%, pentlandite 0.9%, the final composition |
+| Maps | **Geology mode**: 702 South African sites (USGS MRDS), Bushveld seam logs for 317 Thaba holes, grade by seam | the PGE and chromium cluster and the Witwatersrand gold arc emerge from the data; holes have no public coordinates, so they are logs, never map points |
+| Senior outputs | weight % (estimated), mineral contacts, liberation by size, grain table, sample record, **print/PDF, .html/.csv/.json export** | all client-side: filling in the record never re-runs the model |
+| XRF to the phone | **not built** | no device and no real export file; an importer shown on made-up data would be fabricated |
+
+Rejected along the way: Streamlit's built-in 3D chart (deck.gl). It fetched
+map tiles from `basemaps.cartocdn.com` with the base map switched off,
+breaking the offline claim, and it failed an assertion inside a hidden tab.
+Replaced by our own offline renderer.
+
+### Re-score, same rubric (by the side that built it)
+
+| Category | Weight | Before | After | Why |
+|---|---:|---:|---:|---|
+| Usability, student | 15 | 7 | 8 | tap-to-explain grains, visual 3D, glossary; the terms are still technical |
+| Usability, senior | 15 | 4 | 7 | weight %, contacts, liberation by size, grain table, sample record, report and data export, seam logs. Missing: micron scale, LIMS, a QEMSCAN-comparable report format |
+| Mobile | 15 | 7 | 7 | the new views work at phone width, but the phone still needs the laptop on the same network and has no camera capture |
+| Speed | 10 | 6 | 6 | the decision time is unchanged; the new views add about 1 s after it |
+| Field value | 15 | 3 | 3 | still not demonstrated |
+| Technical feasibility | 15 | 5 | 5 | still an analogue model; no path to UG2 without South African data |
+| XRF to phone | 5 | 0 | 0 | not built (above) |
+| 3D + click for composition | 5 | 0 | 7 | a 3D view of the section with tap-for-grain; true 3D needs survey data or CT |
+| Trust | 5 | 9 | 9 | every new view says what it is not |
+| **Total** | | **49.5** | **59.0** | |
+
+The plan's "tonight" projection was 60.5-66.5; it lands at 59 because XRF was
+not built (no data) and mobile needs hosting work, not layout. The remaining
+~40 points still come from Mintek data and a pilot: South African labelled
+sections, flags validated against QEMSCAN, a micron scale, and survey data.

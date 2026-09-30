@@ -19,6 +19,50 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (86) — visualisation build: grains, 3D, live mix, geology (PRs #19-#22)
+
+**Did:** built the visualisation plan Sibusiso approved. It's four stacked
+PRs, each for your review as judge; merge order #18 -> #19 -> #20 -> #21 -> #22.
+- **#19 Explore grains and Report.**
+  - Tap any grain for its composition, size and FREE/LOCKED.
+  - Weight % (estimated), mineral contacts, liberation by size.
+  - Sample record, print/PDF and .html/.csv/.json export, all client-side.
+- **#20 3D view.** The section as columns: colour = main mineral, height =
+  valuable share. Our own offline renderer. Streamlit's deck.gl chart was
+  rejected: it fetched Carto tiles from the internet and crashed in a hidden
+  tab.
+- **#21 Live mineral mix** in every progress frame.
+- **#22 Geology mode.**
+  - 702 South African sites from USGS MRDS (downloaded with approval; 3
+    bad-coordinate records excluded and named).
+  - Seam logs and grade by seam for the 317 Thaba holes, which have no public
+    coordinates, so they are never map points.
+
+**Measured:**
+- Grain counts match the advisor exactly.
+- Grain taps 200/200 standalone and 8/8 in the app; 3D taps 20/20.
+- The 3D view redraws 7,920 columns in ~21 ms.
+- 177 tests pass.
+
+**Decisions from Sibusiso this session:**
+- The 3D framing is "a view of the section", not a reconstruction.
+- The MRDS download was approved.
+- There is no XRF device or file, so XRF is not built.
+- **Lethabo owns the deck and the backup video.** `BACKUP-DEMO-SCRIPT.md` now
+  has **Beat 5 — see inside the answer** for the video.
+
+**Open:**
+- **Microns per pixel.** Sibusiso says we know it, but it isn't in the repo,
+  the dataset page or the paper. Set `KHANYA_MICRONS_PER_PIXEL` and all grain
+  sizes switch to µm.
+- **Board-lens score** 49.5 -> 59.0 (`reports/BOARD-REVIEW-2026-09-30.md`,
+  addendum 2).
+
+**Blocked on:** your reviews: #11 -> #12 -> #13 (the chain to `main`), then
+#18-#22.
+
+---
+
 ## 2026-09-30 — Sibusiso (85) — #17 merged; chain re-review requested; pitch-ready fixes (PR)
 
 **Did:**
