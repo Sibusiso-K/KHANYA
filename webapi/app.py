@@ -185,6 +185,7 @@ async def upload(file:UploadFile=File(...)):
     if len(raw)>25*1024*1024:
         raise HTTPException(413,"Micrograph exceeds the 25 MB local upload limit.")
     try:
+        from webapi.safety import check_input_colour
         with warnings.catch_warnings():
             warnings.simplefilter("error",Image.DecompressionBombWarning)
             with Image.open(io.BytesIO(raw)) as im:
@@ -226,6 +227,7 @@ def run_inference(jid,sid,mode):
         path=sample_path(sid)
         raw=path.read_bytes()
         image_sha=hashlib.sha256(raw).hexdigest()
+        from webapi.safety import check_input_colour, input_evidence
         with Image.open(io.BytesIO(raw)) as im:
             image=im.convert("RGB")
         with torch.inference_mode():
@@ -234,12 +236,8 @@ def run_inference(jid,sid,mode):
             else:
                 labels,confidence=sliding_window_predict(model,image,"cpu")
         measured=modal.analyse(labels,CLASSES,refine=True)
-        rec=advisor.advise(measured,float(confidence))
-        if confidence<.85:
-            action="Hold for manual review"
-            reason=f"Mean model confidence {confidence:.1%} is below the provisional 85% floor. The model suggested: {rec.action}. A specialist must verify the image."
-        else:
-            action,reason=rec.action,rec.reason
+        rec = advisor.confidence_gate(advisor.advise(measured, float(confidence)), float(confidence))
+        action, reason = rec.action, rec.reason
         rid=uuid.uuid4().hex
         directory=STORE/(sid+"-"+rid)
         directory.mkdir()
@@ -289,6 +287,7 @@ class SimulationRequest(BaseModel):
 
 def refusal(r):
     if not r.get("verified"):return "Unverified upload: advisory only. Nothing sent to OPC UA."
+    if not r.get("verified_sample"):return "No byte-for-byte held-out sample match; advisory only. Nothing sent to OPC UA."
     if r.get("model_sha")!=MODEL_SHA:return "Checkpoint mismatch: generate a new prediction."
     if r.get("mode")!="field":return "Full-section results are advisory only."
     if r.get("confidence",0)<.85:return "Confidence below the provisional 85% floor. Setting held."

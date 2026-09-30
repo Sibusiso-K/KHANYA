@@ -1,8 +1,10 @@
+import pytest
+pytest.importorskip("fastapi")
 from webapi.app import refusal,MODEL_SHA
 import time
 
 def result(**changes):
-    r={"verified":True,"model_sha":MODEL_SHA,"mode":"field","confidence":.95,
+    r={"verified":True,"verified_sample":"test_01","model_sha":MODEL_SHA,"mode":"field","confidence":.95,
        "created_at":time.time(),"advisory":{"action":"Grind finer"}}
     r.update(changes)
     return r
@@ -44,3 +46,54 @@ def test_decision_export_requires_exact_event_and_result(tmp_path, monkeypatch):
     assert payload["simulation"]["result_id"] == "r-one"
     assert payload["model_sha"] == "test-checkpoint"
     assert "attachment" in response.headers["content-disposition"]
+
+
+def test_unverified_sample_refuses_even_if_legacy_verified_flag_is_true():
+    assert "byte-for-byte" in refusal(result(verified_sample=None))
+
+def test_copied_speed_advisor_confidence_gate_withholds_positive_action():
+    from src import advisor
+    recommendation = advisor.Recommendation("Grind finer", "Measured reason", "low - verify manually")
+    held = advisor.confidence_gate(recommendation, .84)
+    assert held.action == advisor.LOW_CONFIDENCE_ACTION
+    assert "provisional" in held.reason
+    abstention = advisor.Recommendation("Flag for manual review", "Already abstaining", "low")
+    assert advisor.confidence_gate(abstention, .2) is abstention
+
+def test_input_colour_checks_refuse_greyscale_and_cool_cast():
+    from dashboard.inputs import colour_cast_reason
+    from PIL import Image
+    assert "no colour" in colour_cast_reason(Image.new("RGB", (8, 8), (90, 90, 90)))
+    assert "colour balance" in colour_cast_reason(Image.new("RGB", (8, 8), (60, 100, 160)))
+
+def test_test_11_original_bytes_match_the_committed_manifest():
+    from dashboard.inputs import validated_sample
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[1] / "data/raw/lumenstone/S2_v2/imgs/test/test_11.jpg"
+    if not path.is_file():
+        import pytest
+        pytest.skip("held-out image data is not installed in this checkout")
+    assert validated_sample(path.read_bytes()) == "test_11"
+
+
+def test_verified_sample_matches_exact_raw_bytes(monkeypatch):
+    import hashlib
+    from dashboard import inputs
+    sample = b"held-out sample bytes"
+    monkeypatch.setattr(inputs, "_VALIDATED", {hashlib.sha256(sample).hexdigest(): "test_11"})
+    assert inputs.validated_sample(sample) == "test_11"
+    assert inputs.validated_sample(sample + b"changed") is None
+
+def test_upload_endpoint_refuses_greyscale_before_storing(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    from webapi import app as api
+    from io import BytesIO
+    from PIL import Image
+    upload_dir = tmp_path / "uploads"; upload_dir.mkdir()
+    monkeypatch.setattr(api, "UPLOADS", upload_dir)
+    monkeypatch.setattr(api, "samples", {})
+    stream = BytesIO(); Image.new("RGB", (512, 512), (90, 90, 90)).save(stream, format="JPEG")
+    response = TestClient(api.app).post("/api/upload", files={"file": ("grey.jpg", stream.getvalue(), "image/jpeg")})
+    assert response.status_code == 400
+    assert "no colour" in response.json()["detail"]
+    assert not list(upload_dir.iterdir())
