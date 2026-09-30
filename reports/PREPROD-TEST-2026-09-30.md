@@ -139,6 +139,24 @@ Not re-run today: the stale-command refusal and presenter reset (verified in
 laptop (still outstanding). The browser egress check covers only the requests
 the pane buffered in this session. It is not a firewall-level test.
 
+## Score: 57.5 / 100 as pre-production
+
+Weighted; each category is marked down only by the findings above.
+
+| Category | Weight | Score | Why |
+|---|---:|---:|---|
+| Correct on intended inputs | 15 | 9 | every expected result matched, including the expert reference on test_11 |
+| Bad or unexpected inputs | 15 | 4 | broken files refused well; text and greyscale images measured and published (finding 1) |
+| Safety guards applied consistently | 20 | 5 | live-mode guards work; full section skips one silently (2); confidence never blocks (3) |
+| Speed | 10 | 5 | ~60 s live, ~4 min 50 s full section, 23 s cold start |
+| Installable by someone else | 10 | 4 | finding 5 |
+| Honesty of on-screen claims | 10 | 7 | evidence bound to the checkpoint hash; but the text screenshot was labelled "measured" and time claims are wrong |
+| Security and offline | 5 | 9 | localhost only; wifi-off run on the presenting laptop still to do |
+| Scientific validity | 15 | 5 | n=12; lighting check non-selective; magnetite 0; 3 of 4 thresholds unsourced |
+
+Fixing findings 1-5 would take it to about 72 (an estimate, not a
+measurement). The scientific-validity row does not move without more data.
+
 ## What passed that matters
 
 - Every intended input gave the expected result in every mode, and both

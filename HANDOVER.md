@@ -50,8 +50,8 @@ traffic localhost only.
    (`Desktop\REEFPRINT`, detached at `73806b2`; its integrate/ code matches
    `origin/reefprint` today).
 
-**Score: 58/100 as pre-production** (weighted; breakdown in the chat summary
-and derivable from the report's findings). Fixing 1-5 would take it to about
+**Score: 57.5/100 as pre-production** (weighted; the breakdown is in the
+report's Score section). Fixing 1-5 would take it to about
 72 (an estimate, not a measurement). The science caps (n=12, lighting check
 non-selective, magnetite 0) remain.
 
