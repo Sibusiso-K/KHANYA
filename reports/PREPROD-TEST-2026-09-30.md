@@ -102,6 +102,38 @@ speed-ups** (n=2 today, one machine; cause not investigated). The app says
 | 8 | Low | During a ~5-minute full-section run the previous result stays on screen, faded. | Streamlit default | Clear the result slot when a new run starts. |
 | 9 | Known | Carried scientific limits, re-confirmed rather than re-measured today: lighting check discards 4 of 5 correct confident calls; six-field confident calls unsafe 8 of 13 on train/val; magnetite IoU 0; 3 of 4 thresholds unsourced; n = 12 test sections. | reports | Post-deadline. |
 
+### Evidence for the finding-1 fix (added after the test)
+
+`python -m src.input_eligibility_check` -> `reports/input_eligibility.json`.
+
+**A saturation check alone would not work.** Greyscale test_11 has zero colour,
+while real S2 images have 7.9-23.6. But the text screenshot's saturation
+(21.8) lies inside the real range. What separates it is colour **balance**:
+every S2 image is warm on average (red > green > blue), and the screenshot is
+cool (red 23.6 below green).
+
+**A min/max envelope fitted on train+val would also fail.** Held-out test
+sections reach R-G = 2.41, below the train+val minimum of 4.82, so a fitted
+envelope would have wrongly refused a real section.
+
+**A sign-only rule has no fitted threshold:** some colour (mean channel
+difference >= 1 level) and a warm cast (mean R-G > 0 and mean G-B > 0).
+
+| Set | Eligible | After the lighting check's darkening |
+|---|---:|---:|
+| S2 train | 31/31 | 31/31 |
+| S2 validation | 6/6 | 6/6 |
+| S2 test (descriptive, not used to choose) | 12/12 | 12/12 |
+| S1 v2, other ore, LumenStone set-up | 83/84 | 75/84 |
+| S3 v1, other ore, LumenStone set-up | 35/35 | 26/35 |
+| V1, re-imaged on another set-up | **10/30** | 1/30 |
+| greyscale test_11 · text screenshot | **refused** · **refused** | – |
+
+So the rule encodes the **imaging set-up, not the ore**. It refuses most of V1.
+That is correct for a gate, since the S2 model was never validated on that
+set-up. It also means **a new microscope or camera must be characterised before
+the system will advise**, which has to be written into the pilot plan.
+
 Not re-run today: the stale-command refusal and presenter reset (verified in
 `BACKUP-DEMO-SCRIPT.md` beat 4 on 30 Sept); the wifi-off run on the presenting
 laptop (still outstanding). The browser egress check covers only the requests

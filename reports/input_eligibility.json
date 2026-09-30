@@ -1,0 +1,167 @@
+{
+  "rule": {
+    "chroma_floor": 1.0,
+    "requires": "mean R-G > 0 and mean G-B > 0",
+    "fitted_thresholds": 0
+  },
+  "sets": {
+    "S2 train": {
+      "n": 31,
+      "eligible": 31,
+      "eligible_after_lighting_shift": 31,
+      "ranges": {
+        "chroma": [
+          7.87,
+          23.59
+        ],
+        "r_minus_g": [
+          4.91,
+          18.1
+        ],
+        "g_minus_b": [
+          5.34,
+          22.06
+        ]
+      },
+      "refused": []
+    },
+    "S2 validation": {
+      "n": 6,
+      "eligible": 6,
+      "eligible_after_lighting_shift": 6,
+      "ranges": {
+        "chroma": [
+          11.35,
+          21.34
+        ],
+        "r_minus_g": [
+          4.82,
+          16.73
+        ],
+        "g_minus_b": [
+          11.28,
+          16.53
+        ]
+      },
+      "refused": []
+    },
+    "S2 test (descriptive)": {
+      "n": 12,
+      "eligible": 12,
+      "eligible_after_lighting_shift": 12,
+      "ranges": {
+        "chroma": [
+          9.38,
+          23.29
+        ],
+        "r_minus_g": [
+          2.41,
+          17.68
+        ],
+        "g_minus_b": [
+          8.82,
+          17.99
+        ]
+      },
+      "refused": []
+    },
+    "S1 v2 (other ore, LumenStone set-up)": {
+      "n": 84,
+      "eligible": 83,
+      "eligible_after_lighting_shift": 75,
+      "ranges": {
+        "chroma": [
+          2.6,
+          35.8
+        ],
+        "r_minus_g": [
+          -0.02,
+          22.74
+        ],
+        "g_minus_b": [
+          1.63,
+          30.39
+        ]
+      },
+      "refused": [
+        "S1_v2/imgs/train/train_42.jpg"
+      ]
+    },
+    "S3 v1 (other ore, LumenStone set-up)": {
+      "n": 35,
+      "eligible": 35,
+      "eligible_after_lighting_shift": 26,
+      "ranges": {
+        "chroma": [
+          5.18,
+          16.3
+        ],
+        "r_minus_g": [
+          0.15,
+          10.83
+        ],
+        "g_minus_b": [
+          0.69,
+          12.56
+        ]
+      },
+      "refused": []
+    },
+    "V1 (re-imaged on another set-up)": {
+      "n": 30,
+      "eligible": 10,
+      "eligible_after_lighting_shift": 1,
+      "ranges": {
+        "chroma": [
+          2.03,
+          17.16
+        ],
+        "r_minus_g": [
+          -1.5,
+          22.08
+        ],
+        "g_minus_b": [
+          -11.58,
+          6.12
+        ]
+      },
+      "refused": [
+        "V1_v1/V1_v1/001a.jpg",
+        "V1_v1/V1_v1/001b.jpg",
+        "V1_v1/V1_v1/002a.jpg",
+        "V1_v1/V1_v1/002b.jpg",
+        "V1_v1/V1_v1/003a.jpg",
+        "V1_v1/V1_v1/003b.jpg",
+        "V1_v1/V1_v1/004a.jpg",
+        "V1_v1/V1_v1/004b.jpg",
+        "V1_v1/V1_v1/005a.jpg",
+        "V1_v1/V1_v1/005b.jpg",
+        "V1_v1/V1_v1/006a.jpg",
+        "V1_v1/V1_v1/006b.jpg",
+        "V1_v1/V1_v1/007a.jpg",
+        "V1_v1/V1_v1/007b.jpg",
+        "V1_v1/V1_v1/008a.jpg",
+        "V1_v1/V1_v1/008b.jpg",
+        "V1_v1/V1_v1/009a.jpg",
+        "V1_v1/V1_v1/009b.jpg",
+        "V1_v1/V1_v1/010a.jpg",
+        "V1_v1/V1_v1/010b.jpg"
+      ]
+    }
+  },
+  "hostile": {
+    "test_11 converted to greyscale": {
+      "chroma": 0.0,
+      "r_minus_g": 0.0,
+      "g_minus_b": 0.0,
+      "eligible": false
+    },
+    "screenshot of text (local test input, not in repo)": {
+      "chroma": 21.8,
+      "r_minus_g": -23.56,
+      "g_minus_b": -7.26,
+      "eligible": false,
+      "note": "measured 30 Sept on the file used in the live test"
+    }
+  }
+}

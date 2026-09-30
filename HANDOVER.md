@@ -55,6 +55,11 @@ and derivable from the report's findings). Fixing 1-5 would take it to about
 72 (an estimate, not a measurement). The science caps (n=12, lighting check
 non-selective, magnetite 0) remain.
 
+**Added after the test:** `src/input_eligibility_check.py` measures a fix for
+finding 1: a colour-balance rule with no fitted threshold passes all 49 S2
+sections and refuses both hostile images, but refuses 20 of 30 V1 images (another
+imaging set-up). Details in the report.
+
 **Blocked on:** nothing. Re-reviews of #10-#13 still pending.
 
 **Next (Lethabo):** a view on finding 2. Should full-section mode be
