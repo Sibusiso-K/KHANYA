@@ -216,6 +216,14 @@ it.
   worst-case 95% interval on a proportion is narrower than the band the advisor
   already decides against. Missing counts fail closed. `modal.liberation_stats`
   counts payload-bearing particles; `liberation_index`'s interface is unchanged.
+
+  > **CORRECTED 30 September (Lethabo, PR #10 review). The rationale above is
+  > withdrawn and kept only as history.** 9 is a **provisional operating floor,
+  > a conservative policy choice, not a statistical bound**. The binomial
+  > interval is not valid for an area-weighted ratio over spatially dependent
+  > particles. The floor is now hard-coded and does not follow the margin. A
+  > real uncertainty estimate for this estimator, on training/validation data,
+  > is post-deadline work.
 - **Six sampled fields** replace the single centre field as the live path
   (`multi_field_predict`, 3x2 grid, fixed by a latency budget before
   measuring). Fields sit in a mosaic with background gaps, so the unchanged
