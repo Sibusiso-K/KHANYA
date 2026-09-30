@@ -235,14 +235,15 @@ if "plant" not in st.session_state:
 if reset_plant:
     st.session_state.plant.update(regrind_enabled=0.0, log=[], status=None)
 
-# Visible on purpose: the demo compares the guarded and unguarded pipeline on the
-# same section. Off is labelled as unguarded everywhere it shows.
+# Visible on purpose: the demo compares the pipeline with and without the lighting
+# check on the same section. Off is labelled everywhere it shows; the confidence
+# gate applies either way.
 lighting_check_on = st.toggle(
     "Simulated lighting-perturbation check (live mode)",
     value=True,
     help=("On: a confident recommendation is issued only if it is unchanged on a copy "
           "of the image with a fixed RGB offset (the median darkening between real "
-          "re-imagings of LumenStone V1 sections). Off: the unguarded pipeline, "
+          "re-imagings of LumenStone V1 sections). Off: the confidence gate alone, "
           "for comparison."),
 )
 
@@ -340,7 +341,7 @@ else:
         # model pass, OPC UA publish or command (pre-production finding 1).
         check_eligible(load_image(image_bytes))
         from src import modal
-        from src.advisor import advise
+        from src.advisor import advise, confidence_gate
         from src.segmentation import lumenstone as ls
         from dashboard.opcua import publish_result
         from dashboard.control import REGRIND_HEAD, send_command
@@ -368,7 +369,7 @@ else:
                     image_bytes, checkpoint_key, on_field
                 )
             mode_label = ("Live sampled 512×512 fields" if lighting_check_on
-                          else "Live sampled 512×512 fields, lighting check OFF (unguarded)")
+                          else "Live sampled 512×512 fields, lighting check off (confidence gate on)")
         else:
             with st.spinner(
                 "Tiling and predicting at native resolution — each frame below is "
@@ -398,7 +399,10 @@ else:
             mode_label = "Full section, native resolution"
 
         result = modal.analyse(labels, ls.CLASS_NAMES, refine=True)
-        recommendation = advise(result, mean_confidence)
+        # Pre-production finding 3: a confident call the model is not itself
+        # confident about is withheld (src/advisor.py CONFIDENCE_FLOOR). Before the
+        # lighting check, so a withheld call also skips the second model pass.
+        recommendation = confidence_gate(advise(result, mean_confidence), mean_confidence)
         lighting = None
         if mode == LIVE_FIELD_LABEL and not lighting_check_on:
             lighting = {"as_imaged": recommendation.action, "after_shift": "check switched off",
@@ -465,7 +469,7 @@ else:
                 "image": uploaded.name,
                 "advisory": recommendation.action,
                 "lighting check": ("not run (full section, advisory only)" if mode != LIVE_FIELD_LABEL
-                                   else "on" if lighting_check_on else "OFF (unguarded)"),
+                                   else "on" if lighting_check_on else "off"),
                 "command": command.state,
                 "regrind_enabled": f"{command.before:g} → {command.after:g}",
                 "reason": command.reason,

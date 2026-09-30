@@ -218,7 +218,7 @@ def test_control_strip_shows_decision_evidence_and_plant_state():
     assert "no plant connected" in html
 
 
-def test_strip_marks_the_unguarded_pipeline_and_a_no_change_continue():
+def test_strip_marks_the_lighting_check_off_and_a_no_change_continue():
     import numpy as np
     from PIL import Image
 
@@ -236,7 +236,7 @@ def test_strip_marks_the_unguarded_pipeline_and_a_no_change_continue():
     plant = CommandStatus("unchanged", 1.0, 1.0, "within specification: no command issued")
     html = render.render(Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
                          result, recommendation, plant=plant, lighting=lighting)
-    assert "LIGHTING CHECK OFF · UNGUARDED" in html
+    assert "LIGHTING CHECK OFF" in html and "confidence gate still applies" in html
     assert ">UNCHANGED<" in html and "1 → 1" in html
 
 

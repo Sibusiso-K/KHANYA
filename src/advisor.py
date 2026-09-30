@@ -96,6 +96,18 @@ MIN_ORE_AREA = 0.05
 # the 12 held-out test sections must not be used to set it.
 MIN_PAYLOAD_PARTICLES = 9
 
+# Mean model confidence below this was always labelled "low - verify manually".
+# From 30 September it also GATES the operational pipeline (confidence_gate, below;
+# the dashboard applies it). On the 37 train/validation S2 sections, every unsafe
+# confident six-field call had confidence <= 0.822 and every correct one >= 0.834
+# (reports/confidence_calibration_trainval.json). 0.85 was not fitted to that
+# data: it predates it. It is still PROVISIONAL: 13 confident calls, 31 of 37
+# sections seen in training. The 12 held-out test sections did not inform it.
+# advise() itself is unchanged, so the committed decision-gap reports still
+# describe the advisor rules they were run on.
+CONFIDENCE_FLOOR = 0.85
+LOW_CONFIDENCE_ACTION = "No recommendation - model confidence too low"
+
 
 @dataclass
 class Recommendation:
@@ -142,7 +154,7 @@ def advise(result, mean_confidence: float,
             "low - verify manually",
         )
 
-    confidence = "high" if mean_confidence >= 0.85 else "low - verify manually"
+    confidence = "high" if mean_confidence >= CONFIDENCE_FLOOR else "low - verify manually"
     payload = result.role_fractions.get("payload", 0.0)
 
     if result.ore_area_fraction < MIN_ORE_AREA:
@@ -276,6 +288,23 @@ def advise(result, mean_confidence: float,
 #: colour that means "do not act on this yet". Keeping the rule in one place is
 #: what makes "amber on stage always means the same thing" checkable.
 ABSTAINING_PREFIXES = ("Marginal", "Flag", "No recommendation")
+
+
+def confidence_gate(recommendation: Recommendation, mean_confidence: float) -> Recommendation:
+    """Withhold a confident action the model itself is not confident about.
+
+    Abstentions pass through unchanged: there is no action to protect.
+    """
+    if recommendation.action.startswith(ABSTAINING_PREFIXES) or mean_confidence >= CONFIDENCE_FLOOR:
+        return recommendation
+    return Recommendation(
+        LOW_CONFIDENCE_ACTION,
+        f"The model would say '{recommendation.action}', but its mean confidence on "
+        f"these pixels is {mean_confidence:.0%}, below the {CONFIDENCE_FLOOR:.0%} it needs "
+        "before advice is issued. On the training and validation sections, every unsafe "
+        "confident call fell below that line. Verify manually.",
+        "low - verify manually",
+    )
 
 
 def verdict_state(action: str) -> tuple[str, str]:

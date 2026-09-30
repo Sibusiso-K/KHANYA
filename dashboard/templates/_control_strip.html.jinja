@@ -28,8 +28,8 @@
     <div style="font-size:12px;color:{{ muted }};margin-top:2px">{{ evidence_scope }}</div>
     {% if lighting and lighting.off %}
     <div style="margin-top:14px;padding:8px 10px;border:1px solid {{ bad }};border-radius:4px">
-      <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ bad }}">LIGHTING CHECK OFF · UNGUARDED</div>
-      <div style="font-size:11px;color:{{ muted }};line-height:1.35">shown for comparison; the advice has not been tested against a simulated lighting change</div>
+      <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ bad }}">LIGHTING CHECK OFF</div>
+      <div style="font-size:11px;color:{{ muted }};line-height:1.35">the confidence gate still applies; this advice was not tested against a simulated lighting change</div>
     </div>
     {% elif lighting %}
     {% set lc = ok if lighting.stable else (muted if lighting.abstained else bad) %}
