@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{# Geology context: public data only, inline and offline. A map of South African
+   mineral sites (USGS MRDS) and downhole logs of Bushveld chromitite seams
+   (Thaba boreholes, CC BY 4.0). The Thaba holes have no public collar
+   coordinates, so they are never placed on the map. #}
+<style>
+:root { --bg:#00131D; --panel:#0B2230; --line:#1E3E4B; --text:#E3EAEB; --muted:#8CA6AE; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 'Segoe UI', system-ui, sans-serif; }
+.wrap { padding:14px; display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:16px; }
+@media (max-width: 900px) { .wrap { grid-template-columns:1fr; } }
+.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+.span { grid-column:1 / -1; }
+h2 { font:700 12px/1.2 Consolas, monospace; letter-spacing:.16em; color:var(--muted); margin:0 0 10px; text-transform:uppercase; }
+#map { width:100%; aspect-ratio:4 / 3; min-height:280px; max-height:560px; display:block; border-radius:6px; background:#021018; touch-action:none; cursor:grab; }
+.controls { display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; margin-top:10px; font-size:13px; color:var(--muted); }
+button, select { font:600 13px 'Segoe UI', sans-serif; padding:7px 10px; border-radius:6px; border:1px solid #2EA5BC; background:#0e3342; color:var(--text); }
+label.chk { display:inline-flex; gap:6px; align-items:center; font-size:13px; color:var(--text); }
+.sw { display:inline-block; width:11px; height:11px; border-radius:50%; }
+.hint, .note { color:var(--muted); font-size:13px; } .note { font-size:12px; margin-top:8px; }
+table { width:100%; border-collapse:collapse; font-size:13px; } th, td { text-align:left; padding:5px 6px; border-bottom:1px solid var(--line); }
+th { color:var(--muted); font-weight:600; } .num { text-align:right; font-family:Consolas, monospace; }
+.logrow { display:grid; grid-template-columns:110px 58px 1fr 1fr; gap:8px; align-items:center; font-size:13px; margin:5px 0; }
+.bar { height:12px; border-radius:6px; background:#12303d; overflow:hidden; } .bar i { display:block; height:100%; }
+.hole { position:relative; height:26px; margin:6px 0 12px; border-radius:4px; background:#12303d; }
+.hole i { position:absolute; top:0; bottom:0; width:3px; background:#FFB539; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="panel">
+    <h2>Mineral sites in South Africa · USGS MRDS</h2>
+    <canvas id="map" aria-label="Map of South African mineral sites from the USGS Mineral Resources Data System"></canvas>
+    <div class="controls" id="filters"></div>
+    <div class="controls">
+      <button id="b_all">All of South Africa</button>
+      <button id="b_cluster">Zoom to the PGE and chromium cluster</button>
+    </div>
+    <p class="note">{{ n_deposits }} sites with coordinates. Drag to pan, scroll or pinch to zoom, tap a site. {{ deposits_note }}</p>
+  </section>
+  <section class="panel" id="site">
+    <h2>Selected site</h2>
+    <p class="hint">Tap a site on the map for its name, commodities, deposit type and status.</p>
+  </section>
+
+  <section class="panel span">
+    <h2>Downhole log · Bushveld chromitite seams (Thaba boreholes)</h2>
+    <div class="controls" style="margin-top:0"><label>Hole <select id="hole"></select></label><span id="holeinfo"></span></div>
+    <div class="hole" id="holebar" title="Seam intersections along the hole"></div>
+    <div class="logrow" style="color:var(--muted);font-size:12px"><span>Depth (m)</span><span>Seam</span><span>Cr₂O₃ %</span><span>Pt + Pd (g/t)</span></div>
+    <div id="log"></div>
+    <p class="note">{{ holes_note }} When a micrograph carries a hole ID and depth (the Report tab's sample record), its KHANYA result belongs at that depth in a log like this. No Thaba micrographs are public, so that link is the next step, not shown here.</p>
+  </section>
+
+  <section class="panel span">
+    <h2>Grade by seam · all {{ n_holes }} holes</h2>
+    <table><tr><th>Seam</th><th class="num">Intersections</th><th class="num">Mean depth (m)</th><th class="num">Mean Cr₂O₃ %</th><th class="num">Mean Pt + Pd (g/t)</th></tr>
+    {% for s in seams %}<tr><td>{{ s.seam }}</td><td class="num">{{ s.intervals }}</td><td class="num">{{ "%.0f"|format(s.mean_depth) if s.mean_depth is not none else "–" }}</td><td class="num">{{ "%.1f"|format(s.mean_cr2o3) if s.mean_cr2o3 is not none else "–" }}</td><td class="num">{{ "%.2f"|format(s.mean_pt_pd) if s.mean_pt_pd is not none else "–" }}</td></tr>{% endfor %}
+    </table>
+    <p class="note">Means over the public assay intervals; Pt + Pd from ICP, reported in ppm (= g/t). Source: Thaba chromitite dataset, DOI {{ holes_doi }}, {{ holes_licence }}.</p>
+  </section>
+</div>
+<script>
+(function () {
+  var DATA = {{ data_json|safe }};
+  var GROUP_COLOURS = { "PGE": "#E5E7EB", "Chromium": "#22C55E", "Nickel-copper": "#FFA500", "Gold": "#FACC15", "Other": "#64748B" };
+  var shown = { "PGE": true, "Chromium": true, "Nickel-copper": true, "Gold": true, "Other": false };
+  // ---- map: equirectangular with cos(latitude) scaling, graticule every 2 degrees ----
+  var canvas = document.getElementById("map"), ctx = canvas.getContext("2d"), dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var view = { lon: 24.7, lat: -28.8, span: 18 }, W = 0, H = 0, kx = Math.cos(-28.8 * Math.PI / 180);
+  function toXY(lon, lat) { var s = W / view.span; return [W / 2 + (lon - view.lon) * s * kx, H / 2 - (lat - view.lat) * s]; }
+  function resize() { W = canvas.clientWidth || 600; H = canvas.clientHeight || 450; canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); draw(); }
+  function draw() {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.fillStyle = "#021018"; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = "#153240"; ctx.fillStyle = "#4b6572"; ctx.lineWidth = 1; ctx.font = "11px Consolas, monospace";
+    for (var lon = 14; lon <= 34; lon += 2) { var a = toXY(lon, -20), b = toXY(lon, -36); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); ctx.fillText(lon + "°E", a[0] + 3, H - 6); }
+    for (var lat = -20; lat >= -36; lat -= 2) { var c = toXY(14, lat), d = toXY(34, lat); ctx.beginPath(); ctx.moveTo(c[0], c[1]); ctx.lineTo(d[0], d[1]); ctx.stroke(); ctx.fillText(-lat + "°S", 4, c[1] - 3); }
+    var r = Math.max(3, Math.min(7, 60 / view.span));
+    ["Other", "Gold", "Nickel-copper", "Chromium", "PGE"].forEach(function (g) {
+      if (!shown[g]) return;
+      ctx.fillStyle = GROUP_COLOURS[g];
+      DATA.deposits.forEach(function (s) { if (s.group !== g) return; var p = toXY(s.lon, s.lat); ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, 6.2832); ctx.fill(); });
+    });
+    if (selected) { var q = toXY(selected.lon, selected.lat); ctx.strokeStyle = "#FFB539"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(q[0], q[1], r + 5, 0, 6.2832); ctx.stroke(); }
+  }
+  var selected = null;
+  function nearest(x, y) {
+    var best = null, bd = 18 * 18;
+    DATA.deposits.forEach(function (s) { if (!shown[s.group]) return; var p = toXY(s.lon, s.lat), d = (p[0] - x) * (p[0] - x) + (p[1] - y) * (p[1] - y); if (d < bd) { bd = d; best = s; } });
+    return best;
+  }
+  function showSite(s) {
+    selected = s; draw();
+    var card = document.getElementById("site");
+    if (!s) { card.innerHTML = '<h2>Selected site</h2><p class="hint">No site near that point. Tap a dot.</p>'; return; }
+    card.innerHTML = '<h2>Selected site</h2><p style="margin:0 0 6px"><i class="sw" style="background:' + GROUP_COLOURS[s.group] + '"></i> <b>' + s.name +
+      '</b></p><table><tr><td class="hint">Commodities</td><td>' + (s.commodities || "–") + '</td></tr><tr><td class="hint">Deposit type</td><td>' + (s.type || "–") +
+      '</td></tr><tr><td class="hint">Status (MRDS)</td><td>' + (s.status || "–") + '</td></tr><tr><td class="hint">Location</td><td>' + (-s.lat).toFixed(2) + '°S, ' + s.lon.toFixed(2) + '°E</td></tr></table>';
+    window.khanyaLastSite = s;
+  }
+  var filters = document.getElementById("filters");
+  Object.keys(GROUP_COLOURS).forEach(function (g) {
+    var n = DATA.deposits.filter(function (s) { return s.group === g; }).length;
+    var l = document.createElement("label"); l.className = "chk";
+    l.innerHTML = '<input type="checkbox"' + (shown[g] ? " checked" : "") + '><i class="sw" style="background:' + GROUP_COLOURS[g] + '"></i>' + g + ' (' + n + ')';
+    l.querySelector("input").addEventListener("change", function () { shown[g] = this.checked; draw(); });
+    filters.appendChild(l);
+  });
+  var drag = null, pinch = null, pointers = {};
+  canvas.addEventListener("pointerdown", function (e) { canvas.setPointerCapture(e.pointerId); pointers[e.pointerId] = [e.offsetX, e.offsetY]; drag = [e.offsetX, e.offsetY, view.lon, view.lat, false]; pinch = null; });
+  canvas.addEventListener("pointermove", function (e) {
+    if (!(e.pointerId in pointers)) return; pointers[e.pointerId] = [e.offsetX, e.offsetY];
+    var ids = Object.keys(pointers);
+    if (ids.length === 2) { var a = pointers[ids[0]], b = pointers[ids[1]], dd = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pinch) view.span = Math.min(30, Math.max(0.5, view.span * pinch / dd)); pinch = dd; drag[4] = true; draw(); return; }
+    var dx = e.offsetX - drag[0], dy = e.offsetY - drag[1]; if (Math.abs(dx) + Math.abs(dy) > 4) drag[4] = true;
+    if (drag[4]) { var s = W / view.span; view.lon = drag[2] - dx / (s * kx); view.lat = drag[3] + dy / s; draw(); }
+  });
+  canvas.addEventListener("pointerup", function (e) { var tap = drag && !drag[4] && Object.keys(pointers).length === 1; delete pointers[e.pointerId]; if (tap) showSite(nearest(e.offsetX, e.offsetY)); });
+  canvas.addEventListener("pointercancel", function (e) { delete pointers[e.pointerId]; });
+  canvas.addEventListener("wheel", function (e) { e.preventDefault(); view.span = Math.min(30, Math.max(0.5, view.span * (e.deltaY < 0 ? 1 / 1.15 : 1.15))); draw(); }, { passive: false });
+  document.getElementById("b_all").addEventListener("click", function () { view = { lon: 24.7, lat: -28.8, span: 18 }; draw(); });
+  document.getElementById("b_cluster").addEventListener("click", function () {
+    // centre on the PGE and chromium sites themselves, not on a drawn boundary
+    var pts = DATA.deposits.filter(function (s) { return s.group === "PGE" || s.group === "Chromium"; });
+    var lons = pts.map(function (s) { return s.lon; }).sort(function (a, b) { return a - b; }), lats = pts.map(function (s) { return s.lat; }).sort(function (a, b) { return a - b; });
+    var q = function (v, f) { return v[Math.floor(f * (v.length - 1))]; };
+    view = { lon: (q(lons, 0.1) + q(lons, 0.9)) / 2, lat: (q(lats, 0.1) + q(lats, 0.9)) / 2, span: Math.max(2.5, (q(lons, 0.9) - q(lons, 0.1)) * 1.4) };
+    draw();
+  });
+  // ---- downhole log ----
+  var sel = document.getElementById("hole"), names = Object.keys(DATA.holes);
+  names.sort(function (a, b) { return DATA.holes[b].intervals.length - DATA.holes[a].intervals.length || (a < b ? -1 : 1); });
+  names.forEach(function (h) { var o = document.createElement("option"); o.value = h; o.textContent = h + " (" + DATA.holes[h].intervals.length + " seams)"; sel.appendChild(o); });
+  var maxCr = 60, maxPge = Math.max.apply(null, [].concat.apply([], names.map(function (h) { return DATA.holes[h].intervals.map(function (r) { return r.pt_pd || 0; }); })));
+  function showHole(h) {
+    var hole = DATA.holes[h], depth = hole.max_depth || Math.max.apply(null, hole.intervals.map(function (r) { return r.to || 0; }));
+    document.getElementById("holeinfo").textContent = "depth " + (depth ? depth.toFixed(1) + " m" : "unknown") + " · " + hole.intervals.length + " seam intersections";
+    document.getElementById("holebar").innerHTML = hole.intervals.map(function (r) { return '<i title="' + r.seam + ' at ' + r.from + ' m" style="left:' + (100 * (r.from || 0) / depth).toFixed(2) + '%"></i>'; }).join("");
+    document.getElementById("log").innerHTML = hole.intervals.map(function (r) {
+      var cr = r.cr2o3 === null ? 0 : r.cr2o3, pge = r.pt_pd === null ? 0 : r.pt_pd;
+      return '<div class="logrow"><span class="num" style="text-align:left">' + (r.from !== null ? r.from.toFixed(2) : "–") + '–' + (r.to !== null ? r.to.toFixed(2) : "–") +
+        '</span><b>' + r.seam + '</b><span><span class="bar" style="display:inline-block;width:70%;vertical-align:middle"><i style="width:' + Math.min(100, 100 * cr / maxCr).toFixed(1) + '%;background:#22C55E"></i></span> ' + (r.cr2o3 !== null ? cr.toFixed(1) : "–") +
+        '</span><span><span class="bar" style="display:inline-block;width:70%;vertical-align:middle"><i style="width:' + Math.min(100, 100 * pge / maxPge).toFixed(1) + '%;background:#E5E7EB"></i></span> ' + (r.pt_pd !== null ? pge.toFixed(2) : "–") + '</span></div>';
+    }).join("");
+  }
+  sel.addEventListener("change", function () { showHole(sel.value); });
+  showHole(names[0]);
+  window.addEventListener("resize", resize); try { new ResizeObserver(resize).observe(canvas); } catch (e) {}
+  window.khanyaGeo = { nearest: nearest, toXY: toXY, showSite: showSite, showHole: showHole, view: function () { return view; } };
+  resize();
+})();
+</script>
+{% with bring_into_view=false %}{% include "_fit_frame.html.jinja" %}{% endwith %}
+</body>
+</html>

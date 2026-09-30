@@ -293,6 +293,26 @@ Searched UG2 / Merensky / Bushveld specifically. Mintek's mineralogical work on
 these ores is published as papers, not datasets. No competing team will have local
 data either, so asking Mintek directly is the highest-value request available.
 
+## 6. Geology context: public site locations and Bushveld seam logs
+
+Used only by the dashboard's "Geology — Bushveld context" view, through
+`src/geology_context.py`, which writes the small derived file
+`dashboard/data/geology_context.json` (committed, so the demo needs no raw data).
+
+- **USGS Mineral Resources Data System (MRDS).** `mrds-csv.zip`, 25.8 MB,
+  sha256 `31be4baaa86b0827…`, downloaded 2026-09-30 from
+  mrdata.usgs.gov/mrds (with Sibusiso's approval) into `data/raw/usgs_mrds/`.
+  702 South African sites with coordinates: name, commodities, deposit type,
+  status. A USGS product, normally public domain; the download page states no
+  licence. **USGS stopped systematic updates in 2011**, so it is a historical
+  inventory of deposit locations, not a current mine list. Three South African
+  records have impossible coordinates (two positive latitudes, one at
+  65.7 N 65.7 W). They are excluded and named in the derived file, not corrected.
+- **Thaba chromitite boreholes** (section above, DOI 10.17632/dc8jcnbcvk.1,
+  CC BY 4.0): 1,205 seam intervals in 317 holes. **No collar coordinates** in
+  the public file, so the holes appear as downhole logs and grade-by-seam
+  tables, never as map points.
+
 ## Method references
 
 - DeepLabv3+ opaque/non-opaque segmentation: https://www.sciencedirect.com/science/article/abs/pii/S0892687521002363
