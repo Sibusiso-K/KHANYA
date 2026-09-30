@@ -12,7 +12,7 @@
 </style>
 </head>
 <body>
-<header class="top"><div class="brand"><div class="mark">R</div><div>REEFPRINT <span style="color:#89959c">/</span> KHANYA<small>Mineral phase characterisation · research prototype</small></div></div><div class="topright"><span class="badge">{{ subset_label }}</span><span class="badge warn">RESEARCH MODE · NO LIVE PLANT</span></div></header>
+
 <section class="intro"><div><div class="eyebrow">Ore intelligence workbench</div><h1>{{ 'Analysis unavailable' if refusal_reason else 'From polished section to process insight' }}</h1><p>Upload a reflected-light micrograph to run the real segmentation model and inspect its measured output.</p></div><div class="status">● LOCAL INFERENCE · DEVICE DATA STAYS HERE</div></section>
 {% if refusal_reason %}<div class="alert" role="alert">{{ refusal_reason }} · No recommendation has been issued.</div>{% endif %}
 <section class="cols" aria-label="REEFPRINT mineral analysis workspace">

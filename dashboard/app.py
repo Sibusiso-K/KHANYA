@@ -35,7 +35,14 @@ UPLOAD_BRIDGE_CSS = """
   color: #1C2934;
 }
 [data-testid="stHeader"], footer, #MainMenu { display: none; }
-.block-container { max-width: 1760px; padding: 0.75rem 1rem 2rem; }
+.block-container { max-width: 1760px; padding: 0.45rem 1rem 2rem; }
+.reefprint-masthead { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 16px; margin:0 0 12px; background:#fff; border:1px solid #d8e0e6; border-radius:10px; box-shadow:0 2px 8px #1732490b; }
+.reefprint-brand { display:flex; align-items:center; gap:11px; min-width:0; color:#172b38; font:700 15px 'Segoe UI',sans-serif; letter-spacing:.04em; }
+.reefprint-mark { display:grid; place-items:center; width:34px; height:34px; border-radius:8px; background:#153f49; color:#fff; font:800 14px Consolas,monospace; }
+.reefprint-subtitle { display:block; margin-top:2px; color:#71808b; font:500 11px 'Segoe UI',sans-serif; letter-spacing:0; }
+.reefprint-status { flex:0 0 auto; padding:7px 10px; border:1px solid #eed7a6; border-radius:999px; background:#fff7e8; color:#755719; font:700 10px Consolas,monospace; letter-spacing:.06em; }
+[data-testid="stVerticalBlockBorderWrapper"] { border-color:#d8e0e6; background:#fff; border-radius:10px; }
+@media(max-width:640px){.reefprint-masthead{align-items:flex-start}.reefprint-status{font-size:9px;max-width:135px;text-align:center}.reefprint-brand{font-size:13px}}
 [data-testid="stFileUploader"] {
   max-width: 1720px; margin: 0.85rem auto 1.1rem;
   color: #33424D; font-family: "Segoe UI", sans-serif;
@@ -92,8 +99,12 @@ iframe[title="st.iframe"] { background: #F4F6F8; }
 </style>
 """
 
-st.set_page_config(page_title="KHANYA — ore processability advisor", layout="wide")
+st.set_page_config(page_title="REEFPRINT / KHANYA — mineral phase workbench", layout="wide")
 st.markdown(UPLOAD_BRIDGE_CSS, unsafe_allow_html=True)
+st.markdown(
+    """<header class="reefprint-masthead"><div class="reefprint-brand"><span class="reefprint-mark">R</span><span>REEFPRINT <span style="color:#89959c">/</span> KHANYA<small class="reefprint-subtitle">Mineral phase characterisation | research workbench</small></span></div><span class="reefprint-status">RESEARCH MODE | NO LIVE PLANT CONTROL</span></header>""",
+    unsafe_allow_html=True,
+)
 
 
 @st.cache_resource
@@ -163,17 +174,16 @@ def predict_live_field(image_bytes, checkpoint_key):
     return field, labels, mean_confidence, elapsed
 
 
-landing_slot = st.empty()
-progress_slot = st.empty()
-opcua_slot = st.empty()
 LIVE_FIELD_LABEL = "Live Field Mode — fast, 512×512 field, timed live"
 FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image"
 EVIDENCE_LABEL = "Evidence — held-out S2 test set"
-mode = st.radio(
-    "ANALYSIS MODE",
-    [LIVE_FIELD_LABEL, FULL_SECTION_LABEL, EVIDENCE_LABEL],
-    horizontal=True,
-    help=(
+with st.container(border=True):
+    st.caption("CHOOSE A WORKFLOW | Evidence is separate from new image analysis")
+    mode = st.radio(
+        "ANALYSIS MODE",
+        [LIVE_FIELD_LABEL, FULL_SECTION_LABEL, EVIDENCE_LABEL],
+        horizontal=True,
+        help=(
         "Live Field Mode analyses one 512×512 field with a single model "
         "pass, measured end to end on every run (JUDGE-READY-WORKPLAN.md: "
         "full-section inference measures p95 196s, about 6.5x over the "
@@ -181,8 +191,8 @@ mode = st.radio(
         "Full section is the validated whole-image path used for the "
         "backup recording (BACKUP-DEMO-SCRIPT.md). Evidence is a separate "
         "view over known held-out S2 test images and never uses live uploads."
-    ),
-)
+        ),
+    )
 
 if "force_stale_opcua" not in st.session_state:
     st.session_state.force_stale_opcua = False
@@ -218,6 +228,8 @@ def show_landing(reason=None):
 
 reason = unavailable_reason(SUBSET, CKPT)
 if mode == EVIDENCE_LABEL:
+    landing_slot = st.empty()
+    progress_slot = st.empty()
     progress_slot.empty()
     if reason:
         show_landing(f"Evidence unavailable: {reason}")
@@ -252,19 +264,28 @@ if mode == EVIDENCE_LABEL:
         show_landing(f"Evidence unavailable: {exc}")
     st.stop()
 
-uploaded = st.file_uploader(
-    "REFLECTED-LIGHT MICROGRAPH OF A POLISHED SECTION",
-    type=["jpg", "jpeg", "png", "tif", "tiff"],
-)
 if "use_heldout_example" not in st.session_state:
     st.session_state.use_heldout_example = False
-col_upload, col_example = st.columns([3, 1])
-with col_example:
-    if st.button("RUN HELD-OUT EXAMPLE", help="Run a real S2 test-split micrograph through the model; its ground-truth mask is not used for this prediction."):
-        st.session_state.use_heldout_example = True
-    if st.session_state.use_heldout_example and st.button("CLEAR EXAMPLE"):
-        st.session_state.use_heldout_example = False
+with st.container(border=True):
+    st.markdown("**ANALYSE A POLISHED SECTION** | Upload a micrograph or run the held-out demonstration")
+    upload_col, example_col = st.columns([3, 1], vertical_alignment="bottom")
+    with upload_col:
+        uploaded = st.file_uploader(
+            "REFLECTED-LIGHT MICROGRAPH | JPG, PNG OR TIFF",
+            type=["jpg", "jpeg", "png", "tif", "tiff"],
+            label_visibility="collapsed",
+        )
+    with example_col:
+        if st.button("RUN HELD-OUT EXAMPLE", use_container_width=True, help="Run a real S2 test-split micrograph through the model; its ground-truth mask is not used for this prediction."):
+            st.session_state.use_heldout_example = True
+        if st.session_state.use_heldout_example and st.button("CLEAR EXAMPLE", use_container_width=True):
+            st.session_state.use_heldout_example = False
 
+# Place result/progress slots after the input card so an empty-state dashboard
+# never pushes the actual upload action below a tall embedded preview.
+landing_slot = st.empty()
+progress_slot = st.empty()
+opcua_slot = st.empty()
 if uploaded is not None:
     st.session_state.use_heldout_example = False
 benchmark_image_path = None

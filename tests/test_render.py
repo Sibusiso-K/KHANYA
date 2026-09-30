@@ -49,7 +49,14 @@ def test_pre_upload_state_is_stitch_rendered_without_fabricated_claims():
     html = render.render_landing()
 
     assert "From polished section to process insight" in html
-    assert "REEFPRINT" in html and "KHANYA" in html
+    # The app shell owns branding; the embedded analysis fragment must not
+    # render a second header when Streamlit places it below the controls.
+    assert '<header class="top">' not in html
+    app_source = (Path(__file__).resolve().parents[1] / "dashboard" / "app.py").read_text(encoding="utf-8")
+    assert "reefprint-masthead" in app_source
+    assert app_source.index("uploaded = st.file_uploader") < app_source.index(
+        "# Place result/progress slots after the input card"
+    )
     assert "Sample &amp; interval" in html
     assert "Geology &amp; spatial context" in html
     assert "AI phase analysis" in html
