@@ -3679,3 +3679,6 @@ See reports/WORKBENCH-HANDOVER-2026-09-30.md first for the new React + FastAPI w
 ## 2026-09-30 spatial continuation
 Read reports/SPATIAL-UI-HANDOVER-2026-09-30.md for the current UI/spatial/decision-export implementation and remaining cloud work.
 
+
+Latest backend continuation: reports/LOCAL-RECORDS-HANDOVER-2026-09-30.md (versioned notes/assays and cloud login blockers).
+

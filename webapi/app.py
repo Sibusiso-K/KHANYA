@@ -1,6 +1,7 @@
 """Local REEFPRINT workbench API. Bind to loopback; cloud auth is not implemented."""
 from __future__ import annotations
-import hashlib, io, json, time, uuid, warnings, threading
+import hashlib, io, json, time, uuid, warnings, threading, os, re
+from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
 from pathlib import Path
@@ -8,7 +9,7 @@ from typing import Literal
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,6 +33,7 @@ results: dict = {}
 pool = ThreadPoolExecutor(max_workers=1)
 model_lock = threading.Lock()
 simulation_lock = threading.Lock()
+record_lock = threading.Lock()
 model = None
 plant = 0.0
 app = FastAPI(title="REEFPRINT local research API", version="0.1.0")
@@ -81,6 +83,81 @@ def list_samples():
 def detail(sid:str):
     sample_path(sid)
     return current_result(sid) or blank_result(sid)
+
+class RecordAssay(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
+    element: str = Field(min_length=1, max_length=30)
+    value: float = Field(ge=0)
+    unit: str = Field(min_length=1, max_length=30)
+
+
+class SampleRecord(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
+    sample_label: str = Field(default="", max_length=200)
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
+    depth: float | None = Field(default=None, ge=0)
+    notes: str = Field(default="", max_length=10000)
+    assays: list[RecordAssay] = Field(default_factory=list, max_length=200)
+    assayFile: str = Field(default="", max_length=255)
+
+
+class RecordUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    expected_version: int = Field(ge=0)
+    record: SampleRecord
+
+
+def record_path(sid: str):
+    sample_path(sid)
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", sid):
+        raise HTTPException(400, "Invalid sample identifier")
+    return STORE / "records" / (sid + ".json")
+
+
+def read_record(path: Path, sid: str):
+    if not path.exists():
+        return {"sample_id": sid, "version": 0, "updated_at": None, "record": {}}
+    try:
+        envelope = json.loads(path.read_text(encoding="utf-8"))
+        if (envelope["sample_id"] != sid or type(envelope["version"]) is not int
+                or envelope["version"] < 1 or not isinstance(envelope["updated_at"], str)):
+            raise ValueError("Invalid record envelope")
+        SampleRecord.model_validate(envelope["record"])
+        return envelope
+    except (OSError, ValueError, KeyError, TypeError):
+        raise HTTPException(500, "Stored sample record cannot be read. Restore the local record before saving.")
+
+
+@app.get("/api/samples/{sid}/record")
+def get_record(sid: str):
+    path = record_path(sid)
+    with record_lock:
+        return read_record(path, sid)
+
+
+@app.put("/api/samples/{sid}/record")
+def put_record(sid: str, request: RecordUpdate):
+    path = record_path(sid)
+    with record_lock:
+        current = read_record(path, sid)
+        if request.expected_version != current["version"]:
+            raise HTTPException(409, f"Sample record changed (current version {current['version']}). Reload before saving.")
+        envelope = {"sample_id": sid, "version": current["version"] + 1,
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                    "record": request.record.model_dump(exclude_unset=True)}
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
+        try:
+            with temporary.open("x", encoding="utf-8") as handle:
+                json.dump(envelope, handle, ensure_ascii=False, allow_nan=False)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, path)
+        finally:
+            temporary.unlink(missing_ok=True)
+        return envelope
+
 
 @app.get("/api/samples/{sid}/image")
 def image(sid:str, layer:Literal["original","raw","overlay","mask"]="original", result_id:str|None=None):
