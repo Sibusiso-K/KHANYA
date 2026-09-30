@@ -96,6 +96,14 @@ st.markdown(UPLOAD_BRIDGE_CSS, unsafe_allow_html=True)
 
 
 @st.cache_resource
+def checkpoint_sha256(checkpoint_key):
+    """sha256 of the checkpoint file, computed once per (path, stamp, size)."""
+    import hashlib
+
+    return hashlib.sha256(Path(checkpoint_key[0]).read_bytes()).hexdigest()
+
+
+@st.cache_resource
 def warm_model(checkpoint_key):
     import torch
 
@@ -270,20 +278,26 @@ if mode == EVIDENCE_LABEL:
         evidence_bytes = evidence_image_path.read_bytes()
         stat = CKPT.stat()
         evidence_checkpoint_key = (str(CKPT), stat.st_mtime_ns, stat.st_size)
-        # A prediction cached by src.decision_gap records its checkpoint's file
-        # stamp; use it only when that stamp is this exact checkpoint, otherwise
-        # run the model (about three minutes per section on this CPU).
+        # A prediction cached by src.decision_gap records only its checkpoint's
+        # file stamp, and a restored file can keep a stamp (Lethabo, PR #13
+        # review). So a cached prediction is used only when the stamp matches AND
+        # the active checkpoint's sha256 is the reported one the caches and
+        # reports were produced from; otherwise the model runs (about three
+        # minutes per section on this CPU).
         import numpy as np
+        from src.preflight import EXPECTED_S2_SHA256
+        active_sha = checkpoint_sha256(evidence_checkpoint_key)
         cached = (config.ROOT / "data" / "derived" / "preds_s2_patches"
                   / f"{evidence_stem}.npz")
         evidence_source = None
         if cached.exists():
             stored = np.load(cached)
-            if int(stored["ckpt"]) == stat.st_mtime_ns:
+            if int(stored["ckpt"]) == stat.st_mtime_ns and active_sha == EXPECTED_S2_SHA256:
                 evidence_predicted = stored["mask"]
                 evidence_confidence = float(stored["confidence"])
-                evidence_source = ("precomputed by this exact checkpoint (its file stamp "
-                                   "matches); a live recompute takes about three minutes here")
+                evidence_source = (f"precomputed: its recorded checkpoint timestamp matches, and "
+                                   f"the active checkpoint is sha256 {active_sha[:12]}…, the "
+                                   "reported one; a live recompute takes about three minutes here")
         if evidence_source is None:
             with st.spinner("Running the real native-resolution model on the selected held-out section…"):
                 _image, evidence_predicted, evidence_confidence = predict(
@@ -294,7 +308,8 @@ if mode == EVIDENCE_LABEL:
             render.render_evidence(
                 evidence_stem, evidence_image, evidence_labels,
                 evidence_predicted, evidence_confidence, len(test_ids),
-                source=evidence_source, scores=render.evidence_scores(evidence_stem),
+                source=evidence_source,
+                scores=render.evidence_scores(evidence_stem, active_sha),
             ),
             height=850, scrolling=True,
         )

@@ -238,3 +238,32 @@ def test_strip_marks_the_unguarded_pipeline_and_a_no_change_continue():
                          result, recommendation, plant=plant, lighting=lighting)
     assert "LIGHTING CHECK OFF · UNGUARDED" in html
     assert ">UNCHANGED<" in html and "1 → 1" in html
+
+
+def test_evidence_scorecard_only_shows_for_the_checkpoint_that_produced_it():
+    import json
+
+    from src.segmentation import config
+
+    reported = json.loads((config.REPORT_DIR / "s2_section_stats.json").read_text())["checkpoint_sha256"]
+    scores = render.evidence_scores("test_01", reported)
+    assert scores["mismatch"] is False and "section_iou" in scores
+    other = render.evidence_scores("test_01", "0" * 64)
+    assert other["mismatch"] is True and "section_iou" not in other
+
+
+def test_evidence_view_names_mean_iou_and_hides_a_foreign_scorecard():
+    import numpy as np
+    from PIL import Image
+
+    image = Image.new("RGB", (8, 8))
+    mask = np.zeros((8, 8), dtype=np.int32)
+    shown = render.render_evidence("test_01", image, mask, mask, 0.8, 12,
+                                   scores={"mismatch": False, "section_iou": 0.41,
+                                           "pooled_iou": 0.5725, "model_advice": "a",
+                                           "expert_advice": "a", "agree": True})
+    assert "Section mean IoU" in shown and "accuracy</div>" not in shown
+    hidden = render.render_evidence("test_01", image, mask, mask, 0.8, 12,
+                                    scores={"mismatch": True, "report_sha": "de7135a96541",
+                                            "active_sha": "000000000000"})
+    assert "Scorecard hidden" in hidden and "Section mean IoU" not in hidden

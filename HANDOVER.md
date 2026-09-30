@@ -19,6 +19,30 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (79) — #13 review: evidence provenance bound to the checkpoint hash
+
+Lethabo's #13 review (changes requested) found three provenance holes, all
+fixed:
+- **Cached evidence predictions trusted on a file timestamp alone.** They are
+  now used only when the stamp matches **and** the active checkpoint's sha256
+  (computed once) is the reported `de7135a9`.
+- **The scorecard could sit beside a different model's prediction.** It now
+  checks both reports' recorded `checkpoint_sha256` against the active one, and
+  is hidden, with the reason stated, on a mismatch.
+- **"This section's accuracy" was mean IoU.** Renamed "Section mean IoU".
+
+His first point (simulated-perturbation wording) was already fixed by the #11
+and #12 changes merged up.
+
+Verified live: Evidence shows the sha-bound source line and the scorecard,
+2.5 s. Suite 143 passed.
+
+**Note for later:** Lethabo's new PR #14 (codex/khanya-build-plan -> main)
+touches `src/segmentation/patches.py`, which #10 also changes. Expect a merge
+conflict; merge #10-#13 first.
+
+---
+
 ## 2026-09-30 — Sibusiso (78) — every judge-review point on #10-#12 addressed
 
 **Lethabo's reviews were right on every point; all fixed, pushed and verified

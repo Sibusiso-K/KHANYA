@@ -158,11 +158,13 @@ def render_progress(image, labels, completed, total, tile_box, tile_confidence):
     )
 
 
-def evidence_scores(stem):
+def evidence_scores(stem, active_sha256):
     """This section's own score and both advisories, from the committed reports.
 
     None when a report is missing: the view then shows the images only rather
-    than a number it cannot trace.
+    than a number it cannot trace. When a report was produced by a different
+    checkpoint from the active one, only that fact is returned, so saved scores
+    never sit beside a prediction from another model (Lethabo, PR #13 review).
     """
     import json
     from src.segmentation import config
@@ -171,6 +173,11 @@ def evidence_scores(stem):
         sampling = json.loads((config.REPORT_DIR / "field_sampling_s2.json").read_text())
     except (OSError, ValueError):
         return None
+    report_shas = {stats.get("checkpoint_sha256"), sampling.get("checkpoint_sha256")}
+    if report_shas != {active_sha256}:
+        return {"mismatch": True,
+                "report_sha": ", ".join(sorted(str(s)[:12] for s in report_shas)),
+                "active_sha": str(active_sha256)[:12]}
     stat_row = next((r for r in stats["rows"] if r["section"] == stem), None)
     sample_row = next((r for r in sampling["rows"] if r["section"] == stem), None)
     if stat_row is None or sample_row is None:
@@ -178,6 +185,7 @@ def evidence_scores(stem):
     model_advice = sample_row["model_whole"]["action"]
     expert_advice = sample_row["expert_whole"]["action"]
     return {
+        "mismatch": False,
         "section_iou": stat_row["mean_iou_present_classes"],
         "pooled_iou": stats["pooled_mean_iou"],
         "model_advice": model_advice,
