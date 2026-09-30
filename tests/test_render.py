@@ -372,3 +372,19 @@ def test_report_is_self_contained_and_escapes_its_data():
     assert "advisory only, nothing published or commanded" in html
     assert "Download grains (.csv)" in html and "Print or save as PDF" in html
     assert "not an assay" in html and "South African ore" in html
+
+
+def test_progress_frame_shows_the_mineral_mix_so_far():
+    import re
+
+    import numpy as np
+    from PIL import Image
+
+    labels = np.zeros((64, 64), dtype=np.int64)
+    labels[:32, :32] = 1      # chalcopyrite: a quarter of the field
+    labels[:32, 32:] = 3      # pyrrhotite: a quarter; the rest resin or not yet classified
+    html = render.render_progress(Image.new("RGB", (64, 64)), labels, 1, 6, (0, 0, 32, 32), 0.9)
+    assert "Mineral mix so far" in html and "every field" in html
+    shares = dict(re.findall(r"<span>(\w+)</span><div class=\"bar\">.*?<span class=\"num\">([\d.]+)%", html))
+    assert shares["Chalcopyrite"] == "50.0" and shares["Pyrrhotite"] == "50.0"
+    assert "Valuable minerals so far: <strong>50.0%</strong>" in html

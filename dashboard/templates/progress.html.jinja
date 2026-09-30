@@ -5,7 +5,9 @@
 .eyebrow{font-size:11px;letter-spacing:.18em;color:#FFB539;font-weight:700}.title{font-size:20px;margin:8px 0 16px}
 .meter{height:8px;background:#12333e;border-radius:5px;overflow:hidden;margin:10px 0 18px}.meter span{display:block;height:100%;background:#2DD4BF;width:{{ (completed / total * 100)|round(1) }}%}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel{border:1px solid #194D5C;border-radius:6px;padding:10px;background:#071C27}.label{font-size:10px;color:#8CA6AE;text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}.panel img{display:block;width:100%;height:230px;object-fit:contain;background:#00131D}
-.status{display:flex;justify-content:space-between;font-size:11px;color:#8CA6AE;margin-top:12px}.status strong{color:#E3EAEB}.live{color:#2DD4BF}
+.status{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between;font-size:11px;color:#8CA6AE;margin-top:12px}.status strong{color:#E3EAEB}.live{color:#2DD4BF}
+.mix{margin-top:14px}.mixrow{display:grid;grid-template-columns:120px 1fr 56px;gap:8px;align-items:center;font-size:12px;margin:5px 0}.bar{height:10px;border-radius:5px;background:#12303d;overflow:hidden}.bar i{display:block;height:100%}.num{text-align:right}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.label,.status{font-size:12px}.eyebrow{font-size:12px}.panel img{height:auto}}
 </style></head><body>
 <div class="eyebrow">LIVE NATIVE-RESOLUTION INFERENCE</div>
 <div class="title">Classifying section tiles · <span class="live">{{ completed }} / {{ total }} complete</span></div>
@@ -14,5 +16,9 @@
   <div class="panel"><div class="label">Field scan · gold frame = tile just classified</div><img alt="Uploaded micrograph with the just classified tile marked" src="data:image/png;base64,{{ progress_image_b64 }}"></div>
   <div class="panel"><div class="label">Measured phase labels so far · dark = not classified</div><img alt="Measured labels for completed tiles" src="data:image/png;base64,{{ predicted_phases_b64 }}"></div>
 </div>
+{% if mix %}<div class="panel mix"><div class="label">Mineral mix so far · share of ore classified · updates with every {{ unit_word }}</div>
+{% for m in mix %}<div class="mixrow"><span>{{ m.name|capitalize }}</span><div class="bar"><i style="width:{{ m.pct|round(1) }}%;background:{{ m.colour }}"></i></div><span class="num">{{ "%.1f"|format(m.pct) }}%</span></div>{% endfor %}
+<div class="status" style="margin-top:6px"><span>Valuable minerals so far: <strong>{{ "%.1f"|format(valuable_pct) }}%</strong> of the ore</span></div></div>{% endif %}
 <div class="status"><span>Tile confidence (measured): <strong>{{ "%.1f"|format(tile_confidence * 100) }}%</strong></span><span>Model: <strong>DeepLabV3 · ResNet-50</strong></span></div>
+{% with bring_into_view=false %}{% include "_fit_frame.html.jinja" %}{% endwith %}
 </body></html>

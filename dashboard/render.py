@@ -146,6 +146,20 @@ def render_progress(image, labels, completed, total, tile_box, tile_confidence):
         labels = np.asarray(Image.fromarray(np.asarray(labels).astype(np.uint8))
                             .resize(size, Image.Resampling.NEAREST))
         tile_box = tuple(round(v * scale) for v in tile_box)
+    # Running mineral mix of the ore classified so far. Not-yet-classified pixels
+    # are -1 (whole-section path) or 0 (six-field path, where they share 0 with
+    # resin); ore composition excludes resin, so counting classes >= 1 among
+    # classified pixels gives exactly the mix so far on both paths.
+    from src import modal
+    from src.segmentation import lumenstone as ls
+
+    flat = np.asarray(labels).astype(np.int64).ravel()
+    counts = np.bincount(flat[flat >= 0], minlength=len(ls.CLASS_NAMES))
+    ore = int(counts[1:].sum())
+    mix = [{"name": name, "colour": colour, "pct": 100.0 * counts[i] / ore}
+           for i, (name, colour) in enumerate(zip(ls.CLASS_NAMES, ls.CLASS_COLORS)) if i and ore]
+    valuable = sum(counts[i] for i, name in enumerate(ls.CLASS_NAMES)
+                   if modal.LUMENSTONE_ROLES.get(name) == "payload")
     template = _env.get_template("progress.html.jinja")
     return template.render(
         **_base_context(),
@@ -155,6 +169,9 @@ def render_progress(image, labels, completed, total, tile_box, tile_confidence):
         completed=completed,
         total=total,
         tile_confidence=tile_confidence,
+        mix=mix,
+        valuable_pct=(100.0 * valuable / ore) if ore else 0.0,
+        unit_word="field" if total <= 12 else "tile",
     )
 
 
