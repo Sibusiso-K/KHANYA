@@ -3,11 +3,12 @@ import importlib
 import sys
 from types import SimpleNamespace
 
-import numpy as np
 import pytest
+pytest.importorskip("fastapi")
+
+import numpy as np
 from PIL import Image
 
-pytest.importorskip("fastapi")
 torch = pytest.importorskip("torch")
 api = importlib.import_module("webapi.app")
 
