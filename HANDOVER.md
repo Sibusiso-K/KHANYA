@@ -19,6 +19,46 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (76) — control-room screen: decision, evidence, plant in one row (PR C)
+
+**Did:**
+- A three-tile strip at the top of every result (`_control_strip.html.jinja`,
+  inline SVG and styles because the Tailwind build is offline-compiled):
+  - **DECISION:** the full action, verdict and first sentence of the reason.
+  - **EVIDENCE:** payload-bearing particles against the ≥9 floor, the field
+    coverage, and as-imaged vs re-imaged thumbnails with STABLE/UNSTABLE.
+  - **PLANT:** a simulated flotation circuit (feed, mill, rougher, cleaner,
+    regrind loop vs bypass) with an APPLIED/HELD/REFUSED badge and before ->
+    after.
+- The native Streamlit lighting and plant sections are folded into a collapsed
+  command log.
+- Presenter buttons moved into a collapsed *Presenter controls* panel, plus a
+  new **START WITH REGRIND ON (declared setup)**, logged as a manual setup, not
+  an advisory.
+- The landing page now leads with the problem. The unmeasured "in seconds"
+  claim was removed, caught by the render test for fabricated claims.
+
+**Why the preset:** no held-out *Grind finer* survives the lighting check live
+(entry 75). So the honest demo of a parameter change is regrind set on as the
+declared starting state, then a stable *Continue* (test_01) switches it off.
+
+**Verified live:**
+- test_01: *Continue*, 52 payload particles, LIGHTING STABLE, plant **1 -> 0
+  APPLIED**, bypass lit.
+- test_11: refused, LIGHTING UNSTABLE ("darker lamp: no payload detected"),
+  plant **HELD**.
+
+**Flagged, not fixed:** the confidence tile shows 77% "verify manually" while
+the decision tile shows *within specification*. That comes from the existing
+advisor.
+
+Suite 138 passed.
+
+**Next:** Lethabo - judge review. Sibusiso - PR D (speed, no spinners, hide the
+Streamlit toolbar).
+
+---
+
 ## 2026-09-30 — Sibusiso (75) — lighting check: honest result is a repeatability gate, not an error detector (PR B)
 
 **Did:** `src/stability.py` re-measures the same six live fields after one fixed

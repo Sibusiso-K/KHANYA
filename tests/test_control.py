@@ -3,10 +3,10 @@ import pytest
 from dashboard.control import REGRIND_HEAD, command_for, command_parameters, send_command
 
 
-def test_only_grind_and_continue_command_the_regrind_tag():
+def test_only_grind_finer_commands_the_regrind_tag():
     assert command_for("Grind finer")[0] == 1.0
-    assert command_for("Continue at current setpoint")[0] == 0.0
-    for abstaining in ("Marginal - verify before acting",
+    for abstaining in (
+                       "Continue at current setpoint","Marginal - verify before acting",
                        "Flag for manual review - low payload signal",
                        "No recommendation - insufficient ore in field",
                        "Adjust reagent dosage - raise depressant",
@@ -42,10 +42,19 @@ def test_fresh_command_moves_the_setting_over_real_opc_ua():
     assert status.endpoint
 
 
+def test_continue_means_no_change_whatever_the_current_setting():
+    for before in (0.0, 1.0):
+        status = send_command("Continue at current setpoint", before=before)
+        assert (status.state, status.before, status.after, status.endpoint) == (
+            "unchanged", before, before, None)
+
+
 def test_consumer_starts_from_the_plants_current_value():
     pytest.importorskip("asyncua")
-    status = _wire_or_skip(send_command("Continue at current setpoint", before=1.0))
-    assert (status.state, status.before, status.after) == ("applied", 1.0, 0.0)
+    # A refused command leaves the consumer's parameter untouched, so it must
+    # still read the seeded 1.0, not the client's default 0.0.
+    status = _wire_or_skip(send_command("Grind finer", before=1.0, stale=True))
+    assert (status.state, status.before, status.after) == ("refused", 1.0, 1.0)
 
 
 def test_stale_command_is_refused_and_the_setting_does_not_move():

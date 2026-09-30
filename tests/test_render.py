@@ -45,7 +45,9 @@ def test_dashboard_can_show_stitch_before_the_model_stack_is_loaded():
 def test_pre_upload_state_is_stitch_rendered_without_fabricated_claims():
     html = render.render_landing()
 
-    assert "Awaiting a reflected-light micrograph" in html
+    assert "Plants learn what is in their ore days too late." in html
+    assert "refuses to advise" in html
+    assert "in seconds" not in html   # not true while the lighting check doubles the live pass
     assert "REEFPRINT :: KHANYA" in html
     assert "No network required" in html
     assert "Dr. K. Vance" not in html
@@ -187,3 +189,52 @@ def test_candidates_are_shown_only_for_marginal_verdicts(action, expected_count)
             "Continue at current setpoint",
             "Grind finer",
         }
+
+
+def test_control_strip_shows_decision_evidence_and_plant_state():
+    import numpy as np
+    from PIL import Image
+
+    from dashboard.control import CommandStatus
+    from src.advisor import advise
+    from src.modal import ModalResult
+
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.8, 0.95, 12, 64,
+                         n_payload_particles=4)
+    recommendation = advise(result, 0.95)
+    lighting = {"stable": False, "abstained": False, "as_imaged": "Grind finer",
+                "after_shift": "Marginal - verify before acting",
+                "image": Image.new("RGB", (64, 64)), "shifted_image": Image.new("RGB", (64, 64))}
+    plant = CommandStatus("held", 1.0, 1.0, "advisory is abstaining")
+    html = render.render(Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
+                         result, recommendation, plant=plant, lighting=lighting,
+                         evidence_scope="six 512 px fields")
+    assert "No recommendation — too few payload particles" in html
+    assert "provisional floor 9" in html and "six 512 px fields" in html
+    assert "need ≥" not in html
+    assert "SIMULATED LIGHTING: UNSTABLE" in html
+    assert "@media (max-width: 900px)" in html
+    assert "PLANT · SIMULATED CIRCUIT" in html and ">HELD<" in html
+    assert "no plant connected" in html
+
+
+def test_strip_marks_the_unguarded_pipeline_and_a_no_change_continue():
+    import numpy as np
+    from PIL import Image
+
+    from dashboard.control import CommandStatus
+    from src.advisor import advise
+    from src.modal import ModalResult
+
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.8, 0.95, 12, 64,
+                         n_payload_particles=30)
+    recommendation = advise(result, 0.95)
+    assert recommendation.action == "Continue at current setpoint"
+    lighting = {"stable": False, "abstained": False, "off": True,
+                "as_imaged": recommendation.action, "after_shift": "check switched off",
+                "image": Image.new("RGB", (64, 64)), "shifted_image": None}
+    plant = CommandStatus("unchanged", 1.0, 1.0, "within specification: no command issued")
+    html = render.render(Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
+                         result, recommendation, plant=plant, lighting=lighting)
+    assert "LIGHTING CHECK OFF · UNGUARDED" in html
+    assert ">UNCHANGED<" in html and "1 → 1" in html
