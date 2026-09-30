@@ -1,3 +1,21 @@
+## 2026-09-30 — Sibusiso (Claude review) — independent check of 48d3375 / cec2245
+
+**Did:** Pulled to 998c7b4, restarted the local workbench (127.0.0.1:8510) and ran a fresh real `test_11` Quick analysis (checkpoint de7135a9, no cached result). Tapped grains through the Explore-grains canvas at pixels decoded from `grain-ids.png`.
+
+**Verified:**
+- Local mode: `/api/config` auth_required false, cloud_sync false; zero requests to other origins on page load.
+- 24 grains: 14 NO VALUABLE MINERALS, 9 LOCKED, 1 FREE (API).
+- UI cards: grain 12 (pyrrhotite 100%, payload 0) shows **NO VALUABLE MINERALS**; grain 31 (pentlandite 100%) **FREE**; grain 21 (payload 0.0019) **LOCKED** at 0.2%, not 0.0%. Explanations match each state.
+- PR #15 checks: tests, offline frontend bundle, local workbench API tests, GitGuardian all SUCCESS; mergeable.
+
+**Caveat:** clicks were dispatched pointer events at computed canvas positions (the preview pane's screenshots were offset), so they test the component's mapping and decoding, not a physical touch.
+
+**Pitch note:** present from local mode on 8510 with wifi off; the Cloudflare tunnel depends on the host staying up and is not the demo path.
+
+**Next:** Sibusiso to decide on the retired Streamlit PRs (#11–#13, #18–#22); microns-per-pixel value still outstanding; human Supabase sign-in proof still pending (Lethabo).
+
+---
+
 ## 2026-09-30 — Codex — grain liberation labels and API CI dependencies
 
 **Did:** Updated the visible Grain Explorer to report no valuable mineral, locked, or free using the advisor’s 50% rule. Small nonzero payload percentages retain enough precision to remain visibly nonzero; each state has a matching explanation. Pinned the image-analysis dependencies used by API tests, including SciPy and headless OpenCV, and installed them with the API pins in CI without Streamlit. Inference test failures now show the job error before reading its result.
