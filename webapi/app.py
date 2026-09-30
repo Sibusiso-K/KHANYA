@@ -48,7 +48,10 @@ CHECKPOINT_METRICS = CHECKPOINT_RECORD["checkpoints"]
 APPROVED_MODEL_SHA = CHECKPOINT_RECORD.get("approved_for_demo", "")
 APPROVED_REASON = CHECKPOINT_RECORD.get("approved_reason", "")
 _startup_record = CHECKPOINT_METRICS.get(MODEL_SHA)
-logging.getLogger(__name__).info("KHANYA model active sha=%s mIoU=%s %s", MODEL_SHA[:8] or "none",
+# uvicorn.error is the logger uvicorn prints at INFO; this module's own logger is silent under it.
+logging.getLogger("uvicorn.error").log(
+    logging.INFO if MODEL_SHA and MODEL_SHA == APPROVED_MODEL_SHA else logging.WARNING,
+    "KHANYA model active sha=%s mIoU=%s %s", MODEL_SHA[:8] or "none",
     _startup_record.get("mean_iou", "unknown") if _startup_record else "unknown",
     "APPROVED" if MODEL_SHA and MODEL_SHA == APPROVED_MODEL_SHA else "NOT APPROVED")
 

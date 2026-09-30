@@ -1,3 +1,20 @@
+## 2026-09-30 — Sibusiso (Claude review) — approved-checkpoint change verified, three fixes
+
+**Decision:** the approved demo checkpoint is `de7135a9…` (mIoU 0.5725, pixel acc 0.8914). `fb78727…` is not approved. Lethabo: put `de7135a9` in `checkpoints/lumenstone_s2_patches/best.pt` on your host; the header badge will turn from amber to "approved".
+
+**Fixed on top of Codex's 21fee43 / 3a05241:**
+- `295c9cf`: CI "local workbench API tests" failed 5 safety tests. CI has no checkpoint, so MODEL_SHA is empty and the new approval gate refused everything first. The tests now pin an approved host; added a test that an unapproved checkpoint is held at 0.95 confidence.
+- `49cb1cb`: the badge separator was a lone cp1252 byte in App.tsx, which browsers showed as "�". Saved as UTF-8 and rebuilt dist (npm ci picked up the new @supabase/supabase-js dependency).
+- The startup line went to a logger uvicorn keeps silent. It now logs on `uvicorn.error` (WARNING when not approved).
+
+**Verified on 127.0.0.1:8510:**
+- de7135a9: log "KHANYA model active sha=de7135a9 mIoU=0.5725 APPROVED"; badge "Model de7135a9 · approved"; no warning.
+- One-byte-changed copy (5e43deee, restored afterwards): badge "not approved"; warning "Active model 5e43deee is not the approved demo checkpoint. Approved: de7135a9."; /api/report metrics null.
+
+**Still open:** screenshots of both states at 375 px (Codex); re-run test_11 on de7135a9 on Lethabo's host and fill the TODO in the audit report.
+
+---
+
 ## 2026-09-30 — Sibusiso (Claude review) — the two hosts run different checkpoints
 
 **Found:** `reports/LIVE-RESULT-AND-CONTROL-AUDIT-2026-09-30.md` says the live model is `fb78727…` (mIoU 0.4543 / pixel acc 0.7716). The app loads whatever file sits at `checkpoints/lumenstone_s2_patches/best.pt`, so Lethabo's host (the Cloudflare demo) is serving the weaker Kaggle run. Sibusiso's host (127.0.0.1:8510) serves `de7135a9…` (0.5725 / 0.8914, the checkpoint `reports/ACCURACY-REPORT.md` is about).
