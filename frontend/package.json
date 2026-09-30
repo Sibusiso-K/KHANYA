@@ -9,6 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "test:spatial": "node scripts/test-spatial.mjs",
     "test:grains": "node --test scripts/test-grain-pixels.mjs",
+    "test:grain-selection": "node --test scripts/test-grain-selection.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {
@@ -28,3 +29,5 @@
     "vite": "^6.3.0"
   }
 }
+
+
