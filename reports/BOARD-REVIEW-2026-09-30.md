@@ -87,3 +87,36 @@ This rubric weights what a field professional needs, with usability heavy as ask
 5. **XRF as a consistency check.** Elements against the predicted mineralogy, e.g. predicted chalcopyrite should imply Cu. Read from the instrument's export or SDK. XRF measures elements, not phases, so it cannot label them.
 6. **Spatial view only with survey data.** Results by depth down a logged hole (a strip log), then a block model when collars and surveys exist. Never a 3D picture of a 2D section.
 7. **Phone capture** only after the imaging set-up is standardised and characterised. Merge the two OPC UA sessions (about 10 s a run).
+
+---
+
+## Addendum: before-pitch fixes (branch `khanya/pitch-ready`), re-measured the same evening
+
+| Item | Before | After (measured at 375 × 812 unless stated) |
+|---|---|---|
+| Stale claim, `MINTEK-FIT.md` §3.1 | "6 of 12 (50%) answered confidently" | leads with **2 of 12**, exact 95% interval [2.1%, 48.4%], "1 in 6 on the bench, 5 in 6 to the instrument"; the 50% is kept as history |
+| Stale claim, landing text | refuses when advice "changes with the lighting" | "declines to advise when the evidence is too thin or the model is not confident. Only validated samples can move the simulated plant. Performance on a new ore body is not established." |
+| Upload on the first phone screen | button at y = 802 of 812 | fully visible, y = 745-785 |
+| Landing card | cut off inside a 330 px scrolling box | sized to its content (432 px on a phone, 412 px on desktop); guidance paragraph and badges hidden on phones only |
+| Page order | presenter controls and diagnostic toggle before the upload | mode, upload, progress, result; "Advanced: presenter and diagnostic controls" collapsed at the bottom (all three controls still work there) |
+| Mode names | "Live sampled fields — six 512×512 fields across the section, timed live" | "Quick — six fields across the section (about 35 s)", "Whole section — slow, advisory only", "Evidence — the 12 held-out test sections" |
+| Result scrolling | 3,315 px inside a 1,500 px scrolling box | frame and its wrapper sized to the content (3,664 px on a phone, 1,538 px on desktop), re-sized when the width changes |
+| Result overflow | 415 px wide in 343 px; "APPLIED", "CLEANER" clipped | 0 px overflow; the brand row wraps; the circuit caption moved out of the SVG so it wraps |
+| Text size on a phone | 40 of 66 text elements at 9-11 px | every text element at 12 px or more (result and Evidence) |
+| After a run | answer below the controls | the page jumps to the decision (frame top at 0) |
+| Plain language | none | a collapsed "What these terms mean" guide under the strip: decision, payload-bearing particles, association index, marginal, confidence gate, verified sample, simulated circuit |
+| Evidence on a phone | three-column scorecard, 9 px overflow | one column, 0 px overflow |
+
+Not changed: nothing about the model, the advice, the gates or the plant
+path. 161 tests pass.
+
+### Re-score of the affected rows (by the side that made the fixes)
+
+| Category | Weight | Before | After | Why |
+|---|---:|---:|---:|---|
+| Usability, student | 15 | 5 | 7 | plain mode names, a glossary, controls out of the way; the terms themselves are still technical |
+| Usability, senior | 15 | 4 | 4 | no new outputs (weight %, size-by-size liberation, sample record, export) |
+| Mobile | 15 | 3 | 7 | measured fixes above. Still needs the laptop on the same network, no phone camera capture, ~35 s wait, ~4.5 MB a result |
+| Field value | 15 | 3 | 3 | the claim is now correct, which is not the same as a demonstrated saving |
+| Others | | | unchanged | |
+| **Total** | | **40.5** | **49.5** | |

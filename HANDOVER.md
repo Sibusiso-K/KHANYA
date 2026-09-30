@@ -19,6 +19,38 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (85) — #17 merged; chain re-review requested; pitch-ready fixes (PR)
+
+**Did:**
+- **Merged #17 into `khanya/speed`.** It was your approval, and I used a merge
+  commit, not a squash, so the stack stays linear.
+- **Asked you to re-review #11 -> #12 -> #13 for `main`** (comments on each).
+- **Built the before-pitch fixes from the board review** on
+  `khanya/pitch-ready`, as a new PR so nothing lands under your #17 approval:
+  - **Two stale claims corrected.** `MINTEK-FIT.md` §3.1 now leads with 2 of 12
+    (95% interval [2.1%, 48.4%]), with the old 50% kept as history. The landing
+    text no longer promises a lighting refusal.
+  - **Phone layout.**
+    - Upload on the first screen.
+    - Order is mode, upload, result, then "Advanced: presenter and diagnostic
+      controls" collapsed at the bottom.
+    - Plain mode names ("Quick", "Whole section", "Evidence").
+    - Frames sized to their content (`_fit_frame.html.jinja`), so there is no
+      scrolling box inside the page, and the page jumps to the decision after
+      a run.
+    - No overflow at 375 px, and all text 12 px or more on a phone.
+  - **A collapsed "What these terms mean" guide** under the strip.
+
+Model, advice, gates and plant path are unchanged. 161 tests pass. Before and
+after measurements are in `reports/BOARD-REVIEW-2026-09-30.md` (addendum). The
+board-lens score goes 40.5 -> 49.5; senior usability and field value are
+unchanged. Demo script updated for the new control and mode names.
+
+**Blocked on:** your re-review of #11 -> #12 -> #13, and of the new pitch-ready
+PR.
+
+---
+
 ## 2026-09-30 — Sibusiso (84) — board-level review: a lab triage tool, not a field tool (40.5/100 on that lens)
 
 **Did:** re-tested `ec9f853` as a Mintek board geologist and metallurgist

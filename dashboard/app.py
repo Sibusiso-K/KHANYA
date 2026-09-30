@@ -187,13 +187,25 @@ def predict_live_field(image_bytes, checkpoint_key, progress_callback=None, reim
     return mosaic, labels, mean_confidence, elapsed
 
 
+# Page order, top to bottom, set here once: what the section is, how to analyse
+# it, the upload, progress, the result, then the presenter and diagnostic
+# controls, collapsed at the bottom (board review, 30 Sept: on a phone the upload
+# sat below the fold under developer controls). Widgets are created into these
+# containers early, so their values exist before the analysis runs, but they
+# are drawn where they belong.
 landing_slot = st.empty()
+mode_area = st.container()
+upload_area = st.container()
 progress_slot = st.empty()
 opcua_slot = st.empty()
-LIVE_FIELD_LABEL = "Live sampled fields — six 512×512 fields across the section, timed live"
-FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image · advisory only"
-EVIDENCE_LABEL = "Evidence — held-out S2 test set"
-mode = st.radio(
+# A new run clears the previous result at once, instead of leaving it on screen,
+# faded, for the minutes a full section takes.
+result_slot = st.empty()
+advanced = st.expander("Advanced: presenter and diagnostic controls", expanded=False)
+LIVE_FIELD_LABEL = "Quick — six fields across the section (about 35 s)"
+FULL_SECTION_LABEL = "Whole section — slow, advisory only"
+EVIDENCE_LABEL = "Evidence — the 12 held-out test sections"
+mode = mode_area.radio(
     "ANALYSIS MODE",
     [LIVE_FIELD_LABEL, FULL_SECTION_LABEL, EVIDENCE_LABEL],
     horizontal=True,
@@ -214,7 +226,7 @@ mode = st.radio(
 
 if "force_stale_opcua" not in st.session_state:
     st.session_state.force_stale_opcua = False
-presenter = st.expander("Presenter controls", expanded=False)
+presenter = advanced
 stale_demo = presenter.button(
     "TRIGGER STALE OPC UA REFUSAL",
     help="The next live result is emitted with an expired validity window so the separate consumer must refuse it.",
@@ -241,7 +253,7 @@ if reset_plant:
 # and doubled the time; on darkened copies the gate alone let 0 of 10 confident
 # calls through (reports/confidence_gate_darkened_trainval.json). Off is labelled
 # everywhere it shows; the confidence gate applies either way.
-lighting_check_on = st.toggle(
+lighting_check_on = advanced.toggle(
     "Simulated lighting-perturbation check (optional diagnostic, live mode)",
     value=False,
     help=("On: a confident recommendation is issued only if it is also unchanged on a "
@@ -273,7 +285,7 @@ if mode == EVIDENCE_LABEL:
     try:
         from src.segmentation import lumenstone as ls
         _train_ids, _val_ids, test_ids = ls.split_ids()
-        evidence_stem = st.selectbox(
+        evidence_stem = upload_area.selectbox(
             "HELD-OUT S2 TEST SECTION",
             sorted(test_ids),
             help="Selection is restricted to the real held-out test IDs returned by the dataset split.",
@@ -289,7 +301,7 @@ if mode == EVIDENCE_LABEL:
         # file stamp, and a restored file can keep a stamp (Lethabo, PR #13
         # review). So a cached prediction is used only when the stamp matches AND
         # the active checkpoint's sha256 is the reported one the caches and
-        # reports were produced from; otherwise the model runs (4 min 50 s
+        # reports were produced from; otherwise the model runs (210-290 s
         # for one section on the development laptop, 30 Sept).
         import numpy as np
         from src.preflight import EXPECTED_S2_SHA256
@@ -307,31 +319,29 @@ if mode == EVIDENCE_LABEL:
                                    "reported one; a live recompute runs the full native-resolution model, "
                                    "several minutes on a CPU")
         if evidence_source is None:
-            with st.spinner("Running the real native-resolution model on the selected held-out section…"):
+            with upload_area, st.spinner("Running the real native-resolution model on the selected held-out section…"):
                 _image, evidence_predicted, evidence_confidence = predict(
                     evidence_bytes, evidence_checkpoint_key
                 )
             evidence_source = "computed live on this run"
-        st.components.v1.html(
-            render.render_evidence(
-                evidence_stem, evidence_image, evidence_labels,
-                evidence_predicted, evidence_confidence, len(test_ids),
-                source=evidence_source,
-                scores=render.evidence_scores(evidence_stem, active_sha),
-            ),
-            height=850, scrolling=True,
-        )
+        with result_slot.container():
+            st.components.v1.html(
+                render.render_evidence(
+                    evidence_stem, evidence_image, evidence_labels,
+                    evidence_predicted, evidence_confidence, len(test_ids),
+                    source=evidence_source,
+                    scores=render.evidence_scores(evidence_stem, active_sha),
+                ),
+                height=850, scrolling=True,
+            )
     except (FileNotFoundError, ImportError, OSError, RuntimeError, ValueError) as exc:
         show_landing(f"Evidence unavailable: {exc}")
     st.stop()
 
-uploaded = st.file_uploader(
+uploaded = upload_area.file_uploader(
     "REFLECTED-LIGHT MICROGRAPH OF A POLISHED SECTION",
     type=["jpg", "jpeg", "png", "tif", "tiff"],
 )
-# Declared before any slow work so a new run clears the previous result at once,
-# instead of leaving it on screen, faded, for the minutes a full section takes.
-result_slot = st.empty()
 if uploaded is None:
     show_landing(reason)
 else:
@@ -359,7 +369,7 @@ else:
         checkpoint_key = (str(CKPT), stat.st_mtime_ns, stat.st_size)
 
         if mode == LIVE_FIELD_LABEL:
-            with st.spinner(
+            with upload_area, st.spinner(
                 "Six fields across the section, one model pass each, timed "
                 "live. Not cached: every run measures fresh."
             ):
@@ -379,7 +389,7 @@ else:
             mode_label = ("Live sampled 512×512 fields" if lighting_check_on
                           else "Live sampled 512×512 fields, lighting check off (confidence gate on)")
         else:
-            with st.spinner(
+            with upload_area, st.spinner(
                 "Tiling and predicting at native resolution — each frame below is "
                 "updated after a real tile classification."
             ):
@@ -429,7 +439,7 @@ else:
                             "image": image, "shifted_image": None,
                             "stable": False, "abstained": True}
             else:
-                with st.spinner(
+                with upload_area, st.spinner(
                     "Simulated lighting-perturbation check: the same fields, recomputed on "
                     "a copy darkened by a fixed RGB offset (R -34.8, G -32.5, B -29.6)."
                 ):

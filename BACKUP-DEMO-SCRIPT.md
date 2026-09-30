@@ -79,7 +79,7 @@ declines to issue a normal recommendation because the model's predicted
 payload signal is below its configured floor. It does not prove that the
 model recognised the input as out of domain.
 
-### Beat 4 — the plant moves only on advice the system trusts (Live sampled fields)
+### Beat 4 — the plant moves only on advice the system trusts ("Quick" mode)
 
 The brief asks to see the model's output adjust a plant parameter. The strip at
 the top of each result shows the **simulated circuit**: one illustrative tag,
@@ -99,7 +99,7 @@ The **Simulated lighting-perturbation check** is an optional diagnostic,
 **off by default**. With the gate on, it caught nothing extra on
 training/validation data.
 
-1. **RESET SIMULATED PLANT** (presenter controls). `regrind_enabled = 0`.
+1. **RESET SIMULATED PLANT** (in "Advanced: presenter and diagnostic controls", collapsed at the bottom of the page). `regrind_enabled = 0`.
 2. Upload `S2_v2/imgs/test/test_11.jpg`. → *Grind finer* at 91% confidence,
    **plant 0 → 1 APPLIED**. The expert annotation says the same (Evidence mode).
    Say: *"A held-out section the model never saw, advice that matches the
@@ -118,7 +118,7 @@ training/validation data.
    PUBLISHED** and the plant **HELD**. Say: *"Only the 12 validated sections,
    byte for byte, can touch the plant. Anything else gets advice, never a
    command."*
-6. *Optional, the diagnostic:* switch the lighting check **ON** and re-run
+6. *Optional, the diagnostic:* switch the lighting check **ON** (Advanced section) and re-run
    `test_11`. As imaged it says *Grind finer*; on a copy darkened by a fixed RGB
    offset it says *no payload detected*. → **SIMULATED LIGHTING: UNSTABLE**,
    **HELD**. Say: *"This is why it is a diagnostic, not the guard: it also
@@ -140,7 +140,7 @@ it was built for, resting on enough particles, that the model itself is
 confident about. Everything else holds."* Do not call this a real plant, a P80
 target or a recovery gain. Do not call the floor of 9 or the 85% gate a
 statistical bound; both are provisional operating rules. Do not call the
-perturbation a second capture. Full-section mode is advisory only: it never
+perturbation a second capture. "Whole section" mode is advisory only: it never
 commands the plant.
 
 **Why six fields, not one:** a single centre field held 0-20 payload particles
