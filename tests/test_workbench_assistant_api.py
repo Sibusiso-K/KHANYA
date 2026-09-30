@@ -4,6 +4,7 @@ import uuid
 import hashlib
 from pathlib import Path
 import pytest
+pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient
 api=importlib.import_module("webapi.app")
 
