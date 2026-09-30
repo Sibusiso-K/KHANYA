@@ -29,3 +29,5 @@ Notes and assay CSV imports now save to versioned FastAPI records with atomic di
 
 
 Post-integration verification: remote 6b57daf merged without dropping its input-check refactor or grain helpers. Final combined focused backend/input suite: 74 passed; 12 spatial contracts, three grain utility/selection tests, two serial desktop/mobile browser tests passed. Regenerated bundle after merge. Public browser sign-in page verified; actual user cloud round trip pending.
+
+Release check: GitHub PR15 revision 3eef67b passed all four reported checks (main tests, workbench API tests, offline frontend bundle/browser checks, GitGuardian). Temporary public URL returned HTTP200 after final restart; a short origin-refused window occurred during restart and was resolved. No PR merge performed while reviewer change requests remain outstanding.
