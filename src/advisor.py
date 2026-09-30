@@ -301,8 +301,10 @@ def confidence_gate(recommendation: Recommendation, mean_confidence: float) -> R
         LOW_CONFIDENCE_ACTION,
         f"The model would say '{recommendation.action}', but its mean confidence on "
         f"these pixels is {mean_confidence:.0%}, below the {CONFIDENCE_FLOOR:.0%} it needs "
-        "before advice is issued. On the training and validation sections, every unsafe "
-        "confident call fell below that line. Verify manually.",
+        "before advice is issued. That line is a provisional operating rule, not a "
+        "validated bound: on the training and validation sections every unsafe confident "
+        "call fell below it, which says nothing yet about new ore or imaging set-ups. "
+        "Verify manually.",
         "low - verify manually",
     )
 

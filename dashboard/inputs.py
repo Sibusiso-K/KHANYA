@@ -16,19 +16,20 @@ def unavailable_reason(subset: str, checkpoint: Path) -> str | None:
     return None
 
 
-# Input eligibility (pre-production finding 1): a screenshot of text and a
-# greyscale copy of test_11 were measured, advised on and published over OPC UA.
-# The rule has no fitted threshold. The image must have colour at all, and the
-# warm cast (mean R > G > B) every S2 image has. It passes all 49 S2 sections,
-# including their lighting-check copies, and refuses both hostile inputs and 20
-# of 30 V1 images from another imaging set-up (reports/input_eligibility.json,
-# src/input_eligibility_check.py). It is a colour-cast check: a warm-toned
-# picture that is not a micrograph would still pass.
+# Colour-cast check (pre-production finding 1). NOT an out-of-domain detector.
+# It refuses images with no colour and images without the warm cast (mean
+# R > G > B) every S2 image has, with no fitted threshold. It passes all 49 S2
+# sections and their lighting-check copies, and refuses the greyscale and cool
+# screenshot inputs and 20 of 30 V1 images from another imaging set-up
+# (reports/input_eligibility.json, src/input_eligibility_check.py). A warm-toned
+# picture that is not a micrograph still passes (Lethabo, PR #11/#17 reviews),
+# which is why only validated samples may publish or command: see
+# validated_sample() below.
 CHROMA_FLOOR = 1.0
 
 
-def eligibility_reason(image: Image.Image) -> str | None:
-    """Why this image is not from the imaging set-up the model was validated on, or None."""
+def colour_cast_reason(image: Image.Image) -> str | None:
+    """Why this image's colour rules it out, or None. Passing proves nothing about the content."""
     import numpy as np
 
     rgb = np.asarray(image.convert("RGB"), dtype=np.float32)
@@ -49,11 +50,31 @@ def eligibility_reason(image: Image.Image) -> str | None:
     return None
 
 
-def check_eligible(image: Image.Image) -> None:
-    """Refuse, before any model pass, publish or command, an input the model was not validated on."""
-    reason = eligibility_reason(image)
+def check_colour_cast(image: Image.Image) -> None:
+    """Refuse, before any model pass, publish or command, an image whose colour rules it out."""
+    reason = colour_cast_reason(image)
     if reason:
         raise ValueError(reason)
+
+
+_VALIDATED = None
+
+
+def validated_sample(image_bytes: bytes) -> str | None:
+    """The held-out section this upload is, byte for byte, or None.
+
+    Only these files may publish to or command the OPC UA simulator; every other
+    upload is advisory only (Lethabo, PR #11 and #17 reviews). The manifest holds
+    sha256 hashes only and is rebuilt by `python -m src.validated_samples`.
+    """
+    import hashlib
+    import json
+
+    global _VALIDATED
+    if _VALIDATED is None:
+        manifest = json.loads((Path(__file__).with_name("validated_samples.json")).read_text(encoding="utf-8"))
+        _VALIDATED = {digest: stem for stem, digest in manifest["sha256"].items()}
+    return _VALIDATED.get(hashlib.sha256(image_bytes).hexdigest())
 
 
 def load_image(image_bytes: bytes) -> Image.Image:

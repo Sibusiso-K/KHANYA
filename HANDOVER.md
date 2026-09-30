@@ -19,6 +19,42 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (83) — option (b): only validated samples touch the plant
+
+**Did:** Lethabo's PR #11 / #17 blocker was that warm-toned non-micrographs
+pass the colour check and could reach OPC UA. His option (b) is taken, on
+`khanya/preprod-fixes` (PR #17):
+- `dashboard/validated_samples.json` holds the sha256 of the 12 held-out
+  sections (`python -m src.validated_samples`). Only those files, byte for
+  byte, may publish or command.
+- Everything else is analysed but shows UNVERIFIED SAMPLE · ADVISORY ONLY,
+  OPC UA NOT PUBLISHED, plant HELD.
+- An armed stale refusal is not spent on an unverified upload.
+- The preflight checks the test files still match the manifest (8 checks,
+  READY).
+- The colour check is renamed "colour-cast check" (not an out-of-domain
+  detector).
+- The 85% confidence gate is labelled provisional on screen.
+
+**Re-run end to end** (report addendum). OPC UA server start-ups were counted
+in the dashboard log:
+- **Warm screenshot** (model 93% confident): advisory only, 0 start-ups.
+- **Warm texture** (92%): advisory only, 0 start-ups.
+- **test_11 as PNG** ("Grind finer" at 91%, which used to move the plant):
+  advisory only, 0 start-ups.
+- **test_11.jpg:** verified, published, plant 0 -> 1, 2 start-ups.
+- **Stale refusal:** still refuses.
+- **Tests:** 161 pass.
+
+**For the demo:** do not re-save or convert the test images. A changed file is
+no longer a validated sample and cannot move the plant.
+
+**Blocked on:** Lethabo's re-review of #17. The same blocker is on #11, and the
+fix lives in #17, so I've proposed merging #11 -> #12 -> #13 -> #17 as one
+unit.
+
+---
+
 ## 2026-09-30 — Sibusiso (82) — pre-production fixes: 57.5 -> 79 on re-test (PR #17)
 
 **Did:** fixed every code-fixable finding from issue #16 on

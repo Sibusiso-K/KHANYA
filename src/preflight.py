@@ -49,6 +49,19 @@ def check_data():
     return True, "12 held-out S2 test sections present"
 
 
+def check_validated_samples():
+    """Only these files may command the simulator; a re-saved copy would silently lose that."""
+    import json
+    from .segmentation import lumenstone as ls
+    manifest = json.loads((config.ROOT / "dashboard" / "validated_samples.json").read_text(encoding="utf-8"))
+    expected = manifest["sha256"]
+    differ = [stem for stem, digest in expected.items()
+              if hashlib.sha256((ls.DATA_DIR / "imgs" / "test" / f"{stem}.jpg").read_bytes()).hexdigest() != digest]
+    if len(expected) != 12 or differ:
+        return False, f"{len(expected)} manifest entries; files that differ from it: {differ}"
+    return True, "12 held-out sections match dashboard/validated_samples.json; only these may command the simulator"
+
+
 def check_model_loads():
     import torch
     from .segmentation import lumenstone as ls
@@ -119,6 +132,7 @@ def check_opcua():
 CHECKS = [
     ("S2 checkpoint", check_checkpoint),
     ("S2 held-out data", check_data),
+    ("validated samples", check_validated_samples),
     ("model loads", check_model_loads),
     ("REEFPRINT pinned", check_reefprint_pin),
     ("OPC UA round trip", check_opcua),

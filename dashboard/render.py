@@ -277,7 +277,7 @@ def _first_sentence(text):
 def render(image, labels, mean_confidence, result, recommendation,
            mode_label="Full section, native resolution", elapsed_seconds=None,
            opcua_status=None, plant=None, lighting=None, evidence_scope=None,
-           advisory_only=False):
+           advisory_only=False, sample_stem=None):
     """Render the dashboard for one measured field. Returns an HTML string.
 
     mode_label, elapsed_seconds: which analysis path produced this result
@@ -354,6 +354,8 @@ def render(image, labels, mean_confidence, result, recommendation,
         evidence_scope=evidence_scope or mode_label,
         plant=plant,
         advisory_only=advisory_only,
+        sample_stem=sample_stem,
+        confidence_floor=advisor_module.CONFIDENCE_FLOOR,
         lighting=None if lighting is None else {
             **{k: lighting[k] for k in ("stable", "abstained", "as_imaged", "after_shift")},
             "off": lighting.get("off", False),

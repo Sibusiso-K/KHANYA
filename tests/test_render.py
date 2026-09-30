@@ -304,3 +304,24 @@ def test_full_section_is_advisory_only_and_says_so():
                          evidence_scope="whole section, native resolution")
     assert "ADVISORY ONLY · NO LIGHTING CHECK" in html
     assert ">HELD<" in html and "1 → 1" in html
+
+
+def test_strip_says_whether_the_sample_may_drive_the_simulator():
+    import numpy as np
+    from PIL import Image
+
+    from dashboard.control import unverified_status
+    from src.advisor import advise
+    from src.modal import ModalResult
+
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.95, 0.05, 38, 64,
+                         n_payload_particles=21)
+    recommendation = advise(result, 0.95)
+    held = unverified_status(0.0)
+    assert (held.state, held.after) == ("held", 0.0) and "advisory only" in held.reason
+    args = (Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95, result, recommendation)
+    unverified = render.render(*args, plant=held)
+    assert "UNVERIFIED SAMPLE · ADVISORY ONLY" in unverified and "nothing published" in unverified
+    assert "confidence gate 85% (provisional)" in unverified
+    verified = render.render(*args, plant=held, sample_stem="test_11")
+    assert "VERIFIED SAMPLE · test_11" in verified and "UNVERIFIED" not in verified

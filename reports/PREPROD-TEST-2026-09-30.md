@@ -227,3 +227,39 @@ Not fixed, and why:
   data or literature.
 - **The OPC UA merge.** Transport risk the night before the demo.
 - **The wifi-off run.** It needs the presenting laptop.
+
+## Addendum: only validated samples touch the plant (Lethabo's PR #11 / #17 reviews)
+
+**The gap.** The colour-cast check is not an out-of-domain detector: a
+warm-toned non-micrograph passes it and could reach the OPC UA publish and
+command path. Lethabo's option (b) was taken.
+
+**The rule.**
+- Only the 12 held-out S2 sections, identified byte for byte by sha256
+  (`dashboard/validated_samples.json`), may publish to or command the simulator.
+- Every other upload is analysed and advised on, but marked **UNVERIFIED
+  SAMPLE · ADVISORY ONLY**, with OPC UA **NOT PUBLISHED** and the plant
+  **HELD**.
+- The preflight checks the test images on disk still match the manifest.
+- The 85% confidence gate is now labelled provisional on screen as well.
+
+**Re-run end to end, same evening.** OPC UA server start-ups were counted in
+the dashboard log.
+
+| Input | Colour check | Result | OPC UA server start-ups |
+|---|---|---|---:|
+| Text screenshot re-tinted warm (sepia) | passes | Marginal, model confidence **93%**; UNVERIFIED, NOT PUBLISHED, HELD 0 -> 0 | 0 |
+| Synthetic warm wood-grain texture, 1400x1000 | passes | Flag (not measurable), model confidence **92%**; UNVERIFIED, NOT PUBLISHED, HELD | 0 |
+| test_11 converted to PNG (real section, different file) | passes | **Grind finer at 91%**; UNVERIFIED, NOT PUBLISHED, HELD. It would have commanded the plant before this change | 0 |
+| test_11.jpg, the validated file | passes | Grind finer; VERIFIED SAMPLE · test_11; PUBLISHED + ACKNOWLEDGED; plant 0 -> 1; 32.6 s | 2 |
+| Stale refusal armed, then the warm texture, then test_11.jpg | – | the unverified upload did not spend the armed refusal; test_11 REFUSED, setting stays 0 | – |
+
+The confidences in the first two rows are why this was needed. The model is
+92-93% confident on pictures that are not micrographs, so neither the
+colour check nor the confidence gate could have kept them from the plant.
+Only the allowlist does.
+
+**Remaining limit.** Advice on an unverified upload is still shown (advisory
+only). A validated out-of-domain detector, tested against representative
+warm-toned negatives, is post-deadline work. Until it exists, the plant
+cannot be driven by a new sample at all.

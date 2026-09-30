@@ -12,6 +12,7 @@ def test_confident_action_below_the_floor_is_withheld():
     assert gated.action == LOW_CONFIDENCE_ACTION
     assert gated.action.startswith(ABSTAINING_PREFIXES)
     assert "64%" in gated.reason and "Continue at current setpoint" in gated.reason
+    assert "provisional" in gated.reason
     assert verdict_state(gated.action)[0] == "hold"
 
 

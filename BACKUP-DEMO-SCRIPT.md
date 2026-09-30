@@ -110,9 +110,14 @@ training/validation data.
    call it made sat below that line."*
 4. Upload `test_04.jpg`. → **No recommendation: 4 payload-bearing particles,
    below the provisional floor of 9**, **HELD**.
-5. *If asked about robustness:* upload a greyscale copy or a screenshot. It is
-   refused in about a second, before any model pass: *"no colour"*, or
-   *"colour balance outside the warm cast of every validated micrograph"*.
+5. *If asked about robustness:* upload a greyscale copy or a cool-toned
+   screenshot. It is refused in about a second, before any model pass: *"no
+   colour"*, or *"colour balance outside the warm cast of every validated
+   micrograph"*. A warm-toned picture passes that colour check. It is analysed
+   but marked **UNVERIFIED SAMPLE · ADVISORY ONLY**, with OPC UA **NOT
+   PUBLISHED** and the plant **HELD**. Say: *"Only the 12 validated sections,
+   byte for byte, can touch the plant. Anything else gets advice, never a
+   command."*
 6. *Optional, the diagnostic:* switch the lighting check **ON** and re-run
    `test_11`. As imaged it says *Grind finer*; on a copy darkened by a fixed RGB
    offset it says *no payload detected*. → **SIMULATED LIGHTING: UNSTABLE**,
@@ -123,8 +128,12 @@ training/validation data.
    refused stale command regrind_enabled=1 (age … > validity 0.5s): setting
    unchanged", and the setting stays 0.
 
-Steps 1-4, 6 and 7 verified in the running dashboard on 30 September (evening,
-PR #17). The two refusals in step 5 were verified the same evening.
+All steps verified in the running dashboard on 30 September (evening, PR #17),
+including the warm-toned negatives in step 5 and a stale refusal armed across
+an unverified upload. **Do not re-save, convert or crop the test images**: a
+changed file is no longer a validated sample and cannot move the plant.
+`python -m src.preflight` checks all 12 still match
+`dashboard/validated_samples.json`.
 
 Say: *"The simulated plant moves only on a fresh recommendation, from an image
 it was built for, resting on enough particles, that the model itself is

@@ -175,7 +175,12 @@ all of them are right.
    ```
    or set `REEFPRINT_SRC` to a checkout's `src/`. The preflight fingerprints
    `reefprint/integrate/*.py` and refuses code that differs from that commit.
-5. **Run `python -m src.preflight`, then once with the wifi off.** It also
+5. **Only validated samples touch the plant.** Only the 12 held-out
+   sections, byte for byte (`dashboard/validated_samples.json`, rebuilt by
+   `python -m src.validated_samples`), may publish to or command the OPC UA
+   simulator. Any other upload is advisory only. The preflight checks the
+   files on disk still match.
+6. **Run `python -m src.preflight`, then once with the wifi off.** It also
    times one live pass on this machine, so the number said on stage is this
    laptop's number.
 

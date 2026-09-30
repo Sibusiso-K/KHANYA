@@ -15,7 +15,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from dashboard import render
-from dashboard.inputs import check_eligible, load_image, unavailable_reason
+from dashboard.inputs import check_colour_cast, load_image, unavailable_reason, validated_sample
 from src.segmentation import config
 
 
@@ -341,9 +341,13 @@ else:
     try:
         received = time.perf_counter()  # upload received: the timer every mode reports
         image_bytes = uploaded.getvalue()
-        # Decode, then refuse an input the model was not validated on, before any
-        # model pass, OPC UA publish or command (pre-production finding 1).
-        check_eligible(load_image(image_bytes))
+        # Decode, then refuse an image whose colour rules it out, before any model
+        # pass (pre-production finding 1). This is a colour-cast check, not an
+        # out-of-domain detector, so it does not decide what may touch the plant:
+        # only a validated held-out section, byte for byte, may publish or command
+        # (Lethabo, PR #11 and #17 reviews). Everything else is advisory only.
+        check_colour_cast(load_image(image_bytes))
+        sample_stem = validated_sample(image_bytes)
         from src import modal
         from src.advisor import advise, confidence_gate
         from src.segmentation import lumenstone as ls
@@ -447,19 +451,30 @@ else:
         if result.liberation is not None:
             opcua_values["association_index"] = float(result.liberation * 100.0)
         segmentation_refused = result.liberation is None
-        # The run the arming click itself triggers must not consume it.
-        stale_requested = False if stale_demo else st.session_state.pop("force_stale_opcua", False)
-        opcua_status = publish_result(
-            opcua_values,
-            stale=stale_requested or segmentation_refused,
-            stale_reason=("segmentation refusal" if segmentation_refused
-                          else "presenter demonstration"),
-            on_event=lambda message: opcua_slot.info(message),
-        )
+        if sample_stem is None:
+            # Not a validated sample: nothing is published, and an armed stale
+            # refusal is kept for the next validated upload rather than spent here.
+            from dashboard.opcua import PublishStatus
+            stale_requested = False
+            opcua_status = PublishStatus(
+                "withheld", "not published: unverified sample, advisory only")
+        else:
+            # The run the arming click itself triggers must not consume it.
+            stale_requested = False if stale_demo else st.session_state.pop("force_stale_opcua", False)
+            opcua_status = publish_result(
+                opcua_values,
+                stale=stale_requested or segmentation_refused,
+                stale_reason=("segmentation refusal" if segmentation_refused
+                              else "presenter demonstration"),
+                on_event=lambda message: opcua_slot.info(message),
+            )
         plant = st.session_state.plant
         command_key = (uploaded.file_id, mode, lighting_check_on)
         if command_key != plant["commanded"] or stale_requested:
-            if mode == LIVE_FIELD_LABEL:
+            if sample_stem is None:
+                from dashboard.control import unverified_status
+                command = unverified_status(plant[REGRIND_HEAD])
+            elif mode == LIVE_FIELD_LABEL:
                 command = send_command(
                     recommendation.action, plant[REGRIND_HEAD], stale=stale_requested,
                     on_event=lambda message: opcua_slot.info(message),
@@ -473,6 +488,7 @@ else:
             plant["log"].append({
                 "time": time.strftime("%H:%M:%S"),
                 "image": uploaded.name,
+                "sample": sample_stem or "unverified (advisory only)",
                 "advisory": recommendation.action,
                 "lighting check": ("not run (full section, advisory only)" if mode != LIVE_FIELD_LABEL
                                    else "on" if lighting_check_on else "off"),
@@ -495,7 +511,8 @@ else:
                              elapsed_seconds=time.perf_counter() - received,
                              opcua_status=opcua_status, plant=command,
                              lighting=lighting, evidence_scope=evidence_scope,
-                             advisory_only=mode != LIVE_FIELD_LABEL)
+                             advisory_only=mode != LIVE_FIELD_LABEL,
+                             sample_stem=sample_stem)
     except (ImportError, OSError, RuntimeError, ValueError) as exc:
         show_landing(f"Analysis could not complete: {exc}")
     else:
