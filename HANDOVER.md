@@ -3842,3 +3842,11 @@ Latest backend continuation: reports/LOCAL-RECORDS-HANDOVER-2026-09-30.md (versi
 
 ---
 
+## 2026-09-30 — Sibusiso (via Codex) — warm start and truthful progress
+
+**Did:** Added background model warm-up with a `model_ready` health signal, retained the request lock so first requests cannot load twice, and exposed field progress/provisional phase data from the real label arrays. Added timing fields to results and a warming-up header state. Missing checkpoints still leave the service running with the existing error path.
+
+**Verified:** Focused report tests and frontend production build pass. The inference test initially exposed a mocked callback with no labels; the progress handler now handles that test double without treating it as ore. Full browser mid-run capture and fresh-start timing evidence remain to be collected on the host with the approved checkpoint.
+
+---
+

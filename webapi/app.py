@@ -39,6 +39,7 @@ model_lock = threading.Lock()
 simulation_lock = threading.Lock()
 record_lock = threading.Lock()
 model = None
+model_ready = False
 plants: dict[str, float] = {}
 plant_sessions: set[str] = set()
 app = FastAPI(title="REEFPRINT local research API", version="0.1.0")
@@ -54,6 +55,30 @@ logging.getLogger("uvicorn.error").log(
     "KHANYA model active sha=%s mIoU=%s %s", MODEL_SHA[:8] or "none",
     _startup_record.get("mean_iou", "unknown") if _startup_record else "unknown",
     "APPROVED" if MODEL_SHA and MODEL_SHA == APPROVED_MODEL_SHA else "NOT APPROVED")
+
+def _warm_model():
+    global model, model_ready
+    if not CKPT.exists():
+        logging.getLogger("uvicorn.error").warning("KHANYA warm-up skipped: checkpoint is missing")
+        return
+    try:
+        import torch
+        from src.segmentation.model import build_model
+        with model_lock:
+            if model is None:
+                model = build_model(num_classes=5, pretrained=False)
+                model.load_state_dict(torch.load(CKPT, map_location="cpu", weights_only=True))
+                model.eval()
+            ready = model
+            with torch.inference_mode():
+                model(torch.zeros((1, 3, 512, 512)))
+        model_ready = True
+    except Exception as exc:
+        logging.getLogger("uvicorn.error").warning("KHANYA warm-up failed: %s", exc)
+
+@app.on_event("startup")
+async def warm_model_on_startup():
+    threading.Thread(target=_warm_model, name="khanya-model-warmup", daemon=True).start()
 
 def tenant():
     return cloud.state(STORE, {sid: path for sid, path in samples.items() if sid in verified_hashes})
@@ -158,6 +183,7 @@ def health():
     return {"status":"ok","checkpoint_available": bool(MODEL_SHA), "model_sha":MODEL_SHA,
             "model_approved": bool(MODEL_SHA and MODEL_SHA == APPROVED_MODEL_SHA),
             "approved_model_sha": APPROVED_MODEL_SHA,
+            "model_ready": model_ready,
             "sample_count":len(workspace_samples()),"deployment":"public" if cloud.config()["auth_required"] else "local","cloud_sync":cloud.config()["cloud_sync"],"auth_required":cloud.config()["auth_required"]}
 
 @app.get("/api/samples")
@@ -375,7 +401,13 @@ def run_inference(jid,sid,mode):
         if mode == "field":
             field_count, coverage = field_coverage(image.width, image.height)
         def field_progress(completed,total,_labels,box,_confidence):
+            valid = _labels[_labels >= 0] if _labels is not None else np.array([], dtype=np.int64)
+            provisional = [{"name":name,"area_pct":float(np.mean(valid==i)*100),"color":COLORS[i]}
+                           for i,name in enumerate(CLASSES)] if valid.size else []
             workspace_jobs()[jid]["progress"]={"stage":"segmenting","completed":completed,"total":total,
+                                              "fields_done":completed,"fields_total":total,
+                                              "provisional_phases":provisional,
+                                              "provisional_confidence":float(_confidence),
                                               "box":list(box),"image_size":[image.width,image.height]}
         workspace_jobs()[jid]["progress"]={"stage":"segmenting","completed":0,"total":field_count or 0}
         with torch.inference_mode():
@@ -406,6 +438,8 @@ def run_inference(jid,sid,mode):
         phases=[{"name":name,"area_pct":float(np.mean(labels==i)*100),"color":COLORS[i]} for i,name in enumerate(CLASSES)]
         r={"contract":1,"id":sid,"result_id":rid,"prediction_source":"fresh","phases":phases,
            "confidence":float(confidence),"advisory":{"action":action,"reason":reason},
+           "timings":{"inference_s":round(time.perf_counter()-start,3),"analysis_s":0.0,"write_s":0.0,
+                       "total_s":round(time.perf_counter()-start,3),"per_field_s":[],"torch_threads":torch.get_num_threads()},
            "model_sha":MODEL_SHA,"image_sha":image_sha,"elapsed_seconds":round(time.perf_counter()-start,3),
            "scope":(f"Quick: {field_count} × 512 px fields across the section · "
                     f"{coverage:.1%} area coverage · mosaic") if mode=="field" else "Full section · advisory only",
