@@ -19,6 +19,43 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Codex — quick workbench, input gate, and offline build
+
+**Did:** Integrated six real 512×512 fields in Quick mode and expose the actual
+field count and sampled area coverage; the prediction image is labelled as a
+field mosaic. Restored the provisional confidence gate and copied the reviewed
+input-eligibility helpers/manifest byte-for-byte from `origin/khanya/speed`.
+Only exact held-out image bytes are eligible for the local simulator; colour
+cast checks refuse grayscale/cool images before inference. Pinned the API test
+runtime, committed the built frontend, added CI reproducibility/network checks,
+and replaced `.runtime_packages` startup dependency with documented Python
+installation steps.
+
+**Changed:** `webapi/`, `src/advisor.py`, `src/validated_samples.py`,
+`dashboard/inputs.py`, `dashboard/validated_samples.json`, `frontend/`,
+`requirements-web.txt`, `.github/workflows/`, `scripts/start_workbench.ps1`,
+`README.md`, workbench and renderer tests.
+
+**Verified:** `pytest tests/ -q` — 173 passed, 1 skipped (local checkout lacks
+`test_11.jpg`). `npm ci` and `npm run build` passed; the emitted executable
+bundle has no external URLs apart from W3C namespace identifiers. A synthetic
+1600×1100 inference contract verified six distinct, non-overlapping fields and
+89.4% computed coverage. On 2026-09-30 the current worktree API was run on
+127.0.0.1:8511 against read-only assets from the sibling checkout: real
+`test_01.jpg` bytes uploaded and recognized as `test_01`; real six-field
+inference completed in 33.171 s with 18.2% coverage, confidence 0.7722, and
+the confidence gate withheld advice. Report metrics matched the loaded
+`de7135a…` checkpoint SHA.
+
+**Blocked on:** Visible-browser interaction could not be completed: the CUA
+runtime exited unexpectedly on initialization. The real image was submitted to
+the API over HTTP, not through the browser file picker. The current worktree
+contains no checkpoint or image data; the live API test used sibling assets
+read-only. Do not describe this as browser-verified.
+
+**Next:** Re-run the upload and result inspection through the browser once CUA is
+available, and verify the committed checkpoint/data on the presentation laptop.
+
 ## 2026-09-30 — Codex — checkpoint-bound Reports API
 
 **Did:** Replaced the hard-coded active/inactive report split with a committed

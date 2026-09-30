@@ -1,0 +1,55 @@
+name: Offline frontend bundle
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: offline frontend bundle
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: Confirm the committed bundle matches the source
+        working-directory: .
+        run: |
+          git ls-files --error-unmatch frontend/dist/index.html
+          git diff --exit-code HEAD -- frontend/dist
+      - name: The frontend bundle must not call the network
+        working-directory: .
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, sys
+          pattern = re.compile(r"https?://")
+          allowed_prefix = "http://www.w3.org/"
+          bad = []
+          for path in Path("frontend/dist").rglob("*"):
+              if not path.is_file() or path.suffix not in {".js", ".css", ".html", ".svg"}:
+                  continue
+              text = path.read_text(encoding="utf-8")
+              for match in pattern.finditer(text):
+                  if text[match.start():].startswith(allowed_prefix):
+                      continue
+                  bad.append(f"{path}: {match.group(0)}")
+          if bad:
+              print("\n".join(bad))
+              sys.exit("Built frontend bundle contains an external URL")
+          print("no external network URLs in frontend/dist (W3C namespace identifiers are allowed)")
+          PY

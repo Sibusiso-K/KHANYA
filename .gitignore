@@ -28,7 +28,6 @@ reports/*.csv
 .claude/settings.local.json
 # Responsive workbench (private runtime artefacts)
 frontend/node_modules/
-frontend/dist/
 frontend/*.tsbuildinfo
 .workbench/
 .runtime_packages/
