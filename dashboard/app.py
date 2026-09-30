@@ -137,7 +137,7 @@ def predict_with_progress(image_bytes, checkpoint_key, progress_callback):
     return image, labels, mean_confidence
 
 
-def predict_live_field(image_bytes, checkpoint_key, progress_callback=None):
+def predict_live_field(image_bytes, checkpoint_key, progress_callback=None, reimage=False):
     """The live path: six native-resolution fields sampled across the section,
     one forward pass each, timed end to end on THIS call, including drawing the
     progress frames. A single centre field held 0-20 payload particles and never
@@ -159,6 +159,9 @@ def predict_live_field(image_bytes, checkpoint_key, progress_callback=None):
     model, dev = load_model(checkpoint_key)
     start = time.perf_counter()
     image = load_image(image_bytes)
+    if reimage:
+        from src.stability import reimaged
+        image = reimaged(image)
     with torch.no_grad():
         labels, mean_confidence, mosaic, _boxes = patch_module.multi_field_predict(
             model, image, dev, progress_callback=progress_callback)
@@ -295,7 +298,16 @@ else:
                 image, labels, mean_confidence, elapsed = predict_live_field(
                     image_bytes, checkpoint_key, on_field
                 )
-            mode_label = "Live sampled fields, six 512×512 fields"
+            with st.spinner(
+                "Simulated lighting-perturbation check: the same fields, recomputed on "
+                "a copy darkened by a fixed RGB offset (R -34.8, G -32.5, B -29.6)."
+            ):
+                from src.stability import reimaged
+                field_image = reimaged(load_image(image_bytes))
+                shifted_image, shifted_labels, shifted_confidence, shifted_elapsed = (
+                    predict_live_field(image_bytes, checkpoint_key, on_field, reimage=True))
+            elapsed += shifted_elapsed
+            mode_label = "Live sampled fields, six 512×512 fields, lighting-checked"
         else:
             with st.spinner(
                 "Tiling and predicting at native resolution — each frame below is "
@@ -326,6 +338,19 @@ else:
 
         result = modal.analyse(labels, ls.CLASS_NAMES, refine=True)
         recommendation = advise(result, mean_confidence)
+        lighting = None
+        if mode == LIVE_FIELD_LABEL:
+            from src import stability
+            as_imaged = recommendation
+            after_shift = advise(modal.analyse(shifted_labels, ls.CLASS_NAMES, refine=True),
+                                 shifted_confidence)
+            recommendation = stability.gate(as_imaged, after_shift.action)
+            lighting = {
+                "as_imaged": as_imaged.action, "after_shift": after_shift.action,
+                "image": image, "shifted_image": shifted_image,
+                "stable": after_shift.action == as_imaged.action,
+                "abstained": stability.is_abstaining(as_imaged.action),
+            }
         opcua_values = {"model_confidence": float(mean_confidence * 100.0)}
         if result.liberation is not None:
             opcua_values["association_index"] = float(result.liberation * 100.0)
@@ -366,6 +391,30 @@ else:
         progress_slot.empty()
         opcua_slot.empty()
         st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
+        if lighting is not None:
+            st.subheader("Simulated lighting-perturbation check")
+            st.caption(
+                "An input-sensitivity diagnostic, not a second capture. The same fields "
+                "are recomputed on a copy of this image with a fixed RGB offset subtracted "
+                "(R -34.8, G -32.5, B -29.6: the median darkening between real re-imagings "
+                "of ten LumenStone V1 sections). A confident instruction that changes is "
+                "not issued. On validation data this discarded 4 of 5 correct confident "
+                "calls while catching 5 of 8 wrong ones, and it doubles the analysis time "
+                "(reports/LIGHTING-CHECK-2026-09-30.md)."
+            )
+            imaged_col, shifted_col = st.columns(2)
+            imaged_col.image(lighting["image"], caption=f"As imaged: {lighting['as_imaged']}",
+                             use_container_width=True)
+            shifted_col.image(lighting["shifted_image"],
+                              caption=f"Simulated darker copy (fixed RGB offset): {lighting['after_shift']}",
+                              use_container_width=True)
+            if lighting["stable"]:
+                st.success("STABLE under the simulated perturbation: the advice is unchanged.")
+            elif lighting["abstained"]:
+                st.info("The advice was already a refusal, so there was no instruction to protect.")
+            else:
+                st.error("UNSTABLE under the simulated perturbation: the advice changes. "
+                         "No instruction issued; the plant is held.")
         st.subheader("Simulated plant response")
         st.caption(
             "One illustrative tag, regrind_enabled (1 = regrind, 0 = bypass), commanded "

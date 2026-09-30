@@ -19,6 +19,41 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (75) — lighting check: honest result is a repeatability gate, not an error detector (PR B)
+
+**Did:** `src/stability.py` re-measures the same six live fields after one fixed
+re-imaging shift and refuses a confident recommendation that changes. The shift
+is the per-channel median of real darkening across all ten V1 pairs (R -34.8,
+G -32.5, B -29.6). No tuned threshold. The dashboard shows both passes and holds
+the plant when unstable.
+
+**Validated on train + val only, 0 test sections**
+(`reports/lighting_check_trainval.json`, `reports/LIGHTING-CHECK-2026-09-30.md`):
+- Advice changed under the shift on **24 of 37**.
+- Unsafe **8 -> 3**.
+- It caught 5 of 8 wrong confident calls **but threw away 4 of 5 correct ones**.
+  It does **not** tell good advice from bad and must not be pitched as "catches
+  its own mistakes". Honest framing: measurement-system capability (gauge R&R).
+  Advice that moves with the lamp is not fit to drive control.
+
+**Also exposed:** on these 37, six-field confident calls were unsafe against the
+expert whole section 8 of 13 times (test set: 0 of 3). This suggests the ±0.335
+band, calibrated on whole sections, is too narrow for six fields. It bears on
+PR #10.
+
+**Live, verified:**
+- test_11 and test_12 (*Grind finer*) lose the pentlandite entirely after the
+  shift ("no payload detected"), so both are held.
+- **No held-out *Grind finer* survives the check** in live mode.
+- test_01 *Continue* is stable.
+- Two passes take ~71-74 s end to end; PR D must fix that.
+
+**Next:** Lethabo - judge review. Sibusiso - PR C (control room), including a
+declared regrind-on starting state so a stable *Continue* can visibly move the
+plant.
+
+---
+
 ## 2026-09-30 — Sibusiso (74) — no advice on thin evidence; six fields, not one (PR A)
 
 **Why:** running the build as a judge would, the flagship *Grind finer* that
