@@ -54,7 +54,7 @@ EPOCHS = int(os.environ.get("KHANYA_EPOCHS", 8))
 LR = 2e-4  # lower than the resize baseline's 1e-3: minerals sat at IoU 0.0 for
            # several epochs there, which is the signature of too high an LR for
            # a 5-class fine-tune of a pretrained backbone.
-SEED = 42
+SEED = int(os.environ.get("KHANYA_SEED", 42))
 
 # Cap on stored coordinates per (image, class). Full coordinate lists for
 # 8.6M-pixel masks would be gigabytes; a random subsample of this size is ample
@@ -130,8 +130,15 @@ class BalancedPatches(Dataset):
         self.length = length
         self.train = train
         self.seed = seed
+        self.epoch = 0
         self.classes_present = sorted({c for _, c in index})
         self._cache = {}
+
+    def set_epoch(self, epoch: int) -> None:
+        """Set the deterministic training patch stream for an epoch."""
+        if epoch < 0:
+            raise ValueError("epoch must be non-negative")
+        self.epoch = epoch
 
     def __len__(self):
         return self.length
@@ -151,9 +158,11 @@ class BalancedPatches(Dataset):
         return self._cache[stem]
 
     def __getitem__(self, i):
-        # Deterministic for val (fixed patches every epoch, so val numbers are
-        # comparable across epochs), random for train.
-        rng = random.Random(None if self.train else self.seed + i)
+        # Stateless per-epoch seeds make a sample's crop and augmentation
+        # repeatable across runs and exact resumes. Validation is fixed across
+        # epochs so its estimate does not move as the model trains.
+        sample_seed = self.seed + (self.epoch * self.length if self.train else 0) + i
+        rng = random.Random(sample_seed)
 
         target = rng.choice(self.classes_present)
         candidates = [s for s in self.ids if (s, target) in self.index]

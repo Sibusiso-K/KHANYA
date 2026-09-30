@@ -24,6 +24,8 @@ Khumalo, Lethabo Hoaeane, Ipeleng Modise (Team Sonar). Current plan of record:
 
 ## Start here
 
+**29 September planning and training update:** [Build and pitch handover](handover/README.md) covers the organiser's six pitch themes, evidence, implementation tickets, chemistry/3D scope and pilot economics. The first private S2 v2 baseline completed with 0.4543 pooled mIoU on 12 held-out images; see the [measured report](handover/S2-BASELINE-2026-09-29.md) and [Kaggle runbook](handover/KAGGLE-TRAINING.md). Magnetite IoU is 0.0000, so this is not plant-ready.
+
 | Doc | Answers |
 |---|---|
 | [`JUDGE-READY-WORKPLAN.md`](JUDGE-READY-WORKPLAN.md) | **Active presentation-readiness backlog:** Mintek/category fit, exact CV model, real-time live demo contract, industry applicability, judging criteria and production-readiness gates |

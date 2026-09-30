@@ -1,5 +1,7 @@
 # KHANYA / REEFPRINT — where the project actually stands
 
+**Current handover — 30 September 2026:** Private Kaggle CE+Dice validation version 2 is running from a deterministic source snapshot, with full-section validation checkpoint selection and the 12-image publisher test set sealed. No new score is available or claimed yet. See the latest entry in [`HANDOVER.md`](HANDOVER.md) and [Kaggle training handoff](handover/KAGGLE-TRAINING.md). Figma access is connected. The user approved and created a dedicated Supabase project in the current organization: **REEFPRINT**, `eu-west-2`, ref `uwdrfmwoivibnhpccwxe`, status `ACTIVE_HEALTHY`; project creation was quoted and confirmed at **$0/month**. Its public schema is empty; no tables or policies have been deployed yet. Cloudflare/Azure are not connected and are not required for the offline hackathon demonstration.
+
 **Judge-readiness update: 2026-09-14.** The active presentation and
 production-readiness gaps are in [`JUDGE-READY-WORKPLAN.md`](JUDGE-READY-WORKPLAN.md).
 The current engineering scoreboard remains [`WORKBOARD.md`](WORKBOARD.md).
