@@ -19,6 +19,50 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (80) — pre-production test, end to end: 58/100, not pilot-ready
+
+**Did:** tested `khanya/speed` (`5254951`) in four layers: static checks, a
+fresh GitHub clone, every dashboard mode live from a cold server, and hostile
+uploads. Full results: `reports/PREPROD-TEST-2026-09-30.md`. No code changed.
+
+**Passed:** 143 tests (repo and fresh clone); preflight READY here and a
+correct 3-check refusal in the clone; test_01 Continue/UNCHANGED, test_11
+UNSTABLE/HELD; Evidence agrees with the expert on test_01 and test_11;
+corrupt and 300 px files refused before any command; RGBA = JPG; browser
+traffic localhost only.
+
+**Failed, ranked:**
+1. **No input-eligibility gate.** A screenshot of text came back as 68% ore,
+   100% pentlandite, 193 particles, and its association index was **published
+   over OPC UA and acknowledged**. Greyscale test_11 inverts the phases
+   (pyrrhotite 99.1% -> pentlandite 97.5%, association 1% -> 66%). Both held
+   only because the value fell inside the ±33.5% band.
+2. **Full-section mode bypasses the lighting check without saying so.**
+   test_11: live mode HELD; full mode Grind finer, APPLIED 0 -> 1, no
+   UNGUARDED label. (Grind finer is the expert's answer on test_11, so this
+   call was right, but it had no guard.)
+3. Confidence is a caption, not a gate (`advisor.py:145`).
+4. Time claims: "about three minutes" in the app vs about 4 min 50 s measured
+   for full section; live ~60 s today vs 49 s recorded; "end to end" leaves
+   out about 8 s of upload and render.
+5. Not installable from the repo: unpinned requirements, Jinja2 missing, no
+   checkpoint route, REEFPRINT loaded from an unpinned folder outside the repo
+   (`Desktop\REEFPRINT`, detached at `73806b2`; its integrate/ code matches
+   `origin/reefprint` today).
+
+**Score: 58/100 as pre-production** (weighted; breakdown in the chat summary
+and derivable from the report's findings). Fixing 1-5 would take it to about
+72 (an estimate, not a measurement). The science caps (n=12, lighting check
+non-selective, magnetite 0) remain.
+
+**Blocked on:** nothing. Re-reviews of #10-#13 still pending.
+
+**Next (Lethabo):** a view on finding 2. Should full-section mode be
+advisory-only (no command), or should it run the lighting check too? It
+changes what the demo shows on test_11.
+
+---
+
 ## 2026-09-30 — Sibusiso (79) — #13 review: evidence provenance bound to the checkpoint hash
 
 Lethabo's #13 review (changes requested) found three provenance holes, all

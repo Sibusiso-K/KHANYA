@@ -1,0 +1,122 @@
+# Pre-production test, end to end: 30 September 2026
+
+**Build under test:** `khanya/speed` at `5254951` (the top of the #10-#13 stack).
+**Machine:** the development laptop, CPU only. **Checkpoint:** sha256 `de7135a9…`.
+**Method:** four layers. Static checks. A fresh clone from GitHub. A live run of
+every mode through the browser, starting from a cold server. Hostile and
+out-of-distribution uploads. Every number below was measured in this session. Nothing is carried over from earlier reports
+unless it says so.
+
+---
+
+## Verdict in one paragraph
+
+On the inputs it was built for, the system does what it says in every mode,
+and its refusals of broken files are clean. It is **not pre-production ready**,
+for three reasons found today. (1) It has **no check that the input is a
+micrograph**: a screenshot of text was reported as 68% ore, 100% pentlandite,
+with 193 particles, and that "association index" was **published over OPC UA and
+acknowledged**. (2) **Full-section mode sends a real command with no lighting
+check and no "unguarded" label**: the same section is held in live mode and
+commanded 0 → 1 in full mode. (3) **It cannot be installed from the repository
+alone**: dependencies are unpinned, Jinja2 is missing from `requirements.txt`,
+the checkpoint has no distribution route, and the OPC UA code is loaded from a
+REEFPRINT checkout outside the repo.
+
+---
+
+## Layer 1: static
+
+| Check | Result |
+|---|---|
+| Test suite | **143 passed** |
+| CI offline guard | pass; the only URL in the served assets is the Tailwind licence comment (not fetched) |
+| `python -m src.preflight` | **READY TO PRESENT** |
+| Secrets scan | clean |
+| Tracked files under `checkpoints/`, `data/raw/`, `logs/`, `.claude/settings.local.json` | 0 |
+| `requirements.txt` | **every entry unpinned** (`torch>=2.2`, `streamlit`, `numpy`, …). Installed here: torch 2.13.0, torchvision 0.28.0, streamlit 1.61.0, numpy 2.5.2, scipy 1.18.0, Pillow 12.3.0, asyncua 2.0.1, opencv-python 5.0.0.93 |
+| Jinja2 | imported directly by `dashboard/render.py`, **not listed** (it arrives only as a Streamlit dependency) |
+
+## Layer 2: fresh clone from GitHub
+
+| Check | Result |
+|---|---|
+| Test suite, no data and no weights | **143 passed** |
+| Preflight | **3 CHECK(S) FAILED - do not present from this machine** (checkpoint, data, model load); OPC UA passed |
+| Dashboard | refuses cleanly: "The validated S2 model checkpoint is missing. Restore checkpoints/lumenstone_s2_patches/best.pt before analysing an image." |
+| Obtaining the checkpoint | **no route documented**: nothing says where the 168 MB file comes from |
+
+The OPC UA check passes in the clone only because `ensure_reefprint()` finds
+`Desktop\REEFPRINT\src`, a checkout outside this repo. That checkout is a
+**detached HEAD at `73806b2` (14 Sept)**, 14 commits behind `origin/reefprint`.
+Its `src/reefprint/integrate/` code is identical to `origin/reefprint` today, so
+nothing is wrong yet. But nothing pins it. On a laptop without that folder, the
+plant half of the demo does not run.
+
+## Layer 3: live, every mode, from a cold server
+
+| Run | Result | Time |
+|---|---|---|
+| Server start to upload-ready page | model warmed before first upload | ≈23 s |
+| Live, lighting check on, **test_01** | Continue at current setpoint · 52 payload particles · 6 fields, 18% · SIMULATED LIGHTING: STABLE · plant **UNCHANGED 0 → 0** | app reports **59.6 s** |
+| Live, lighting check on, **test_11** | No recommendation (changes under simulated lighting shift) · 10 payload particles · UNSTABLE · plant **HELD 0 → 0** | app reports **59.8 s**; upload to rendered result ≈68 s wall |
+| **Full section**, test_11 | **Grind finer · 21 payload particles · association 0% across 38 particles · plant APPLIED 0 → 1 · no lighting check** | ≈4 min 50 s wall; **no timing shown** |
+| Evidence, test_01 | Section mean IoU 0.41 · model and expert both Continue · agrees · provenance line cites sha256 `de7135a96541…` | first open under ~17 s (includes a one-time hash of the checkpoint) |
+| Evidence, test_11 | Section mean IoU 0.38 · model and expert both **Grind finer** · agrees · confidence 90.5% | cached |
+| Browser network requests | **only `localhost:8501`** (plus the local test-file server this test used) | – |
+
+The test_11 rows show the trade-off plainly. Its expert reference is **Grind
+finer**. The live lighting check withheld that correct call, as
+`LIGHTING-CHECK-2026-09-30.md` says it will four times in five. Full-section mode
+issued it with no guard.
+
+The live timings are **~60 s today against the 49 s recorded after the PR #13
+speed-ups** (n=2 today, one machine; cause not investigated). The app says
+"measured, this run: 59.8s end to end", but upload to rendered result took about
+68 s: the label leaves out the upload and the render.
+
+## Layer 4: hostile and out-of-distribution inputs (live mode)
+
+| Input | What the system did | Correct? |
+|---|---|---|
+| Corrupt JPG | "The upload could not be decoded safely… No recommendation has been issued." 2.3 s | **Yes** |
+| 300 × 300 PNG | "smaller than one 512x512 field; use the full-section path instead. No recommendation has been issued." 1.1 s | Refusal yes; **the advice sends the operator to the unguarded mode** |
+| 300 × 300 PNG in full-section mode | Flag for manual review, association not measurable · 0 payload particles · HELD | **Yes** |
+| test_11 as **RGBA PNG** | identical to the JPG: 10 payload particles, pyrrhotite 99.1%, association 1%, UNSTABLE, HELD | **Yes**: format-invariant |
+| **Screenshot of text** (1350 × 746) | 2 fields, 52% · **68% "ore", 100.0% pentlandite, 193 particles**, association 48% · confidence 64% ("verify manually") · Marginal, HELD · **OPC UA: published model_confidence, association_index · consumer acknowledged and applied** · labelled "Reflected-light micrograph… Every number below is measured" | **No.** It held only because 48% fell inside the ±33.5% band |
+| test_11 as **greyscale** | **pentlandite 97.5%, pyrrhotite 2.5%; association 66%** (colour version: pyrrhotite 99.1%, association 1%) · 36 payload particles · confidence 76% · Marginal, HELD · 31.4 s | **No.** Colour carries the phase identification; greyscale inverts it, unchecked. Held only by the band |
+
+---
+
+## Findings, ranked
+
+| # | Severity | Finding | Where | Fix |
+|---|---|---|---|---|
+| 1 | **High** | No input-eligibility gate. Non-micrographs and greyscale images get measured, labelled as measurements, and published over OPC UA. | `dashboard/app.py` upload path; `src/advisor.py` | Refuse before any model pass or publish: (a) reject images whose channels are near-identical (greyscale); (b) reject images outside the train set's per-channel colour envelope, with the envelope computed on train/val, never test; (c) state the reason on screen. |
+| 2 | **High** | Full-section mode issues commands with no lighting check and no UNGUARDED label. Log says "lighting check: n/a". | `app.py:394-426`, `_control_strip.html.jinja:48` | Either run the check in full mode, or make full mode advisory-only (no command) and label it UNGUARDED exactly like the switched-off live check. |
+| 3 | Medium-high | Confidence never gates. It is a label (`advisor.py:145`, 0.85 split); a 64% result and a 91% result reach the same decision logic. | `src/advisor.py` | Choose a floor on train/val data and make it an abstention, not a caption. |
+| 4 | Medium | Time claims are wrong or missing. "About three minutes" for a live recompute (`app.py:285, 300`) vs ≈4 min 50 s measured; full mode shows no time; "end to end" excludes ≈8 s of upload and render; live is ~60 s today vs 49 s recorded. | `app.py`, `khanya.html.jinja:189` | Time from upload receipt to render; show it in every mode; replace fixed claims with the measured value. |
+| 5 | Medium | Not installable from the repo: unpinned requirements, Jinja2 missing, no checkpoint route, REEFPRINT loaded from an unpinned folder outside the repo. | `requirements.txt`, `src/polarimetry.py`, README | Pin exact versions from this working environment (`pip freeze`); add Jinja2; document the checkpoint's source and sha256; pin the REEFPRINT commit and have preflight check it. |
+| 6 | Low | The too-small refusal recommends full-section mode, which is the unguarded path (finding 2). | `src/segmentation/patches.py` message | Change the advice once finding 2 is decided. |
+| 7 | Low | "As imaged, this field says…" when six fields were analysed. | `src/stability.py:57` | "these fields". |
+| 8 | Low | During a ~5-minute full-section run the previous result stays on screen, faded. | Streamlit default | Clear the result slot when a new run starts. |
+| 9 | Known | Carried scientific limits, re-confirmed rather than re-measured today: lighting check discards 4 of 5 correct confident calls; six-field confident calls unsafe 8 of 13 on train/val; magnetite IoU 0; 3 of 4 thresholds unsourced; n = 12 test sections. | reports | Post-deadline. |
+
+Not re-run today: the stale-command refusal and presenter reset (verified in
+`BACKUP-DEMO-SCRIPT.md` beat 4 on 30 Sept); the wifi-off run on the presenting
+laptop (still outstanding). The browser egress check covers only the requests
+the pane buffered in this session. It is not a firewall-level test.
+
+## What passed that matters
+
+- Every intended input gave the expected result in every mode, and both
+  full-section and Evidence agree with the expert reference on test_11.
+- Broken inputs (corrupt, too small) are refused before any command, with a
+  reason.
+- File format does not change the answer (RGBA PNG = JPG).
+- The preflight catches a machine that cannot present, and the dashboard
+  refuses rather than guessing.
+- The simulated plant never moved on an abstention in any run today.
+- OPC UA uses an ephemeral localhost port per transaction, so concurrent
+  sessions do not collide.
+- Nothing left the machine from the browser.
