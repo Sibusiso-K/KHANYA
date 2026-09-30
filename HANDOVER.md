@@ -1,3 +1,21 @@
+## 2026-09-30 — Sibusiso (Claude review) — the two hosts run different checkpoints
+
+**Found:** `reports/LIVE-RESULT-AND-CONTROL-AUDIT-2026-09-30.md` says the live model is `fb78727…` (mIoU 0.4543 / pixel acc 0.7716). The app loads whatever file sits at `checkpoints/lumenstone_s2_patches/best.pt`, so Lethabo's host (the Cloudflare demo) is serving the weaker Kaggle run. Sibusiso's host (127.0.0.1:8510) serves `de7135a9…` (0.5725 / 0.8914, the checkpoint `reports/ACCURACY-REPORT.md` is about).
+
+**Same image, different answers (test_11, Quick, 6 fields, 18.2%):**
+| | fb78727 (Lethabo's host) | de7135a9 (Sibusiso's host) |
+|---|---|---|
+| pentlandite | 34.66% | 0.8% |
+| pyrrhotite | 60.84% | 93.6% |
+| mean confidence | 0.5535 | 0.907 |
+| advisor | HOLD, below the 0.85 floor | Grind finer (0.9066) |
+
+`END-TO-END-LOCAL-DEMO-2026-09-30.md` itself says "Do not promote the weaker Kaggle run; retain de7135a…". The new audit header contradicts that.
+
+**Ask (Lethabo):** put `de7135a9…` in `best.pt` on your host (sha256 must match), re-run test_11, and correct the audit's header and live-run numbers. Consider having `/api/health` refuse to start, or show a warning, when the sha isn't the one the accuracy report covers.
+
+---
+
 ## 2026-09-30 — Sibusiso (Claude review) — independent check of 48d3375 / cec2245
 
 **Did:** Pulled to 998c7b4, restarted the local workbench (127.0.0.1:8510) and ran a fresh real `test_11` Quick analysis (checkpoint de7135a9, no cached result). Tapped grains through the Explore-grains canvas at pixels decoded from `grain-ids.png`.
