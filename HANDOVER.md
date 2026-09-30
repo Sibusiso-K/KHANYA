@@ -19,6 +19,64 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (82) — pre-production fixes: 57.5 -> 79 on re-test (PR #17)
+
+**Did:** fixed every code-fixable finding from issue #16 on
+`khanya/preprod-fixes` (PR #17, stacked on #13). Re-ran all four test layers.
+Results and re-score are in `reports/PREPROD-TEST-2026-09-30.md` ("Re-test
+after the fixes").
+
+**Two behaviour changes, both yours to veto, both on train/val evidence only:**
+1. **Confidence now gates.** The advisor's existing 0.85 "verify manually"
+   threshold withholds a confident call.
+   - On 37 train/val sections, unsafe confident calls were 0.635-0.822 and
+     correct ones 0.834-0.896: 8/8 unsafe withheld, 2/5 correct lost
+     (`reports/confidence_calibration_trainval.json`).
+   - On darkened copies, 0/10 confident calls pass.
+   - `advise()` is unchanged, so the committed reports stay valid.
+2. **The lighting check is an optional diagnostic, off by default.** With the
+   gate on it caught no extra unsafe call and cost 3 more correct ones.
+
+Effect on held-out data (described afterwards, chose nothing):
+- test_11 and test_12 -> Grind finer (correct), so the live demo now moves the
+  plant on held-out data. That answers your #12 point.
+- test_01's correct Continue is withheld at 77%.
+
+**Other fixes:**
+- **Inputs.** Input-eligibility gate: greyscale and non-micrographs are refused
+  before any model pass or publish.
+- **Full section.** Advisory only, and labelled.
+- **Timing.** One labelled server-side timer in every mode.
+- **Installability.**
+  - `requirements-lock.txt`, installed by CI on Python 3.13;
+  - `jinja2` added;
+  - README "Setting up a presenting laptop" (where the checkpoint comes from);
+  - preflight fingerprints REEFPRINT against 29254718 and times a live pass;
+  - the offline test covers templates and CSS.
+- **Small items.** Evidence names the gate; the result clears at run start;
+  "these fields"; the small-image message is reworded.
+- **Evidence found along the way.** The ±0.335 band covers 75.7% of six-field
+  errors on train/val against a nominal 85%: documented, not widened.
+
+**Re-test:**
+- Live 31.5-38.6 s (was ~60); full section 210 s (was ~290).
+- Every hostile input refused in 1-2 s.
+- Stale refusal re-verified; 158 tests pass.
+- Demo beat 4 is rewritten and re-verified (`BACKUP-DEMO-SCRIPT.md`).
+
+**Not fixed:**
+- **OPC UA:** 10.2 s of each Grind-finer run, two server start-ups. Merging
+  them is a transport change the night before the demo.
+- **Science:** n = 12, magnetite 0, unsourced thresholds.
+- **Wifi-off run:** needs the presenting laptop.
+
+**Blocked on:** your reviews: #11 -> #12 -> #13 -> #17.
+
+**Next (Lethabo):** veto or accept the two behaviour changes in #17. They
+change the pitch's demo beat.
+
+---
+
 ## 2026-09-30 — Sibusiso (81) — stack repaired after #10's merge; #15 reviewed
 
 **Did:**
