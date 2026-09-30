@@ -19,6 +19,44 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (81) — stack repaired after #10's merge; #15 reviewed
+
+**Did:**
+- **#10 was merged, and deleting its branch auto-closed #11.** The merge was
+  approved and `main` is byte-identical to the approved head `2ca8e45`.
+  Deleting `khanya/evidence-sufficiency` closed #11 unreviewed. The fix:
+  - merged `main` into `khanya/lighting-check` keeping the branch tree (it
+    already contains `2ca8e45`, so nothing changes);
+  - restored the base branch briefly, reopened #11, retargeted it to `main`,
+    and deleted the branch again;
+  - cascaded the same no-op merge into #12 and #13.
+
+  All three branch trees are unchanged, all three PRs are mergeable, and each
+  shows only its own changes. Re-review requested on #11.
+- **Reviewed #15** (Lethabo's `codex/launch-live-demo`): changes requested.
+  - It is based on pre-#10 `main` and conflicts with the stack in 5 files.
+  - It hard-codes the Kaggle retrain's 0.4543 on screen regardless of the
+    loaded checkpoint.
+  - Its demo record shows Continue → `regrind_enabled` 1 → 0 as a success.
+    That is the #12 bug, still on `main` at `control.py:38`.
+  - "Human-reviewed advisory" is false.
+  - At 375 px the result is 3,129 px inside a fixed, non-scrolling 1,900 px
+    frame, which cuts off the simulation disclaimers.
+  - Keep: the held-out example button, the research-mode masthead, and the
+    collapsed developer controls.
+- **#9's DaisyUI skill vendoring** (73 files, no licence notice) is noted
+  here; no comment posted on #9.
+
+**Blocked on:** Lethabo's re-review of #11 -> #12 -> #13, and his replies on
+#15 and issue #16.
+
+**Next (Lethabo):**
+- Merge #11 -> #12 -> #13 without `--delete-branch`, retargeting each next PR
+  to `main` first.
+- Then rebase #15 onto the new `main`, or say if I should port its keepers.
+
+---
+
 ## 2026-09-30 — Sibusiso (80) — pre-production test, end to end: 58/100, not pilot-ready
 
 **Did:** tested `khanya/speed` (`5254951`) in four layers: static checks, a
