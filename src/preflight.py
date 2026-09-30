@@ -21,10 +21,19 @@ from .segmentation import config
 EXPECTED_S2_SHA256 = "de7135a96541a46dc0981a991cb954186c7cd669ea1c1b33914d1929ae9b1357"
 S2_CKPT = config.ROOT / "checkpoints" / "lumenstone_s2_patches" / "best.pt"
 
+# The OPC UA transport is REEFPRINT's code, loaded from a checkout outside this
+# repo (ADR-0003: the histories stay unmerged). Pinned by content, not by
+# location: sha256 over src/reefprint/integrate/*.py at reefprint commit
+# 29254718be5d76b62fabfcdd885f7ce0fe09bbc9 (12 Sept, the last change to that
+# folder; identical at origin/reefprint on 30 Sept). Line endings normalised,
+# so a Windows checkout matches. See README "Setting up a presenting laptop".
+EXPECTED_REEFPRINT_INTEGRATE_SHA256 = "cc3414834373e8a823e61406c41f1844725147858a5ce744e28534f29b8c3041"
+
 
 def check_checkpoint():
     if not S2_CKPT.exists():
-        return False, f"missing: {S2_CKPT}"
+        return False, (f"missing: {S2_CKPT}. It is not in Git; see README "
+                       "'Setting up a presenting laptop' for where it comes from")
     digest = hashlib.sha256(S2_CKPT.read_bytes()).hexdigest()
     if digest != EXPECTED_S2_SHA256:
         return False, f"sha256 {digest[:12]}... is not the reported checkpoint {EXPECTED_S2_SHA256[:12]}..."
@@ -40,6 +49,19 @@ def check_data():
     return True, "12 held-out S2 test sections present"
 
 
+def check_validated_samples():
+    """Only these files may command the simulator; a re-saved copy would silently lose that."""
+    import json
+    from .segmentation import lumenstone as ls
+    manifest = json.loads((config.ROOT / "dashboard" / "validated_samples.json").read_text(encoding="utf-8"))
+    expected = manifest["sha256"]
+    differ = [stem for stem, digest in expected.items()
+              if hashlib.sha256((ls.DATA_DIR / "imgs" / "test" / f"{stem}.jpg").read_bytes()).hexdigest() != digest]
+    if len(expected) != 12 or differ:
+        return False, f"{len(expected)} manifest entries; files that differ from it: {differ}"
+    return True, "12 held-out sections match dashboard/validated_samples.json; only these may command the simulator"
+
+
 def check_model_loads():
     import torch
     from .segmentation import lumenstone as ls
@@ -47,6 +69,55 @@ def check_model_loads():
     model = build_model(num_classes=ls.NUM_CLASSES, pretrained=False)
     model.load_state_dict(torch.load(S2_CKPT, map_location="cpu"))
     return True, f"state dict loads strictly into {ls.NUM_CLASSES}-class DeepLabV3"
+
+
+def reefprint_integrate_sha256(source):
+    import hashlib as _hashlib
+    folder = source / "reefprint" / "integrate"
+    digest = _hashlib.sha256()
+    for path in sorted(folder.glob("*.py"), key=lambda p: p.name):
+        content = path.read_bytes().replace(bytes([13, 10]), bytes([10]))
+        digest.update(path.name.encode() + bytes([0]) + content + bytes([0]))
+    return digest.hexdigest()
+
+
+def check_reefprint_pin():
+    from .polarimetry import ensure_reefprint
+    source = ensure_reefprint()
+    digest = reefprint_integrate_sha256(source)
+    if digest != EXPECTED_REEFPRINT_INTEGRATE_SHA256:
+        return False, (f"{source}: integrate/ is sha256 {digest[:12]}..., not the pinned "
+                       f"{EXPECTED_REEFPRINT_INTEGRATE_SHA256[:12]}... (reefprint 29254718)")
+    return True, f"{source}: integrate/ matches the pinned reefprint 29254718"
+
+
+def check_offline_config():
+    text = (config.ROOT / ".streamlit" / "config.toml").read_text(encoding="utf-8")
+    if "gatherUsageStats = false" not in text:
+        return False, ".streamlit/config.toml does not switch off Streamlit's usage statistics"
+    return True, "Streamlit usage statistics off; run once with the wifi off to be sure"
+
+
+def check_live_timing():
+    import time
+
+    import torch
+    from PIL import Image
+
+    from .segmentation import lumenstone as ls
+    from .segmentation.model import build_model
+    from .segmentation.patches import multi_field_predict
+    model = build_model(num_classes=ls.NUM_CLASSES, pretrained=False)
+    model.load_state_dict(torch.load(S2_CKPT, map_location="cpu"))
+    model.eval()
+    image = Image.open(ls.DATA_DIR / "imgs" / "test" / "test_01.jpg").convert("RGB")
+    with torch.no_grad():
+        model(torch.zeros(1, 3, 512, 512))  # warm, as the dashboard does before any upload
+        start = time.perf_counter()
+        multi_field_predict(model, image, "cpu")
+        seconds = time.perf_counter() - start
+    return True, (f"one six-field pass took {seconds:.1f}s on this machine; a lighting-checked "
+                  f"live result runs two, so expect roughly {2 * seconds:.0f}s plus rendering")
 
 
 def check_opcua():
@@ -61,8 +132,12 @@ def check_opcua():
 CHECKS = [
     ("S2 checkpoint", check_checkpoint),
     ("S2 held-out data", check_data),
+    ("validated samples", check_validated_samples),
     ("model loads", check_model_loads),
+    ("REEFPRINT pinned", check_reefprint_pin),
     ("OPC UA round trip", check_opcua),
+    ("offline config", check_offline_config),
+    ("live timing (measured here)", check_live_timing),
 ]
 
 

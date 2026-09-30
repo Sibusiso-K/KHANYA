@@ -22,16 +22,18 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: pip
 
       - name: Install dependencies
         # CPU-only torch. The GPU wheels are ~2 GB and nothing in the test
-        # suite needs CUDA; the training scripts are not run in CI.
+        # suite needs CUDA; the training scripts are not run in CI. Installs
+        # the exact versions the reported numbers were produced with
+        # (requirements-lock.txt), not whatever the ranges resolve to today.
         run: |
           python -m pip install --upgrade pip
-          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-          pip install -r requirements.txt
+          pip install torch==2.13.0 torchvision==0.28.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements-lock.txt
           pip install pytest
 
       - name: Tests

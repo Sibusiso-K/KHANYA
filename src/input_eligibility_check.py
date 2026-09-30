@@ -1,5 +1,9 @@
 """Would a colour-balance rule refuse inputs that are not micrographs from this set-up?
 
+Shipped as the dashboard's COLOUR-CAST CHECK (dashboard/inputs.py), not as an
+out-of-domain detector: warm-toned non-micrographs pass it (Lethabo, PR #11 and
+#17 reviews). What may touch the plant is decided by dashboard/validated_samples.json.
+
 Evidence for finding 1 of reports/PREPROD-TEST-2026-09-30.md: a screenshot of
 text and a greyscale copy of test_11 were measured, advised on and published
 over OPC UA. This script measures, and does not wire anything into the app.

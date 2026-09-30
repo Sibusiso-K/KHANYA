@@ -6,12 +6,30 @@
 **not used**.
 **Code:** `src/stability.py`
 
+> **Status from 30 September (evening): an optional diagnostic, off by
+> default.** The pre-production fixes (PR #17) made the advisor's existing 0.85
+> confidence threshold a gate. On the 37 train/validation sections:
+>
+> - that gate withheld all 8 unsafe confident calls, including all 5 this
+>   check caught, and lost 2 of 5 correct ones;
+> - with both on, no confident call survived: the check added no caught error
+>   and cost 3 more correct calls;
+> - on copies darkened by this check's own offset, the gate alone let **0 of
+>   10** confident calls through
+>   (`reports/confidence_gate_darkened_trainval.json`).
+>
+> The check stays on the screen as a toggle, labelled as a diagnostic.
+>
 > **Read these costs before any safety claim.** On sections the test set never
 > touched, this check **discarded 4 of 5 correct confident recommendations**
 > while catching 5 of 8 wrong ones. It **does not improve phase
-> identification**. It **doubles the analysis time**: two live passes took
-> 71-74 s end to end on this CPU when first measured (49 s after the PR #13
-> speed-ups). It is one fixed, synthetic perturbation.
+> identification**. It **doubles the analysis time**:
+>
+> - two live passes took 71-74 s end to end on this CPU when first measured;
+> - 49 s once after the PR #13 speed-ups;
+> - 59.6-59.8 s in the two runs of the 30 September pre-production test.
+>
+> It is one fixed, synthetic perturbation.
 
 ---
 

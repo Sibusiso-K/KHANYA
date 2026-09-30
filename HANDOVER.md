@@ -19,6 +19,139 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (84) — board-level review: a lab triage tool, not a field tool (40.5/100 on that lens)
+
+**Did:** re-tested `ec9f853` as a Mintek board geologist and metallurgist
+would. Covered phone width (375 × 812), desktop, a search of every branch,
+and the evidence for time and cost. Full review:
+`reports/BOARD-REVIEW-2026-09-30.md`.
+
+**Answers to the questions asked:**
+- **Mobile: not easy.** Measured:
+  - Upload sits below the fold;
+  - the landing card is cut off in a scrolling box;
+  - the result is 3,315 px inside a 1,500 px scrolling frame, 415 px wide in
+    343 px ("APPLIED" and "CLEANER" are clipped);
+  - 40 of 66 text elements are 9-11 px.
+- **XRF to phone:** not built anywhere.
+- **3D render with click-for-composition:** not built. The mineral map is a
+  static image, and a 3D view of a 2D section would not be meaningful anyway.
+- **Speed:** 35 s a sample, 210 s for a whole section. Fine for a bench;
+  section preparation dominates.
+- **Time and cost:** not demonstrated. Only 2 of 12 held-out sections (3 of
+  37 train/val) get a confident call past the gates, and the "verify" flags
+  have never been checked against QEMSCAN.
+
+**Two stale claims to fix before the pitch:**
+- `MINTEK-FIT.md` §3.1 still says 6 of 12 are answered confidently (50%).
+- The landing text still promises refusal when advice "changes with the
+  lighting".
+
+**Scores:**
+- **40.5/100 on this lens** (usability-weighted; XRF and 3D scored 0 because
+  they are absent).
+- The pre-production score stays 79: that rubric asks a different question.
+
+**Next:** the before-pitch list in the report (stale claims, framing,
+mobile layout, glossary). Everything else is post-deadline, and the South
+African data (QEMSCAN labels, chromite and PGM classes) comes first.
+
+---
+
+## 2026-09-30 — Sibusiso (83) — option (b): only validated samples touch the plant
+
+**Did:** Lethabo's PR #11 / #17 blocker was that warm-toned non-micrographs
+pass the colour check and could reach OPC UA. His option (b) is taken, on
+`khanya/preprod-fixes` (PR #17):
+- `dashboard/validated_samples.json` holds the sha256 of the 12 held-out
+  sections (`python -m src.validated_samples`). Only those files, byte for
+  byte, may publish or command.
+- Everything else is analysed but shows UNVERIFIED SAMPLE · ADVISORY ONLY,
+  OPC UA NOT PUBLISHED, plant HELD.
+- An armed stale refusal is not spent on an unverified upload.
+- The preflight checks the test files still match the manifest (8 checks,
+  READY).
+- The colour check is renamed "colour-cast check" (not an out-of-domain
+  detector).
+- The 85% confidence gate is labelled provisional on screen.
+
+**Re-run end to end** (report addendum). OPC UA server start-ups were counted
+in the dashboard log:
+- **Warm screenshot** (model 93% confident): advisory only, 0 start-ups.
+- **Warm texture** (92%): advisory only, 0 start-ups.
+- **test_11 as PNG** ("Grind finer" at 91%, which used to move the plant):
+  advisory only, 0 start-ups.
+- **test_11.jpg:** verified, published, plant 0 -> 1, 2 start-ups.
+- **Stale refusal:** still refuses.
+- **Tests:** 161 pass.
+
+**For the demo:** do not re-save or convert the test images. A changed file is
+no longer a validated sample and cannot move the plant.
+
+**Blocked on:** Lethabo's re-review of #17. The same blocker is on #11, and the
+fix lives in #17, so I've proposed merging #11 -> #12 -> #13 -> #17 as one
+unit.
+
+---
+
+## 2026-09-30 — Sibusiso (82) — pre-production fixes: 57.5 -> 79 on re-test (PR #17)
+
+**Did:** fixed every code-fixable finding from issue #16 on
+`khanya/preprod-fixes` (PR #17, stacked on #13). Re-ran all four test layers.
+Results and re-score are in `reports/PREPROD-TEST-2026-09-30.md` ("Re-test
+after the fixes").
+
+**Two behaviour changes, both yours to veto, both on train/val evidence only:**
+1. **Confidence now gates.** The advisor's existing 0.85 "verify manually"
+   threshold withholds a confident call.
+   - On 37 train/val sections, unsafe confident calls were 0.635-0.822 and
+     correct ones 0.834-0.896: 8/8 unsafe withheld, 2/5 correct lost
+     (`reports/confidence_calibration_trainval.json`).
+   - On darkened copies, 0/10 confident calls pass.
+   - `advise()` is unchanged, so the committed reports stay valid.
+2. **The lighting check is an optional diagnostic, off by default.** With the
+   gate on it caught no extra unsafe call and cost 3 more correct ones.
+
+Effect on held-out data (described afterwards, chose nothing):
+- test_11 and test_12 -> Grind finer (correct), so the live demo now moves the
+  plant on held-out data. That answers your #12 point.
+- test_01's correct Continue is withheld at 77%.
+
+**Other fixes:**
+- **Inputs.** Input-eligibility gate: greyscale and non-micrographs are refused
+  before any model pass or publish.
+- **Full section.** Advisory only, and labelled.
+- **Timing.** One labelled server-side timer in every mode.
+- **Installability.**
+  - `requirements-lock.txt`, installed by CI on Python 3.13;
+  - `jinja2` added;
+  - README "Setting up a presenting laptop" (where the checkpoint comes from);
+  - preflight fingerprints REEFPRINT against 29254718 and times a live pass;
+  - the offline test covers templates and CSS.
+- **Small items.** Evidence names the gate; the result clears at run start;
+  "these fields"; the small-image message is reworded.
+- **Evidence found along the way.** The ±0.335 band covers 75.7% of six-field
+  errors on train/val against a nominal 85%: documented, not widened.
+
+**Re-test:**
+- Live 31.5-38.6 s (was ~60); full section 210 s (was ~290).
+- Every hostile input refused in 1-2 s.
+- Stale refusal re-verified; 158 tests pass.
+- Demo beat 4 is rewritten and re-verified (`BACKUP-DEMO-SCRIPT.md`).
+
+**Not fixed:**
+- **OPC UA:** 10.2 s of each Grind-finer run, two server start-ups. Merging
+  them is a transport change the night before the demo.
+- **Science:** n = 12, magnetite 0, unsourced thresholds.
+- **Wifi-off run:** needs the presenting laptop.
+
+**Blocked on:** your reviews: #11 -> #12 -> #13 -> #17.
+
+**Next (Lethabo):** veto or accept the two behaviour changes in #17. They
+change the pitch's demo beat.
+
+---
+
 ## 2026-09-30 — Sibusiso (81) — stack repaired after #10's merge; #15 reviewed
 
 **Did:**

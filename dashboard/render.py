@@ -208,6 +208,12 @@ def render_evidence(stem, image, ground_truth, predicted, mean_confidence,
         ground_truth_b64=_colourise_png_b64(ground_truth),
         predicted_phases_b64=_colourise_png_b64(predicted),
         confidence=mean_confidence,
+        # The saved advice is the advisor rules before the dashboard's confidence
+        # gate; say so when the gate would withhold it (pre-production finding 3).
+        withheld_by_gate=(scores is not None and not scores.get("mismatch")
+                          and not scores["model_advice"].startswith(advisor_module.ABSTAINING_PREFIXES)
+                          and mean_confidence < advisor_module.CONFIDENCE_FLOOR),
+        confidence_floor=advisor_module.CONFIDENCE_FLOOR,
     )
 
 
@@ -270,13 +276,16 @@ def _first_sentence(text):
 
 def render(image, labels, mean_confidence, result, recommendation,
            mode_label="Full section, native resolution", elapsed_seconds=None,
-           opcua_status=None, plant=None, lighting=None, evidence_scope=None):
+           opcua_status=None, plant=None, lighting=None, evidence_scope=None,
+           advisory_only=False, sample_stem=None):
     """Render the dashboard for one measured field. Returns an HTML string.
 
     mode_label, elapsed_seconds: which analysis path produced this result
-    and how long it actually took, end to end, on this run - never a cached
-    or estimated figure (Live Field Mode's caller must time a fresh,
-    uncached call; see dashboard/app.py). elapsed_seconds is None for a
+    and how long it actually took on this run, from the upload being received
+    by the server to the result being ready - never a cached or estimated
+    figure (see dashboard/app.py). It excludes the browser's upload transfer
+    and final drawing. advisory_only: the path issued no plant command (the
+    full section, where the lighting check does not run). elapsed_seconds is None for a
     caller that hasn't measured one (e.g. a direct-render test) - the
     template shows nothing rather than a fabricated number.
     """
@@ -312,7 +321,8 @@ def render(image, labels, mean_confidence, result, recommendation,
         liberation_pct=0 if liberation_pct is None else liberation_pct,
         liberation_floor_pct=round(floor * 100),
         confidence=mean_confidence,
-        confidence_label="high" if mean_confidence >= 0.85 else "verify manually",
+        confidence_label=("high" if mean_confidence >= advisor_module.CONFIDENCE_FLOOR
+                          else "verify manually"),
         ore_area_fraction=result.ore_area_fraction,
         n_particles=result.n_particles,
         input_micrograph_b64=_image_png_b64(image),
@@ -343,6 +353,9 @@ def render(image, labels, mean_confidence, result, recommendation,
         min_payload_particles=advisor_module.MIN_PAYLOAD_PARTICLES,
         evidence_scope=evidence_scope or mode_label,
         plant=plant,
+        advisory_only=advisory_only,
+        sample_stem=sample_stem,
+        confidence_floor=advisor_module.CONFIDENCE_FLOOR,
         lighting=None if lighting is None else {
             **{k: lighting[k] for k in ("stable", "abstained", "as_imaged", "after_shift")},
             "off": lighting.get("off", False),

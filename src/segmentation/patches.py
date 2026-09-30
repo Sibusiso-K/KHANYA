@@ -277,7 +277,7 @@ def single_field_predict(model, image, dev, patch=PATCH):
         raise ValueError(
             f"image is {width}x{height}, smaller than the {patch}x{patch} "
             "live field in at least one dimension - Live Field Mode needs "
-            "an image at least this large; use the full-section path instead."
+            "an image at least this large."
         )
     top, left = (height - patch) // 2, (width - patch) // 2
     tile = array[top:top + patch, left:left + patch]
@@ -363,8 +363,9 @@ def multi_field_predict(model, image, dev, grid=FIELD_GRID, patch=PATCH,
     height, width = array.shape[:2]
     if height < patch or width < patch:
         raise ValueError(
-            f"image is {width}x{height}, smaller than one {patch}x{patch} field; "
-            "use the full-section path instead."
+            f"image is {width}x{height}, smaller than one {patch}x{patch} field. "
+            "Use a micrograph at least that large; a smaller one does not hold enough "
+            "particles to advise on."
         )
     columns, rows = field_grid(width, height, grid, patch)
     boxes = field_boxes(width, height, grid, patch)

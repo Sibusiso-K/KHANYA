@@ -170,3 +170,96 @@ measurement). The scientific-validity row does not move without more data.
 - OPC UA uses an ephemeral localhost port per transaction, so concurrent
   sessions do not collide.
 - Nothing left the machine from the browser.
+
+---
+
+## Re-test after the fixes (PR #17), 30 September, evening
+
+Same four layers, same inputs, same rubric, on `khanya/preprod-fixes`
+(`4b526c7`). The score below is a re-score by the side that made the fixes; the
+judge review of PR #17 is the real test.
+
+| Check | Morning | After the fixes |
+|---|---|---|
+| Test suite | 143 passed | **158 passed** (repo, fresh clone, and Linux CI installing `requirements-lock.txt` on Python 3.13) |
+| Preflight | 4 checks | **7 checks**: adds REEFPRINT pin (content fingerprint of reefprint `29254718`), telemetry off, a timed live pass (**21.4 s** per six-field pass here) |
+| Fresh clone | refused, no route to the checkpoint | refused, pointing to README "Setting up a presenting laptop" (source, sha256, size, why unpublished) |
+| Cold start | ≈23 s | ≈25 s |
+| Live test_11 | held (lighting check); 59.8 s app / ≈68 s wall | **Grind finer, plant 0 → 1**; 38.6 s server side / 41.5 s wall. Expert: Grind finer |
+| Live test_01 | Continue, unchanged | **withheld: confidence 77% < 85%**, held; 32.1 s |
+| Live test_04 | (not re-run) | withheld, 4 particles < floor 9, held; 31.5 s |
+| Lighting diagnostic ON, test_11 | (default) | UNSTABLE, held; 58.2 s; wording "these fields" |
+| Full section test_11 | Grind finer, **APPLIED 0 → 1, no label, no time** | Grind finer, **ADVISORY ONLY · NO LIGHTING CHECK, HELD**, **210.3 s shown** |
+| Evidence test_01 | Continue, agrees | same, plus "advisor rules only · at 78% confidence the live pipeline withholds it" |
+| Screenshot of text | measured (68% ore, 193 particles), **published over OPC UA** | **refused in 1.0 s** before any model pass: colour balance -23.6 / -7.3 |
+| Greyscale test_11 | phases inverted, held by luck | **refused in 2.1 s**: no colour |
+| Corrupt / 300 px | refused | refused; the small-image message no longer points at the unguarded path |
+| Stale command | (verified 30 Sept) | re-verified: REFUSED, setting stays 0 |
+| Previous result during a new run | stayed on screen, faded | cleared at run start |
+| Network | localhost only | localhost only |
+
+Where a live result's time goes (`test_11`, measured outside the browser):
+- model **24.7 s**, of which progress frames 2.1 s;
+- **OPC UA 10.2 s**: publish 5.9 s and command 4.3 s, each starting its own local server;
+- modal analysis 2.3 s;
+- decode and eligibility 1.4 s;
+- render 0.7 s.
+
+Merging the two OPC UA exchanges into one server session is the largest speed
+item left. It was not done the night before the demo.
+
+### Score after the fixes: 79 / 100
+
+| Category | Weight | Morning | Now | Why |
+|---|---:|---:|---:|---|
+| Correct on intended inputs | 15 | 9 | 9 | every result matches the expert; test_01's correct Continue is now withheld (conservative, not wrong) |
+| Bad or unexpected inputs | 15 | 4 | **8** | every hostile input refused in 1-2 s before any model pass, publish or command. Limit: a colour-cast rule; a warm-toned non-micrograph would pass |
+| Safety guards applied consistently | 20 | 5 | **8** | full section advisory only and labelled. The confidence gate withholds 8 of 8 unsafe train/val calls and 0 of 10 darkened ones pass. Stale refusal still works. Limit: gate evidence is 13 calls, mostly on training sections |
+| Speed | 10 | 5 | **7** | live 31.5-38.6 s (was ~60); full section 210 s (was ~290); OPC UA still 10 s of it |
+| Installable by someone else | 10 | 4 | **8** | lock file installs and passes on Linux CI; checkpoint route documented; REEFPRINT pinned by content. Limit: the checkpoint still needs a person (licence), transitive deps float |
+| Honesty of on-screen claims | 10 | 7 | **9** | no hostile input reaches "measured"; every mode shows a labelled server-side time within ~3 s of the wall clock; full section and Evidence say what the gate does |
+| Security and offline | 5 | 9 | 9 | offline test now covers every served file; the wifi-off run on the presenting laptop is still the team's to do |
+| Scientific validity | 15 | 5 | **6** | new train/val evidence (confidence gate, darkened copies, eligibility with no fitted threshold) and a measured band undercoverage (75.7% vs nominal 85%). Still n = 12 test sections, magnetite 0, 3 of 4 thresholds unsourced, band not recalibrated |
+| **Total** | | **57.5** | **79.0** | |
+
+Not fixed, and why:
+- **Scientific limits.** n = 12, magnetite 0 and the unsourced thresholds need
+  data or literature.
+- **The OPC UA merge.** Transport risk the night before the demo.
+- **The wifi-off run.** It needs the presenting laptop.
+
+## Addendum: only validated samples touch the plant (Lethabo's PR #11 / #17 reviews)
+
+**The gap.** The colour-cast check is not an out-of-domain detector: a
+warm-toned non-micrograph passes it and could reach the OPC UA publish and
+command path. Lethabo's option (b) was taken.
+
+**The rule.**
+- Only the 12 held-out S2 sections, identified byte for byte by sha256
+  (`dashboard/validated_samples.json`), may publish to or command the simulator.
+- Every other upload is analysed and advised on, but marked **UNVERIFIED
+  SAMPLE · ADVISORY ONLY**, with OPC UA **NOT PUBLISHED** and the plant
+  **HELD**.
+- The preflight checks the test images on disk still match the manifest.
+- The 85% confidence gate is now labelled provisional on screen as well.
+
+**Re-run end to end, same evening.** OPC UA server start-ups were counted in
+the dashboard log.
+
+| Input | Colour check | Result | OPC UA server start-ups |
+|---|---|---|---:|
+| Text screenshot re-tinted warm (sepia) | passes | Marginal, model confidence **93%**; UNVERIFIED, NOT PUBLISHED, HELD 0 -> 0 | 0 |
+| Synthetic warm wood-grain texture, 1400x1000 | passes | Flag (not measurable), model confidence **92%**; UNVERIFIED, NOT PUBLISHED, HELD | 0 |
+| test_11 converted to PNG (real section, different file) | passes | **Grind finer at 91%**; UNVERIFIED, NOT PUBLISHED, HELD. It would have commanded the plant before this change | 0 |
+| test_11.jpg, the validated file | passes | Grind finer; VERIFIED SAMPLE · test_11; PUBLISHED + ACKNOWLEDGED; plant 0 -> 1; 32.6 s | 2 |
+| Stale refusal armed, then the warm texture, then test_11.jpg | – | the unverified upload did not spend the armed refusal; test_11 REFUSED, setting stays 0 | – |
+
+The confidences in the first two rows are why this was needed. The model is
+92-93% confident on pictures that are not micrographs, so neither the
+colour check nor the confidence gate could have kept them from the plant.
+Only the allowlist does.
+
+**Remaining limit.** Advice on an unverified upload is still shown (advisory
+only). A validated out-of-domain detector, tested against representative
+warm-toned negatives, is post-deadline work. Until it exists, the plant
+cannot be driven by a new sample at all.
