@@ -19,6 +19,21 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Codex — checkpoint-bound Reports API
+
+**Did:** Replaced the hard-coded active/inactive report split with a committed
+full-SHA checkpoint manifest. `/api/report` now displays metrics only for the
+loaded checkpoint, identifies exactly one matching known checkpoint as active,
+and returns an explicit unknown-checkpoint/no-metrics message otherwise.
+
+**Changed:** `reports/checkpoint-metrics.json`, `webapi/app.py`,
+`tests/test_workbench_report.py`.
+
+**Verified:** `pytest tests/test_workbench_report.py -q` — 3 passed, including
+both known SHAs and an unknown SHA.
+
+**Next:** Continue with the six-field inference API path.
+
 ## 2026-09-30 — Codex — merge main evidence sufficiency and six-field sampler
 
 **Did:** Merged `origin/main` into `codex/launch-live-demo` per the live-demo

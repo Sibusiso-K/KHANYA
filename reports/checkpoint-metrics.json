@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "checkpoints": {
+    "de7135a96541a46dc0981a991cb954186c7cd669ea1c1b33914d1929ae9b1357": {
+      "mean_iou": 0.5725,
+      "pixel_accuracy": 0.8914,
+      "n_test_images": 12,
+      "source": "reports/ACCURACY-REPORT.md",
+      "classes": [
+        {"name": "background", "iou": 0.8709, "recall": 0.9198, "color": "#8c96a1"},
+        {"name": "chalcopyrite", "iou": 0.5755, "recall": 0.7161, "color": "#f28136"},
+        {"name": "magnetite", "iou": 0.0, "recall": 0.0, "color": "#d6ac25"},
+        {"name": "pyrrhotite", "iou": 0.8695, "recall": 0.9343, "color": "#119eae"},
+        {"name": "pentlandite", "iou": 0.5468, "recall": 0.7420, "color": "#9562d1"}
+      ]
+    },
+    "fb78727d4859947d3605ccf9374f8defbc40897e9cf1b1922a52c1832d387067": {
+      "mean_iou": 0.4543,
+      "pixel_accuracy": 0.7716,
+      "n_test_images": 12,
+      "source": "reports/END-TO-END-LOCAL-DEMO-2026-09-30.md",
+      "classes": [
+        {"name": "background", "iou": 0.8756, "recall": 0.9266, "color": "#8c96a1"},
+        {"name": "chalcopyrite", "iou": 0.3537, "recall": 0.9287, "color": "#f28136"},
+        {"name": "magnetite", "iou": 0.0, "recall": 0.0, "color": "#d6ac25"},
+        {"name": "pyrrhotite", "iou": 0.6866, "recall": 0.7129, "color": "#119eae"},
+        {"name": "pentlandite", "iou": 0.3555, "recall": 0.7128, "color": "#9562d1"}
+      ]
+    }
+  }
+}

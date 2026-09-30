@@ -37,6 +37,8 @@ record_lock = threading.Lock()
 model = None
 plant = 0.0
 app = FastAPI(title="REEFPRINT local research API", version="0.1.0")
+CHECKPOINT_METRICS_PATH = ROOT / "reports" / "checkpoint-metrics.json"
+CHECKPOINT_METRICS = json.loads(CHECKPOINT_METRICS_PATH.read_text(encoding="utf-8"))["checkpoints"]
 
 def sample_path(sid):
     if sid not in samples:
@@ -315,18 +317,19 @@ def simulate(req:SimulationRequest):
 
 @app.get("/api/report")
 def report():
-    matched=MODEL_SHA==KNOWN_SHA
-    metrics={"mean_iou":.4543,"pixel_accuracy":.7716,"n_test_images":12,
-        "classes":[{"name":n,"iou":iou,"recall":recall,"color":c} for n,c,iou,recall in
-        zip(CLASSES,COLORS,[.8756,.3537,0,.6866,.3555],[.9266,.9287,0,.7129,.7128])]} if matched else None
-    return {"model_sha":MODEL_SHA,"checkpoint_available":bool(MODEL_SHA),"checkpoint_matches_report":matched,
-        "report_source":"reports/END-TO-END-LOCAL-DEMO-2026-09-30.md (recorded Kaggle run; not reevaluated by this UI)",
-        "metrics":metrics,"historical_baseline":{"model_sha_prefix":"de7135a","mean_iou":.5725,"pixel_accuracy":.8914,"active":False},
+    checkpoint=CHECKPOINT_METRICS.get(MODEL_SHA)
+    metrics={key: checkpoint[key] for key in ("mean_iou","pixel_accuracy","n_test_images","classes")} if checkpoint else None
+    return {"model_sha":MODEL_SHA,"checkpoint_available":bool(MODEL_SHA),"checkpoint_matches_report":checkpoint is not None,
+        "report_source":checkpoint["source"] if checkpoint else None,
+        "metrics":metrics,
+        "metrics_message":None if checkpoint else "Unknown checkpoint; no metrics are available for this SHA-256.",
+        "known_checkpoints":[{"model_sha":sha,"mean_iou":record["mean_iou"],
+            "pixel_accuracy":record["pixel_accuracy"],"source":record["source"],
+            "active":sha==MODEL_SHA} for sha,record in CHECKPOINT_METRICS.items()],
         "limitations":["Magnetite IoU is zero: the active checkpoint does not detect that phase.",
         "Only 12 publisher-held-out S2 sections; no prospective South African ore or plant validation.",
         "Live field inference measures one 512 px centre crop. It is not a whole-section estimate.",
         "Mean confidence is uncalibrated; the 85% simulation floor is provisional.",
-        "The stronger historical baseline belongs to another checkpoint and is not used for this screen.",
         "Runtime reports server-side decode, inference and analysis; it excludes network upload.",
         "No measured recovery gain, physical XRF device, or live plant connection."],
         "download_url":"/api/report/download"}
