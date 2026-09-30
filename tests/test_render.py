@@ -269,6 +269,21 @@ def test_evidence_view_names_mean_iou_and_hides_a_foreign_scorecard():
     assert "Scorecard hidden" in hidden and "Section mean IoU" not in hidden
 
 
+def test_evidence_says_when_the_live_gate_would_withhold_the_model_advice():
+    import numpy as np
+    from PIL import Image
+
+    image = Image.new("RGB", (8, 8))
+    mask = np.zeros((8, 8), dtype=np.int32)
+    scores = {"mismatch": False, "section_iou": 0.41, "pooled_iou": 0.5725,
+              "model_advice": "Continue at current setpoint",
+              "expert_advice": "Continue at current setpoint", "agree": True}
+    low = render.render_evidence("test_01", image, mask, mask, 0.781, 12, scores=scores)
+    assert "the live pipeline withholds it" in low and "78% confidence" in low
+    high = render.render_evidence("test_11", image, mask, mask, 0.905, 12, scores=scores)
+    assert "the live pipeline withholds it" not in high
+
+
 def test_full_section_is_advisory_only_and_says_so():
     import numpy as np
     from PIL import Image

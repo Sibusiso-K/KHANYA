@@ -208,6 +208,12 @@ def render_evidence(stem, image, ground_truth, predicted, mean_confidence,
         ground_truth_b64=_colourise_png_b64(ground_truth),
         predicted_phases_b64=_colourise_png_b64(predicted),
         confidence=mean_confidence,
+        # The saved advice is the advisor rules before the dashboard's confidence
+        # gate; say so when the gate would withhold it (pre-production finding 3).
+        withheld_by_gate=(scores is not None and not scores.get("mismatch")
+                          and not scores["model_advice"].startswith(advisor_module.ABSTAINING_PREFIXES)
+                          and mean_confidence < advisor_module.CONFIDENCE_FLOOR),
+        confidence_floor=advisor_module.CONFIDENCE_FLOOR,
     )
 
 
@@ -315,7 +321,8 @@ def render(image, labels, mean_confidence, result, recommendation,
         liberation_pct=0 if liberation_pct is None else liberation_pct,
         liberation_floor_pct=round(floor * 100),
         confidence=mean_confidence,
-        confidence_label="high" if mean_confidence >= 0.85 else "verify manually",
+        confidence_label=("high" if mean_confidence >= advisor_module.CONFIDENCE_FLOOR
+                          else "verify manually"),
         ore_area_fraction=result.ore_area_fraction,
         n_particles=result.n_particles,
         input_micrograph_b64=_image_png_b64(image),

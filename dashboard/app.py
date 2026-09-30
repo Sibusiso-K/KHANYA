@@ -235,16 +235,20 @@ if "plant" not in st.session_state:
 if reset_plant:
     st.session_state.plant.update(regrind_enabled=0.0, log=[], status=None)
 
-# Visible on purpose: the demo compares the pipeline with and without the lighting
-# check on the same section. Off is labelled everywhere it shows; the confidence
-# gate applies either way.
+# Off by default since 30 Sept, kept as an optional input-sensitivity diagnostic.
+# With the confidence gate on, the check caught no unsafe call the gate did not
+# already withhold on the 37 train/validation sections, cost 3 more correct calls
+# and doubled the time; on darkened copies the gate alone let 0 of 10 confident
+# calls through (reports/confidence_gate_darkened_trainval.json). Off is labelled
+# everywhere it shows; the confidence gate applies either way.
 lighting_check_on = st.toggle(
-    "Simulated lighting-perturbation check (live mode)",
-    value=True,
-    help=("On: a confident recommendation is issued only if it is unchanged on a copy "
-          "of the image with a fixed RGB offset (the median darkening between real "
-          "re-imagings of LumenStone V1 sections). Off: the confidence gate alone, "
-          "for comparison."),
+    "Simulated lighting-perturbation check (optional diagnostic, live mode)",
+    value=False,
+    help=("On: a confident recommendation is issued only if it is also unchanged on a "
+          "copy of the image with a fixed RGB offset (the median darkening between real "
+          "re-imagings of LumenStone V1 sections); doubles the time. Off (default): the "
+          "confidence gate alone, which on training/validation data withheld every "
+          "unsafe call the check caught."),
 )
 
 def show_landing(reason=None):
@@ -375,7 +379,9 @@ else:
                 "Tiling and predicting at native resolution — each frame below is "
                 "updated after a real tile classification."
             ):
-                progress_image = load_image(image_bytes)
+                # Built once at frame size, as the live path does, rather than resized
+                # from full resolution on every tile. Display only; no number changes.
+                progress_image = render.progress_preview(load_image(image_bytes))
 
                 def on_tile(completed, total, partial_labels, tile_box, tile_confidence):
                     # st.empty() returns a DeltaGenerator, which has no
