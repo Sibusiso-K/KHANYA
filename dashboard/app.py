@@ -299,8 +299,8 @@ else:
                     image_bytes, checkpoint_key, on_field
                 )
             with st.spinner(
-                "Lighting check: the same six fields, re-measured after the "
-                "lighting shift measured between real re-imagings of the same sections."
+                "Simulated lighting-perturbation check: the same fields, recomputed on "
+                "a copy darkened by a fixed RGB offset (R -34.8, G -32.5, B -29.6)."
             ):
                 from src.stability import reimaged
                 field_image = reimaged(load_image(image_bytes))
@@ -392,25 +392,28 @@ else:
         opcua_slot.empty()
         st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
         if lighting is not None:
-            st.subheader("Lighting check")
+            st.subheader("Simulated lighting-perturbation check")
             st.caption(
-                "The same six fields re-measured after the lighting shift measured "
-                "between real re-imagings of the same sections (LumenStone V1, median "
-                "of ten pairs). A confident instruction that changes with the lamp "
-                "is not issued."
+                "An input-sensitivity diagnostic, not a second capture. The same fields "
+                "are recomputed on a copy of this image with a fixed RGB offset subtracted "
+                "(R -34.8, G -32.5, B -29.6: the median darkening between real re-imagings "
+                "of ten LumenStone V1 sections). A confident instruction that changes is "
+                "not issued. On validation data this discarded 4 of 5 correct confident "
+                "calls while catching 5 of 8 wrong ones, and it doubles the analysis time "
+                "(reports/LIGHTING-CHECK-2026-09-30.md)."
             )
             imaged_col, shifted_col = st.columns(2)
             imaged_col.image(lighting["image"], caption=f"As imaged: {lighting['as_imaged']}",
                              use_container_width=True)
             shifted_col.image(lighting["shifted_image"],
-                              caption=f"After the re-imaging shift: {lighting['after_shift']}",
+                              caption=f"Simulated darker copy (fixed RGB offset): {lighting['after_shift']}",
                               use_container_width=True)
             if lighting["stable"]:
-                st.success("STABLE: the advice does not depend on the lighting.")
+                st.success("STABLE under the simulated perturbation: the advice is unchanged.")
             elif lighting["abstained"]:
                 st.info("The advice was already a refusal, so there was no instruction to protect.")
             else:
-                st.error("UNSTABLE: the advice changes with the lighting. "
+                st.error("UNSTABLE under the simulated perturbation: the advice changes. "
                          "No instruction issued; the plant is held.")
         st.subheader("Simulated plant response")
         st.caption(

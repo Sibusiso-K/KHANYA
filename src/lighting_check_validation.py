@@ -9,7 +9,8 @@ The model has seen the training sections, so its behaviour there is optimistic;
 the 6 validation sections are unseen but few. Both are reported separately.
 
 For each section, the live six-field pipeline runs twice, once as imaged and
-once after src.stability's measured re-imaging shift, and the advice is compared
+once on a copy with src.stability's fixed RGB offset subtracted (a simulated
+lighting perturbation, not a second capture), and the advice is compared
 with the advisor run on the expert-annotated whole section (the same reference
 policy src.decision_gap uses: consistency with expert labels, not plant truth).
 """
