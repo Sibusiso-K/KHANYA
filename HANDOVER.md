@@ -1,3 +1,18 @@
+## 2026-09-30 — Sibusiso (Claude review) — progressive scan checked live at 375 px
+
+**Checked 9c4661c on 127.0.0.1:8510 (de7135a9, test_11 Quick, 375 px):**
+- Works: lifespan warm-up; provisional bars during the run (pyrrhotite 96.7% at field 3, final 93.6%); "Mean confidence provisional"; the "no final advisory until completion" note. "Test in simulator" stays disabled until the result is complete, and "Grind finer" appears only after. Run took 16.7 s. No horizontal overflow and no text under 12 px mid-run.
+- **Fixed (this entry's commit):** the status line read "Field 3 of 63 / 6 fields classified", two labels with no separator. It now reads "Field 3 of 6 classified".
+
+**Still missing from codex-prompt-5b:**
+1. The timing line on the result card: it shows only "Runtime 16.7 s", while result.timings has the measured breakdown.
+2. Outlines of the finished fields on the image. The card covers the image and the reticle is decoration only.
+3. New tests: 9c4661c adds none. The Playwright provisional/advisory test, the model_ready test and the single-model-load test are all still to write.
+
+Provisional bars list the four minerals without background, so on test_11 they sum to 97%. Either show "background/resin" as a fifth row, like the final panel's "Background / other", or label them "share of analysed area".
+
+---
+
 ## 2026-09-30 — Sibusiso (Claude review) — warm start verified; provisional mix and timings fixed
 
 **Checked 3e68f12 on 127.0.0.1:8510 (de7135a9, test_11 Quick, two runs after a fresh start):**
