@@ -20,6 +20,7 @@
       // less than the frame itself, so a frame could only ever grow (e.g. after
       // turning a phone sideways, or a desktop first draw taller than the page).
       var height = Math.ceil(document.body.getBoundingClientRect().bottom + window.scrollY);
+      if (height < 10) return;   // inside a hidden tab: measure when it is shown
       if (Math.abs(frame.getBoundingClientRect().height - height) > 2) {
         frame.style.height = height + "px";
         frame.setAttribute("height", height);
