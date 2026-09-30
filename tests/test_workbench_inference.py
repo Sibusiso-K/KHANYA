@@ -45,7 +45,7 @@ def test_quick_inference_uses_six_field_predictor_and_records_measured_scope(tmp
     monkeypatch.setattr(patches, "field_coverage", lambda w, h: (6, 6 * 512 * 512 / (w * h)))
     monkeypatch.setattr(patches, "sliding_window_predict", lambda *a, **k: pytest.fail("quick mode must not use whole-section tiling"))
     from src import modal, advisor
-    monkeypatch.setattr(modal, "analyse", lambda *a, **k: SimpleNamespace(liberation=None))
+    monkeypatch.setattr(modal, "analyse", lambda *a, **k: SimpleNamespace(liberation=None, phase_fractions={}))
     monkeypatch.setattr(advisor, "advise", lambda *a, **k: SimpleNamespace(action="Continue at current setpoint", reason="Measured advisory"))
     monkeypatch.setattr(api, "verified_hashes", {})
     from webapi import safety

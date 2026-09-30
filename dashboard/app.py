@@ -15,7 +15,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from dashboard import render
-from dashboard.inputs import load_image, unavailable_reason
+from src.input_checks import load_image, unavailable_reason
 from src.segmentation import config
 
 
@@ -383,3 +383,4 @@ else:
             state_col.metric("command", command.state.upper())
             st.write(command.reason)
         st.dataframe(st.session_state.plant["log"], use_container_width=True, hide_index=True)
+

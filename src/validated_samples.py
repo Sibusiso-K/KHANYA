@@ -2,7 +2,7 @@
 
     python -m src.validated_samples
 
-Writes dashboard/validated_samples.json: the sha256 of each of the 12 held-out
+Writes src/data/validated_samples.json: the sha256 of each of the 12 held-out
 S2 test sections, byte for byte (hashes only, no image data). Only these files,
 the ones the accuracy report validates against expert annotation, may drive the
 simulator. Any other upload is analysed and advised on, but publishes nothing
@@ -18,7 +18,7 @@ import json
 
 from .segmentation import config, lumenstone as ls
 
-MANIFEST = config.ROOT / "dashboard" / "validated_samples.json"
+MANIFEST = config.ROOT / "src" / "data" / "validated_samples.json"
 
 
 def build():
@@ -43,3 +43,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

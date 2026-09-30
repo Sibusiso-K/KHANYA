@@ -4,7 +4,7 @@ import io
 import pytest
 from PIL import Image
 
-from dashboard.inputs import load_image, unavailable_reason
+from src.input_checks import load_image, unavailable_reason
 
 
 def test_corrupt_image_is_rejected():
@@ -41,3 +41,4 @@ def test_application_starts_with_visible_refusal_without_checkpoint(monkeypatch,
     frames = app.get("iframe")
     assert frames
     assert "checkpoint is missing" in frames[0].proto.srcdoc
+

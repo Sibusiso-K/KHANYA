@@ -72,7 +72,7 @@ def validated_sample(image_bytes: bytes) -> str | None:
 
     global _VALIDATED
     if _VALIDATED is None:
-        manifest = json.loads((Path(__file__).with_name("validated_samples.json")).read_text(encoding="utf-8"))
+        manifest = json.loads((Path(__file__).parent / "data" / "validated_samples.json").read_text(encoding="utf-8"))
         _VALIDATED = {digest: stem for stem, digest in manifest["sha256"].items()}
     return _VALIDATED.get(hashlib.sha256(image_bytes).hexdigest())
 
@@ -89,3 +89,4 @@ def load_image(image_bytes: bytes) -> Image.Image:
             Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
         raise ValueError("The upload could not be decoded safely. Choose an intact "
                          "JPG, PNG, or TIFF micrograph.") from exc
+
