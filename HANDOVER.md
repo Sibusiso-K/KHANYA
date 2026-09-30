@@ -19,6 +19,43 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Codex — local end-to-end launch and evidence
+
+**Did:** Launched the Streamlit KHANYA app at `http://127.0.0.1:8501/` from an
+isolated checkout, loaded the private Kaggle S2 patch checkpoint strictly,
+ran a fresh 512×512 held-out `test_01` inference, computed modal phase output,
+and passed the actual advisor action through the local OPC UA simulator. The
+simulated consumer acknowledged `regrind_enabled` changing 1 → 0 after a
+“Continue at current setpoint” advisory. Fresh CPU inference was 12.776 s;
+mean confidence 0.5316, so the advisor labeled it low confidence / verify
+manually. The full native-resolution evidence view was stopped because it
+kept consuming CPU for minutes; the measured whole-section path is not the
+right live demo mode.
+
+**Accuracy:** Kaggle run `20260929-185547`, checkpoint SHA-256
+`fb78727d4859947d3605ccf9374f8defbc40897e9cf1b1922a52c1832d387067`, has
+held-out mIoU 0.4543 / pixel accuracy 0.7716 and misses magnetite. This is
+weaker than `reports/ACCURACY-REPORT.md`'s `de7135a…` checkpoint (0.5725 /
+0.8914), so keep the latter as the report baseline until a comparable run
+beats it. No dataset or checkpoint was added to Git.
+
+**Checks:** 122 tests passed (2 pytest-cache permission warnings); checkpoint
+strict load, held-out inference, OPC UA simulated ack and localhost health
+checks passed. Full record: `reports/END-TO-END-LOCAL-DEMO-2026-09-30.md`.
+
+**Blocked on:** No Cloudflare Pages/Wrangler auth or deployment exists on this
+host. The active Supabase project has no application schema/storage/API; Azure
+is not deployed. The live build therefore remains localhost-only and has no
+PWA phone sync, cloud auth/persistence, 3D geology or real plant connection.
+
+**Next:** Keep the stronger checkpoint/report as baseline; run comparable
+training/evaluation before model promotion. Then connect Cloudflare and
+Supabase for a real cloud build, implement app schema/auth and private uploads,
+and validate on representative South African reference sections before
+describing this as a plant tool.
+
+---
+
 ## 2026-09-29 — Sibusiso (73) — the accuracy report, as one document (PR for review)
 
 **Did:** The brief says submissions *must include an accuracy report*. The

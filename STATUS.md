@@ -1,5 +1,18 @@
 # KHANYA / REEFPRINT — where the project actually stands
 
+**2026-09-30 local launch check:** the main-branch Streamlit research prototype
+now launches on localhost when the private S2 checkpoint, dataset and isolated
+runtime packages are supplied. One held-out 512×512 field completed through
+segmentation → measured modal output → conservative advisor → acknowledged
+local OPC UA simulator transaction in 12.776 s on CPU. The action was
+“Continue at current setpoint”, and simulated `regrind_enabled` changed 1 → 0.
+This is a local software demonstration, not a public cloud deployment, phone
+sync, real plant connection, South African ore validation, or recovery claim.
+The current Kaggle run checkpoint (`fb78727…`) scores mIoU 0.4543 and pixel
+accuracy 0.7716; it is weaker than the separately reported `de7135a…`
+checkpoint (mIoU 0.5725), so do not replace the report baseline. Full details
+are in [`reports/END-TO-END-LOCAL-DEMO-2026-09-30.md`](reports/END-TO-END-LOCAL-DEMO-2026-09-30.md).
+
 **Judge-readiness update: 2026-09-14.** The active presentation and
 production-readiness gaps are in [`JUDGE-READY-WORKPLAN.md`](JUDGE-READY-WORKPLAN.md).
 The current engineering scoreboard remains [`WORKBOARD.md`](WORKBOARD.md).
