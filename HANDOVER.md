@@ -1,3 +1,18 @@
+## 2026-09-30 — Sibusiso (Claude review) — warm start verified; provisional mix and timings fixed
+
+**Checked 3e68f12 on 127.0.0.1:8510 (de7135a9, test_11 Quick, two runs after a fresh start):**
+- Warm start works: model_ready was true when the page loaded, and runs took 19–21 s with no first-run penalty.
+- **Bug, fixed:** the provisional mix counted the zero-filled, not-yet-analysed section as background. After 5 of 6 fields it read background 85.7% / pyrrhotite 14.2% (final: 5.6% / 93.6%). It now counts only pixels inside finished boxes, each once. Measured: pyrrhotite 96.8 → 97.8 → 96.7 → 94.1 → 93.6% across fields 1–5; final 93.6%.
+- **Bug, fixed:** the timings were placeholders (analysis_s 0, write_s 0, per_field_s [], inference_s = total). Now measured: prepare 0.41, inference 17.83, analysis 0.85, write 0.44, total 19.52 s; per field 2.3–3.4 s. The four stages sum to total_s.
+- provisional_confidence is now the running mean over finished fields (it was the last field's value).
+- New test `test_provisional_mix_counts_only_analysed_fields_and_timings_add_up`.
+
+**Still not built (from codex-prompt-5):**
+- UI: provisional bars with the "Provisional · k of 6 fields" label; field outlines filling in; the timing line on the result card; hiding the advisory until the final result.
+- Tests: Playwright for those, and API tests for model_ready and a single model load under concurrent first requests.
+
+---
+
 ## 2026-09-30 — Sibusiso (Claude review) — approved-checkpoint change verified, three fixes
 
 **Decision:** the approved demo checkpoint is `de7135a9…` (mIoU 0.5725, pixel acc 0.8914). `fb78727…` is not approved. Lethabo: put `de7135a9` in `checkpoints/lumenstone_s2_patches/best.pt` on your host; the header badge will turn from amber to "approved".

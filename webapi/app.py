@@ -400,16 +400,35 @@ def run_inference(jid,sid,mode):
         coverage = None
         if mode == "field":
             field_count, coverage = field_coverage(image.width, image.height)
+        # The callback's label map is full-section and zero-filled outside the finished
+        # boxes, and 0 is background: count only pixels inside boxes analysed so far,
+        # each once (full-section windows overlap), or unanalysed area reads as resin.
+        tally={"analysed":None,"counts":np.zeros(len(CLASSES),dtype=np.int64),"confidences":[],"field_s":[]}
         def field_progress(completed,total,_labels,box,_confidence):
-            valid = _labels[_labels >= 0] if _labels is not None else np.array([], dtype=np.int64)
-            provisional = [{"name":name,"area_pct":float(np.mean(valid==i)*100),"color":COLORS[i]}
-                           for i,name in enumerate(CLASSES)] if valid.size else []
+            now=time.perf_counter()
+            tally["field_s"].append(round(now-tally.get("last",now),3)); tally["last"]=now
+            tally["confidences"].append(float(_confidence))
+            provisional=[]
+            if _labels is not None:
+                if tally["analysed"] is None:
+                    tally["analysed"]=np.zeros(_labels.shape,dtype=bool)
+                left,top,right,bottom=box
+                fresh=~tally["analysed"][top:bottom,left:right]
+                region=_labels[top:bottom,left:right][fresh]
+                region=region[(region>=0)&(region<len(CLASSES))]
+                tally["counts"]+=np.bincount(region.astype(np.int64),minlength=len(CLASSES))
+                tally["analysed"][top:bottom,left:right]=True
+                seen=int(tally["counts"].sum())
+                if seen:
+                    provisional=[{"name":name,"area_pct":float(tally["counts"][i]/seen*100),"color":COLORS[i]}
+                                 for i,name in enumerate(CLASSES)]
             workspace_jobs()[jid]["progress"]={"stage":"segmenting","completed":completed,"total":total,
                                               "fields_done":completed,"fields_total":total,
                                               "provisional_phases":provisional,
-                                              "provisional_confidence":float(_confidence),
+                                              "provisional_confidence":float(np.mean(tally["confidences"])),
                                               "box":list(box),"image_size":[image.width,image.height]}
         workspace_jobs()[jid]["progress"]={"stage":"segmenting","completed":0,"total":field_count or 0}
+        t_inference=tally["last"]=time.perf_counter()
         with torch.inference_mode():
             if mode=="field":
                 labels, confidence, mosaic_image, _boxes = multi_field_predict(model, image, "cpu",progress_callback=field_progress)
@@ -419,6 +438,7 @@ def run_inference(jid,sid,mode):
                 image = mosaic_image
             else:
                 labels,confidence=sliding_window_predict(model,image,"cpu",progress_callback=field_progress)
+        t_analysis=time.perf_counter()
         workspace_jobs()[jid]["progress"]={"stage":"measuring"}
         measured=modal.analyse(labels,CLASSES,refine=True)
         rec = advisor.confidence_gate(advisor.advise(measured, float(confidence)), float(confidence))
@@ -428,6 +448,7 @@ def run_inference(jid,sid,mode):
         directory.mkdir()
         from webapi.grain_evidence import write_grain_evidence
         grain_evidence = write_grain_evidence(labels, CLASSES, measured.phase_fractions, directory)
+        t_write=time.perf_counter()
         image.save(directory/"raw.png")
         rgb=np.zeros((*labels.shape,3),dtype=np.uint8)
         for i,color in enumerate(COLORS):
@@ -436,11 +457,16 @@ def run_inference(jid,sid,mode):
         mask.save(directory/"mask.png")
         Image.blend(image.convert("RGB"),mask,.6).save(directory/"overlay.png")
         phases=[{"name":name,"area_pct":float(np.mean(labels==i)*100),"color":COLORS[i]} for i,name in enumerate(CLASSES)]
+        t_end=time.perf_counter()
+        # Measured stage boundaries; the four stages sum to total_s.
+        timings={"prepare_s":round(t_inference-start,3),"inference_s":round(t_analysis-t_inference,3),
+                 "analysis_s":round(t_write-t_analysis,3),"write_s":round(t_end-t_write,3),
+                 "total_s":round(t_end-start,3),"per_field_s":tally["field_s"],
+                 "torch_threads":torch.get_num_threads()}
         r={"contract":1,"id":sid,"result_id":rid,"prediction_source":"fresh","phases":phases,
            "confidence":float(confidence),"advisory":{"action":action,"reason":reason},
-           "timings":{"inference_s":round(time.perf_counter()-start,3),"analysis_s":0.0,"write_s":0.0,
-                       "total_s":round(time.perf_counter()-start,3),"per_field_s":[],"torch_threads":torch.get_num_threads()},
-           "model_sha":MODEL_SHA,"image_sha":image_sha,"elapsed_seconds":round(time.perf_counter()-start,3),
+           "timings":timings,
+           "model_sha":MODEL_SHA,"image_sha":image_sha,"elapsed_seconds":timings["total_s"],
            "scope":(f"Quick: {field_count} × 512 px fields across the section · "
                     f"{coverage:.1%} area coverage · mosaic") if mode=="field" else "Full section · advisory only",
            "field_count":field_count,"field_coverage":coverage,

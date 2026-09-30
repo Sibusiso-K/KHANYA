@@ -64,3 +64,52 @@ def test_quick_inference_uses_six_field_predictor_and_records_measured_scope(tmp
     assert "6 × 512 px fields" in result["scope"]
     assert "89.4% area coverage" in result["scope"]
     assert result["raw_url"].endswith("layer=raw&result_id=" + result["result_id"])
+
+
+def test_provisional_mix_counts_only_analysed_fields_and_timings_add_up(tmp_path, monkeypatch):
+    # The predictor hands the callback a full-section map that is zero (background)
+    # outside finished fields; unanalysed area must not dilute the provisional mix.
+    ckpt = tmp_path / "best.pt"; ckpt.write_bytes(b"checkpoint")
+    image_path = tmp_path / "section.png"
+    Image.new("RGB", (1600, 1100), (190, 130, 80)).save(image_path)
+    monkeypatch.setattr(api, "CKPT", ckpt)
+    monkeypatch.setattr(api, "CKPT_STAMP", ckpt.stat().st_mtime_ns)
+    monkeypatch.setattr(api, "MODEL_SHA", "test-sha")
+    monkeypatch.setattr(api, "STORE", tmp_path / "store")
+    api.STORE.mkdir()
+    monkeypatch.setattr(api, "samples", {"sample": image_path})
+    monkeypatch.setattr(api, "model", object())
+    monkeypatch.setattr(api, "jobs", {"job": {"id": "job", "status": "queued"}})
+    pyrrhotite, pentlandite = api.CLASSES.index("pyrrhotite"), api.CLASSES.index("pentlandite")
+    seen = []
+    def predict(model, image, device, progress_callback=None):
+        full = np.zeros((1100, 1600), dtype=np.int64)
+        full[0:512, 0:512] = pyrrhotite
+        progress_callback(1, 2, full.copy(), (0, 0, 512, 512), .9)
+        seen.append({p["name"]: p["area_pct"] for p in api.jobs["job"]["progress"]["provisional_phases"]})
+        full[0:512, 600:1112] = pyrrhotite
+        full[0:256, 600:1112] = pentlandite
+        progress_callback(2, 2, full.copy(), (600, 0, 1112, 512), .8)
+        progress = api.jobs["job"]["progress"]
+        seen.append({p["name"]: p["area_pct"] for p in progress["provisional_phases"]})
+        assert progress["provisional_confidence"] == pytest.approx(.85)
+        return np.full((512, 1024), pyrrhotite, dtype=np.int64), .85, Image.new("RGB", (1024, 512)), [(0, 0, 512, 512)] * 2
+    from src.segmentation import patches
+    monkeypatch.setattr(patches, "multi_field_predict", predict)
+    monkeypatch.setattr(patches, "field_coverage", lambda w, h: (2, 2 * 512 * 512 / (w * h)))
+    from src import modal, advisor
+    monkeypatch.setattr(modal, "analyse", lambda *a, **k: SimpleNamespace(liberation=None, phase_fractions={name: 0.0 for name in api.CLASSES}))
+    monkeypatch.setattr(advisor, "advise", lambda *a, **k: SimpleNamespace(action="Continue at current setpoint", reason="Measured advisory"))
+    monkeypatch.setattr(api, "verified_hashes", {})
+    from webapi import safety
+    monkeypatch.setattr(safety, "check_input_colour", lambda image: None)
+    monkeypatch.setattr(safety, "input_evidence", lambda raw: {"verified": True, "verified_sample": "test_11"})
+    api.run_inference("job", "sample", "field")
+    assert api.jobs["job"]["status"] == "complete", api.jobs["job"].get("error")
+    assert seen[0]["pyrrhotite"] == pytest.approx(100) and seen[0]["background"] == 0
+    assert seen[1]["pyrrhotite"] == pytest.approx(75) and seen[1]["pentlandite"] == pytest.approx(25)
+    assert seen[1]["background"] == 0
+    t = api.jobs["job"]["result"]["timings"]
+    assert len(t["per_field_s"]) == 2
+    assert t["prepare_s"] + t["inference_s"] + t["analysis_s"] + t["write_s"] == pytest.approx(t["total_s"], abs=0.005)
+    assert t["write_s"] > 0
