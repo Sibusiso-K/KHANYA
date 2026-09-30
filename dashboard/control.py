@@ -6,8 +6,11 @@ transport works; it does not show a recommendation changing a plant setting.
 This module does: one explicitly simulated Boolean tag, `regrind_enabled`,
 driven by the advisor's action, carried across uploads by the caller.
 
-Only two actions command it. Every abstaining action (Marginal, Flag, No
-recommendation) issues no command, so the setting holds - a hold is the
+Only "Grind finer" commands it (regrind_enabled = 1). "Continue at current
+setpoint" means exactly that: no command, the setting stays where it is. It
+previously commanded 0, which switched regrind off while saying "continue"
+(Lethabo, PR #12 review). Every abstaining action (Marginal, Flag, No
+recommendation) also issues no command, so the setting holds - a hold is the
 absence of a command, not a stale record. Reagent actions target a parameter
 this simulator does not model, so they do not touch regrind either. The tag is
 illustrative: it is not an engineered plant recommendation or a P80 target.
@@ -24,7 +27,7 @@ REGRIND_HEAD = "regrind_enabled"
 
 @dataclass(frozen=True)
 class CommandStatus:
-    state: str  # applied | held | refused | unavailable | error
+    state: str  # applied | unchanged | held | refused | unavailable | error
     before: float
     after: float
     reason: str
@@ -36,7 +39,7 @@ def command_for(action: str) -> tuple[float | None, str]:
     if action == "Grind finer":
         return 1.0, "confident low-liberation advisory: regrind requested"
     if action == "Continue at current setpoint":
-        return 0.0, "within specification: regrind not requested"
+        return None, "within specification: continue at the current setting, no command issued"
     if action.startswith("Adjust reagent dosage"):
         return None, "advisory targets reagent dosage, which this simulator does not model: no regrind command"
     return None, "advisory is abstaining: no command issued, setting held for review"
@@ -60,7 +63,8 @@ def send_command(action: str, before: float, *, stale: bool = False, on_event=No
     """Command the simulated regrind tag from `action`, starting from the plant's current value."""
     value, reason = command_for(action)
     if value is None:
-        return CommandStatus("held", before, before, reason)
+        state = "unchanged" if action == "Continue at current setpoint" else "held"
+        return CommandStatus(state, before, before, reason)
     try:
         from src.polarimetry import ensure_reefprint
         ensure_reefprint()

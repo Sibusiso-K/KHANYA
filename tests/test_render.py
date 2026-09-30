@@ -210,7 +210,31 @@ def test_control_strip_shows_decision_evidence_and_plant_state():
                          result, recommendation, plant=plant, lighting=lighting,
                          evidence_scope="six 512 px fields")
     assert "No recommendation — too few payload particles" in html
-    assert "need ≥ 9" in html and "six 512 px fields" in html
-    assert "LIGHTING UNSTABLE" in html
+    assert "provisional floor 9" in html and "six 512 px fields" in html
+    assert "need ≥" not in html
+    assert "SIMULATED LIGHTING: UNSTABLE" in html
+    assert "@media (max-width: 900px)" in html
     assert "PLANT · SIMULATED CIRCUIT" in html and ">HELD<" in html
     assert "no plant connected" in html
+
+
+def test_strip_marks_the_unguarded_pipeline_and_a_no_change_continue():
+    import numpy as np
+    from PIL import Image
+
+    from dashboard.control import CommandStatus
+    from src.advisor import advise
+    from src.modal import ModalResult
+
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.8, 0.95, 12, 64,
+                         n_payload_particles=30)
+    recommendation = advise(result, 0.95)
+    assert recommendation.action == "Continue at current setpoint"
+    lighting = {"stable": False, "abstained": False, "off": True,
+                "as_imaged": recommendation.action, "after_shift": "check switched off",
+                "image": Image.new("RGB", (64, 64)), "shifted_image": None}
+    plant = CommandStatus("unchanged", 1.0, 1.0, "within specification: no command issued")
+    html = render.render(Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
+                         result, recommendation, plant=plant, lighting=lighting)
+    assert "LIGHTING CHECK OFF · UNGUARDED" in html
+    assert ">UNCHANGED<" in html and "1 → 1" in html

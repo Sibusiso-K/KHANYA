@@ -300,9 +300,31 @@ FIELD_GRID = (3, 2)
 FIELD_GAP = 2  # px of background between fields in the mosaic
 
 
+def field_grid(width, height, grid=FIELD_GRID, patch=PATCH):
+    """The largest grid, up to `grid`, whose fields fit without overlapping.
+
+    A smaller upload gets fewer fields rather than the same crop repeated: at
+    512x512 every one of six clamped fields was identical, which counted the same
+    particles six times (Lethabo, PR #12 review).
+    """
+    return min(grid[0], width // patch), min(grid[1], height // patch)
+
+
+def field_coverage(width, height, grid=FIELD_GRID, patch=PATCH):
+    """(number of fields, fraction of the image they cover) for this image size."""
+    columns, rows = field_grid(width, height, grid, patch)
+    count = columns * rows
+    return count, count * patch * patch / float(width * height)
+
+
 def field_boxes(width, height, grid=FIELD_GRID, patch=PATCH):
-    """(left, top, right, bottom) of each field, centred in an even grid."""
-    columns, rows = grid
+    """(left, top, right, bottom) of each field, centred in an even grid.
+
+    Fields never overlap; the grid shrinks to fit the image (see field_grid).
+    """
+    columns, rows = field_grid(width, height, grid, patch)
+    if columns < 1 or rows < 1:
+        raise ValueError(f"image is {width}x{height}, smaller than one {patch}x{patch} field")
     boxes = []
     for row in range(rows):
         for column in range(columns):
@@ -311,6 +333,10 @@ def field_boxes(width, height, grid=FIELD_GRID, patch=PATCH):
             left = min(max(centre_x - patch // 2, 0), width - patch)
             top = min(max(centre_y - patch // 2, 0), height - patch)
             boxes.append((left, top, left + patch, top + patch))
+    for i, a in enumerate(boxes):
+        for b in boxes[i + 1:]:
+            if not (a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1]):
+                raise AssertionError(f"fields overlap: {a} and {b}")
     return boxes
 
 
@@ -340,7 +366,7 @@ def multi_field_predict(model, image, dev, grid=FIELD_GRID, patch=PATCH,
             f"image is {width}x{height}, smaller than one {patch}x{patch} field; "
             "use the full-section path instead."
         )
-    columns, rows = grid
+    columns, rows = field_grid(width, height, grid, patch)
     boxes = field_boxes(width, height, grid, patch)
     step = patch + FIELD_GAP
     mosaic_labels = np.zeros((rows * step - FIELD_GAP, columns * step - FIELD_GAP), dtype=np.int64)

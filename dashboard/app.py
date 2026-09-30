@@ -224,20 +224,17 @@ if "plant" not in st.session_state:
     st.session_state.plant = {"regrind_enabled": 0.0, "log": [], "commanded": None, "status": None}
 if reset_plant:
     st.session_state.plant.update(regrind_enabled=0.0, log=[], status=None)
-# A declared starting state, so a stable "Continue" can visibly switch regrind
-# off. On the held-out set no "Grind finer" survives the lighting check in live
-# mode (reports/LIGHTING-CHECK-2026-09-30.md), so the plant is never switched on
-# by a live reading here; it is set up, logged as such, and said out loud.
-if presenter.button(
-    "START WITH REGRIND ON (declared setup)",
-    help="Sets regrind_enabled = 1 as the scene's starting state and logs it as a manual setup, not an advisory.",
-):
-    st.session_state.plant.update(regrind_enabled=1.0, status=None)
-    st.session_state.plant["log"].append({
-        "time": time.strftime("%H:%M:%S"), "image": "-", "advisory": "-",
-        "command": "manual setup", "regrind_enabled": "set to 1",
-        "reason": "presenter's declared starting state, not a model output",
-    })
+
+# Visible on purpose: the demo compares the guarded and unguarded pipeline on the
+# same section. Off is labelled as unguarded everywhere it shows.
+lighting_check_on = st.toggle(
+    "Simulated lighting-perturbation check (live mode)",
+    value=True,
+    help=("On: a confident recommendation is issued only if it is unchanged on a copy "
+          "of the image with a fixed RGB offset (the median darkening between real "
+          "re-imagings of LumenStone V1 sections). Off: the unguarded pipeline, "
+          "for comparison."),
+)
 
 def show_landing(reason=None):
     with landing_slot.container():
@@ -346,7 +343,8 @@ else:
                 image, labels, mean_confidence, elapsed = predict_live_field(
                     image_bytes, checkpoint_key, on_field
                 )
-            mode_label = "Live sampled fields, six 512×512 fields"
+            mode_label = ("Live sampled 512×512 fields" if lighting_check_on
+                          else "Live sampled 512×512 fields, lighting check OFF (unguarded)")
         else:
             with st.spinner(
                 "Tiling and predicting at native resolution — each frame below is "
@@ -378,7 +376,11 @@ else:
         result = modal.analyse(labels, ls.CLASS_NAMES, refine=True)
         recommendation = advise(result, mean_confidence)
         lighting = None
-        if mode == LIVE_FIELD_LABEL:
+        if mode == LIVE_FIELD_LABEL and not lighting_check_on:
+            lighting = {"as_imaged": recommendation.action, "after_shift": "check switched off",
+                        "image": image, "shifted_image": None,
+                        "stable": False, "abstained": False, "off": True}
+        elif mode == LIVE_FIELD_LABEL:
             from src import stability
             as_imaged = recommendation
             if stability.is_abstaining(as_imaged.action):
@@ -390,14 +392,14 @@ else:
                             "stable": False, "abstained": True}
             else:
                 with st.spinner(
-                    "Lighting check: the same six fields, re-measured after the "
-                    "lighting shift measured between real re-imagings of the same sections."
+                    "Simulated lighting-perturbation check: the same fields, recomputed on "
+                    "a copy darkened by a fixed RGB offset (R -34.8, G -32.5, B -29.6)."
                 ):
                     field_image = stability.reimaged(render.progress_preview(load_image(image_bytes)))
                     shifted_image, shifted_labels, shifted_confidence, shifted_elapsed = (
                         predict_live_field(image_bytes, checkpoint_key, on_field, reimage=True))
                 elapsed += shifted_elapsed
-                mode_label = "Live sampled fields, six 512×512 fields, lighting-checked"
+                mode_label = "Live sampled 512×512 fields, lighting-checked"
                 after_shift = advise(modal.analyse(shifted_labels, ls.CLASS_NAMES, refine=True),
                                      shifted_confidence)
                 recommendation = stability.gate(as_imaged, after_shift.action)
@@ -421,7 +423,7 @@ else:
             on_event=lambda message: opcua_slot.info(message),
         )
         plant = st.session_state.plant
-        command_key = (uploaded.file_id, mode)
+        command_key = (uploaded.file_id, mode, lighting_check_on)
         if command_key != plant["commanded"] or stale_requested:
             command = send_command(
                 recommendation.action, plant[REGRIND_HEAD], stale=stale_requested,
@@ -432,13 +434,22 @@ else:
                 "time": time.strftime("%H:%M:%S"),
                 "image": uploaded.name,
                 "advisory": recommendation.action,
+                "lighting check": ("n/a" if mode != LIVE_FIELD_LABEL
+                                   else "on" if lighting_check_on else "OFF (unguarded)"),
                 "command": command.state,
                 "regrind_enabled": f"{command.before:g} → {command.after:g}",
                 "reason": command.reason,
             })
         command = plant["status"]
-        evidence_scope = ("six 512 px fields, 18% of the section"
-                          if mode == LIVE_FIELD_LABEL else "whole section, native resolution")
+        if mode == LIVE_FIELD_LABEL:
+            import io
+            from PIL import Image as PILImage
+            from src.segmentation.patches import field_coverage
+            n_fields, coverage = field_coverage(*PILImage.open(io.BytesIO(image_bytes)).size)
+            evidence_scope = (f"{n_fields} × 512 px field{'s' if n_fields != 1 else ''}, "
+                              f"{coverage:.0%} of the image")
+        else:
+            evidence_scope = "whole section, native resolution"
         html = render.render(image, labels, mean_confidence, result, recommendation,
                              mode_label=mode_label, elapsed_seconds=elapsed,
                              opcua_status=opcua_status, plant=command,
@@ -452,12 +463,20 @@ else:
         st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
         with st.expander("Command log and lighting-check detail", expanded=False):
             if lighting is not None:
+                st.caption(
+                    "Simulated lighting-perturbation check: an input-sensitivity diagnostic, "
+                    "not a second capture. The same fields are recomputed on a copy of this "
+                    "image with a fixed RGB offset subtracted (R -34.8, G -32.5, B -29.6: the "
+                    "median darkening between real re-imagings of ten LumenStone V1 sections). "
+                    "On validation data it discarded 4 of 5 correct confident calls while "
+                    "catching 5 of 8 wrong ones (reports/LIGHTING-CHECK-2026-09-30.md)."
+                )
                 imaged_col, shifted_col = st.columns(2)
                 imaged_col.image(lighting["image"], caption=f"As imaged: {lighting['as_imaged']}",
                                  use_container_width=True)
                 if lighting["shifted_image"] is not None:
                     shifted_col.image(lighting["shifted_image"],
-                                      caption=f"After the re-imaging shift: {lighting['after_shift']}",
+                                      caption=f"Simulated darker copy (fixed RGB offset): {lighting['after_shift']}",
                                       use_container_width=True)
             if command is None:
                 st.write(f"Simulated plant reset: regrind_enabled = "

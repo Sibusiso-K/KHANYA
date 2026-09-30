@@ -337,6 +337,7 @@ def render(image, labels, mean_confidence, result, recommendation,
         plant=plant,
         lighting=None if lighting is None else {
             **{k: lighting[k] for k in ("stable", "abstained", "as_imaged", "after_shift")},
+            "off": lighting.get("off", False),
             "as_imaged_b64": _thumbnail_b64(lighting["image"]),
             "shifted_b64": (None if lighting["shifted_image"] is None
                             else _thumbnail_b64(lighting["shifted_image"])),

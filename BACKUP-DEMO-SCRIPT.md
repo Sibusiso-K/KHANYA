@@ -79,38 +79,49 @@ declines to issue a normal recommendation because the model's predicted
 payload signal is below its configured floor. It does not prove that the
 model recognised the input as out of domain.
 
-### Beat 4 — the plant parameter moves, refuses on thin evidence, holds, and rejects stale (Live sampled fields)
+### Beat 4 — guarded vs unguarded on the same section (Live sampled fields)
 
-The brief asks to see the model's output adjust a plant parameter. Below the
-result is **Simulated plant response**: one illustrative tag, `regrind_enabled`
-(1 = regrind, 0 = bypass), commanded over a real local OPC UA exchange. The live
-mode samples **six 512 px fields** across the section, and the advisor will not
-advise on fewer than **9 payload-bearing particles**. Expected values from
-`reports/field_sampling_s2.json`; steps 2 and 3 verified in the running
-dashboard on 2026-09-30.
+The brief asks to see the model's output adjust a plant parameter. The strip at
+the top of each result shows the **simulated circuit**: one illustrative tag,
+`regrind_enabled` (1 = regrind, 0 = bypass), commanded over a real local OPC UA
+exchange. Only *Grind finer* commands it. *Continue at current setpoint* changes
+nothing (**UNCHANGED**). Every refusal **HOLDS**.
 
-1. **RESET SIMULATED PLANT.** Shows `regrind_enabled = 0`.
-2. Upload `S2_v2/imgs/test/test_11.jpg` → six fields light up across the section
-   → *Grind finer* on 10 payload particles → **0 → 1, APPLIED**.
-3. Upload `test_04.jpg` → **"No recommendation - too few payload particles"**:
-   six fields but only 4 payload-bearing particles → **1 → 1, HELD**. Say: *"It
-   won't tell a plant anything on four particles."*
-4. Upload `test_03.jpg` → *Marginal* (46 payload particles, association inside
-   the uncertainty band) → **HELD**.
-5. Press **TRIGGER STALE OPC UA REFUSAL** (nothing fires on the image on screen),
-   then upload `test_01.jpg` → **REFUSED**, "consumer refused stale command
-   regrind_enabled=0 ... setting unchanged". It would have turned regrind off;
-   it stays at 1.
+The visible toggle **Simulated lighting-perturbation check** switches the guard.
+When ON, a confident recommendation is issued only if it is unchanged on a copy
+of the image with a fixed RGB offset (R -34.8, G -32.5, B -29.6, the median
+darkening measured between real re-imagings of LumenStone V1 sections). It is a
+simulated perturbation, not a second capture.
 
-Say: "The simulated plant only moves on a fresh, confident advisory backed by
-enough evidence. Thin evidence and uncertain evidence hold it, and an expired
-command is refused." Do not call this a real plant, a P80 target or a recovery
-gain.
+1. **RESET SIMULATED PLANT** (presenter controls). `regrind_enabled = 0`.
+2. Check **ON**. Upload `S2_v2/imgs/test/test_11.jpg`. As imaged it says *Grind
+   finer*; on the darker copy it says *no payload detected*. → **SIMULATED
+   LIGHTING: UNSTABLE**, no recommendation, plant **HELD at 0**.
+3. Switch the check **OFF**. The same section re-runs. → *Grind finer*,
+   **LIGHTING CHECK OFF · UNGUARDED**, plant **0 → 1 APPLIED**. Say: *"This is
+   what an unguarded system does to your plant, on advice that disappears when
+   the image is slightly darker."*
+4. Switch the check back **ON**. Upload `test_04.jpg` → **no recommendation: 4
+   payload-bearing particles, below the provisional floor of 9** → **HELD**.
+5. Upload `test_01.jpg` → *Continue*, stable under the perturbation →
+   **UNCHANGED** (no command sent).
+6. *Optional, stale refusal:* RESET, press **TRIGGER STALE OPC UA REFUSAL**,
+   switch the check OFF, upload `test_11.jpg` → **REFUSED**: the command would
+   have set 1, it expired, the setting stays 0.
+
+Say: *"The simulated plant moves only on a fresh, confident recommendation that
+survives a simulated lighting change and rests on enough particles. Everything
+else holds."* Do not call this a real plant, a P80 target or a recovery gain.
+Do not call the floor of 9 a statistical bound, or the perturbation a second
+capture. On validation data the check withheld 4 of 5 correct confident calls;
+say so if asked.
 
 **Why six fields, not one:** a single centre field held 0-20 payload particles
-and matched the whole section's advice on 0 of 12 held-out sections once the
-gate applies; six fields match on 9 of 12. The previous version of this beat
-decided test_11 on one field holding **one** payload particle.
+and matched the whole section's advice on 0 of 12 held-out sections; six fields
+match on 9 of 12.
+
+**Time it takes on this laptop's CPU:** about a minute when the check runs its
+second pass. Rehearse the pause.
 
 ## What NOT to show live if the venue timing is tight
 
