@@ -1,0 +1,31 @@
+import {useEffect,useRef,useState} from 'react';
+import type {RefObject} from 'react';
+import {grainIdAt,pixelForClick} from './grainSelection.js';
+
+type Grain={id:number;area_px:number;ecd_px:number;phases:Record<string,number>;payload_fraction:number;liberated:boolean;bbox:number[]};
+type Report={n_grains:number;n_payload_grains:number;grains:Grain[];weight_percent:Record<string,number>;association:Record<string,Record<string,number>>;liberation_by_size:{from_px:number;to_px:number|null;payload_grains:number;payload_area_px:number;liberated_share:number|null}[];microns_per_pixel:number|null};
+type Props={resultId:string;phases:{name:string;area_pct:number;color:string}[];imageRef:RefObject<HTMLImageElement|null>;stageRef:RefObject<HTMLDivElement|null>};
+const colours:Record<string,string>={chalcopyrite:'#f28136',magnetite:'#d6ac25',pyrrhotite:'#119eae',pentlandite:'#9562d1',background:'#8c96a1'};
+const label=(s:string)=>s.replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase());
+
+export default function GrainInspector({resultId,phases,imageRef,stageRef}:Props){
+  const ids=useRef<HTMLCanvasElement>(null),highlight=useRef<HTMLCanvasElement>(null),[report,setReport]=useState<Report|null>(null),[chosen,setChosen]=useState<Grain|null>(null),[miss,setMiss]=useState(false),[mapReady,setMapReady]=useState(false);
+  useEffect(()=>{let stop=false;setReport(null);setChosen(null);setMiss(false);setMapReady(false);const load=async()=>{try{const response=await fetch(`/api/results/${resultId}/grains`);if(!response.ok)throw new Error();const data:Report=await response.json();if(stop)return;setReport(data);const image=new Image();image.onload=()=>{if(stop||!ids.current||!highlight.current)return;for(const canvas of [ids.current,highlight.current]){canvas.width=image.naturalWidth;canvas.height=image.naturalHeight}ids.current.getContext('2d',{willReadFrequently:true})?.drawImage(image,0,0);setMapReady(true)};image.onerror=()=>{if(!stop)setMiss(true)};image.src=`/api/results/${resultId}/grain-ids.png`;}catch{if(!stop)setMiss(true)}};void load();return()=>{stop=true}},[resultId]);
+  useEffect(()=>{const src=ids.current,dst=highlight.current;if(!src||!dst||!chosen)return;const ctx=src.getContext('2d',{willReadFrequently:true}),out=dst.getContext('2d');if(!ctx||!out)return;const {width,height}=src;const image=ctx.getImageData(0,0,width,height),pixels=image.data;for(let i=0;i<pixels.length;i+=4){const id=grainIdAt(pixels,i/4);if(id===chosen.id){pixels[i]=255;pixels[i+1]=220;pixels[i+2]=70;pixels[i+3]=220}else pixels[i+3]=0}out.putImageData(image,0,0)},[chosen,report]);
+  useEffect(()=>{const stage=stageRef.current;if(!stage)return;const select=(event:MouseEvent)=>{const image=imageRef.current,canvas=ids.current;if(!image||!canvas||!report)return;const rect=image.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)return;const {x,y}=pixelForClick(event.clientX,event.clientY,rect,canvas.width,canvas.height),pixel=canvas.getContext('2d',{willReadFrequently:true})?.getImageData(x,y,1,1).data;if(!pixel)return;const id=grainIdAt(pixel,0),grain=report.grains.find(g=>g.id===id);setChosen(grain||null);setMiss(id===0||!grain)};stage.addEventListener('click',select);return()=>stage.removeEventListener('click',select)},[imageRef,stageRef,report]);
+  return <>
+    <canvas className="grain-map-hidden" ref={ids} aria-hidden="true"/><canvas className="grain-highlight" ref={highlight} aria-hidden="true"/>
+    <div className="grain-evidence panel">
+      <div className="grain-evidence-head"><div><h2>Grain-level evidence</h2><p>{report&&mapReady?`${report.n_grains} advisor-matched grains · ${report.n_payload_grains} with valuable mineral`:miss?'Grain evidence is unavailable':'Loading result-bound grain map…'}</p></div></div>
+      {report&&mapReady&&<>
+        <div className="grain-comparison-panels">
+          <section><h3>Composition</h3><p>Area % from the predicted phase map</p>{phases.map(p=><div className="grain-metric" key={p.name}><span><i style={{background:colours[p.name]||p.color}}/>{label(p.name)}</span><b>{p.area_pct.toFixed(1)}%</b><b>{(report.weight_percent[p.name]||0).toFixed(1)}% <small>weight</small></b></div>)}<small>Weight share is estimated, not an assay.</small></section>
+          <section><h3>Mineral contacts</h3><p>Share of each mineral boundary; resin means free surface.</p>{Object.entries(report.association).map(([mineral,neighbours])=><div className="grain-contact" key={mineral}><strong>{label(mineral)}</strong><span>{Object.entries(neighbours).map(([other,share])=>`${label(other)} ${(share*100).toFixed(1)}%`).join(' · ')}</span></div>)}</section>
+          <section><h3>Liberation by grain size</h3><p>Payload-area share meeting the advisor’s 50% free-particle rule.</p>{report.liberation_by_size.map((bin,i)=><div className="grain-metric" key={i}><span>{bin.to_px===null?`≥ ${bin.from_px}`:`${bin.from_px}–${bin.to_px}`} px</span><b>{bin.payload_grains} grains</b><b>{bin.liberated_share===null?'—':`${(bin.liberated_share*100).toFixed(1)}%`}</b></div>)}</section>
+        </div>
+        <div className="grain-selected" aria-live="polite">{chosen?<><h3>Grain {chosen.id}</h3><p>{Object.entries(chosen.phases).map(([name,share])=>`${label(name)} ${(share*100).toFixed(1)}%`).join(' · ')||'No classified mineral pixels'}</p><p>Equivalent circle diameter: {chosen.ecd_px.toFixed(1)} px{report.microns_per_pixel?` · ${(chosen.ecd_px*report.microns_per_pixel).toFixed(1)} µm`:''} · Valuable-mineral share: {(chosen.payload_fraction*100).toFixed(1)}% · <strong>{chosen.liberated?'FREE':'LOCKED'}</strong></p></>:miss?<p>No retained grain at this pixel. It is resin/background or a fragment below the advisor’s 64 px minimum; the ID map cannot distinguish those cases.</p>:<p>Tap or click a grain in the phase overlay or mask to inspect it. {report.microns_per_pixel?'Sizes are scaled from the configured imaging scale.':'Sizes are in pixels; no micron scale is configured.'}</p>}</div>
+      </>}
+      {miss&&report&&<span className="sr-only">No grain was selected</span>}
+    </div>
+  </>;
+}

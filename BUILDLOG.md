@@ -27,3 +27,5 @@ Added 3D/plan/section geological demo, validated QGIS GeoJSON survey import/link
 ## 2026-09-30 — durable local sample records
 Notes and assay CSV imports now save to versioned FastAPI records with atomic disk writes and stale-write protection. Browser save/reload verified; QA note removed. 30 Python tests and prior12spatial tests pass; frontend build passes. Cloud readiness audit found Azure expired MFA and no usable Supabase/Cloudflare project configuration in this session. See reports/LOCAL-RECORDS-HANDOVER-2026-09-30.md. No public deployment or accuracy improvement claimed.
 
+
+Post-integration verification: remote 6b57daf merged without dropping its input-check refactor or grain helpers. Final combined focused backend/input suite: 74 passed; 12 spatial contracts, three grain utility/selection tests, two serial desktop/mobile browser tests passed. Regenerated bundle after merge. Public browser sign-in page verified; actual user cloud round trip pending.

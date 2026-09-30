@@ -61,13 +61,13 @@ def test_copied_speed_advisor_confidence_gate_withholds_positive_action():
     assert advisor.confidence_gate(abstention, .2) is abstention
 
 def test_input_colour_checks_refuse_greyscale_and_cool_cast():
-    from dashboard.inputs import colour_cast_reason
+    from src.input_checks import colour_cast_reason
     from PIL import Image
     assert "no colour" in colour_cast_reason(Image.new("RGB", (8, 8), (90, 90, 90)))
     assert "colour balance" in colour_cast_reason(Image.new("RGB", (8, 8), (60, 100, 160)))
 
 def test_test_11_original_bytes_match_the_committed_manifest():
-    from dashboard.inputs import validated_sample
+    from src.input_checks import validated_sample
     from pathlib import Path
     path = Path(__file__).resolve().parents[1] / "data/raw/lumenstone/S2_v2/imgs/test/test_11.jpg"
     if not path.is_file():
@@ -78,7 +78,7 @@ def test_test_11_original_bytes_match_the_committed_manifest():
 
 def test_verified_sample_matches_exact_raw_bytes(monkeypatch):
     import hashlib
-    from dashboard import inputs
+    from src import input_checks as inputs
     sample = b"held-out sample bytes"
     monkeypatch.setattr(inputs, "_VALIDATED", {hashlib.sha256(sample).hexdigest(): "test_11"})
     assert inputs.validated_sample(sample) == "test_11"

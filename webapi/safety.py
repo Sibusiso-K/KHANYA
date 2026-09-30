@@ -1,5 +1,5 @@
 """Input eligibility for the workbench's advisory and local simulator paths."""
-from dashboard.inputs import check_colour_cast, validated_sample
+from src.input_checks import check_colour_cast, validated_sample
 
 
 def check_input_colour(image):
