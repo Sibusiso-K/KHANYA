@@ -1,4 +1,6 @@
 {
+  "approved_for_demo": "de7135a96541a46dc0981a991cb954186c7cd669ea1c1b33914d1929ae9b1357",
+  "approved_reason": "best held-out mIoU, the subject of reports/ACCURACY-REPORT.md",
   "schema_version": 1,
   "checkpoints": {
     "de7135a96541a46dc0981a991cb954186c7cd669ea1c1b33914d1929ae9b1357": {

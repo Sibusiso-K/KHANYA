@@ -3817,3 +3817,11 @@ Latest backend continuation: reports/LOCAL-RECORDS-HANDOVER-2026-09-30.md (versi
 **Next:** Review PR #15 and verify the real Quick-mode grain click on the presentation laptop.
 
 ---
+## 2026-09-30 — Codex — approved checkpoint contract
+
+**Did:** Bound the local API and simulator to the approved `de7135a9` checkpoint, exposed approval state in health/report responses and startup logs, added explicit non-approved refusal coverage, and restyled the workbench header with a model badge and warning banner. Corrected the demo evidence header and added the live-result/control audit with a TODO to rerun the historical `test_11` result on the approved checkpoint.
+
+**Verified:** API report/simulator tests 6 passed; frontend build passed; grain-selection and Playwright tests passed (2). Browser verification of the new badge/banner against both mocked approval states remains to be captured after this commit.
+
+---
+

@@ -26,3 +26,16 @@ def test_api_issued_simulator_sessions_keep_independent_state(session_api):
     assert event_a["before"] == event_a["after"] == 0
     assert event_b["before"] == event_b["after"] == 0
     assert session_api.post("/api/simulate", json={"result_id": "r", "session_id": "invented"}).status_code == 404
+
+
+def test_simulator_holds_a_valid_advisory_when_checkpoint_is_not_approved(session_api, monkeypatch):
+    sha = "f" * 64
+    monkeypatch.setattr(api, "MODEL_SHA", sha)
+    monkeypatch.setattr(api, "APPROVED_MODEL_SHA", "d" * 64)
+    api.results["r"] = {"result_id":"r", "verified":True, "verified_sample":True,
+        "model_sha":sha, "mode":"field", "confidence":.99,
+        "created_at":__import__("time").time(), "advisory":{"action":"Grind finer"}}
+    sid = session_api.post("/api/simulation-sessions", json={}).json()["session_id"]
+    event = session_api.post("/api/simulate", json={"result_id":"r", "session_id":sid}).json()
+    assert event["state"] == "held"
+    assert "not approved" in event["reason"]

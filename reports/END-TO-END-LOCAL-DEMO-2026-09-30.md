@@ -1,5 +1,8 @@
 # Current live analysis and deliverable evidence — 30 September 2026
 
+## Approved demo checkpoint
+The approved live-demo checkpoint is `de7135a96541a46dc0981a991cb954186c7cd669ea1c1b33914d1929ae9b1357` (`de7135a9`), selected for the best held-out mIoU reported in `reports/ACCURACY-REPORT.md` (mIoU 0.5725; pixel accuracy 0.8914). The recorded test_11 run below used `fb78727d` on the Lethabo host and must be rerun with `de7135a9` before its result is presented as approved evidence. No replacement numbers are invented here.
+
 ## Live model and measured accuracy
 DeepLabV3 with ResNet-50 backbone (Torchvision/PyTorch), five pixel classes. Inference runs locally on this computer's CPU through FastAPI; Cloudflare supplies HTTPS and Supabase supplies authentication/private storage. Kaggle is training only, not the live inference endpoint.
 Checkpoint SHA: fb78727d4859947d3605ccf9374f8defbc40897e9cf1b1922a52c1832d387067.
