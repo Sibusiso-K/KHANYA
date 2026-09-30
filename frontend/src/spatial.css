@@ -10,3 +10,4 @@
 @media(max-width:700px){.grain-highlight{height:340px}.grain-active .image-transform{height:340px}.grain-comparison-panels{grid-template-columns:1fr}.grain-evidence{margin:8px;padding:12px}.grain-metric{grid-template-columns:minmax(0,1fr) auto auto}.grain-active .image-caption{padding:10px}.grain-selected p{overflow-wrap:anywhere}}
 .grain-active{pointer-events:none}.grain-active .mask-image,.grain-active .grain-evidence{pointer-events:auto}.grain-active .mask-image{cursor:crosshair}
 .image-stage.grain-active{display:block!important;width:100%;box-sizing:border-box}.image-stage.grain-active .image-transform{width:100%;min-width:0}.image-stage.grain-active .mask-image{width:100%}
+.grain-state{display:inline-block;padding:3px 7px;border-radius:4px;font-size:12px;letter-spacing:.02em}.grain-state--free{color:#17613b;background:#e5f5eb}.grain-state--locked{color:#805400;background:#fff1d2}.grain-state--none{color:#536170;background:#e9edf1}
