@@ -105,9 +105,14 @@ simulated perturbation, not a second capture.
    payload-bearing particles, below the provisional floor of 9** → **HELD**.
 5. Upload `test_01.jpg` → *Continue*, stable under the perturbation →
    **UNCHANGED** (no command sent).
-6. *Optional, stale refusal:* RESET, press **TRIGGER STALE OPC UA REFUSAL**,
-   switch the check OFF, upload `test_11.jpg` → **REFUSED**: the command would
-   have set 1, it expired, the setting stays 0.
+6. *Optional, stale refusal, in exactly this order:* switch the check **OFF**
+   first, then **RESET**, then **TRIGGER STALE OPC UA REFUSAL**, then upload
+   `test_11.jpg` → **REFUSED**: "consumer refused stale command
+   regrind_enabled=1 ... setting unchanged", the setting stays 0. (Switching the
+   check after arming re-runs the image on screen and spends the armed refusal
+   there.)
+
+Steps 1-6 verified in the running dashboard on 2026-09-30.
 
 Say: *"The simulated plant moves only on a fresh, confident recommendation that
 survives a simulated lighting change and rests on enough particles. Everything
