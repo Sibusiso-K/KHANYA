@@ -44,6 +44,11 @@
         <div style="font-size:11px;color:{{ muted }};line-height:1.35">darker copy (RGB offset): {{ lighting.after_shift }}</div>
       </div>
     </div>
+    {% elif advisory_only %}
+    <div style="margin-top:14px;padding:8px 10px;border:1px solid {{ warn }};border-radius:4px">
+      <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ warn }}">ADVISORY ONLY · NO LIGHTING CHECK</div>
+      <div style="font-size:11px;color:{{ muted }};line-height:1.35">the lighting check runs only in live sampled-fields mode, so this path issues no plant command</div>
+    </div>
     {% else %}
     <div style="margin-top:14px;font-size:11px;color:{{ muted }}">Lighting check runs in live sampled-fields mode.</div>
     {% endif %}

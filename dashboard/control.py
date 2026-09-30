@@ -34,6 +34,15 @@ class CommandStatus:
     endpoint: str | None = None
 
 
+ADVISORY_ONLY_REASON = ("full-section mode is advisory only: the lighting check does not "
+                        "run here, so no command is issued")
+
+
+def advisory_only_status(before: float) -> CommandStatus:
+    """The full-section path's plant status: held, no OPC UA command (pre-production finding 2)."""
+    return CommandStatus("held", before, before, ADVISORY_ONLY_REASON)
+
+
 def command_for(action: str) -> tuple[float | None, str]:
     """The regrind value an advisory action requests, or None with why it requests nothing."""
     if action == "Grind finer":

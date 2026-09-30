@@ -54,7 +54,7 @@ def gate(original: Recommendation, reimaged_action: str) -> Recommendation:
         return original
     return Recommendation(
         UNSTABLE_ACTION,
-        f"As imaged, this field says '{original.action}'. On a copy of the same "
+        f"As imaged, these fields say '{original.action}'. On a copy of the same "
         f"image with a fixed RGB offset subtracted (R {REIMAGING_SHIFT_RGB[0]:+.1f}, "
         f"G {REIMAGING_SHIFT_RGB[1]:+.1f}, B {REIMAGING_SHIFT_RGB[2]:+.1f}; the median "
         "darkening measured between real re-imagings of LumenStone V1 sections; "

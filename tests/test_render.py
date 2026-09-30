@@ -116,13 +116,13 @@ def test_live_field_mode_shows_its_measured_elapsed_time_not_a_fabricated_one():
         elapsed_seconds=3.42,
     )
     assert "Live Field Mode, 512x512 field" in with_timing
-    assert "3.4s end to end" in with_timing
+    assert "3.4s from upload received to result" in with_timing
 
     without_timing = render.render(
         Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
         result, recommendation,
     )
-    assert "end to end" not in without_timing  # no fabricated number when unmeasured
+    assert "from upload received" not in without_timing  # no fabricated number when unmeasured
 
 
 def test_result_renders_opcua_publish_acknowledgement_and_refusal_states():
@@ -267,3 +267,25 @@ def test_evidence_view_names_mean_iou_and_hides_a_foreign_scorecard():
                                     scores={"mismatch": True, "report_sha": "de7135a96541",
                                             "active_sha": "000000000000"})
     assert "Scorecard hidden" in hidden and "Section mean IoU" not in hidden
+
+
+def test_full_section_is_advisory_only_and_says_so():
+    import numpy as np
+    from PIL import Image
+
+    from dashboard.control import advisory_only_status
+    from src.advisor import advise
+    from src.modal import ModalResult
+
+    status = advisory_only_status(1.0)
+    assert (status.state, status.before, status.after) == ("held", 1.0, 1.0)
+    assert "advisory only" in status.reason
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.95, 0.05, 38, 64,
+                         n_payload_particles=21)
+    recommendation = advise(result, 0.95)
+    assert recommendation.action == "Grind finer"
+    html = render.render(Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
+                         result, recommendation, plant=status, advisory_only=True,
+                         evidence_scope="whole section, native resolution")
+    assert "ADVISORY ONLY · NO LIGHTING CHECK" in html
+    assert ">HELD<" in html and "1 → 1" in html

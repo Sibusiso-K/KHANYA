@@ -15,7 +15,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from dashboard import render
-from dashboard.inputs import load_image, unavailable_reason
+from dashboard.inputs import check_eligible, load_image, unavailable_reason
 from src.segmentation import config
 
 
@@ -191,7 +191,7 @@ landing_slot = st.empty()
 progress_slot = st.empty()
 opcua_slot = st.empty()
 LIVE_FIELD_LABEL = "Live sampled fields — six 512×512 fields across the section, timed live"
-FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image"
+FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image · advisory only"
 EVIDENCE_LABEL = "Evidence — held-out S2 test set"
 mode = st.radio(
     "ANALYSIS MODE",
@@ -205,7 +205,9 @@ mode = st.radio(
         "full-section inference measures p95 196s, about 6.5x over the "
         "review's 30s design target — unworkable as a live demo beat). "
         "Full section is the validated whole-image path used for the "
-        "backup recording (BACKUP-DEMO-SCRIPT.md). Evidence is a separate "
+        "backup recording (BACKUP-DEMO-SCRIPT.md). It is advisory only: the "
+        "lighting check does not run there, so it issues no plant command. "
+        "Evidence is a separate "
         "view over known held-out S2 test images and never uses live uploads."
     ),
 )
@@ -282,8 +284,8 @@ if mode == EVIDENCE_LABEL:
         # file stamp, and a restored file can keep a stamp (Lethabo, PR #13
         # review). So a cached prediction is used only when the stamp matches AND
         # the active checkpoint's sha256 is the reported one the caches and
-        # reports were produced from; otherwise the model runs (about three
-        # minutes per section on this CPU).
+        # reports were produced from; otherwise the model runs (4 min 50 s
+        # for one section on the development laptop, 30 Sept).
         import numpy as np
         from src.preflight import EXPECTED_S2_SHA256
         active_sha = checkpoint_sha256(evidence_checkpoint_key)
@@ -297,7 +299,8 @@ if mode == EVIDENCE_LABEL:
                 evidence_confidence = float(stored["confidence"])
                 evidence_source = (f"precomputed: its recorded checkpoint timestamp matches, and "
                                    f"the active checkpoint is sha256 {active_sha[:12]}…, the "
-                                   "reported one; a live recompute takes about three minutes here")
+                                   "reported one; a live recompute runs the full native-resolution model, "
+                                   "several minutes on a CPU")
         if evidence_source is None:
             with st.spinner("Running the real native-resolution model on the selected held-out section…"):
                 _image, evidence_predicted, evidence_confidence = predict(
@@ -321,6 +324,9 @@ uploaded = st.file_uploader(
     "REFLECTED-LIGHT MICROGRAPH OF A POLISHED SECTION",
     type=["jpg", "jpeg", "png", "tif", "tiff"],
 )
+# Declared before any slow work so a new run clears the previous result at once,
+# instead of leaving it on screen, faded, for the minutes a full section takes.
+result_slot = st.empty()
 if uploaded is None:
     show_landing(reason)
 else:
@@ -328,8 +334,11 @@ else:
         show_landing(reason)
         st.stop()
     try:
+        received = time.perf_counter()  # upload received: the timer every mode reports
         image_bytes = uploaded.getvalue()
-        load_image(image_bytes)  # Decode before starting expensive model work.
+        # Decode, then refuse an input the model was not validated on, before any
+        # model pass, OPC UA publish or command (pre-production finding 1).
+        check_eligible(load_image(image_bytes))
         from src import modal
         from src.advisor import advise
         from src.segmentation import lumenstone as ls
@@ -440,16 +449,22 @@ else:
         plant = st.session_state.plant
         command_key = (uploaded.file_id, mode, lighting_check_on)
         if command_key != plant["commanded"] or stale_requested:
-            command = send_command(
-                recommendation.action, plant[REGRIND_HEAD], stale=stale_requested,
-                on_event=lambda message: opcua_slot.info(message),
-            )
+            if mode == LIVE_FIELD_LABEL:
+                command = send_command(
+                    recommendation.action, plant[REGRIND_HEAD], stale=stale_requested,
+                    on_event=lambda message: opcua_slot.info(message),
+                )
+            else:
+                # The lighting check runs only on the live path, so the full section
+                # never commands the plant (pre-production finding 2).
+                from dashboard.control import advisory_only_status
+                command = advisory_only_status(plant[REGRIND_HEAD])
             plant.update({REGRIND_HEAD: command.after, "commanded": command_key, "status": command})
             plant["log"].append({
                 "time": time.strftime("%H:%M:%S"),
                 "image": uploaded.name,
                 "advisory": recommendation.action,
-                "lighting check": ("n/a" if mode != LIVE_FIELD_LABEL
+                "lighting check": ("not run (full section, advisory only)" if mode != LIVE_FIELD_LABEL
                                    else "on" if lighting_check_on else "OFF (unguarded)"),
                 "command": command.state,
                 "regrind_enabled": f"{command.before:g} → {command.after:g}",
@@ -466,17 +481,21 @@ else:
         else:
             evidence_scope = "whole section, native resolution"
         html = render.render(image, labels, mean_confidence, result, recommendation,
-                             mode_label=mode_label, elapsed_seconds=elapsed,
+                             mode_label=mode_label,
+                             elapsed_seconds=time.perf_counter() - received,
                              opcua_status=opcua_status, plant=command,
-                             lighting=lighting, evidence_scope=evidence_scope)
+                             lighting=lighting, evidence_scope=evidence_scope,
+                             advisory_only=mode != LIVE_FIELD_LABEL)
     except (ImportError, OSError, RuntimeError, ValueError) as exc:
         show_landing(f"Analysis could not complete: {exc}")
     else:
         landing_slot.empty()
         progress_slot.empty()
         opcua_slot.empty()
-        st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
-        with st.expander("Command log and lighting-check detail", expanded=False):
+        result_view = result_slot.container()
+        with result_view:
+            st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
+        with result_view.expander("Command log and lighting-check detail", expanded=False):
             if lighting is not None:
                 st.caption(
                     "Simulated lighting-perturbation check: an input-sensitivity diagnostic, "
