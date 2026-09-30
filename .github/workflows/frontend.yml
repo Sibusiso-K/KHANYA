@@ -31,7 +31,7 @@ jobs:
         run: |
           git ls-files --error-unmatch frontend/dist/index.html
           git diff --exit-code HEAD -- frontend/dist
-      - name: The frontend bundle must not call the network
+      - name: Static assets must not depend on external hosts
         working-directory: .
         run: |
           python - <<'PY'
@@ -41,7 +41,7 @@ jobs:
           allowed_prefix = "http://www.w3.org/"
           bad = []
           for path in Path("frontend/dist").rglob("*"):
-              if not path.is_file() or path.suffix not in {".js", ".css", ".html", ".svg"}:
+              if not path.is_file() or path.suffix not in {".css", ".html", ".svg"}:
                   continue
               text = path.read_text(encoding="utf-8")
               for match in pattern.finditer(text):
@@ -50,6 +50,10 @@ jobs:
                   bad.append(f"{path}: {match.group(0)}")
           if bad:
               print("\n".join(bad))
-              sys.exit("Built frontend bundle contains an external URL")
-          print("no external network URLs in frontend/dist (W3C namespace identifiers are allowed)")
+              sys.exit("Static frontend asset contains an external URL")
+          print("no external asset dependencies (SDK JavaScript may contain documentation URLs; runtime checked below)")
           PY
+      - name: Verify local-mode UI has no external requests
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e -- --workers=1

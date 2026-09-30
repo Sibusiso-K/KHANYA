@@ -1,4 +1,4 @@
-"""Local REEFPRINT workbench API. Bind to loopback; cloud auth is not implemented."""
+"""REEFPRINT API: loopback research demo or authenticated Supabase workspace."""
 from __future__ import annotations
 import hashlib, io, json, time, uuid, warnings, threading, os, re
 from datetime import datetime, timezone
@@ -7,7 +7,10 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Literal
 from fastapi import FastAPI, HTTPException, UploadFile, File
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, Response, JSONResponse
+from webapi import cloud
+import contextvars
+import ipaddress
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 from PIL import Image
@@ -42,21 +45,87 @@ app = FastAPI(title="REEFPRINT local research API", version="0.1.0")
 CHECKPOINT_METRICS_PATH = ROOT / "reports" / "checkpoint-metrics.json"
 CHECKPOINT_METRICS = json.loads(CHECKPOINT_METRICS_PATH.read_text(encoding="utf-8"))["checkpoints"]
 
+def tenant():
+    return cloud.state(STORE, {sid: path for sid, path in samples.items() if sid in verified_hashes})
+
+def workspace_store():
+    return tenant()["store"] if cloud.identity.get() else STORE
+
+def workspace_uploads():
+    return workspace_store() / "uploads" if cloud.identity.get() else UPLOADS
+
+def workspace_samples():
+    return tenant()["samples"] if cloud.identity.get() else samples
+
+def workspace_results():
+    return tenant()["results"] if cloud.identity.get() else results
+
+def workspace_jobs():
+    return tenant()["jobs"] if cloud.identity.get() else jobs
+
+def workspace_plants():
+    return tenant()["plants"] if cloud.identity.get() else plants
+
+def workspace_sessions():
+    return tenant()["plant_sessions"] if cloud.identity.get() else plant_sessions
+
+@app.middleware("http")
+async def workspace_security(request, call_next):
+    cfg = cloud.config()
+    protected = request.url.path.startswith("/api/") and request.url.path not in (
+        "/api/health", "/api/config", "/api/report", "/api/report/download")
+    if not protected:
+        return await call_next(request)
+    token_context = None
+    try:
+        if cfg["auth_required"]:
+            if not cfg["cloud_sync"]:
+                raise HTTPException(503, "Public deployment requires Supabase configuration.")
+            authorization = request.headers.get("authorization", "")
+            if not authorization.startswith("Bearer ") or len(authorization) > 16384:
+                raise HTTPException(401, "Sign in to access your workspace.")
+            from starlette.concurrency import run_in_threadpool
+            user = await run_in_threadpool(cloud.verify, authorization[7:])
+            token_context = cloud.identity.set(user)
+            # Refresh remote data at the library boundary, avoiding downloads during polling.
+            if request.url.path == "/api/samples" and request.method == "GET":
+                await run_in_threadpool(cloud.hydrate, tenant())
+        else:
+            host = request.client.host if request.client else ""
+            try:
+                local = ipaddress.ip_address(host).is_loopback
+            except ValueError:
+                local = host == "testclient"
+            if not local:
+                raise HTTPException(403, "Local demo access is restricted to loopback. Configure Supabase for public access.")
+        response = await call_next(request)
+        response.headers["Cache-Control"] = "private, no-store"
+        return response
+    except HTTPException as exc:
+        return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
+    finally:
+        if token_context is not None:
+            cloud.identity.reset(token_context)
+
+@app.get("/api/config")
+def public_config():
+    return cloud.config()
+
 def sample_path(sid):
-    if sid not in samples:
+    if sid not in workspace_samples():
         raise HTTPException(404, "Sample not found")
-    return samples[sid]
+    return workspace_samples()[sid]
 
 def current_result(sid):
     path = sample_path(sid)
     image_sha = hashlib.sha256(path.read_bytes()).hexdigest()
-    candidates = sorted(STORE.glob(sid + "-*/result.json"), key=lambda p:p.stat().st_mtime, reverse=True)
+    candidates = sorted(workspace_store().glob(sid + "-*/result.json"), key=lambda p:p.stat().st_mtime, reverse=True)
     for file in candidates:
         try:
             r = json.loads(file.read_text())
             if r["model_sha"] == MODEL_SHA and r["image_sha"] == image_sha and r.get("contract") == 1:
                 r["prediction_source"] = "cached"
-                results[r["result_id"]] = r
+                workspace_results()[r["result_id"]] = r
                 return r
         except (OSError, ValueError, KeyError):
             pass
@@ -77,11 +146,11 @@ def blank_result(sid):
 @app.get("/api/health")
 def health():
     return {"status":"ok","checkpoint_available": bool(MODEL_SHA), "model_sha":MODEL_SHA,
-            "sample_count":len(samples),"deployment":"local","cloud_sync":False}
+            "sample_count":len(workspace_samples()),"deployment":"public" if cloud.config()["auth_required"] else "local","cloud_sync":cloud.config()["cloud_sync"],"auth_required":cloud.config()["auth_required"]}
 
 @app.get("/api/samples")
 def list_samples():
-    return [sample_item(s) for s in samples]
+    return [sample_item(s) for s in workspace_samples()]
 
 @app.get("/api/samples/{sid}")
 def detail(sid:str):
@@ -116,7 +185,7 @@ def record_path(sid: str):
     sample_path(sid)
     if not re.fullmatch(r"[A-Za-z0-9_-]+", sid):
         raise HTTPException(400, "Invalid sample identifier")
-    return STORE / "records" / (sid + ".json")
+    return workspace_store() / "records" / (sid + ".json")
 
 
 def read_record(path: Path, sid: str):
@@ -135,6 +204,9 @@ def read_record(path: Path, sid: str):
 
 @app.get("/api/samples/{sid}/record")
 def get_record(sid: str):
+    if cloud.identity.get():
+        sample_path(sid)
+        return cloud.get_record(sid)
     path = record_path(sid)
     with record_lock:
         return read_record(path, sid)
@@ -142,6 +214,9 @@ def get_record(sid: str):
 
 @app.put("/api/samples/{sid}/record")
 def put_record(sid: str, request: RecordUpdate):
+    if cloud.identity.get():
+        cloud.save_sample(sid, sample_path(sid)) if sid in verified_hashes else None
+        return cloud.save_record(sid, request.expected_version, request.record.model_dump(exclude_unset=True))
     path = record_path(sid)
     with record_lock:
         current = read_record(path, sid)
@@ -173,10 +248,10 @@ def image(sid:str, layer:Literal["original","raw","overlay","mask"]="original", 
             out=io.BytesIO()
             im.save(out,format="JPEG",quality=88)
         return Response(out.getvalue(),media_type="image/jpeg")
-    r=results.get(result_id) if result_id else current_result(sid)
+    r=workspace_results().get(result_id) if result_id else current_result(sid)
     if not r or r["id"]!=sid or r["model_sha"]!=MODEL_SHA:
         raise HTTPException(404,"No checkpoint-matched prediction exists.")
-    f=STORE / (sid+"-"+r["result_id"]) / (layer+".png")
+    f=workspace_store() / (sid+"-"+r["result_id"]) / (layer+".png")
     if not f.is_file():
         raise HTTPException(404,"Image layer unavailable.")
     return FileResponse(f,media_type="image/png")
@@ -184,7 +259,7 @@ def image(sid:str, layer:Literal["original","raw","overlay","mask"]="original", 
 
 def grain_evidence_for_result(result_id: str):
     """Return paths for evidence only when its result and source image are current."""
-    r = results.get(result_id)
+    r = workspace_results().get(result_id)
     if not r or r.get("result_id") != result_id or r.get("model_sha") != MODEL_SHA:
         raise HTTPException(404, "Grain evidence is unavailable for this result.")
     try:
@@ -193,7 +268,7 @@ def grain_evidence_for_result(result_id: str):
             raise HTTPException(404, "This inference is stale because its source image changed.")
     except (KeyError, OSError):
         raise HTTPException(404, "Grain evidence is unavailable for this result.")
-    directory = STORE / (r["id"] + "-" + result_id)
+    directory = workspace_store() / (r["id"] + "-" + result_id)
     try:
         saved = json.loads((directory / "result.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -242,9 +317,15 @@ async def upload(file:UploadFile=File(...)):
     except ValueError as exc:
         raise HTTPException(400,f"Cannot analyse this upload: {exc}")
     sid="upload_"+uuid.uuid4().hex[:12]
-    path=UPLOADS/sid
+    path=workspace_uploads()/sid
     path.write_bytes(raw)
-    samples[sid]=path
+    if cloud.identity.get():
+        try:
+            cloud.save_sample(sid, path, uploaded=True)
+        except Exception:
+            path.unlink(missing_ok=True)
+            raise
+    workspace_samples()[sid]=path
     return sample_item(sid)
 
 class InferenceRequest(BaseModel):
@@ -253,7 +334,7 @@ class InferenceRequest(BaseModel):
 
 def run_inference(jid,sid,mode):
     global model
-    jobs[jid]["status"]="running"
+    workspace_jobs()[jid]["status"]="running"
     try:
         import torch
         import numpy as np
@@ -294,7 +375,7 @@ def run_inference(jid,sid,mode):
         rec = advisor.confidence_gate(advisor.advise(measured, float(confidence)), float(confidence))
         action, reason = rec.action, rec.reason
         rid=uuid.uuid4().hex
-        directory=STORE/(sid+"-"+rid)
+        directory=workspace_store()/(sid+"-"+rid)
         directory.mkdir()
         from webapi.grain_evidence import write_grain_evidence
         grain_evidence = write_grain_evidence(labels, CLASSES, measured.phase_fractions, directory)
@@ -320,29 +401,36 @@ def run_inference(jid,sid,mode):
         r.update(eligibility)
         for layer in ("raw","mask","overlay"):
             r[layer+"_url"]=f"/api/samples/{sid}/image?layer={layer}&result_id={rid}"
+        if cloud.identity.get():
+            cloud.save_result(r, directory)
         (directory/"result.json").write_text(json.dumps(r,indent=2))
-        results[rid]=r
-        jobs[jid].update(status="complete",result=r)
+        workspace_results()[rid]=r
+        workspace_jobs()[jid].update(status="complete",result=r)
     except Exception as exc:
-        jobs[jid].update(status="failed",error=str(exc))
+        workspace_jobs()[jid].update(status="failed",error=str(exc))
 
 @app.post("/api/inferences",status_code=202)
 def infer(req:InferenceRequest):
     sample_path(req.sample_id)
     if not MODEL_SHA:
         raise HTTPException(503,"Restore the S2 checkpoint before running inference.")
-    if any(j["status"] in ("queued","running") for j in jobs.values()):
+    if any(j["status"] in ("queued","running") for j in workspace_jobs().values()):
         raise HTTPException(409,"An analysis is already running. Wait for it to finish.")
+    if cloud.identity.get() and req.sample_id in verified_hashes:
+        cloud.save_sample(req.sample_id, sample_path(req.sample_id))
     jid=uuid.uuid4().hex
-    jobs[jid]={"id":jid,"status":"queued"}
-    pool.submit(run_inference,jid,req.sample_id,req.mode)
-    return jobs[jid]
+    workspace_jobs()[jid]={"id":jid,"status":"queued"}
+    if cloud.identity.get():
+        pool.submit(contextvars.copy_context().run,run_inference,jid,req.sample_id,req.mode)
+    else:
+        pool.submit(run_inference,jid,req.sample_id,req.mode)
+    return workspace_jobs()[jid]
 
 @app.get("/api/jobs/{jid}")
 def job(jid:str):
-    if jid not in jobs:
+    if jid not in workspace_jobs():
         raise HTTPException(404,"Job not found")
-    return jobs[jid]
+    return workspace_jobs()[jid]
 
 class SimulationRequest(BaseModel):
     result_id:str
@@ -352,9 +440,9 @@ class SimulationRequest(BaseModel):
 def create_simulation_session():
     session_id = uuid.uuid4().hex
     with simulation_lock:
-        plants[session_id] = 0.0
-        plant_sessions.add(session_id)
-    return {"session_id": session_id, "setpoint": plants[session_id]}
+        workspace_plants()[session_id] = 0.0
+        workspace_sessions().add(session_id)
+    return {"session_id": session_id, "setpoint": workspace_plants()[session_id]}
 
 def refusal(r):
     if not r.get("verified"):return "Unverified upload: advisory only. Nothing sent to OPC UA."
@@ -368,22 +456,22 @@ def refusal(r):
 
 @app.post("/api/simulate")
 def simulate(req:SimulationRequest):
-    r=results.get(req.result_id)
+    r=workspace_results().get(req.result_id)
     if not r:
         raise HTTPException(404,"Result unavailable; open or analyse the sample first.")
     with simulation_lock:
-        if req.session_id not in plant_sessions:
+        if req.session_id not in workspace_sessions():
             raise HTTPException(404,"Simulator session unavailable. Start a new local session.")
         reason=refusal(r)
         if reason:
-            current=plants[req.session_id]
+            current=workspace_plants()[req.session_id]
             event={"state":"held","before":current,"after":current,"reason":reason}
         else:
             from dashboard.control import send_command
-            event=asdict(send_command("Grind finer",plants[req.session_id]))
-        plants[req.session_id] = event["after"]
+            event=asdict(send_command("Grind finer",workspace_plants()[req.session_id]))
+        workspace_plants()[req.session_id] = event["after"]
         event.update(result_id=req.result_id,created_at=time.time(),simulator_only=True)
-        with (STORE/"simulation-events.jsonl").open("a") as f:
+        with (workspace_store()/"simulation-events.jsonl").open("a") as f:
             f.write(json.dumps({**event,"session_id":req.session_id})+"\n")
         return event
 
@@ -408,11 +496,11 @@ def report():
 
 @app.get("/api/decisions/{result_id}/download")
 def decision_download(result_id: str, event_time: float):
-    r = results.get(result_id)
+    r = workspace_results().get(result_id)
     if not r:
         raise HTTPException(404, "Open the source sample before exporting its decision.")
     event = None
-    log = STORE / "simulation-events.jsonl"
+    log = workspace_store() / "simulation-events.jsonl"
     with simulation_lock:
         if log.exists():
             with log.open() as stream:

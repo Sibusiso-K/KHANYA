@@ -45,15 +45,15 @@ def test_quick_inference_uses_six_field_predictor_and_records_measured_scope(tmp
     monkeypatch.setattr(patches, "field_coverage", lambda w, h: (6, 6 * 512 * 512 / (w * h)))
     monkeypatch.setattr(patches, "sliding_window_predict", lambda *a, **k: pytest.fail("quick mode must not use whole-section tiling"))
     from src import modal, advisor
-    monkeypatch.setattr(modal, "analyse", lambda *a, **k: SimpleNamespace(liberation=None))
+    monkeypatch.setattr(modal, "analyse", lambda *a, **k: SimpleNamespace(liberation=None, phase_fractions={name: 0.0 for name in api.CLASSES}))
     monkeypatch.setattr(advisor, "advise", lambda *a, **k: SimpleNamespace(action="Continue at current setpoint", reason="Measured advisory"))
     monkeypatch.setattr(api, "verified_hashes", {})
     from webapi import safety
     monkeypatch.setattr(safety, "check_input_colour", lambda image: None)
     monkeypatch.setattr(safety, "input_evidence", lambda raw: {"verified": True, "verified_sample": "test_11"})
     api.run_inference("job", "sample", "field")
+    assert api.jobs["job"]["status"] == "complete", api.jobs["job"].get("error")
     result = api.jobs["job"]["result"]
-    assert api.jobs["job"]["status"] == "complete"
     assert len(calls) == 1 and calls[0][1:] == ((1600, 1100), "cpu")
     assert result["field_count"] == 6
     assert result["field_coverage"] == pytest.approx(6 * 512 * 512 / (1600 * 1100))

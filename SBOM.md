@@ -80,3 +80,5 @@ regeneration process.
 ## React workbench typography
 Public Sans Variable5.3.0 via @fontsource-variable/public-sans, SIL Open Font License1.1. License shipped at frontend/public/licenses/Public-Sans-OFL.txt. Fonts are served locally in the Vite bundle.
 
+
+Frontend authentication addition: @supabase/supabase-js 2.117.2 (MIT), pinned in frontend/package-lock.json. SDK is used only when server configuration requires authentication; local offline behavior is covered by browser request assertions.

@@ -1,0 +1,43 @@
+import {test,expect} from '@playwright/test';
+import {readFile} from 'node:fs/promises';
+
+test('grain selections follow exact map pixels and keyboard table with result provenance',async({page})=>{
+ const externalRequests:string[]=[];
+ const localOrigin=new URL(test.info().project.use.baseURL as string).origin;
+ page.on('request',request=>{const url=new URL(request.url());if(['http:','https:'].includes(url.protocol)&&url.origin!==localOrigin)externalRequests.push(request.url())});
+ const png='iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAIAAAB7QOjdAAAAD0lEQVR4nGNkZGBgZGAAAAAXAAQM+HPhAAAAAElFTkSuQmCC';
+ await page.route('**/api/**',async route=>{
+  const path=new URL(route.request().url()).pathname;
+  if(path.endsWith('.png'))return route.fulfill({contentType:'image/png',body:Buffer.from(png,'base64')});
+  let body:unknown={};
+  if(path==='/api/config')body={auth_required:false,cloud_sync:false};
+  if(path==='/api/samples')body=[{id:'test_11',thumbnail_url:'/api/raw.png',dimensions:[2,1],dataset:'Test fixture',has_prediction:true}];
+  if(path==='/api/health')body={status:'ok',checkpoint_available:false};
+  if(path==='/api/report')body={model_sha:'fixture-sha',checkpoint_matches_report:false,metrics:null,limitations:[]};
+  if(path==='/api/samples/test_11/record')body={version:0,record:{}};
+  if(path==='/api/samples/test_11')body={id:'test_11',result_id:'fixture-result',raw_url:'/api/raw.png',mask_url:'/api/mask.png',phases:[],model_sha:'fixture-sha',scope:'Two-pixel test fixture',prediction_source:'cached',advisory:{action:'Hold',reason:'Test fixture'},confidence:.5};
+  if(path==='/api/results/fixture-result/grains')body={n_grains:2,n_payload_grains:1,microns_per_pixel:null,association:{},liberation_by_size:[],grains:[{id:1,area_px:1,ecd_px:1.1,phases:{chalcopyrite:1},payload_fraction:1,liberated:true,bbox:[0,0,0,0]},{id:2,area_px:1,ecd_px:1.1,phases:{pyrrhotite:1},payload_fraction:0,liberated:false,bbox:[1,0,1,0]}]};
+  return route.fulfill({json:body});
+ });
+ await page.goto('/');
+ await expect(page.getByRole('heading',{name:'Explore individual grains'})).toBeVisible();
+ const image=page.getByRole('img',{name:/Predicted grain map/});
+ const rect=await image.boundingBox();if(!rect)throw Error('Grain canvas missing');
+ await image.click({position:{x:rect.width*.75,y:rect.height*.5}});
+ await expect(page.locator('.grain-inspector').getByRole('heading',{name:'Grain 2',exact:true})).toBeVisible();
+ const grainOne=page.getByRole('button',{name:'Grain 1',exact:true});await grainOne.focus();await page.keyboard.press('Enter');
+ await expect(page.locator('.grain-inspector').getByRole('heading',{name:'Grain 1',exact:true})).toBeVisible();
+ await page.getByLabel('Contains phase').selectOption('pyrrhotite');
+ await expect(page.getByRole('button',{name:'Grain 1',exact:true})).toHaveCount(0);
+ const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'Export grain evidence'}).click();const download=await downloadPromise;
+ expect(download.suggestedFilename()).toBe('test_11-grain-evidence.json');
+ const downloadedPath=await download.path();if(!downloadedPath)throw Error('Evidence download missing');
+ const exported=JSON.parse(await readFile(downloadedPath,'utf8'));
+ expect(exported.result_id).toBe('fixture-result');expect(exported.model_sha).toBe('fixture-sha');expect(exported.evidence.n_grains).toBe(2);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+ await page.screenshot({path:test.info().outputPath('grain-explorer-mobile.png'),fullPage:true});
+ await page.setViewportSize({width:1440,height:1000});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+ await page.screenshot({path:test.info().outputPath('grain-explorer-desktop.png'),fullPage:true});
+ expect(externalRequests,'local grain inspection must stay offline when cloud authentication is disabled').toEqual([]);
+});

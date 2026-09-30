@@ -64,7 +64,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-          pip install -r requirements-web.txt numpy pillow pytest
+          pip install -r requirements-web.txt numpy pillow scipy scikit-image pytest
       - name: Test workbench API and safety contract
         run: pytest tests/test_workbench_*.py -q
-

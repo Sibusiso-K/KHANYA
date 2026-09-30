@@ -1,9 +1,13 @@
 import {test, expect} from '@playwright/test';
 
 test('all workbench pages remain legible and unclipped at 375px', async ({page}) => {
+  const externalRequests:string[]=[];
+  const localOrigin=new URL(test.info().project.use.baseURL as string).origin;
+  page.on('request',request=>{const url=new URL(request.url());if(['http:','https:'].includes(url.protocol)&&url.origin!==localOrigin)externalRequests.push(request.url())});
   await page.route('**/api/**', async route => {
     const url = route.request().url();
     let body: unknown = {};
+    if (url.endsWith('/api/config')) body = {auth_required:false,cloud_sync:false};
     if (url.endsWith('/api/samples')) body = [{id:'test_11',thumbnail_url:'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',dimensions:[512,512],dataset:'Held-out S2',has_prediction:false}];
     if (url.endsWith('/api/report')) body = {model_sha:'abc',checkpoint_available:false,checkpoint_matches_report:false,report_source:'test',metrics:null,limitations:[],download_url:''};
     if (url.endsWith('/api/health')) body = {status:'ok',checkpoint_available:false};
@@ -13,7 +17,7 @@ test('all workbench pages remain legible and unclipped at 375px', async ({page})
   });
   await page.goto('/');
   await expect(page.getByRole('heading', {name:'From specimen to insight'})).toBeVisible();
-  const pages = ['Samples','Spatial','Process','Reports'];
+  const pages = ['Dashboard','Samples','Spatial','Process','Reports'];
   for (const name of pages) {
     await page.getByRole('navigation').getByRole('button', {name, exact:true}).click();
     await expect(page.getByRole('heading', {level:1})).toBeVisible();
@@ -33,4 +37,5 @@ test('all workbench pages remain legible and unclipped at 375px', async ({page})
       await expect(page.getByText('SYNTHETIC · NOT DATA')).toBeVisible();
     }
   }
+  expect(externalRequests,'local offline runtime must not request remote assets, APIs or auth services').toEqual([]);
 });

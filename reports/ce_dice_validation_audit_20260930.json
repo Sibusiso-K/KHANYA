@@ -1,0 +1,382 @@
+{
+  "run_id": "20260929T235548Z-s2-seed42-fullval-v1",
+  "checkpoint_sha256_reported": "43de2fabe92fc6149ecbe36f21488636923738495f6658a0f4472148b42d0d21",
+  "checkpoint_bytes_downloaded_or_rehashed": false,
+  "manifest_sha256": "502e547df4e6ed66d5b718bbb094f52cc974b76d2e037d1de039dee3f1c8c697",
+  "dataset_sha256_verified": "64aebd108b3306a8b2e83a945c01f2779bbfd1abeb187b1e2cedcac96cf40c1d",
+  "train_sections": 31,
+  "validation_sections": 6,
+  "best_epoch": 8,
+  "best_validation": {
+    "iou_per_class": [
+      0.8940683231602692,
+      0.5930224185499913,
+      0.0,
+      0.7936801293451863,
+      0.3398910122655015
+    ],
+    "mean_iou": 0.5241323766641897,
+    "pixel_accuracy": 0.8511884309569802,
+    "tp_per_class": [
+      21728310,
+      6003960,
+      0,
+      13843622,
+      2598806
+    ],
+    "fp_per_class": [
+      535733,
+      3330054,
+      0,
+      989533,
+      2867654
+    ],
+    "fn_per_class": [
+      2038697,
+      790325,
+      105250,
+      2609164,
+      2179538
+    ],
+    "recall_per_class": [
+      0.9142215509087871,
+      0.8836779734732941,
+      0.0,
+      0.8414150649014702,
+      0.543871684416191
+    ],
+    "precision_per_class": [
+      0.9759372994383815,
+      0.6432345183969084,
+      null,
+      0.9332891080825354,
+      0.4754093142545633
+    ],
+    "class_names": [
+      "background",
+      "chalcopyrite",
+      "magnetite",
+      "pyrrhotite",
+      "pentlandite"
+    ],
+    "n_validation_sections": 6,
+    "per_section": {
+      "train_06": {
+        "iou_per_class": [
+          0.9415489624859201,
+          0.5409810208815022,
+          null,
+          0.381948356632521,
+          0.23473421194615152
+        ],
+        "mean_iou": 0.5248031379865237,
+        "pixel_accuracy": 0.8479612727137356,
+        "tp_per_class": [
+          5795280,
+          895197,
+          0,
+          358656,
+          285403
+        ],
+        "fp_per_class": [
+          43758,
+          569372,
+          0,
+          10548,
+          691398
+        ],
+        "fn_per_class": [
+          316011,
+          190197,
+          0,
+          569813,
+          239055
+        ],
+        "recall_per_class": [
+          0.9482906312266917,
+          0.8247668588549412,
+          null,
+          0.3862875335633177,
+          0.5441865697539173
+        ],
+        "precision_per_class": [
+          0.9925059573169416,
+          0.6112357970160505,
+          null,
+          0.9714304287060812,
+          0.2921813143106938
+        ]
+      },
+      "train_10": {
+        "iou_per_class": [
+          0.8890953162501383,
+          0.6404304282782098,
+          null,
+          0.19387891969013074,
+          0.17701547903435685
+        ],
+        "mean_iou": 0.47510503581320895,
+        "pixel_accuracy": 0.7963309799329727,
+        "tp_per_class": [
+          4100801,
+          2409729,
+          0,
+          195137,
+          182287
+        ],
+        "fp_per_class": [
+          25399,
+          1177430,
+          0,
+          828,
+          558001
+        ],
+        "fn_per_class": [
+          486130,
+          175512,
+          0,
+          810524,
+          289492
+        ],
+        "recall_per_class": [
+          0.8940184624534356,
+          0.9321100044444599,
+          null,
+          0.1940385477810117,
+          0.38638218318322776
+        ],
+        "precision_per_class": [
+          0.9938444573699772,
+          0.6717653162293614,
+          null,
+          0.9957747556961702,
+          0.2462379506354284
+        ]
+      },
+      "train_13": {
+        "iou_per_class": [
+          0.9515024278706861,
+          0.7797692328033777,
+          null,
+          0.8337010189199683,
+          0.03683561951407999
+        ],
+        "mean_iou": 0.650452074777028,
+        "pixel_accuracy": 0.9293331307808952,
+        "tp_per_class": [
+          5771828,
+          1326945,
+          0,
+          925489,
+          14109
+        ],
+        "fp_per_class": [
+          28379,
+          222024,
+          0,
+          15236,
+          345602
+        ],
+        "fn_per_class": [
+          265808,
+          152746,
+          0,
+          169372,
+          23315
+        ],
+        "recall_per_class": [
+          0.9559748219336177,
+          0.8967716908462645,
+          null,
+          0.8453027370597729,
+          0.3770040615647713
+        ],
+        "precision_per_class": [
+          0.9951072435863065,
+          0.8566633676981269,
+          null,
+          0.9838039809721225,
+          0.03922315414318717
+        ]
+      },
+      "train_21": {
+        "iou_per_class": [
+          0.6629426484614769,
+          0.5381400796162332,
+          0.0,
+          0.7877433396515459,
+          0.483141315670818
+        ],
+        "mean_iou": 0.49439347668001477,
+        "pixel_accuracy": 0.8138189319937126,
+        "tp_per_class": [
+          613035,
+          181957,
+          0,
+          5001258,
+          1242968
+        ],
+        "fp_per_class": [
+          161513,
+          131711,
+          0,
+          767307,
+          549863
+        ],
+        "fn_per_class": [
+          150170,
+          24454,
+          75644,
+          580277,
+          779849
+        ],
+        "recall_per_class": [
+          0.8032376622270556,
+          0.881527631763811,
+          0.0,
+          0.8960363054249414,
+          0.614473775927333
+        ],
+        "precision_per_class": [
+          0.7914745115861122,
+          0.5800942397694377,
+          null,
+          0.8669847700424629,
+          0.6932990337628031
+        ]
+      },
+      "train_23": {
+        "iou_per_class": [
+          0.8691258225864616,
+          0.4439087908655384,
+          0.0,
+          0.0,
+          0.3749200006176896
+        ],
+        "mean_iou": 0.33759092281393793,
+        "pixel_accuracy": 0.7994580566157187,
+        "tp_per_class": [
+          5097323,
+          943640,
+          0,
+          0,
+          874039
+        ],
+        "fp_per_class": [
+          154031,
+          969793,
+          0,
+          1384,
+          609402
+        ],
+        "fn_per_class": [
+          613531,
+          212319,
+          29606,
+          31327,
+          847827
+        ],
+        "recall_per_class": [
+          0.8925675564460237,
+          0.8163265306122449,
+          0.0,
+          0.0,
+          0.5076115098387447
+        ],
+        "precision_per_class": [
+          0.970668326682985,
+          0.4931659483242946,
+          null,
+          0.0,
+          0.5891970088463242
+        ]
+      },
+      "train_27": {
+        "iou_per_class": [
+          0.5149637436501737,
+          0.45535946855146653,
+          null,
+          0.9197916394706767,
+          0.0
+        ],
+        "mean_iou": 0.47252871291807924,
+        "pixel_accuracy": 0.920228213704846,
+        "tp_per_class": [
+          350043,
+          246492,
+          0,
+          7363082,
+          0
+        ],
+        "fp_per_class": [
+          122653,
+          259724,
+          0,
+          194230,
+          113388
+        ],
+        "fn_per_class": [
+          207047,
+          35097,
+          0,
+          447851,
+          0
+        ],
+        "recall_per_class": [
+          0.628341919618015,
+          0.8753608983305455,
+          null,
+          0.942663571688555,
+          null
+        ],
+        "precision_per_class": [
+          0.7405245654712542,
+          0.48693048026929214,
+          null,
+          0.974299062947249,
+          0.0
+        ]
+      }
+    },
+    "foreground_macro_iou": 0.43164839004016975,
+    "method": "sliding window, 512px patches at native resolution, whole sections, no downsampling"
+  },
+  "validation_counts_independently_verified": true,
+  "training_class_pixel_counts": [
+    90179568,
+    30473769,
+    4937549,
+    120519310,
+    22027776
+  ],
+  "validation_class_pixel_counts": [
+    23767007,
+    6794285,
+    105250,
+    16452786,
+    4778344
+  ],
+  "majority_class_baseline": {
+    "chosen_using": "31 training masks only",
+    "class": "pyrrhotite",
+    "validation_pixel_accuracy": 0.3170235844104915,
+    "validation_mean_iou": 0.0634047168820983,
+    "validation_foreground_macro_iou": 0.07925589610262287
+  },
+  "metadata_only_baseline": {
+    "status": "not evaluated",
+    "reason": "No verified specimen/locality/acquisition metadata manifest. Do not substitute filename-based leakage or imply stronger-baseline uplift."
+  },
+  "exploratory_section_bootstrap": {
+    "draws": 10000,
+    "seed": 20260930,
+    "n_section_clusters": 6,
+    "foreground_macro_iou_percentile_95_interval": [
+      0.32139408604878306,
+      0.5424030541049529
+    ],
+    "limitation": "Conditional on already selected checkpoint; no correction for model selection. Sections are not independent localities. Not external accuracy uncertainty."
+  },
+  "test_evaluation_performed": false,
+  "promotion_allowed": false
+}
