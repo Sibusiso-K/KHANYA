@@ -45,9 +45,15 @@ def test_dashboard_can_show_stitch_before_the_model_stack_is_loaded():
 def test_pre_upload_state_is_stitch_rendered_without_fabricated_claims():
     html = render.render_landing()
 
-    assert "Awaiting a reflected-light micrograph" in html
-    assert "REEFPRINT :: KHANYA" in html
-    assert "No network required" in html
+    assert "From polished section to process insight" in html
+    assert "REEFPRINT" in html and "KHANYA" in html
+    assert "Sample &amp; interval" in html
+    assert "Geology &amp; spatial context" in html
+    assert "AI phase analysis" in html
+    assert "0.4543" in html and "0.7716" in html
+    assert "Magnetite" in html and "IoU = 0.000" in html
+    assert "SCHEMATIC" in html and "NO LIVE PLANT" in html
+    assert "@media(max-width:620px)" in html
     assert "Dr. K. Vance" not in html
     assert "ISO/IEC 17025" not in html
     assert "DISPATCH" not in html

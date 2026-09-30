@@ -22,7 +22,7 @@ from src.segmentation import config
 SUBSET = os.environ.get("KHANYA_SUBSET", "S2").upper()
 CKPT = config.ROOT / "checkpoints" / f"lumenstone_{SUBSET.lower()}_patches" / "best.pt"
 RESULT_FRAME_HEIGHT = 1500
-LANDING_FRAME_HEIGHT = 330
+LANDING_FRAME_HEIGHT = 700
 
 # Streamlit remains the upload/model bridge, but it must not look like a
 # second dashboard wrapped around the actual Stitch interface. These rules
@@ -31,33 +31,34 @@ LANDING_FRAME_HEIGHT = 330
 UPLOAD_BRIDGE_CSS = """
 <style>
 [data-testid="stAppViewContainer"], [data-testid="stMain"] {
-  background: #00131D;
+  background: #F4F6F8;
+  color: #1C2934;
 }
 [data-testid="stHeader"], footer, #MainMenu { display: none; }
 .block-container { max-width: 1760px; padding: 0.75rem 1rem 2rem; }
 [data-testid="stFileUploader"] {
   max-width: 1720px; margin: 0.85rem auto 1.1rem;
-  color: #E3EAEB; font-family: "Segoe UI", sans-serif;
+  color: #33424D; font-family: "Segoe UI", sans-serif;
 }
 [data-testid="stRadio"] > label {
-  color: #8CA6AE; font-family: "JetBrains Mono", Consolas, monospace;
+  color: #52616D; font-family: "JetBrains Mono", Consolas, monospace;
   font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
   text-transform: uppercase; margin-bottom: 0.35rem;
 }
 [data-testid="stRadio"] div[role="radiogroup"] {
   display: flex; gap: 4px; padding: 4px; width: fit-content;
-  background: #000D14; border: 1px solid #1E3E4B; border-radius: 0.5rem;
+  background: #FFFFFF; border: 1px solid #D8E0E6; border-radius: 0.5rem;
 }
 [data-testid="stRadio"] div[role="radiogroup"] label {
   margin: 0; padding: 0.55rem 0.8rem; border: 1px solid transparent;
-  border-radius: 0.3rem; color: #8CA6AE; background: #0B222E;
+  border-radius: 0.3rem; color: #52616D; background: #F4F6F8;
   transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
 [data-testid="stRadio"] div[role="radiogroup"] label:hover {
-  border-color: #194D5C; color: #E3EAEB; background: #102C3B;
+  border-color: #AFC0C9; color: #1C2934; background: #EDF2F4;
 }
 [data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
-  color: #E3EAEB; background: #194D5C; border-color: #2EA5BC;
+  color: #173E49; background: #E8F2F3; border-color: #5F9BA3;
   box-shadow: 0 0 0 1px rgba(46,165,188,.18);
 }
 [data-testid="stRadio"] div[role="radiogroup"] input {
@@ -68,12 +69,12 @@ UPLOAD_BRIDGE_CSS = """
   font-size: 0.76rem; font-weight: 700; letter-spacing: 0.12em;
 }
 [data-testid="stFileUploaderDropzone"] {
-  background: #071C27; border: 1px dashed #2EA5BC; border-radius: 0.5rem;
+  background: #FFFFFF; border: 1px dashed #8FA7B1; border-radius: 0.5rem;
   padding: 1.4rem 1rem; box-shadow: inset 0 0 0 1px rgba(46,165,188,.08);
   transition: border-color .15s ease, background .15s ease;
 }
 [data-testid="stFileUploaderDropzone"]:hover {
-  background: #0B222E; border-color: #FFB539;
+  background: #F8FAFB; border-color: #C68B28;
 }
 [data-testid="stFileUploader"] svg { color: #2EA5BC; }
 [data-testid="stTooltipIcon"] { color: #8CA6AE; }
@@ -87,7 +88,7 @@ button:focus, input:focus, [role="radiogroup"] label:focus-within {
   border-radius: 0.25rem; font-weight: 700;
 }
 [data-testid="stSpinner"] { color: #FFB539; }
-iframe[title="st.iframe"] { background: #00131D; }
+iframe[title="st.iframe"] { background: #F4F6F8; }
 </style>
 """
 
@@ -208,7 +209,7 @@ if reset_plant:
 def show_landing(reason=None):
     with landing_slot.container():
         st.components.v1.html(
-            render.render_landing(reason), height=LANDING_FRAME_HEIGHT, scrolling=True
+            render.render_landing(reason), height=LANDING_FRAME_HEIGHT, scrolling=False
         )
 
 
