@@ -1,0 +1,287 @@
+{
+  "checkpoint_sha256": "de7135a96541a46dc0981a991cb954186c7cd669ea1c1b33914d1929ae9b1357",
+  "confidence_floor": 0.85,
+  "note": "descriptive only: run after the rule was fixed on train/val; chose nothing",
+  "as_imaged": {
+    "sections": 12,
+    "confident": 3,
+    "unsafe_confident": 0,
+    "unsafe_past_gate": 0,
+    "correct_confident": 3,
+    "correct_past_gate": 2
+  },
+  "darkened": {
+    "sections": 12,
+    "confident": 1,
+    "unsafe_confident": 0,
+    "unsafe_past_gate": 0,
+    "correct_confident": 1,
+    "correct_past_gate": 0
+  },
+  "rows": [
+    {
+      "section": "test_01",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.7722,
+      "action": "Continue at current setpoint",
+      "reference": "Continue at current setpoint",
+      "confident": true,
+      "severity": "agrees",
+      "passes_gate": false
+    },
+    {
+      "section": "test_01",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.7953,
+      "action": "Continue at current setpoint",
+      "reference": "Continue at current setpoint",
+      "confident": true,
+      "severity": "agrees",
+      "passes_gate": false
+    },
+    {
+      "section": "test_02",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.8582,
+      "action": "Flag for manual review - low payload signal",
+      "reference": "Grind finer",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_02",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.7067,
+      "action": "Flag for manual review - no payload detected",
+      "reference": "Grind finer",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_03",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.7273,
+      "action": "Marginal - verify before acting",
+      "reference": "Marginal - verify before acting",
+      "confident": false,
+      "severity": "agrees",
+      "passes_gate": false
+    },
+    {
+      "section": "test_03",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.7552,
+      "action": "Marginal - verify before acting",
+      "reference": "Marginal - verify before acting",
+      "confident": false,
+      "severity": "agrees",
+      "passes_gate": false
+    },
+    {
+      "section": "test_04",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.8221,
+      "action": "No recommendation - too few payload particles",
+      "reference": "Marginal - verify before acting",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_04",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.7975,
+      "action": "No recommendation - too few payload particles",
+      "reference": "Marginal - verify before acting",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_05",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.701,
+      "action": "Marginal - verify before acting",
+      "reference": "Marginal - verify before acting",
+      "confident": false,
+      "severity": "agrees",
+      "passes_gate": false
+    },
+    {
+      "section": "test_05",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.7217,
+      "action": "Marginal - verify before acting",
+      "reference": "Marginal - verify before acting",
+      "confident": false,
+      "severity": "agrees",
+      "passes_gate": false
+    },
+    {
+      "section": "test_06",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.7145,
+      "action": "Marginal - verify before acting",
+      "reference": "Grind finer",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_06",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.7507,
+      "action": "Marginal - verify before acting",
+      "reference": "Grind finer",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_07",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.925,
+      "action": "No recommendation - too few payload particles",
+      "reference": "Grind finer",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_07",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.9123,
+      "action": "Flag for manual review - no payload detected",
+      "reference": "Grind finer",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_08",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.881,
+      "action": "Marginal - verify before acting",
+      "reference": "Marginal - verify before acting",
+      "confident": false,
+      "severity": "agrees",
+      "passes_gate": false
+    },
+    {
+      "section": "test_08",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.8244,
+      "action": "No recommendation - too few payload particles",
+      "reference": "Marginal - verify before acting",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_09",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.7692,
+      "action": "Marginal - verify before acting",
+      "reference": "Marginal - verify before acting",
+      "confident": false,
+      "severity": "agrees",
+      "passes_gate": false
+    },
+    {
+      "section": "test_09",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.8393,
+      "action": "No recommendation - too few payload particles",
+      "reference": "Marginal - verify before acting",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_10",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.9132,
+      "action": "No recommendation - too few payload particles",
+      "reference": "Grind finer",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_10",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.909,
+      "action": "Flag for manual review - low payload signal",
+      "reference": "Grind finer",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_11",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.9066,
+      "action": "Grind finer",
+      "reference": "Grind finer",
+      "confident": true,
+      "severity": "agrees",
+      "passes_gate": true
+    },
+    {
+      "section": "test_11",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.9062,
+      "action": "Flag for manual review - no payload detected",
+      "reference": "Grind finer",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    },
+    {
+      "section": "test_12",
+      "split": "test",
+      "darkened": false,
+      "confidence": 0.875,
+      "action": "Grind finer",
+      "reference": "Grind finer",
+      "confident": true,
+      "severity": "agrees",
+      "passes_gate": true
+    },
+    {
+      "section": "test_12",
+      "split": "test",
+      "darkened": true,
+      "confidence": 0.8924,
+      "action": "Flag for manual review - no payload detected",
+      "reference": "Grind finer",
+      "confident": false,
+      "severity": "flagged",
+      "passes_gate": false
+    }
+  ]
+}

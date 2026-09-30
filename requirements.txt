@@ -13,6 +13,7 @@ opencv-python-headless  # marker-controlled watershed for particle separation; f
 matplotlib
 pandas
 streamlit
+jinja2>=3.1  # dashboard/render.py imports it directly; do not rely on streamlit pulling it in
 # streamlit declares starlette>=0.40.0 but its gzip middleware imports
 # DEFAULT_EXCLUDED_CONTENT_TYPES, which older starlette does not export - so pip
 # resolves a version that then fails at import. With starlette 0.41.3 the

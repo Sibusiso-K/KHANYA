@@ -12,5 +12,14 @@
   <div class="panel"><div class="label">Expert annotation · ground truth</div><img alt="Expert annotated ground-truth mineral phases" src="data:image/png;base64,{{ ground_truth_b64 }}"></div>
   <div class="panel"><div class="label">Model prediction · measured output</div><img alt="Model predicted mineral phases" src="data:image/png;base64,{{ predicted_phases_b64 }}"></div>
 </div>
-<div class="footer">Mean prediction confidence (measured): <strong>{{ "%.1f"|format(confidence * 100) }}%</strong> · LumenStone S2 v2 · offline evidence</div>
+{% if scores and scores.mismatch %}
+<div class="panel" style="margin-top:14px;border-color:#D29922"><div class="label">Scorecard hidden</div><div class="footer" style="margin-top:0">The saved section scores and advisories were produced by checkpoint {{ scores.report_sha }}…, not the active checkpoint {{ scores.active_sha }}…. They are not shown beside this prediction.</div></div>
+{% elif scores %}
+<div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:14px">
+  <div class="panel"><div class="label">Section mean IoU</div><div style="font-size:28px;font-weight:700">{{ "%.2f"|format(scores.section_iou) }}</div><div class="footer" style="margin-top:4px">mean IoU on this section alone · all 12 pooled: {{ "%.4f"|format(scores.pooled_iou) }}</div></div>
+  <div class="panel"><div class="label">Model's advice (whole section)</div><div style="font-size:16px;font-weight:700">{{ scores.model_advice }}</div>{% if withheld_by_gate %}<div class="footer" style="margin-top:4px;color:#D29922">advisor rules only · at {{ "%.0f"|format(confidence * 100) }}% confidence the live pipeline withholds it (gate: {{ "%.0f"|format(confidence_floor * 100) }}%)</div>{% endif %}</div>
+  <div class="panel" style="border-color:{{ '#2EA043' if scores.agree else '#D29922' }}"><div class="label">Expert annotation's advice</div><div style="font-size:16px;font-weight:700">{{ scores.expert_advice }}</div><div class="footer" style="margin-top:4px;color:{{ '#2EA043' if scores.agree else '#D29922' }}">{{ "Agrees with the model" if scores.agree else "Differs from the model" }}</div></div>
+</div>
+{% endif %}
+<div class="footer">Mean prediction confidence (measured): <strong>{{ "%.1f"|format(confidence * 100) }}%</strong> · LumenStone S2 v2 · offline evidence{% if source %} · prediction {{ source }}{% endif %}</div>
 </body></html>

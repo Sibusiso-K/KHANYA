@@ -26,10 +26,11 @@
       <span style="font-size:13px;color:{{ muted }}">payload-bearing particles · provisional floor {{ min_payload_particles }}</span>
     </div>
     <div style="font-size:12px;color:{{ muted }};margin-top:2px">{{ evidence_scope }}</div>
+    <div style="font-size:12px;color:{{ muted }};margin-top:2px">model confidence {{ "%.0f"|format(confidence * 100) }}% · confidence gate {{ "%.0f"|format(confidence_floor * 100) }}% (provisional)</div>
     {% if lighting and lighting.off %}
-    <div style="margin-top:14px;padding:8px 10px;border:1px solid {{ bad }};border-radius:4px">
-      <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ bad }}">LIGHTING CHECK OFF · UNGUARDED</div>
-      <div style="font-size:11px;color:{{ muted }};line-height:1.35">shown for comparison; the advice has not been tested against a simulated lighting change</div>
+    <div style="margin-top:14px;padding:8px 10px;border:1px solid {{ dim }};border-radius:4px">
+      <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ muted }}">LIGHTING CHECK OFF · CONFIDENCE GATE ON</div>
+      <div style="font-size:11px;color:{{ muted }};line-height:1.35">the optional lighting diagnostic did not run; the confidence gate still applies</div>
     </div>
     {% elif lighting %}
     {% set lc = ok if lighting.stable else (muted if lighting.abstained else bad) %}
@@ -43,6 +44,11 @@
         <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ lc }}">SIMULATED LIGHTING: {{ "STABLE" if lighting.stable else ("N/A" if lighting.abstained else "UNSTABLE") }}</div>
         <div style="font-size:11px;color:{{ muted }};line-height:1.35">darker copy (RGB offset): {{ lighting.after_shift }}</div>
       </div>
+    </div>
+    {% elif advisory_only %}
+    <div style="margin-top:14px;padding:8px 10px;border:1px solid {{ warn }};border-radius:4px">
+      <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ warn }}">ADVISORY ONLY · NO LIGHTING CHECK</div>
+      <div style="font-size:11px;color:{{ muted }};line-height:1.35">the lighting check runs only in live sampled-fields mode, so this path issues no plant command</div>
     </div>
     {% else %}
     <div style="margin-top:14px;font-size:11px;color:{{ muted }}">Lighting check runs in live sampled-fields mode.</div>
@@ -76,6 +82,14 @@
     </svg>
     {% if plant %}
     <div style="font-size:12px;color:{{ muted }};margin-top:6px;line-height:1.4"><span class="font-mono" style="color:{{ text }}">{{ "%g"|format(plant.before) }} → {{ "%g"|format(plant.after) }}</span> · {{ plant.reason }}</div>
+    {% endif %}
+    {% if sample_stem %}
+    <div class="font-mono" style="margin-top:8px;font-size:11px;font-weight:700;letter-spacing:.1em;color:{{ ok }}">VERIFIED SAMPLE · {{ sample_stem }} · MAY COMMAND THE SIMULATOR</div>
+    {% else %}
+    <div style="margin-top:8px;padding:6px 8px;border:1px solid {{ warn }};border-radius:4px">
+      <div class="font-mono" style="font-size:11px;font-weight:700;letter-spacing:.1em;color:{{ warn }}">UNVERIFIED SAMPLE · ADVISORY ONLY</div>
+      <div style="font-size:11px;color:{{ muted }};line-height:1.35">nothing published, nothing commanded: only the 12 validated held-out sections, byte for byte, may drive the simulator</div>
+    </div>
     {% endif %}
   </div>
 </section>

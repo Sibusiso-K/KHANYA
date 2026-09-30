@@ -19,6 +19,335 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (84) — board-level review: a lab triage tool, not a field tool (40.5/100 on that lens)
+
+**Did:** re-tested `ec9f853` as a Mintek board geologist and metallurgist
+would. Covered phone width (375 × 812), desktop, a search of every branch,
+and the evidence for time and cost. Full review:
+`reports/BOARD-REVIEW-2026-09-30.md`.
+
+**Answers to the questions asked:**
+- **Mobile: not easy.** Measured:
+  - Upload sits below the fold;
+  - the landing card is cut off in a scrolling box;
+  - the result is 3,315 px inside a 1,500 px scrolling frame, 415 px wide in
+    343 px ("APPLIED" and "CLEANER" are clipped);
+  - 40 of 66 text elements are 9-11 px.
+- **XRF to phone:** not built anywhere.
+- **3D render with click-for-composition:** not built. The mineral map is a
+  static image, and a 3D view of a 2D section would not be meaningful anyway.
+- **Speed:** 35 s a sample, 210 s for a whole section. Fine for a bench;
+  section preparation dominates.
+- **Time and cost:** not demonstrated. Only 2 of 12 held-out sections (3 of
+  37 train/val) get a confident call past the gates, and the "verify" flags
+  have never been checked against QEMSCAN.
+
+**Two stale claims to fix before the pitch:**
+- `MINTEK-FIT.md` §3.1 still says 6 of 12 are answered confidently (50%).
+- The landing text still promises refusal when advice "changes with the
+  lighting".
+
+**Scores:**
+- **40.5/100 on this lens** (usability-weighted; XRF and 3D scored 0 because
+  they are absent).
+- The pre-production score stays 79: that rubric asks a different question.
+
+**Next:** the before-pitch list in the report (stale claims, framing,
+mobile layout, glossary). Everything else is post-deadline, and the South
+African data (QEMSCAN labels, chromite and PGM classes) comes first.
+
+---
+
+## 2026-09-30 — Sibusiso (83) — option (b): only validated samples touch the plant
+
+**Did:** Lethabo's PR #11 / #17 blocker was that warm-toned non-micrographs
+pass the colour check and could reach OPC UA. His option (b) is taken, on
+`khanya/preprod-fixes` (PR #17):
+- `dashboard/validated_samples.json` holds the sha256 of the 12 held-out
+  sections (`python -m src.validated_samples`). Only those files, byte for
+  byte, may publish or command.
+- Everything else is analysed but shows UNVERIFIED SAMPLE · ADVISORY ONLY,
+  OPC UA NOT PUBLISHED, plant HELD.
+- An armed stale refusal is not spent on an unverified upload.
+- The preflight checks the test files still match the manifest (8 checks,
+  READY).
+- The colour check is renamed "colour-cast check" (not an out-of-domain
+  detector).
+- The 85% confidence gate is labelled provisional on screen.
+
+**Re-run end to end** (report addendum). OPC UA server start-ups were counted
+in the dashboard log:
+- **Warm screenshot** (model 93% confident): advisory only, 0 start-ups.
+- **Warm texture** (92%): advisory only, 0 start-ups.
+- **test_11 as PNG** ("Grind finer" at 91%, which used to move the plant):
+  advisory only, 0 start-ups.
+- **test_11.jpg:** verified, published, plant 0 -> 1, 2 start-ups.
+- **Stale refusal:** still refuses.
+- **Tests:** 161 pass.
+
+**For the demo:** do not re-save or convert the test images. A changed file is
+no longer a validated sample and cannot move the plant.
+
+**Blocked on:** Lethabo's re-review of #17. The same blocker is on #11, and the
+fix lives in #17, so I've proposed merging #11 -> #12 -> #13 -> #17 as one
+unit.
+
+---
+
+## 2026-09-30 — Sibusiso (82) — pre-production fixes: 57.5 -> 79 on re-test (PR #17)
+
+**Did:** fixed every code-fixable finding from issue #16 on
+`khanya/preprod-fixes` (PR #17, stacked on #13). Re-ran all four test layers.
+Results and re-score are in `reports/PREPROD-TEST-2026-09-30.md` ("Re-test
+after the fixes").
+
+**Two behaviour changes, both yours to veto, both on train/val evidence only:**
+1. **Confidence now gates.** The advisor's existing 0.85 "verify manually"
+   threshold withholds a confident call.
+   - On 37 train/val sections, unsafe confident calls were 0.635-0.822 and
+     correct ones 0.834-0.896: 8/8 unsafe withheld, 2/5 correct lost
+     (`reports/confidence_calibration_trainval.json`).
+   - On darkened copies, 0/10 confident calls pass.
+   - `advise()` is unchanged, so the committed reports stay valid.
+2. **The lighting check is an optional diagnostic, off by default.** With the
+   gate on it caught no extra unsafe call and cost 3 more correct ones.
+
+Effect on held-out data (described afterwards, chose nothing):
+- test_11 and test_12 -> Grind finer (correct), so the live demo now moves the
+  plant on held-out data. That answers your #12 point.
+- test_01's correct Continue is withheld at 77%.
+
+**Other fixes:**
+- **Inputs.** Input-eligibility gate: greyscale and non-micrographs are refused
+  before any model pass or publish.
+- **Full section.** Advisory only, and labelled.
+- **Timing.** One labelled server-side timer in every mode.
+- **Installability.**
+  - `requirements-lock.txt`, installed by CI on Python 3.13;
+  - `jinja2` added;
+  - README "Setting up a presenting laptop" (where the checkpoint comes from);
+  - preflight fingerprints REEFPRINT against 29254718 and times a live pass;
+  - the offline test covers templates and CSS.
+- **Small items.** Evidence names the gate; the result clears at run start;
+  "these fields"; the small-image message is reworded.
+- **Evidence found along the way.** The ±0.335 band covers 75.7% of six-field
+  errors on train/val against a nominal 85%: documented, not widened.
+
+**Re-test:**
+- Live 31.5-38.6 s (was ~60); full section 210 s (was ~290).
+- Every hostile input refused in 1-2 s.
+- Stale refusal re-verified; 158 tests pass.
+- Demo beat 4 is rewritten and re-verified (`BACKUP-DEMO-SCRIPT.md`).
+
+**Not fixed:**
+- **OPC UA:** 10.2 s of each Grind-finer run, two server start-ups. Merging
+  them is a transport change the night before the demo.
+- **Science:** n = 12, magnetite 0, unsourced thresholds.
+- **Wifi-off run:** needs the presenting laptop.
+
+**Blocked on:** your reviews: #11 -> #12 -> #13 -> #17.
+
+**Next (Lethabo):** veto or accept the two behaviour changes in #17. They
+change the pitch's demo beat.
+
+---
+
+## 2026-09-30 — Sibusiso (81) — stack repaired after #10's merge; #15 reviewed
+
+**Did:**
+- **#10 was merged, and deleting its branch auto-closed #11.** The merge was
+  approved and `main` is byte-identical to the approved head `2ca8e45`.
+  Deleting `khanya/evidence-sufficiency` closed #11 unreviewed. The fix:
+  - merged `main` into `khanya/lighting-check` keeping the branch tree (it
+    already contains `2ca8e45`, so nothing changes);
+  - restored the base branch briefly, reopened #11, retargeted it to `main`,
+    and deleted the branch again;
+  - cascaded the same no-op merge into #12 and #13.
+
+  All three branch trees are unchanged, all three PRs are mergeable, and each
+  shows only its own changes. Re-review requested on #11.
+- **Reviewed #15** (Lethabo's `codex/launch-live-demo`): changes requested.
+  - It is based on pre-#10 `main` and conflicts with the stack in 5 files.
+  - It hard-codes the Kaggle retrain's 0.4543 on screen regardless of the
+    loaded checkpoint.
+  - Its demo record shows Continue → `regrind_enabled` 1 → 0 as a success.
+    That is the #12 bug, still on `main` at `control.py:38`.
+  - "Human-reviewed advisory" is false.
+  - At 375 px the result is 3,129 px inside a fixed, non-scrolling 1,900 px
+    frame, which cuts off the simulation disclaimers.
+  - Keep: the held-out example button, the research-mode masthead, and the
+    collapsed developer controls.
+- **#9's DaisyUI skill vendoring** (73 files, no licence notice) is noted
+  here; no comment posted on #9.
+
+**Blocked on:** Lethabo's re-review of #11 -> #12 -> #13, and his replies on
+#15 and issue #16.
+
+**Next (Lethabo):**
+- Merge #11 -> #12 -> #13 without `--delete-branch`, retargeting each next PR
+  to `main` first.
+- Then rebase #15 onto the new `main`, or say if I should port its keepers.
+
+---
+
+## 2026-09-30 — Sibusiso (80) — pre-production test, end to end: 58/100, not pilot-ready
+
+**Did:** tested `khanya/speed` (`5254951`) in four layers: static checks, a
+fresh GitHub clone, every dashboard mode live from a cold server, and hostile
+uploads. Full results: `reports/PREPROD-TEST-2026-09-30.md`. No code changed.
+
+**Passed:** 143 tests (repo and fresh clone); preflight READY here and a
+correct 3-check refusal in the clone; test_01 Continue/UNCHANGED, test_11
+UNSTABLE/HELD; Evidence agrees with the expert on test_01 and test_11;
+corrupt and 300 px files refused before any command; RGBA = JPG; browser
+traffic localhost only.
+
+**Failed, ranked:**
+1. **No input-eligibility gate.** A screenshot of text came back as 68% ore,
+   100% pentlandite, 193 particles, and its association index was **published
+   over OPC UA and acknowledged**. Greyscale test_11 inverts the phases
+   (pyrrhotite 99.1% -> pentlandite 97.5%, association 1% -> 66%). Both held
+   only because the value fell inside the ±33.5% band.
+2. **Full-section mode bypasses the lighting check without saying so.**
+   test_11: live mode HELD; full mode Grind finer, APPLIED 0 -> 1, no
+   UNGUARDED label. (Grind finer is the expert's answer on test_11, so this
+   call was right, but it had no guard.)
+3. Confidence is a caption, not a gate (`advisor.py:145`).
+4. Time claims: "about three minutes" in the app vs about 4 min 50 s measured
+   for full section; live ~60 s today vs 49 s recorded; "end to end" leaves
+   out about 8 s of upload and render.
+5. Not installable from the repo: unpinned requirements, Jinja2 missing, no
+   checkpoint route, REEFPRINT loaded from an unpinned folder outside the repo
+   (`Desktop\REEFPRINT`, detached at `73806b2`; its integrate/ code matches
+   `origin/reefprint` today).
+
+**Score: 57.5/100 as pre-production** (weighted; the breakdown is in the
+report's Score section). Fixing 1-5 would take it to about
+72 (an estimate, not a measurement). The science caps (n=12, lighting check
+non-selective, magnetite 0) remain.
+
+**Added after the test:** `src/input_eligibility_check.py` measures a fix for
+finding 1: a colour-balance rule with no fitted threshold passes all 49 S2
+sections and refuses both hostile images, but refuses 20 of 30 V1 images (another
+imaging set-up). Details in the report.
+
+**Blocked on:** nothing. Re-reviews of #10-#13 still pending.
+
+**Next (Lethabo):** issue #16 has every finding, its fix, and five decisions
+(D1-D5) that are yours: full-section mode, refusing unseen camera set-ups,
+checkpoint route, REEFPRINT pin, confidence floor. Nothing is implemented
+yet beyond the measurement script.
+
+---
+
+## 2026-09-30 — Sibusiso (79) — #13 review: evidence provenance bound to the checkpoint hash
+
+Lethabo's #13 review (changes requested) found three provenance holes, all
+fixed:
+- **Cached evidence predictions trusted on a file timestamp alone.** They are
+  now used only when the stamp matches **and** the active checkpoint's sha256
+  (computed once) is the reported `de7135a9`.
+- **The scorecard could sit beside a different model's prediction.** It now
+  checks both reports' recorded `checkpoint_sha256` against the active one, and
+  is hidden, with the reason stated, on a mismatch.
+- **"This section's accuracy" was mean IoU.** Renamed "Section mean IoU".
+
+His first point (simulated-perturbation wording) was already fixed by the #11
+and #12 changes merged up.
+
+Verified live: Evidence shows the sha-bound source line and the scorecard,
+2.5 s. Suite 143 passed.
+
+**Note for later:** Lethabo's new PR #14 (codex/khanya-build-plan -> main)
+touches `src/segmentation/patches.py`, which #10 also changes. Expect a merge
+conflict; merge #10-#13 first.
+
+---
+
+## 2026-09-30 — Sibusiso (78) — every judge-review point on #10-#12 addressed
+
+**Lethabo's reviews were right on every point; all fixed, pushed and verified
+live on the full stack.**
+
+- **#10:** the minimum of 9 payload particles is now a **provisional operating
+  floor, not a statistical bound**. The binomial derivation doesn't hold for an
+  area-weighted index over dependent particles. The on-screen "even a perfect
+  segmentation cannot..." is gone.
+  The **six-field sampler no longer repeats or overlaps crops** on small
+  uploads (a 512x512 upload got the same crop six times): the grid shrinks to
+  fit, overlap is asserted, and coverage is computed. Tested on 200 random
+  sizes.
+- **#11:** now a **simulated lighting-perturbation check / input-sensitivity
+  diagnostic**. It is the same image with a fixed RGB offset, not a second
+  capture, and the offset is shown. **Gauge R&R comparison withdrawn.** The
+  costs (4 of 5 correct confident calls discarded, double the time) sit at the
+  top of the report. Validation re-run with the renamed refusal: **identical
+  numbers, deterministic**.
+- **#12:**
+  - **Continue at current setpoint no longer switches regrind off.** It is a
+    no-op (UNCHANGED), and the declared regrind-on preset is removed.
+  - A **visible guarded/unguarded toggle** replaces the preset.
+  - The tile says "provisional floor", coverage is computed rather than
+    asserted, and the strip stacks on phones.
+
+**Verified live (BACKUP-DEMO-SCRIPT beat 4, all six steps):**
+- test_11, check ON: UNSTABLE, HELD 0.
+- Check OFF: *Grind finer*, UNGUARDED, **0 -> 1**.
+- test_04: provisional floor, HELD.
+- test_01: *Continue*, STABLE, **UNCHANGED 1 -> 1**.
+- Stale refusal: REFUSED, stays 0.
+- Phone width: one column.
+
+Script bug found while verifying: arming the stale refusal and *then* toggling
+spends it on the image on screen. Order fixed in the script.
+
+Presenter note: in the in-app browser pane, pointer clicks on the toggle
+didn't register but keyboard Space did. Check it on the presenting laptop
+during rehearsal.
+
+Suite 141 passed; offline guard clean.
+
+**Next:** Lethabo - re-review #10 -> #13 in order.
+
+---
+
+## 2026-09-30 — Sibusiso (77) — fewer spinners: faster live path, instant evidence, offline config (PR D)
+
+**Profiled first:** of a live six-field pass, the model's six forward passes
+took 15.3 s, but the **progress frames took 5.2 s each (31 s)**: full-size PNG
+encoding of a preview. Batching two fields per forward saves only 2% on this
+CPU, so that was not done.
+
+**Did:**
+- **Progress frames at screen size, with fast PNG compression**: 5.16 -> 0.41 s
+  per frame. Measurement still runs on full-resolution labels.
+- **The lighting pass runs only when there is a confident instruction to
+  protect.** The gate leaves abstentions untouched, so a second pass could not
+  change them.
+- **Model warmed once at startup**, before any upload.
+- `.streamlit/config.toml`: toolbar hidden (no "Deploy" button), and
+  **`gatherUsageStats = false`**. Streamlit's usage statistics would otherwise
+  try the network, a hole in the offline claim.
+- **Evidence view** loads the cached prediction only when its stored checkpoint
+  stamp equals this checkpoint's file stamp (otherwise it runs live), says which
+  on screen, and adds a scorecard: the section's own IoU, the model's
+  whole-section advice and the expert annotation's advice.
+
+**Measured live (this CPU, single runs, not distributions):**
+- test_01, two passes: model part **49.0 s** (was 71-74 s), ~58 s upload to
+  result.
+- test_04, one pass: 32.2 s, ~50 s upload to result.
+- Evidence: **13.5 s** (was ~3 min).
+
+**Still slow and not fixed:** forward passes dominate now, and they ran slower
+tonight than in the earlier profile. The ~8-18 s after inference is mostly two
+OPC UA transactions, each starting a fresh local server. GPU timing is
+Lethabo's (entry 72).
+
+**Next:** Lethabo - judge review of #10-#13.
+
+---
+
 ## 2026-09-30 — Sibusiso (76) — control-room screen: decision, evidence, plant in one row (PR C)
 
 **Did:**

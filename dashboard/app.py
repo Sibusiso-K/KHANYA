@@ -15,7 +15,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from dashboard import render
-from dashboard.inputs import load_image, unavailable_reason
+from dashboard.inputs import check_colour_cast, load_image, unavailable_reason, validated_sample
 from src.segmentation import config
 
 
@@ -96,6 +96,24 @@ st.markdown(UPLOAD_BRIDGE_CSS, unsafe_allow_html=True)
 
 
 @st.cache_resource
+def checkpoint_sha256(checkpoint_key):
+    """sha256 of the checkpoint file, computed once per (path, stamp, size)."""
+    import hashlib
+
+    return hashlib.sha256(Path(checkpoint_key[0]).read_bytes()).hexdigest()
+
+
+@st.cache_resource
+def warm_model(checkpoint_key):
+    import torch
+
+    model, dev = load_model(checkpoint_key)
+    with torch.no_grad():
+        model(torch.zeros(1, 3, 512, 512, device=dev))
+    return True
+
+
+@st.cache_resource
 def load_model(checkpoint_key):
     import torch
 
@@ -173,7 +191,7 @@ landing_slot = st.empty()
 progress_slot = st.empty()
 opcua_slot = st.empty()
 LIVE_FIELD_LABEL = "Live sampled fields — six 512×512 fields across the section, timed live"
-FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image"
+FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image · advisory only"
 EVIDENCE_LABEL = "Evidence — held-out S2 test set"
 mode = st.radio(
     "ANALYSIS MODE",
@@ -187,7 +205,9 @@ mode = st.radio(
         "full-section inference measures p95 196s, about 6.5x over the "
         "review's 30s design target — unworkable as a live demo beat). "
         "Full section is the validated whole-image path used for the "
-        "backup recording (BACKUP-DEMO-SCRIPT.md). Evidence is a separate "
+        "backup recording (BACKUP-DEMO-SCRIPT.md). It is advisory only: the "
+        "lighting check does not run there, so it issues no plant command. "
+        "Evidence is a separate "
         "view over known held-out S2 test images and never uses live uploads."
     ),
 )
@@ -215,15 +235,20 @@ if "plant" not in st.session_state:
 if reset_plant:
     st.session_state.plant.update(regrind_enabled=0.0, log=[], status=None)
 
-# Visible on purpose: the demo compares the guarded and unguarded pipeline on the
-# same section. Off is labelled as unguarded everywhere it shows.
+# Off by default since 30 Sept, kept as an optional input-sensitivity diagnostic.
+# With the confidence gate on, the check caught no unsafe call the gate did not
+# already withhold on the 37 train/validation sections, cost 3 more correct calls
+# and doubled the time; on darkened copies the gate alone let 0 of 10 confident
+# calls through (reports/confidence_gate_darkened_trainval.json). Off is labelled
+# everywhere it shows; the confidence gate applies either way.
 lighting_check_on = st.toggle(
-    "Simulated lighting-perturbation check (live mode)",
-    value=True,
-    help=("On: a confident recommendation is issued only if it is unchanged on a copy "
-          "of the image with a fixed RGB offset (the median darkening between real "
-          "re-imagings of LumenStone V1 sections). Off: the unguarded pipeline, "
-          "for comparison."),
+    "Simulated lighting-perturbation check (optional diagnostic, live mode)",
+    value=False,
+    help=("On: a confident recommendation is issued only if it is also unchanged on a "
+          "copy of the image with a fixed RGB offset (the median darkening between real "
+          "re-imagings of LumenStone V1 sections); doubles the time. Off (default): the "
+          "confidence gate alone, which on training/validation data withheld every "
+          "unsafe call the check caught."),
 )
 
 def show_landing(reason=None):
@@ -234,6 +259,12 @@ def show_landing(reason=None):
 
 
 reason = unavailable_reason(SUBSET, CKPT)
+if not reason:
+    # Load the model and run one forward pass once per server process, before any
+    # upload, so no judge sees the cold first run. Excluded from every timing.
+    _stat = CKPT.stat()
+    with st.spinner("Loading the model once…"):
+        warm_model((str(CKPT), _stat.st_mtime_ns, _stat.st_size))
 if mode == EVIDENCE_LABEL:
     progress_slot.empty()
     if reason:
@@ -254,14 +285,39 @@ if mode == EVIDENCE_LABEL:
         evidence_bytes = evidence_image_path.read_bytes()
         stat = CKPT.stat()
         evidence_checkpoint_key = (str(CKPT), stat.st_mtime_ns, stat.st_size)
-        with st.spinner("Running the real native-resolution model on the selected held-out section…"):
-            _image, evidence_predicted, evidence_confidence = predict(
-                evidence_bytes, evidence_checkpoint_key
-            )
+        # A prediction cached by src.decision_gap records only its checkpoint's
+        # file stamp, and a restored file can keep a stamp (Lethabo, PR #13
+        # review). So a cached prediction is used only when the stamp matches AND
+        # the active checkpoint's sha256 is the reported one the caches and
+        # reports were produced from; otherwise the model runs (4 min 50 s
+        # for one section on the development laptop, 30 Sept).
+        import numpy as np
+        from src.preflight import EXPECTED_S2_SHA256
+        active_sha = checkpoint_sha256(evidence_checkpoint_key)
+        cached = (config.ROOT / "data" / "derived" / "preds_s2_patches"
+                  / f"{evidence_stem}.npz")
+        evidence_source = None
+        if cached.exists():
+            stored = np.load(cached)
+            if int(stored["ckpt"]) == stat.st_mtime_ns and active_sha == EXPECTED_S2_SHA256:
+                evidence_predicted = stored["mask"]
+                evidence_confidence = float(stored["confidence"])
+                evidence_source = (f"precomputed: its recorded checkpoint timestamp matches, and "
+                                   f"the active checkpoint is sha256 {active_sha[:12]}…, the "
+                                   "reported one; a live recompute runs the full native-resolution model, "
+                                   "several minutes on a CPU")
+        if evidence_source is None:
+            with st.spinner("Running the real native-resolution model on the selected held-out section…"):
+                _image, evidence_predicted, evidence_confidence = predict(
+                    evidence_bytes, evidence_checkpoint_key
+                )
+            evidence_source = "computed live on this run"
         st.components.v1.html(
             render.render_evidence(
                 evidence_stem, evidence_image, evidence_labels,
                 evidence_predicted, evidence_confidence, len(test_ids),
+                source=evidence_source,
+                scores=render.evidence_scores(evidence_stem, active_sha),
             ),
             height=850, scrolling=True,
         )
@@ -273,6 +329,9 @@ uploaded = st.file_uploader(
     "REFLECTED-LIGHT MICROGRAPH OF A POLISHED SECTION",
     type=["jpg", "jpeg", "png", "tif", "tiff"],
 )
+# Declared before any slow work so a new run clears the previous result at once,
+# instead of leaving it on screen, faded, for the minutes a full section takes.
+result_slot = st.empty()
 if uploaded is None:
     show_landing(reason)
 else:
@@ -280,10 +339,17 @@ else:
         show_landing(reason)
         st.stop()
     try:
+        received = time.perf_counter()  # upload received: the timer every mode reports
         image_bytes = uploaded.getvalue()
-        load_image(image_bytes)  # Decode before starting expensive model work.
+        # Decode, then refuse an image whose colour rules it out, before any model
+        # pass (pre-production finding 1). This is a colour-cast check, not an
+        # out-of-domain detector, so it does not decide what may touch the plant:
+        # only a validated held-out section, byte for byte, may publish or command
+        # (Lethabo, PR #11 and #17 reviews). Everything else is advisory only.
+        check_colour_cast(load_image(image_bytes))
+        sample_stem = validated_sample(image_bytes)
         from src import modal
-        from src.advisor import advise
+        from src.advisor import advise, confidence_gate
         from src.segmentation import lumenstone as ls
         from dashboard.opcua import publish_result
         from dashboard.control import REGRIND_HEAD, send_command
@@ -297,7 +363,7 @@ else:
                 "Six fields across the section, one model pass each, timed "
                 "live. Not cached: every run measures fresh."
             ):
-                field_image = load_image(image_bytes)
+                field_image = render.progress_preview(load_image(image_bytes))
 
                 def on_field(completed, total, partial_labels, box, confidence):
                     with progress_slot.container():
@@ -310,24 +376,16 @@ else:
                 image, labels, mean_confidence, elapsed = predict_live_field(
                     image_bytes, checkpoint_key, on_field
                 )
-            mode_label = "Live sampled 512×512 fields, lighting check OFF (unguarded)"
-            if lighting_check_on:
-                with st.spinner(
-                    "Simulated lighting-perturbation check: the same fields, recomputed on "
-                    "a copy darkened by a fixed RGB offset (R -34.8, G -32.5, B -29.6)."
-                ):
-                    from src.stability import reimaged
-                    field_image = reimaged(load_image(image_bytes))
-                    shifted_image, shifted_labels, shifted_confidence, shifted_elapsed = (
-                        predict_live_field(image_bytes, checkpoint_key, on_field, reimage=True))
-                elapsed += shifted_elapsed
-                mode_label = "Live sampled 512×512 fields, lighting-checked"
+            mode_label = ("Live sampled 512×512 fields" if lighting_check_on
+                          else "Live sampled 512×512 fields, lighting check off (confidence gate on)")
         else:
             with st.spinner(
                 "Tiling and predicting at native resolution — each frame below is "
                 "updated after a real tile classification."
             ):
-                progress_image = load_image(image_bytes)
+                # Built once at frame size, as the live path does, rather than resized
+                # from full resolution on every tile. Display only; no number changes.
+                progress_image = render.progress_preview(load_image(image_bytes))
 
                 def on_tile(completed, total, partial_labels, tile_box, tile_confidence):
                     # st.empty() returns a DeltaGenerator, which has no
@@ -351,7 +409,10 @@ else:
             mode_label = "Full section, native resolution"
 
         result = modal.analyse(labels, ls.CLASS_NAMES, refine=True)
-        recommendation = advise(result, mean_confidence)
+        # Pre-production finding 3: a confident call the model is not itself
+        # confident about is withheld (src/advisor.py CONFIDENCE_FLOOR). Before the
+        # lighting check, so a withheld call also skips the second model pass.
+        recommendation = confidence_gate(advise(result, mean_confidence), mean_confidence)
         lighting = None
         if mode == LIVE_FIELD_LABEL and not lighting_check_on:
             lighting = {"as_imaged": recommendation.action, "after_shift": "check switched off",
@@ -360,42 +421,77 @@ else:
         elif mode == LIVE_FIELD_LABEL:
             from src import stability
             as_imaged = recommendation
-            after_shift = advise(modal.analyse(shifted_labels, ls.CLASS_NAMES, refine=True),
-                                 shifted_confidence)
-            recommendation = stability.gate(as_imaged, after_shift.action)
-            lighting = {
-                "as_imaged": as_imaged.action, "after_shift": after_shift.action,
-                "image": image, "shifted_image": shifted_image,
-                "stable": after_shift.action == as_imaged.action,
-                "abstained": stability.is_abstaining(as_imaged.action),
-            }
+            if stability.is_abstaining(as_imaged.action):
+                # The gate leaves abstentions untouched, so a second pass could
+                # not change the outcome: skip it rather than make the room wait.
+                lighting = {"as_imaged": as_imaged.action,
+                            "after_shift": "not run, no instruction to protect",
+                            "image": image, "shifted_image": None,
+                            "stable": False, "abstained": True}
+            else:
+                with st.spinner(
+                    "Simulated lighting-perturbation check: the same fields, recomputed on "
+                    "a copy darkened by a fixed RGB offset (R -34.8, G -32.5, B -29.6)."
+                ):
+                    field_image = stability.reimaged(render.progress_preview(load_image(image_bytes)))
+                    shifted_image, shifted_labels, shifted_confidence, shifted_elapsed = (
+                        predict_live_field(image_bytes, checkpoint_key, on_field, reimage=True))
+                elapsed += shifted_elapsed
+                mode_label = "Live sampled 512×512 fields, lighting-checked"
+                after_shift = advise(modal.analyse(shifted_labels, ls.CLASS_NAMES, refine=True),
+                                     shifted_confidence)
+                recommendation = stability.gate(as_imaged, after_shift.action)
+                lighting = {
+                    "as_imaged": as_imaged.action, "after_shift": after_shift.action,
+                    "image": image, "shifted_image": shifted_image,
+                    "stable": after_shift.action == as_imaged.action,
+                    "abstained": False,
+                }
         opcua_values = {"model_confidence": float(mean_confidence * 100.0)}
         if result.liberation is not None:
             opcua_values["association_index"] = float(result.liberation * 100.0)
         segmentation_refused = result.liberation is None
-        # The run the arming click itself triggers must not consume it.
-        stale_requested = False if stale_demo else st.session_state.pop("force_stale_opcua", False)
-        opcua_status = publish_result(
-            opcua_values,
-            stale=stale_requested or segmentation_refused,
-            stale_reason=("segmentation refusal" if segmentation_refused
-                          else "presenter demonstration"),
-            on_event=lambda message: opcua_slot.info(message),
-        )
+        if sample_stem is None:
+            # Not a validated sample: nothing is published, and an armed stale
+            # refusal is kept for the next validated upload rather than spent here.
+            from dashboard.opcua import PublishStatus
+            stale_requested = False
+            opcua_status = PublishStatus(
+                "withheld", "not published: unverified sample, advisory only")
+        else:
+            # The run the arming click itself triggers must not consume it.
+            stale_requested = False if stale_demo else st.session_state.pop("force_stale_opcua", False)
+            opcua_status = publish_result(
+                opcua_values,
+                stale=stale_requested or segmentation_refused,
+                stale_reason=("segmentation refusal" if segmentation_refused
+                              else "presenter demonstration"),
+                on_event=lambda message: opcua_slot.info(message),
+            )
         plant = st.session_state.plant
         command_key = (uploaded.file_id, mode, lighting_check_on)
         if command_key != plant["commanded"] or stale_requested:
-            command = send_command(
-                recommendation.action, plant[REGRIND_HEAD], stale=stale_requested,
-                on_event=lambda message: opcua_slot.info(message),
-            )
+            if sample_stem is None:
+                from dashboard.control import unverified_status
+                command = unverified_status(plant[REGRIND_HEAD])
+            elif mode == LIVE_FIELD_LABEL:
+                command = send_command(
+                    recommendation.action, plant[REGRIND_HEAD], stale=stale_requested,
+                    on_event=lambda message: opcua_slot.info(message),
+                )
+            else:
+                # The lighting check runs only on the live path, so the full section
+                # never commands the plant (pre-production finding 2).
+                from dashboard.control import advisory_only_status
+                command = advisory_only_status(plant[REGRIND_HEAD])
             plant.update({REGRIND_HEAD: command.after, "commanded": command_key, "status": command})
             plant["log"].append({
                 "time": time.strftime("%H:%M:%S"),
                 "image": uploaded.name,
+                "sample": sample_stem or "unverified (advisory only)",
                 "advisory": recommendation.action,
-                "lighting check": ("n/a" if mode != LIVE_FIELD_LABEL
-                                   else "on" if lighting_check_on else "OFF (unguarded)"),
+                "lighting check": ("not run (full section, advisory only)" if mode != LIVE_FIELD_LABEL
+                                   else "on" if lighting_check_on else "off"),
                 "command": command.state,
                 "regrind_enabled": f"{command.before:g} → {command.after:g}",
                 "reason": command.reason,
@@ -411,17 +507,22 @@ else:
         else:
             evidence_scope = "whole section, native resolution"
         html = render.render(image, labels, mean_confidence, result, recommendation,
-                             mode_label=mode_label, elapsed_seconds=elapsed,
+                             mode_label=mode_label,
+                             elapsed_seconds=time.perf_counter() - received,
                              opcua_status=opcua_status, plant=command,
-                             lighting=lighting, evidence_scope=evidence_scope)
+                             lighting=lighting, evidence_scope=evidence_scope,
+                             advisory_only=mode != LIVE_FIELD_LABEL,
+                             sample_stem=sample_stem)
     except (ImportError, OSError, RuntimeError, ValueError) as exc:
         show_landing(f"Analysis could not complete: {exc}")
     else:
         landing_slot.empty()
         progress_slot.empty()
         opcua_slot.empty()
-        st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
-        with st.expander("Command log and lighting-check detail", expanded=False):
+        result_view = result_slot.container()
+        with result_view:
+            st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
+        with result_view.expander("Command log and lighting-check detail", expanded=False):
             if lighting is not None:
                 st.caption(
                     "Simulated lighting-perturbation check: an input-sensitivity diagnostic, "
@@ -434,9 +535,10 @@ else:
                 imaged_col, shifted_col = st.columns(2)
                 imaged_col.image(lighting["image"], caption=f"As imaged: {lighting['as_imaged']}",
                                  use_container_width=True)
-                shifted_col.image(lighting["shifted_image"],
-                                  caption=f"Simulated darker copy (fixed RGB offset): {lighting['after_shift']}",
-                                  use_container_width=True)
+                if lighting["shifted_image"] is not None:
+                    shifted_col.image(lighting["shifted_image"],
+                                      caption=f"Simulated darker copy (fixed RGB offset): {lighting['after_shift']}",
+                                      use_container_width=True)
             if command is None:
                 st.write(f"Simulated plant reset: regrind_enabled = "
                          f"{st.session_state.plant['regrind_enabled']:g}. Upload an image to command it.")

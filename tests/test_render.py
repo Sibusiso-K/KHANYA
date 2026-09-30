@@ -116,13 +116,13 @@ def test_live_field_mode_shows_its_measured_elapsed_time_not_a_fabricated_one():
         elapsed_seconds=3.42,
     )
     assert "Live Field Mode, 512x512 field" in with_timing
-    assert "3.4s end to end" in with_timing
+    assert "3.4s from upload received to result" in with_timing
 
     without_timing = render.render(
         Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
         result, recommendation,
     )
-    assert "end to end" not in without_timing  # no fabricated number when unmeasured
+    assert "from upload received" not in without_timing  # no fabricated number when unmeasured
 
 
 def test_result_renders_opcua_publish_acknowledgement_and_refusal_states():
@@ -218,7 +218,7 @@ def test_control_strip_shows_decision_evidence_and_plant_state():
     assert "no plant connected" in html
 
 
-def test_strip_marks_the_unguarded_pipeline_and_a_no_change_continue():
+def test_strip_marks_the_lighting_check_off_and_a_no_change_continue():
     import numpy as np
     from PIL import Image
 
@@ -236,5 +236,92 @@ def test_strip_marks_the_unguarded_pipeline_and_a_no_change_continue():
     plant = CommandStatus("unchanged", 1.0, 1.0, "within specification: no command issued")
     html = render.render(Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
                          result, recommendation, plant=plant, lighting=lighting)
-    assert "LIGHTING CHECK OFF · UNGUARDED" in html
+    assert "LIGHTING CHECK OFF" in html and "confidence gate still applies" in html
     assert ">UNCHANGED<" in html and "1 → 1" in html
+
+
+def test_evidence_scorecard_only_shows_for_the_checkpoint_that_produced_it():
+    import json
+
+    from src.segmentation import config
+
+    reported = json.loads((config.REPORT_DIR / "s2_section_stats.json").read_text())["checkpoint_sha256"]
+    scores = render.evidence_scores("test_01", reported)
+    assert scores["mismatch"] is False and "section_iou" in scores
+    other = render.evidence_scores("test_01", "0" * 64)
+    assert other["mismatch"] is True and "section_iou" not in other
+
+
+def test_evidence_view_names_mean_iou_and_hides_a_foreign_scorecard():
+    import numpy as np
+    from PIL import Image
+
+    image = Image.new("RGB", (8, 8))
+    mask = np.zeros((8, 8), dtype=np.int32)
+    shown = render.render_evidence("test_01", image, mask, mask, 0.8, 12,
+                                   scores={"mismatch": False, "section_iou": 0.41,
+                                           "pooled_iou": 0.5725, "model_advice": "a",
+                                           "expert_advice": "a", "agree": True})
+    assert "Section mean IoU" in shown and "accuracy</div>" not in shown
+    hidden = render.render_evidence("test_01", image, mask, mask, 0.8, 12,
+                                    scores={"mismatch": True, "report_sha": "de7135a96541",
+                                            "active_sha": "000000000000"})
+    assert "Scorecard hidden" in hidden and "Section mean IoU" not in hidden
+
+
+def test_evidence_says_when_the_live_gate_would_withhold_the_model_advice():
+    import numpy as np
+    from PIL import Image
+
+    image = Image.new("RGB", (8, 8))
+    mask = np.zeros((8, 8), dtype=np.int32)
+    scores = {"mismatch": False, "section_iou": 0.41, "pooled_iou": 0.5725,
+              "model_advice": "Continue at current setpoint",
+              "expert_advice": "Continue at current setpoint", "agree": True}
+    low = render.render_evidence("test_01", image, mask, mask, 0.781, 12, scores=scores)
+    assert "the live pipeline withholds it" in low and "78% confidence" in low
+    high = render.render_evidence("test_11", image, mask, mask, 0.905, 12, scores=scores)
+    assert "the live pipeline withholds it" not in high
+
+
+def test_full_section_is_advisory_only_and_says_so():
+    import numpy as np
+    from PIL import Image
+
+    from dashboard.control import advisory_only_status
+    from src.advisor import advise
+    from src.modal import ModalResult
+
+    status = advisory_only_status(1.0)
+    assert (status.state, status.before, status.after) == ("held", 1.0, 1.0)
+    assert "advisory only" in status.reason
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.95, 0.05, 38, 64,
+                         n_payload_particles=21)
+    recommendation = advise(result, 0.95)
+    assert recommendation.action == "Grind finer"
+    html = render.render(Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95,
+                         result, recommendation, plant=status, advisory_only=True,
+                         evidence_scope="whole section, native resolution")
+    assert "ADVISORY ONLY · NO LIGHTING CHECK" in html
+    assert ">HELD<" in html and "1 → 1" in html
+
+
+def test_strip_says_whether_the_sample_may_drive_the_simulator():
+    import numpy as np
+    from PIL import Image
+
+    from dashboard.control import unverified_status
+    from src.advisor import advise
+    from src.modal import ModalResult
+
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.95, 0.05, 38, 64,
+                         n_payload_particles=21)
+    recommendation = advise(result, 0.95)
+    held = unverified_status(0.0)
+    assert (held.state, held.after) == ("held", 0.0) and "advisory only" in held.reason
+    args = (Image.new("RGB", (8, 8)), np.ones((8, 8), dtype=np.int32), 0.95, result, recommendation)
+    unverified = render.render(*args, plant=held)
+    assert "UNVERIFIED SAMPLE · ADVISORY ONLY" in unverified and "nothing published" in unverified
+    assert "confidence gate 85% (provisional)" in unverified
+    verified = render.render(*args, plant=held, sample_stem="test_11")
+    assert "VERIFIED SAMPLE · test_11" in verified and "UNVERIFIED" not in verified
