@@ -79,32 +79,39 @@ declines to issue a normal recommendation because the model's predicted
 payload signal is below its configured floor. It does not prove that the
 model recognised the input as out of domain.
 
-### Beat 4 — the plant parameter moves, holds, and refuses (Live Field Mode)
+### Beat 4 — the plant parameter moves, refuses on thin evidence, holds, and rejects stale (Live sampled fields)
 
 The brief asks to see the model's output adjust a plant parameter. Below the
 result is **Simulated plant response**: one illustrative tag, `regrind_enabled`
-(1 = regrind, 0 = bypass), commanded over a real local OPC UA exchange. Verified
-in the running dashboard on 2026-09-29, in this order:
+(1 = regrind, 0 = bypass), commanded over a real local OPC UA exchange. The live
+mode samples **six 512 px fields** across the section, and the advisor will not
+advise on fewer than **9 payload-bearing particles**, a provisional operating
+floor, never to be called a statistical bound on stage. Expected values from
+`reports/field_sampling_s2.json`; steps 2 and 3 verified in the running
+dashboard on 2026-09-30.
 
 1. **RESET SIMULATED PLANT.** Shows `regrind_enabled = 0`.
-2. Upload `S2_v2/imgs/test/test_11.jpg` → *Grind finer* → **0 → 1, APPLIED**.
-   test_11 is the only held-out section that gives *Grind finer* in both Live
-   Field and full-section mode.
-3. Upload `test_03.jpg` → *Marginal* → **1 → 1, HELD**. An abstaining advisory
-   issues no command at all.
-4. Press **TRIGGER STALE OPC UA REFUSAL** (nothing fires on the image on screen),
+2. Upload `S2_v2/imgs/test/test_11.jpg` → six fields light up across the section
+   → *Grind finer* on 10 payload particles → **0 → 1, APPLIED**.
+3. Upload `test_04.jpg` → **"No recommendation - too few payload particles"**:
+   six fields but only 4 payload-bearing particles → **1 → 1, HELD**. Say: *"It
+   won't tell a plant anything on four particles."*
+4. Upload `test_03.jpg` → *Marginal* (46 payload particles, association inside
+   the uncertainty band) → **HELD**.
+5. Press **TRIGGER STALE OPC UA REFUSAL** (nothing fires on the image on screen),
    then upload `test_01.jpg` → **REFUSED**, "consumer refused stale command
    regrind_enabled=0 ... setting unchanged". It would have turned regrind off;
    it stays at 1.
 
-Say: "The simulated plant only moves on a fresh, confident advisory. Uncertain
-evidence holds it, and an expired command is refused." Do not call this a real
-plant, a P80 target or a recovery gain.
+Say: "The simulated plant only moves on a fresh, confident advisory backed by
+enough evidence. Thin evidence and uncertain evidence hold it, and an expired
+command is refused." Do not call this a real plant, a P80 target or a recovery
+gain.
 
-**Caveat for Beat 2:** its expected values are full-section. In Live Field Mode
-test_04 gives *No recommendation - insufficient ore in field*, not *Marginal*.
-Live Field and full-section recommendations differ on 8 of the 12 held-out
-sections, because a 512 px centre field is not the whole section.
+**Why six fields, not one:** a single centre field held 0-20 payload particles
+and matched the whole section's advice on 0 of 12 held-out sections once the
+gate applies; six fields match on 9 of 12. The previous version of this beat
+decided test_11 on one field holding **one** payload particle.
 
 ## What NOT to show live if the venue timing is tight
 

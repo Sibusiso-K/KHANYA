@@ -19,6 +19,17 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Codex — merge main evidence sufficiency and six-field sampler
+
+**Did:** Merged `origin/main` into `codex/launch-live-demo` per the live-demo
+workbench task. Resolved the shared dashboard conflict in favour of main's
+six-field predictor and retained the launch branch's workbench history and
+files. Main adds a provisional nine-payload-particle refusal floor and reports
+that six fields matched whole-section advice on 9 of 12 held-out sections.
+
+**Next:** Complete the FastAPI adaptation on this branch; its request and
+response contract is separate from the Streamlit dashboard.
+
 ## 2026-09-30 — Codex — local end-to-end launch and evidence
 
 **Did:** Launched the Streamlit KHANYA app at `http://127.0.0.1:8501/` from an

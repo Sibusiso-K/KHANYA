@@ -21,8 +21,8 @@ from src.segmentation import config
 
 SUBSET = os.environ.get("KHANYA_SUBSET", "S2").upper()
 CKPT = config.ROOT / "checkpoints" / f"lumenstone_{SUBSET.lower()}_patches" / "best.pt"
-RESULT_FRAME_HEIGHT = 1900
-LANDING_FRAME_HEIGHT = 700
+RESULT_FRAME_HEIGHT = 1500
+LANDING_FRAME_HEIGHT = 330
 
 # Streamlit remains the upload/model bridge, but it must not look like a
 # second dashboard wrapped around the actual Stitch interface. These rules
@@ -31,41 +31,33 @@ LANDING_FRAME_HEIGHT = 700
 UPLOAD_BRIDGE_CSS = """
 <style>
 [data-testid="stAppViewContainer"], [data-testid="stMain"] {
-  background: #F4F6F8;
-  color: #1C2934;
+  background: #00131D;
 }
 [data-testid="stHeader"], footer, #MainMenu { display: none; }
-.block-container { max-width: 1760px; padding: 0.45rem 1rem 2rem; }
-.reefprint-masthead { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 16px; margin:0 0 12px; background:#fff; border:1px solid #d8e0e6; border-radius:10px; box-shadow:0 2px 8px #1732490b; }
-.reefprint-brand { display:flex; align-items:center; gap:11px; min-width:0; color:#172b38; font:700 15px 'Segoe UI',sans-serif; letter-spacing:.04em; }
-.reefprint-mark { display:grid; place-items:center; width:34px; height:34px; border-radius:8px; background:#153f49; color:#fff; font:800 14px Consolas,monospace; }
-.reefprint-subtitle { display:block; margin-top:2px; color:#71808b; font:500 11px 'Segoe UI',sans-serif; letter-spacing:0; }
-.reefprint-status { flex:0 0 auto; padding:7px 10px; border:1px solid #eed7a6; border-radius:999px; background:#fff7e8; color:#755719; font:700 10px Consolas,monospace; letter-spacing:.06em; }
-[data-testid="stVerticalBlockBorderWrapper"] { border-color:#d8e0e6; background:#fff; border-radius:10px; }
-@media(max-width:640px){.reefprint-masthead{align-items:flex-start}.reefprint-status{font-size:9px;max-width:135px;text-align:center}.reefprint-brand{font-size:13px}}
+.block-container { max-width: 1760px; padding: 0.75rem 1rem 2rem; }
 [data-testid="stFileUploader"] {
   max-width: 1720px; margin: 0.85rem auto 1.1rem;
-  color: #33424D; font-family: "Segoe UI", sans-serif;
+  color: #E3EAEB; font-family: "Segoe UI", sans-serif;
 }
 [data-testid="stRadio"] > label {
-  color: #52616D; font-family: "JetBrains Mono", Consolas, monospace;
+  color: #8CA6AE; font-family: "JetBrains Mono", Consolas, monospace;
   font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
   text-transform: uppercase; margin-bottom: 0.35rem;
 }
 [data-testid="stRadio"] div[role="radiogroup"] {
   display: flex; gap: 4px; padding: 4px; width: fit-content;
-  background: #FFFFFF; border: 1px solid #D8E0E6; border-radius: 0.5rem;
+  background: #000D14; border: 1px solid #1E3E4B; border-radius: 0.5rem;
 }
 [data-testid="stRadio"] div[role="radiogroup"] label {
   margin: 0; padding: 0.55rem 0.8rem; border: 1px solid transparent;
-  border-radius: 0.3rem; color: #52616D; background: #F4F6F8;
+  border-radius: 0.3rem; color: #8CA6AE; background: #0B222E;
   transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
 [data-testid="stRadio"] div[role="radiogroup"] label:hover {
-  border-color: #AFC0C9; color: #1C2934; background: #EDF2F4;
+  border-color: #194D5C; color: #E3EAEB; background: #102C3B;
 }
 [data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
-  color: #173E49; background: #E8F2F3; border-color: #5F9BA3;
+  color: #E3EAEB; background: #194D5C; border-color: #2EA5BC;
   box-shadow: 0 0 0 1px rgba(46,165,188,.18);
 }
 [data-testid="stRadio"] div[role="radiogroup"] input {
@@ -76,12 +68,12 @@ UPLOAD_BRIDGE_CSS = """
   font-size: 0.76rem; font-weight: 700; letter-spacing: 0.12em;
 }
 [data-testid="stFileUploaderDropzone"] {
-  background: #FFFFFF; border: 1px dashed #8FA7B1; border-radius: 0.5rem;
+  background: #071C27; border: 1px dashed #2EA5BC; border-radius: 0.5rem;
   padding: 1.4rem 1rem; box-shadow: inset 0 0 0 1px rgba(46,165,188,.08);
   transition: border-color .15s ease, background .15s ease;
 }
 [data-testid="stFileUploaderDropzone"]:hover {
-  background: #F8FAFB; border-color: #C68B28;
+  background: #0B222E; border-color: #FFB539;
 }
 [data-testid="stFileUploader"] svg { color: #2EA5BC; }
 [data-testid="stTooltipIcon"] { color: #8CA6AE; }
@@ -95,16 +87,12 @@ button:focus, input:focus, [role="radiogroup"] label:focus-within {
   border-radius: 0.25rem; font-weight: 700;
 }
 [data-testid="stSpinner"] { color: #FFB539; }
-iframe[title="st.iframe"] { background: #F4F6F8; }
+iframe[title="st.iframe"] { background: #00131D; }
 </style>
 """
 
-st.set_page_config(page_title="REEFPRINT / KHANYA — mineral phase workbench", layout="wide")
+st.set_page_config(page_title="KHANYA — ore processability advisor", layout="wide")
 st.markdown(UPLOAD_BRIDGE_CSS, unsafe_allow_html=True)
-st.markdown(
-    """<header class="reefprint-masthead"><div class="reefprint-brand"><span class="reefprint-mark">R</span><span>REEFPRINT <span style="color:#89959c">/</span> KHANYA<small class="reefprint-subtitle">Mineral phase characterisation | research workbench</small></span></div><span class="reefprint-status">RESEARCH MODE | NO LIVE PLANT CONTROL</span></header>""",
-    unsafe_allow_html=True,
-)
 
 
 @st.cache_resource
@@ -149,9 +137,12 @@ def predict_with_progress(image_bytes, checkpoint_key, progress_callback):
     return image, labels, mean_confidence
 
 
-def predict_live_field(image_bytes, checkpoint_key):
-    """The Live Field Mode fast path: one field, one forward pass, timed
-    end to end on THIS call. Deliberately not @st.cache_data - a cached
+def predict_live_field(image_bytes, checkpoint_key, progress_callback=None):
+    """The live path: six native-resolution fields sampled across the section,
+    one forward pass each, timed end to end on THIS call, including drawing the
+    progress frames. A single centre field held 0-20 payload particles and never
+    matched the whole section's advice on the held-out set; six fields matched on
+    9 of 12 (reports/field_sampling_s2.json). Deliberately not @st.cache_data - a cached
     result reused across uploads would report a stale timing as if it were
     fresh, which is exactly the thing a live demo must not do (JUDGE-READY-
     WORKPLAN.md: "never use cached output as a fresh timing result").
@@ -169,51 +160,52 @@ def predict_live_field(image_bytes, checkpoint_key):
     start = time.perf_counter()
     image = load_image(image_bytes)
     with torch.no_grad():
-        labels, mean_confidence, field = patch_module.single_field_predict(model, image, dev)
+        labels, mean_confidence, mosaic, _boxes = patch_module.multi_field_predict(
+            model, image, dev, progress_callback=progress_callback)
     elapsed = time.perf_counter() - start
-    return field, labels, mean_confidence, elapsed
+    return mosaic, labels, mean_confidence, elapsed
 
 
-LIVE_FIELD_LABEL = "Live Field Mode — fast, 512×512 field, timed live"
+landing_slot = st.empty()
+progress_slot = st.empty()
+opcua_slot = st.empty()
+LIVE_FIELD_LABEL = "Live sampled fields — six 512×512 fields across the section, timed live"
 FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image"
 EVIDENCE_LABEL = "Evidence — held-out S2 test set"
-with st.container(border=True):
-    st.caption("CHOOSE A WORKFLOW | Evidence is separate from new image analysis")
-    mode = st.radio(
-        "ANALYSIS MODE",
-        [LIVE_FIELD_LABEL, FULL_SECTION_LABEL, EVIDENCE_LABEL],
-        horizontal=True,
-        help=(
-        "Live Field Mode analyses one 512×512 field with a single model "
-        "pass, measured end to end on every run (JUDGE-READY-WORKPLAN.md: "
+mode = st.radio(
+    "ANALYSIS MODE",
+    [LIVE_FIELD_LABEL, FULL_SECTION_LABEL, EVIDENCE_LABEL],
+    horizontal=True,
+    help=(
+        "Live sampled fields analyses six 512×512 fields spread across the "
+        "section, one model pass each, measured end to end on every run. A "
+        "single centre field never matched the whole section's advice on the "
+        "held-out set; six fields matched on 9 of 12 (JUDGE-READY-WORKPLAN.md: "
         "full-section inference measures p95 196s, about 6.5x over the "
         "review's 30s design target — unworkable as a live demo beat). "
         "Full section is the validated whole-image path used for the "
         "backup recording (BACKUP-DEMO-SCRIPT.md). Evidence is a separate "
         "view over known held-out S2 test images and never uses live uploads."
-        ),
-    )
+    ),
+)
 
 if "force_stale_opcua" not in st.session_state:
     st.session_state.force_stale_opcua = False
-stale_demo = False
-reset_plant = False
-with st.expander("Developer and simulator controls", expanded=False):
-    stale_demo = st.button(
-        "TRIGGER STALE OPC UA REFUSAL",
-        help="The next live result is emitted with an expired validity window so the separate consumer must refuse it.",
-    )
-    if stale_demo:
-        st.session_state.force_stale_opcua = True
-        st.info("Stale refusal armed for the next upload. It is not applied to a result already on screen.")
+stale_demo = st.button(
+    "TRIGGER STALE OPC UA REFUSAL",
+    help="The next live result is emitted with an expired validity window so the separate consumer must refuse it.",
+)
+if stale_demo:
+    st.session_state.force_stale_opcua = True
+    st.info("Stale refusal armed for the next upload. It is not applied to a result already on screen.")
 
-    # The simulated plant outlives a single upload, so a command's before/after is real state.
-    # A command belongs to one upload in one mode: Streamlit reruns the whole script on every
-    # click, and without `commanded` a Reset would immediately re-command the image on screen.
-    reset_plant = st.button(
-        "RESET SIMULATED PLANT",
-        help="Return the simulated regrind tag to 0 (bypass) and clear the command log.",
-    )
+# The simulated plant outlives a single upload, so a command's before/after is real state.
+# A command belongs to one upload in one mode: Streamlit reruns the whole script on every
+# click, and without `commanded` a Reset would immediately re-command the image on screen.
+reset_plant = st.button(
+    "RESET SIMULATED PLANT",
+    help="Return the simulated regrind tag to 0 (bypass) and clear the command log.",
+)
 if "plant" not in st.session_state:
     st.session_state.plant = {"regrind_enabled": 0.0, "log": [], "commanded": None, "status": None}
 if reset_plant:
@@ -222,14 +214,12 @@ if reset_plant:
 def show_landing(reason=None):
     with landing_slot.container():
         st.components.v1.html(
-            render.render_landing(reason), height=LANDING_FRAME_HEIGHT, scrolling=False
+            render.render_landing(reason), height=LANDING_FRAME_HEIGHT, scrolling=True
         )
 
 
 reason = unavailable_reason(SUBSET, CKPT)
 if mode == EVIDENCE_LABEL:
-    landing_slot = st.empty()
-    progress_slot = st.empty()
     progress_slot.empty()
     if reason:
         show_landing(f"Evidence unavailable: {reason}")
@@ -264,54 +254,18 @@ if mode == EVIDENCE_LABEL:
         show_landing(f"Evidence unavailable: {exc}")
     st.stop()
 
-if "use_heldout_example" not in st.session_state:
-    st.session_state.use_heldout_example = False
-with st.container(border=True):
-    st.markdown("**ANALYSE A POLISHED SECTION** | Upload a micrograph or run the held-out demonstration")
-    upload_col, example_col = st.columns([3, 1], vertical_alignment="bottom")
-    with upload_col:
-        uploaded = st.file_uploader(
-            "REFLECTED-LIGHT MICROGRAPH | JPG, PNG OR TIFF",
-            type=["jpg", "jpeg", "png", "tif", "tiff"],
-            label_visibility="collapsed",
-        )
-    with example_col:
-        if st.button("RUN HELD-OUT EXAMPLE", use_container_width=True, help="Run a real S2 test-split micrograph through the model; its ground-truth mask is not used for this prediction."):
-            st.session_state.use_heldout_example = True
-        if st.session_state.use_heldout_example and st.button("CLEAR EXAMPLE", use_container_width=True):
-            st.session_state.use_heldout_example = False
-
-# Place result/progress slots after the input card so an empty-state dashboard
-# never pushes the actual upload action below a tall embedded preview.
-landing_slot = st.empty()
-progress_slot = st.empty()
-opcua_slot = st.empty()
-if uploaded is not None:
-    st.session_state.use_heldout_example = False
-benchmark_image_path = None
-if uploaded is None and st.session_state.use_heldout_example:
-    from src.segmentation import lumenstone as ls
-    benchmark_image_path = ls.DATA_DIR / "imgs" / "test" / "test_01.jpg"
-
-if uploaded is None and benchmark_image_path is None:
+uploaded = st.file_uploader(
+    "REFLECTED-LIGHT MICROGRAPH OF A POLISHED SECTION",
+    type=["jpg", "jpeg", "png", "tif", "tiff"],
+)
+if uploaded is None:
     show_landing(reason)
 else:
     if reason:
         show_landing(reason)
         st.stop()
     try:
-        if uploaded is not None:
-            image_bytes = uploaded.getvalue()
-            image_name = uploaded.name
-            image_key = uploaded.file_id
-            sample_title = f"Uploaded micrograph · {image_name}"
-            sample_caption = "User-supplied reflected-light micrograph. Prediction values are measured from this image; they are not lab assay results."
-        else:
-            image_bytes = benchmark_image_path.read_bytes()
-            image_name = "LumenStone S2 held-out test_01"
-            image_key = "benchmark:test_01"
-            sample_title = image_name
-            sample_caption = "Real held-out benchmark image · centre field for Live Field Mode. Not South African ore, not a plant sample; ground truth is not used in prediction."
+        image_bytes = uploaded.getvalue()
         load_image(image_bytes)  # Decode before starting expensive model work.
         from src import modal
         from src.advisor import advise
@@ -325,13 +279,23 @@ else:
 
         if mode == LIVE_FIELD_LABEL:
             with st.spinner(
-                "Live Field Mode — one 512×512 field, one model pass, "
-                "timed live. Not cached: every run measures fresh."
+                "Six fields across the section, one model pass each, timed "
+                "live. Not cached: every run measures fresh."
             ):
+                field_image = load_image(image_bytes)
+
+                def on_field(completed, total, partial_labels, box, confidence):
+                    with progress_slot.container():
+                        st.components.v1.html(
+                            render.render_progress(field_image, partial_labels, completed,
+                                                   total, box, confidence),
+                            height=700, scrolling=False,
+                        )
+
                 image, labels, mean_confidence, elapsed = predict_live_field(
-                    image_bytes, checkpoint_key
+                    image_bytes, checkpoint_key, on_field
                 )
-            mode_label = f"{LIVE_FIELD_LABEL.split(' — ')[0]}, 512×512 field"
+            mode_label = "Live sampled fields, six 512×512 fields"
         else:
             with st.spinner(
                 "Tiling and predicting at native resolution — each frame below is "
@@ -376,7 +340,7 @@ else:
             on_event=lambda message: opcua_slot.info(message),
         )
         plant = st.session_state.plant
-        command_key = (image_key, mode)
+        command_key = (uploaded.file_id, mode)
         if command_key != plant["commanded"] or stale_requested:
             command = send_command(
                 recommendation.action, plant[REGRIND_HEAD], stale=stale_requested,
@@ -385,35 +349,37 @@ else:
             plant.update({REGRIND_HEAD: command.after, "commanded": command_key, "status": command})
             plant["log"].append({
                 "time": time.strftime("%H:%M:%S"),
-                "image": image_name,
+                "image": uploaded.name,
                 "advisory": recommendation.action,
                 "command": command.state,
                 "regrind_enabled": f"{command.before:g} → {command.after:g}",
                 "reason": command.reason,
             })
         command = plant["status"]
-        html = render.render(
-            image, labels, mean_confidence, result, recommendation,
-            mode_label=mode_label, elapsed_seconds=elapsed,
-            opcua_status=opcua_status,
-            sample_title=sample_title,
-            sample_caption=sample_caption,
-            simulation_preview={
-                "parameter": REGRIND_HEAD,
-                "before": f"{command.before:g}",
-                "after": f"{command.after:g}",
-                "state": command.state,
-            } if command else None,
-        )
+        html = render.render(image, labels, mean_confidence, result, recommendation,
+                             mode_label=mode_label, elapsed_seconds=elapsed,
+                             opcua_status=opcua_status)
     except (ImportError, OSError, RuntimeError, ValueError) as exc:
         show_landing(f"Analysis could not complete: {exc}")
     else:
         landing_slot.empty()
         progress_slot.empty()
         opcua_slot.empty()
-        st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=False)
-        with st.expander("Local OPC UA event log", expanded=False):
-            st.caption(
-                "Simulated exchange only. This local OPC UA endpoint is not a plant PLC."
-            )
-            st.dataframe(st.session_state.plant["log"], width="stretch", hide_index=True)
+        st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
+        st.subheader("Simulated plant response")
+        st.caption(
+            "One illustrative tag, regrind_enabled (1 = regrind, 0 = bypass), commanded "
+            "over a real local OPC UA exchange. Simulated: no real plant or PLC is connected."
+        )
+        if command is None:
+            st.write(f"Simulated plant reset: regrind_enabled = "
+                     f"{st.session_state.plant['regrind_enabled']:g}. Upload an image to command it.")
+        else:
+            before_col, after_col, state_col = st.columns(3)
+            before_col.metric("regrind_enabled before", f"{command.before:g}")
+            after_col.metric("regrind_enabled after", f"{command.after:g}",
+                             delta=(f"{command.after - command.before:+g}"
+                                    if command.after != command.before else None))
+            state_col.metric("command", command.state.upper())
+            st.write(command.reason)
+        st.dataframe(st.session_state.plant["log"], use_container_width=True, hide_index=True)
