@@ -19,6 +19,45 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (84) — board-level review: a lab triage tool, not a field tool (40.5/100 on that lens)
+
+**Did:** re-tested `ec9f853` as a Mintek board geologist and metallurgist
+would. Covered phone width (375 × 812), desktop, a search of every branch,
+and the evidence for time and cost. Full review:
+`reports/BOARD-REVIEW-2026-09-30.md`.
+
+**Answers to the questions asked:**
+- **Mobile: not easy.** Measured:
+  - Upload sits below the fold;
+  - the landing card is cut off in a scrolling box;
+  - the result is 3,315 px inside a 1,500 px scrolling frame, 415 px wide in
+    343 px ("APPLIED" and "CLEANER" are clipped);
+  - 40 of 66 text elements are 9-11 px.
+- **XRF to phone:** not built anywhere.
+- **3D render with click-for-composition:** not built. The mineral map is a
+  static image, and a 3D view of a 2D section would not be meaningful anyway.
+- **Speed:** 35 s a sample, 210 s for a whole section. Fine for a bench;
+  section preparation dominates.
+- **Time and cost:** not demonstrated. Only 2 of 12 held-out sections (3 of
+  37 train/val) get a confident call past the gates, and the "verify" flags
+  have never been checked against QEMSCAN.
+
+**Two stale claims to fix before the pitch:**
+- `MINTEK-FIT.md` §3.1 still says 6 of 12 are answered confidently (50%).
+- The landing text still promises refusal when advice "changes with the
+  lighting".
+
+**Scores:**
+- **40.5/100 on this lens** (usability-weighted; XRF and 3D scored 0 because
+  they are absent).
+- The pre-production score stays 79: that rubric asks a different question.
+
+**Next:** the before-pitch list in the report (stale claims, framing,
+mobile layout, glossary). Everything else is post-deadline, and the South
+African data (QEMSCAN labels, chromite and PGM classes) comes first.
+
+---
+
 ## 2026-09-30 — Sibusiso (83) — option (b): only validated samples touch the plant
 
 **Did:** Lethabo's PR #11 / #17 blocker was that warm-toned non-micrographs
