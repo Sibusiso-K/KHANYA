@@ -194,6 +194,7 @@ async def upload(file:UploadFile=File(...)):
                     raise ValueError("Use an image at least 512 px on each side and below 30 million pixels.")
                 if im.format not in ("PNG","JPEG","TIFF"):
                     raise ValueError("Use a PNG, JPEG or TIFF micrograph.")
+                check_input_colour(im)
     except Exception as exc:
         raise HTTPException(400,f"Cannot analyse this upload: {exc}")
     sid="upload_"+uuid.uuid4().hex[:12]
@@ -213,8 +214,8 @@ def run_inference(jid,sid,mode):
         import torch
         import numpy as np
         from src.segmentation.model import build_model
-        from src.segmentation.patches import single_field_predict,sliding_window_predict
-        from src import modal,advisor
+        from src.segmentation.patches import field_coverage, multi_field_predict, sliding_window_predict
+        from src import modal, advisor
         start=time.perf_counter()
         torch.set_num_threads(2)
         if not CKPT.exists() or CKPT.stat().st_mtime_ns!=CKPT_STAMP:
@@ -230,9 +231,19 @@ def run_inference(jid,sid,mode):
         from webapi.safety import check_input_colour, input_evidence
         with Image.open(io.BytesIO(raw)) as im:
             image=im.convert("RGB")
+        check_input_colour(image)
+        eligibility = input_evidence(raw)
+        field_count = None
+        coverage = None
+        if mode == "field":
+            field_count, coverage = field_coverage(image.width, image.height)
         with torch.inference_mode():
             if mode=="field":
-                labels,confidence,image=single_field_predict(model,image,"cpu")
+                labels, confidence, mosaic_image, _boxes = multi_field_predict(model, image, "cpu")
+                # The prediction is a mosaic of actual fields, not a full-section mask.
+                # Keep all stored layers aligned and preserve the full-source image at
+                # /api/samples/{id}/image?layer=original.
+                image = mosaic_image
             else:
                 labels,confidence=sliding_window_predict(model,image,"cpu")
         measured=modal.analyse(labels,CLASSES,refine=True)
@@ -252,10 +263,13 @@ def run_inference(jid,sid,mode):
         r={"contract":1,"id":sid,"result_id":rid,"prediction_source":"fresh","phases":phases,
            "confidence":float(confidence),"advisory":{"action":action,"reason":reason},
            "model_sha":MODEL_SHA,"image_sha":image_sha,"elapsed_seconds":round(time.perf_counter()-start,3),
-           "scope":"512 × 512 centre field" if mode=="field" else "Whole section · advisory only",
-           "mode":mode,"verified":verified_hashes.get(sid)==image_sha,
+           "scope":(f"Quick: {field_count} × 512 px fields across the section · "
+                    f"{coverage:.1%} area coverage · mosaic") if mode=="field" else "Full section · advisory only",
+           "field_count":field_count,"field_coverage":coverage,
+           "mode":mode,
            "association_index":None if measured.liberation is None else float(measured.liberation),
            "created_at":time.time()}
+        r.update(eligibility)
         for layer in ("raw","mask","overlay"):
             r[layer+"_url"]=f"/api/samples/{sid}/image?layer={layer}&result_id={rid}"
         (directory/"result.json").write_text(json.dumps(r,indent=2))
@@ -327,7 +341,7 @@ def report():
             "active":sha==MODEL_SHA} for sha,record in CHECKPOINT_METRICS.items()],
         "limitations":["Magnetite IoU is zero: the active checkpoint does not detect that phase.",
         "Only 12 publisher-held-out S2 sections; no prospective South African ore or plant validation.",
-        "Live field inference measures one 512 px centre crop. It is not a whole-section estimate.",
+        "Quick inference samples up to six non-overlapping 512 px fields; displayed coverage is the sampled fraction, not a whole-section estimate.",
         "Mean confidence is uncalibrated; the 85% simulation floor is provisional.",
         "Runtime reports server-side decode, inference and analysis; it excludes network upload.",
         "No measured recovery gain, physical XRF device, or live plant connection."],
