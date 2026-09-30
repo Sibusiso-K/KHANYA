@@ -97,3 +97,16 @@ def test_upload_endpoint_refuses_greyscale_before_storing(tmp_path, monkeypatch)
     assert response.status_code == 400
     assert "no colour" in response.json()["detail"]
     assert not list(upload_dir.iterdir())
+
+
+def test_corrupt_upload_uses_plain_actionable_message_not_buffer_repr(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    from webapi import app as api
+    upload_dir = tmp_path / "uploads"; upload_dir.mkdir()
+    monkeypatch.setattr(api, "UPLOADS", upload_dir)
+    monkeypatch.setattr(api, "samples", {})
+    response = TestClient(api.app).post("/api/upload", files={"file": ("broken.jpg", b"not an image", "image/jpeg")})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "This file could not be read as an image. Choose an intact JPG, PNG or TIFF micrograph."
+    assert "BytesIO" not in response.text
+    assert not list(upload_dir.iterdir())
