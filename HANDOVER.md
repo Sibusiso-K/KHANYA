@@ -62,9 +62,10 @@ imaging set-up). Details in the report.
 
 **Blocked on:** nothing. Re-reviews of #10-#13 still pending.
 
-**Next (Lethabo):** a view on finding 2. Should full-section mode be
-advisory-only (no command), or should it run the lighting check too? It
-changes what the demo shows on test_11.
+**Next (Lethabo):** issue #16 has every finding, its fix, and five decisions
+(D1-D5) that are yours: full-section mode, refusing unseen camera set-ups,
+checkpoint route, REEFPRINT pin, confidence floor. Nothing is implemented
+yet beyond the measurement script.
 
 ---
 
