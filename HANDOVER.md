@@ -3675,3 +3675,7 @@ before touching code.
 
 ## 2026-09-30 continuation — responsive application
 See reports/WORKBENCH-HANDOVER-2026-09-30.md first for the new React + FastAPI workbench, localhost:8510, actual test evidence and remaining cloud/integration work. Source implementation in frontend/ and webapi/. Do not confuse this application's Kaggle checkpoint with the stronger historical baseline.
+
+## 2026-09-30 spatial continuation
+Read reports/SPATIAL-UI-HANDOVER-2026-09-30.md for the current UI/spatial/decision-export implementation and remaining cloud work.
+

@@ -254,6 +254,31 @@ def report():
         "No measured recovery gain, physical XRF device, or live plant connection."],
         "download_url":"/api/report/download"}
 
+@app.get("/api/decisions/{result_id}/download")
+def decision_download(result_id: str, event_time: float):
+    r = results.get(result_id)
+    if not r:
+        raise HTTPException(404, "Open the source sample before exporting its decision.")
+    event = None
+    log = STORE / "simulation-events.jsonl"
+    with simulation_lock:
+        if log.exists():
+            with log.open() as stream:
+                for line in stream:
+                    try:
+                        candidate = json.loads(line)
+                    except ValueError:
+                        continue
+                    if candidate.get("result_id") == result_id and candidate.get("created_at") == event_time:
+                        event = candidate
+    if event is None:
+        raise HTTPException(404, "No matching simulator event exists for this inference and time.")
+    payload = {"sample_id": r["id"], "exported_at": time.time(), "inference": r,
+               "simulation": event, "evaluation_source": report()["report_source"],
+               "model_sha": r["model_sha"], "scope": "Local simulator only; not live plant control"}
+    return Response(json.dumps(payload, indent=2), media_type="application/json",
+                    headers={"Content-Disposition": 'attachment; filename="reefprint-decision-evidence.json"'})
+
 @app.get("/api/report/download")
 def report_download():
     return FileResponse(ROOT/"reports/END-TO-END-LOCAL-DEMO-2026-09-30.md",media_type="text/markdown",filename="REEFPRINT-recorded-accuracy-report.md")

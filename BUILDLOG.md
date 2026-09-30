@@ -10,3 +10,7 @@
 
 ## 2026-09-30 — Responsive workbench implementation
 Added frontend/ (React/TypeScript/Vite, white three-panel design) and webapi/ (local FastAPI inference, checkpoint-bound reports, guarded simulation). New app localhost:8510; old Streamlit remains separate. Production build passed; six new refusal tests passed; real test_11 centre inference 26.482 s and full-section 396.592 s. No accuracy improvement, cloud auth/sync, geographic orebody, or successful new actuation claimed. Full restart guide and remaining work: reports/WORKBENCH-HANDOVER-2026-09-30.md. User explicitly authorized the responsive redesign and asked to preserve/push for continuation.
+
+## 2026-09-30 — spatial workbench and decision evidence
+Added 3D/plan/section geological demo, validated QGIS GeoJSON survey import/link/export, Public Sans light UI refinement, dedicated Process screen and server-bound decision attachment. 12 spatial contract tests and 7 API safety/export tests pass; production build passes. Independent review fixes resolved. See reports/SPATIAL-UI-HANDOVER-2026-09-30.md for exact scope, provenance, verification and cloud follow-up. Model accuracy unchanged; cloud remains pending.
+
