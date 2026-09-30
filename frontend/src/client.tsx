@@ -37,7 +37,7 @@ export function AuthImage({src,...props}:ImgHTMLAttributes<HTMLImageElement>){
 export function AuthGate({children}:{children:ReactNode}){
   const [config,setConfig]=useState<Config|null>(null),[session,setSession]=useState<Session|null>(null),[ready,setReady]=useState(false);
   const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
-  async function register(){setBusy(true);setError('');try{if(!email||password.length<8)throw Error('Enter an email and a password of at least 8 characters.');const {error}=await client!.auth.signUp({email,password});if(error)throw error;setError('Check your email to confirm your account, then return here to sign in.')}catch(reason:any){setError(reason.message)}finally{setBusy(false)}}
+  async function register(){setBusy(true);setError('');try{if(!email||password.length<8)throw Error('Enter an email and a password of at least 8 characters.');const {error}=await client!.auth.signUp({email,password,options:{emailRedirectTo:new URL("/",window.location.origin).href}});if(error)throw error;setError('Check your email to confirm your account, then return here to sign in.')}catch(reason:any){setError(reason.message)}finally{setBusy(false)}}
   useEffect(()=>{let alive=true;let dispose:(()=>void)|undefined;
     fetch('/api/config').then(async response=>{if(!response.ok)throw Error('Backend configuration unavailable.');return response.json()}).then(async (value:Config)=>{configuration=value; if(!alive)return;setConfig(value);
       if(value.auth_required){if(!value.supabase_url||!value.supabase_publishable_key)throw Error('Cloud login configuration is incomplete.');client=createClient(value.supabase_url,value.supabase_publishable_key);
