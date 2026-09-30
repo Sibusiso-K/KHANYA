@@ -13,7 +13,7 @@ from src.modal import ModalResult
 
 
 def _result(liberation=0.9, payload=0.05, ore_area=0.8, n_particles=12,
-            payload_pixels=500):
+            payload_pixels=500, n_payload_particles=12):
     """A ModalResult with healthy defaults; override one field per test."""
     return ModalResult(
         phase_fractions={"chalcopyrite": payload, "pyrite": 1.0 - payload},
@@ -22,6 +22,7 @@ def _result(liberation=0.9, payload=0.05, ore_area=0.8, n_particles=12,
         liberation=liberation,
         n_particles=n_particles,
         payload_pixels=payload_pixels,
+        n_payload_particles=n_payload_particles,
     )
 
 
@@ -108,3 +109,35 @@ class TestConfidenceReporting:
                        {"liberation": None}):
             rec = advisor.advise(_result(**kwargs), mean_confidence=0.9)
             assert rec.reason.strip()
+
+
+class TestEvidenceSufficiency:
+    """An association index from a handful of particles cannot decide a plant action."""
+
+    def test_floor_is_a_provisional_policy_and_says_so(self):
+        assert advisor.MIN_PAYLOAD_PARTICLES == 9
+        rec = advisor.advise(_result(liberation=0.0, n_payload_particles=2), 0.99)
+        assert "provisional floor of 9" in rec.reason
+        assert "not a statistical bound" in rec.reason
+        assert "perfect segmentation" not in rec.reason
+
+    @pytest.mark.parametrize("liberation", [0.0, 0.95])
+    def test_too_few_payload_particles_refuses_either_way(self, liberation):
+        rec = advisor.advise(_result(liberation=liberation, n_payload_particles=2), 0.99)
+        assert rec.action == "No recommendation - too few payload particles"
+        assert "only 2" in rec.reason
+
+    def test_unmeasured_count_fails_closed(self):
+        rec = advisor.advise(_result(liberation=0.0, n_payload_particles=None), 0.99)
+        assert rec.action == "No recommendation - too few payload particles"
+
+    def test_the_threshold_itself_is_enough(self):
+        rec = advisor.advise(
+            _result(liberation=0.0, n_payload_particles=advisor.MIN_PAYLOAD_PARTICLES), 0.99)
+        assert rec.action == "Grind finer"
+
+    def test_the_refusal_is_an_abstention_the_plant_holds_on(self):
+        from dashboard.control import command_for
+        rec = advisor.advise(_result(liberation=0.0, n_payload_particles=2), 0.99)
+        assert advisor.verdict_state(rec.action)[0] == "hold"
+        assert command_for(rec.action)[0] is None

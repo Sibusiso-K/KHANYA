@@ -2,12 +2,12 @@
   "model": "patches",
   "refine": true,
   "n_sections": 12,
-  "n_recommendation_flips": 6,
-  "flip_rate": 0.5,
+  "n_recommendation_flips": 8,
+  "flip_rate": 0.6666666666666666,
   "severity_counts": {
     "unsafe": 0,
     "conservative": 0,
-    "flagged": 6
+    "flagged": 8
   },
   "rows": [
     {
@@ -28,9 +28,9 @@
       "payload_truth": 0.009857085424990305,
       "payload_predicted": 0.007648905725736079,
       "action_truth": "Grind finer",
-      "action_predicted": "Grind finer",
-      "flipped": false,
-      "severity": "none"
+      "action_predicted": "No recommendation - too few payload particles",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_03",
@@ -83,9 +83,9 @@
       "payload_truth": 0.02435575621944218,
       "payload_predicted": 0.020246235630568224,
       "action_truth": "Grind finer",
-      "action_predicted": "Grind finer",
-      "flipped": false,
-      "severity": "none"
+      "action_predicted": "No recommendation - too few payload particles",
+      "flipped": true,
+      "severity": "flagged"
     },
     {
       "id": "test_08",

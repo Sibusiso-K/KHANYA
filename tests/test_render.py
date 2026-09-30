@@ -79,7 +79,7 @@ def test_full_result_renders_the_actual_advisor_state(liberation, expected):
     from src.modal import ModalResult
 
     result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0},
-                         0.8, liberation, 1, 64)
+                         0.8, liberation, 1, 64, n_payload_particles=12)
     recommendation = advise(result, 0.95)
     html = render.render(Image.new("RGB", (8, 8)),
                          np.ones((8, 8), dtype=np.int32), 0.95,
@@ -103,7 +103,8 @@ def test_live_field_mode_shows_its_measured_elapsed_time_not_a_fabricated_one():
     from src.advisor import advise
     from src.modal import ModalResult
 
-    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.8, 0.95, 1, 64)
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.8, 0.95, 1, 64,
+                         n_payload_particles=12)
     recommendation = advise(result, 0.95)
 
     with_timing = render.render(
@@ -129,7 +130,8 @@ def test_result_renders_opcua_publish_acknowledgement_and_refusal_states():
     from src.modal import ModalResult
     from dashboard.opcua import PublishStatus
 
-    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.8, 0.95, 1, 64)
+    result = ModalResult({"chalcopyrite": 1.0}, {"payload": 1.0}, 0.8, 0.95, 1, 64,
+                         n_payload_particles=12)
     recommendation = advise(result, 0.95)
     image = Image.new("RGB", (8, 8))
     labels = np.ones((8, 8), dtype=np.int32)

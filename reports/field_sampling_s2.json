@@ -1,0 +1,258 @@
+{
+  "checkpoint_sha256": "de7135a96541a46dc0981a991cb954186c7cd669ea1c1b33914d1929ae9b1357",
+  "eval_set": [
+    "test_01",
+    "test_02",
+    "test_03",
+    "test_04",
+    "test_05",
+    "test_06",
+    "test_07",
+    "test_08",
+    "test_09",
+    "test_10",
+    "test_11",
+    "test_12"
+  ],
+  "min_payload_particles": 9,
+  "agrees_with_model_whole_section": {
+    "single_field": 0,
+    "six_fields": 9
+  },
+  "refused_too_few_particles": {
+    "expert_whole": 0,
+    "model_whole": 2,
+    "single_field": 4,
+    "six_fields": 3
+  },
+  "rows": [
+    {
+      "section": "test_01",
+      "expert_whole": {
+        "payload_particles": 224,
+        "action": "Continue at current setpoint"
+      },
+      "model_whole": {
+        "payload_particles": 34,
+        "action": "Continue at current setpoint"
+      },
+      "single_field": {
+        "payload_particles": 1,
+        "action": "No recommendation - too few payload particles"
+      },
+      "six_fields": {
+        "payload_particles": 52,
+        "action": "Continue at current setpoint"
+      }
+    },
+    {
+      "section": "test_02",
+      "expert_whole": {
+        "payload_particles": 12,
+        "action": "Grind finer"
+      },
+      "model_whole": {
+        "payload_particles": 5,
+        "action": "No recommendation - too few payload particles"
+      },
+      "single_field": {
+        "payload_particles": 0,
+        "action": "Flag for manual review - no payload detected"
+      },
+      "six_fields": {
+        "payload_particles": 0,
+        "action": "Flag for manual review - low payload signal"
+      }
+    },
+    {
+      "section": "test_03",
+      "expert_whole": {
+        "payload_particles": 79,
+        "action": "Marginal - verify before acting"
+      },
+      "model_whole": {
+        "payload_particles": 51,
+        "action": "Marginal - verify before acting"
+      },
+      "single_field": {
+        "payload_particles": 1,
+        "action": "No recommendation - too few payload particles"
+      },
+      "six_fields": {
+        "payload_particles": 46,
+        "action": "Marginal - verify before acting"
+      }
+    },
+    {
+      "section": "test_04",
+      "expert_whole": {
+        "payload_particles": 70,
+        "action": "Marginal - verify before acting"
+      },
+      "model_whole": {
+        "payload_particles": 59,
+        "action": "Marginal - verify before acting"
+      },
+      "single_field": {
+        "payload_particles": 2,
+        "action": "No recommendation - insufficient ore in field"
+      },
+      "six_fields": {
+        "payload_particles": 4,
+        "action": "No recommendation - too few payload particles"
+      }
+    },
+    {
+      "section": "test_05",
+      "expert_whole": {
+        "payload_particles": 92,
+        "action": "Marginal - verify before acting"
+      },
+      "model_whole": {
+        "payload_particles": 40,
+        "action": "Marginal - verify before acting"
+      },
+      "single_field": {
+        "payload_particles": 11,
+        "action": "Continue at current setpoint"
+      },
+      "six_fields": {
+        "payload_particles": 36,
+        "action": "Marginal - verify before acting"
+      }
+    },
+    {
+      "section": "test_06",
+      "expert_whole": {
+        "payload_particles": 101,
+        "action": "Grind finer"
+      },
+      "model_whole": {
+        "payload_particles": 202,
+        "action": "Marginal - verify before acting"
+      },
+      "single_field": {
+        "payload_particles": 20,
+        "action": "Continue at current setpoint"
+      },
+      "six_fields": {
+        "payload_particles": 80,
+        "action": "Marginal - verify before acting"
+      }
+    },
+    {
+      "section": "test_07",
+      "expert_whole": {
+        "payload_particles": 13,
+        "action": "Grind finer"
+      },
+      "model_whole": {
+        "payload_particles": 8,
+        "action": "No recommendation - too few payload particles"
+      },
+      "single_field": {
+        "payload_particles": 0,
+        "action": "Flag for manual review - association index not measurable"
+      },
+      "six_fields": {
+        "payload_particles": 1,
+        "action": "No recommendation - too few payload particles"
+      }
+    },
+    {
+      "section": "test_08",
+      "expert_whole": {
+        "payload_particles": 20,
+        "action": "Marginal - verify before acting"
+      },
+      "model_whole": {
+        "payload_particles": 19,
+        "action": "Marginal - verify before acting"
+      },
+      "single_field": {
+        "payload_particles": 1,
+        "action": "No recommendation - too few payload particles"
+      },
+      "six_fields": {
+        "payload_particles": 9,
+        "action": "Marginal - verify before acting"
+      }
+    },
+    {
+      "section": "test_09",
+      "expert_whole": {
+        "payload_particles": 28,
+        "action": "Marginal - verify before acting"
+      },
+      "model_whole": {
+        "payload_particles": 26,
+        "action": "Marginal - verify before acting"
+      },
+      "single_field": {
+        "payload_particles": 0,
+        "action": "Flag for manual review - association index not measurable"
+      },
+      "six_fields": {
+        "payload_particles": 13,
+        "action": "Marginal - verify before acting"
+      }
+    },
+    {
+      "section": "test_10",
+      "expert_whole": {
+        "payload_particles": 34,
+        "action": "Grind finer"
+      },
+      "model_whole": {
+        "payload_particles": 9,
+        "action": "Grind finer"
+      },
+      "single_field": {
+        "payload_particles": 0,
+        "action": "Flag for manual review - low payload signal"
+      },
+      "six_fields": {
+        "payload_particles": 6,
+        "action": "No recommendation - too few payload particles"
+      }
+    },
+    {
+      "section": "test_11",
+      "expert_whole": {
+        "payload_particles": 66,
+        "action": "Grind finer"
+      },
+      "model_whole": {
+        "payload_particles": 21,
+        "action": "Grind finer"
+      },
+      "single_field": {
+        "payload_particles": 1,
+        "action": "No recommendation - too few payload particles"
+      },
+      "six_fields": {
+        "payload_particles": 10,
+        "action": "Grind finer"
+      }
+    },
+    {
+      "section": "test_12",
+      "expert_whole": {
+        "payload_particles": 33,
+        "action": "Grind finer"
+      },
+      "model_whole": {
+        "payload_particles": 19,
+        "action": "Grind finer"
+      },
+      "single_field": {
+        "payload_particles": 0,
+        "action": "Flag for manual review - association index not measurable"
+      },
+      "six_fields": {
+        "payload_particles": 10,
+        "action": "Grind finer"
+      }
+    }
+  ]
+}

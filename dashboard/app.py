@@ -137,9 +137,12 @@ def predict_with_progress(image_bytes, checkpoint_key, progress_callback):
     return image, labels, mean_confidence
 
 
-def predict_live_field(image_bytes, checkpoint_key):
-    """The Live Field Mode fast path: one field, one forward pass, timed
-    end to end on THIS call. Deliberately not @st.cache_data - a cached
+def predict_live_field(image_bytes, checkpoint_key, progress_callback=None):
+    """The live path: six native-resolution fields sampled across the section,
+    one forward pass each, timed end to end on THIS call, including drawing the
+    progress frames. A single centre field held 0-20 payload particles and never
+    matched the whole section's advice on the held-out set; six fields matched on
+    9 of 12 (reports/field_sampling_s2.json). Deliberately not @st.cache_data - a cached
     result reused across uploads would report a stale timing as if it were
     fresh, which is exactly the thing a live demo must not do (JUDGE-READY-
     WORKPLAN.md: "never use cached output as a fresh timing result").
@@ -157,15 +160,16 @@ def predict_live_field(image_bytes, checkpoint_key):
     start = time.perf_counter()
     image = load_image(image_bytes)
     with torch.no_grad():
-        labels, mean_confidence, field = patch_module.single_field_predict(model, image, dev)
+        labels, mean_confidence, mosaic, _boxes = patch_module.multi_field_predict(
+            model, image, dev, progress_callback=progress_callback)
     elapsed = time.perf_counter() - start
-    return field, labels, mean_confidence, elapsed
+    return mosaic, labels, mean_confidence, elapsed
 
 
 landing_slot = st.empty()
 progress_slot = st.empty()
 opcua_slot = st.empty()
-LIVE_FIELD_LABEL = "Live Field Mode — fast, 512×512 field, timed live"
+LIVE_FIELD_LABEL = "Live sampled fields — six 512×512 fields across the section, timed live"
 FULL_SECTION_LABEL = "Full section — slow, native resolution, whole image"
 EVIDENCE_LABEL = "Evidence — held-out S2 test set"
 mode = st.radio(
@@ -173,8 +177,10 @@ mode = st.radio(
     [LIVE_FIELD_LABEL, FULL_SECTION_LABEL, EVIDENCE_LABEL],
     horizontal=True,
     help=(
-        "Live Field Mode analyses one 512×512 field with a single model "
-        "pass, measured end to end on every run (JUDGE-READY-WORKPLAN.md: "
+        "Live sampled fields analyses six 512×512 fields spread across the "
+        "section, one model pass each, measured end to end on every run. A "
+        "single centre field never matched the whole section's advice on the "
+        "held-out set; six fields matched on 9 of 12 (JUDGE-READY-WORKPLAN.md: "
         "full-section inference measures p95 196s, about 6.5x over the "
         "review's 30s design target — unworkable as a live demo beat). "
         "Full section is the validated whole-image path used for the "
@@ -273,13 +279,23 @@ else:
 
         if mode == LIVE_FIELD_LABEL:
             with st.spinner(
-                "Live Field Mode — one 512×512 field, one model pass, "
-                "timed live. Not cached: every run measures fresh."
+                "Six fields across the section, one model pass each, timed "
+                "live. Not cached: every run measures fresh."
             ):
+                field_image = load_image(image_bytes)
+
+                def on_field(completed, total, partial_labels, box, confidence):
+                    with progress_slot.container():
+                        st.components.v1.html(
+                            render.render_progress(field_image, partial_labels, completed,
+                                                   total, box, confidence),
+                            height=700, scrolling=False,
+                        )
+
                 image, labels, mean_confidence, elapsed = predict_live_field(
-                    image_bytes, checkpoint_key
+                    image_bytes, checkpoint_key, on_field
                 )
-            mode_label = f"{LIVE_FIELD_LABEL.split(' — ')[0]}, 512×512 field"
+            mode_label = "Live sampled fields, six 512×512 fields"
         else:
             with st.spinner(
                 "Tiling and predicting at native resolution — each frame below is "

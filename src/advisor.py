@@ -85,6 +85,17 @@ LIBERATION_MARGIN = 0.335
 # from it is derived from too few ore pixels to act on.
 MIN_ORE_AREA = 0.05
 
+# Fewest payload-bearing particles an association index may be acted on from.
+# PROVISIONAL OPERATIONAL FLOOR, NOT A STATISTICAL BOUND. The value came from a
+# worst-case binomial calculation (1.96 * 0.5 / sqrt(n) <= LIBERATION_MARGIN
+# gives n = 9), but that calculation does not describe this estimator: the
+# association index is an area-weighted ratio over connected particles, and
+# neighbouring particles are not independent (Lethabo, PR #10 review). So 9 is a
+# conservative policy choice, not an interval. It should be replaced by an
+# uncertainty estimate derived for this estimator on training/validation data;
+# the 12 held-out test sections must not be used to set it.
+MIN_PAYLOAD_PARTICLES = 9
+
 
 @dataclass
 class Recommendation:
@@ -173,6 +184,19 @@ def advise(result, mean_confidence: float,
             "Payload is present but no particle cleared the minimum size for "
             "an association-index measurement. Reported as unmeasured rather "
             "than as a number we cannot defend.",
+            confidence,
+        )
+
+    n_payload = result.n_payload_particles
+    if n_payload is None or n_payload < MIN_PAYLOAD_PARTICLES:
+        counted = "an unmeasured number of" if n_payload is None else f"only {n_payload}"
+        return Recommendation(
+            "No recommendation - too few payload particles",
+            f"The association index here rests on {counted} payload-bearing "
+            f"particle(s), below the provisional floor of {MIN_PAYLOAD_PARTICLES}. "
+            "That is too few particles to act on, so no instruction is issued. "
+            "Measure more fields or the whole section. (The floor is a "
+            "conservative operating policy, not a statistical bound.)",
             confidence,
         )
 

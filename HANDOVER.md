@@ -19,6 +19,63 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (74) — no advice on thin evidence; six fields, not one (PR A)
+
+**Why:** running the build as a judge would, the flagship *Grind finer* that
+moved the plant rested on **2 particles** (1 payload-bearing) in a single centre
+field. A system whose thesis is refusing weak evidence was commanding a plant on
+it.
+
+**Did:**
+- **Evidence-sufficiency gate** in `src/advisor.py`: *No recommendation - too
+  few payload particles* below `MIN_PAYLOAD_PARTICLES`. It is **derived**, not
+  tuned: `ceil((1.96*0.5/LIBERATION_MARGIN)^2) = 9`, the smallest n whose
+  worst-case 95% interval on a proportion is narrower than the band the advisor
+  already decides against. Missing counts fail closed. `modal.liberation_stats`
+  counts payload-bearing particles; `liberation_index`'s interface is unchanged.
+
+  > **CORRECTED 30 September (Lethabo, PR #10 review). The rationale above is
+  > withdrawn and kept only as history.** 9 is a **provisional operating floor,
+  > a conservative policy choice, not a statistical bound**. The binomial
+  > interval is not valid for an area-weighted ratio over spatially dependent
+  > particles. The floor is now hard-coded and does not follow the margin. A
+  > real uncertainty estimate for this estimator, on training/validation data,
+  > is post-deadline work.
+- **Six sampled fields** replace the single centre field as the live path
+  (`multi_field_predict`, 3x2 grid, fixed by a latency budget before
+  measuring). Fields sit in a mosaic with background gaps, so the unchanged
+  measurement chain cannot merge particles across fields.
+- **Bug fixed:** `decision_gap.classify` counted only Marginal/Flag as hedges,
+  so a *No recommendation* abstention would have scored as a confident error. It
+  now uses the advisor's own `ABSTAINING_PREFIXES`.
+
+**Measured** (`reports/field_sampling_s2.json`, held-out S2):
+- Single field: 0-20 payload particles; matches whole-section advice on
+  **0/12**.
+- Six fields: match on **9/12**.
+- Expert whole sections: never refused (12-224 payload particles).
+- Model whole sections: refused on 2 (test_02, test_07: 5 and 8 payload
+  particles against the expert's 12 and 13).
+- Decision gap, S2 refined: 0 unsafe still, disagreements 6 -> 8, all hedges.
+- Decision gap, S2 raw: errors 5 -> 2. The 2 unsafe (test_03/04) are the raw
+  estimator's broken particle identity, not thin evidence.
+- S1 unchanged.
+
+**Live, in the running dashboard:** test_11 -> six fields -> *Grind finer* on 10
+payload particles (24 total), 17.2 s end to end, plant 0 -> 1. test_04 ->
+refused on 4 payload particles, plant held.
+
+**Changed:** `src/{advisor,modal,decision_gap}.py`,
+`src/segmentation/patches.py`, `src/field_sampling_check.py` (new),
+`dashboard/app.py`, tests (+10), S2 decision-gap JSONs,
+`reports/field_sampling_s2.json`, `ACCURACY-REPORT.md` s7/s10, `PITCH.md`,
+`BACKUP-DEMO-SCRIPT.md` beat 4. Suite 132 passed.
+
+**Next:** Lethabo - review as a hostile Mintek judge (PR). Sibusiso - PR B,
+lighting consistency check.
+
+---
+
 ## 2026-09-29 — Sibusiso (73) — the accuracy report, as one document (PR for review)
 
 **Did:** The brief says submissions *must include an accuracy report*. The

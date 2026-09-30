@@ -171,11 +171,25 @@ metallurgical correctness.
 
 | Pipeline | Disagreements | Unsafe | Conservative | Flagged |
 |---|---:|---:|---:|---:|
-| Raw particle segmentation | 6/12 | 2 | 3 | 1 |
-| With topology refinement (shipped) | 6/12 | **0** | **0** | 6 |
+| Raw particle segmentation | 7/12 | 2 | 0 | 5 |
+| With topology refinement (shipped) | 8/12 | **0** | **0** | 8 |
 
-Refinement does not reduce disagreement. It turns five confident errors, two of
-them unsafe, into requests for review. **Zero unsafe in 12 is an observation,
+These figures include the evidence-sufficiency gate added on 30 September
+(PR #10): no advice from fewer than 9 payload-bearing particles. **9 is a
+provisional, conservative operating floor, not a statistical bound**: the
+binomial argument first used to motivate it does not hold for an area-weighted
+index over spatially dependent particles (Lethabo, PR #10 review). Before it, the
+raw pipeline made 5 confident errors (2 unsafe, 3 conservative) and the refined
+one disagreed on 6/12, all hedges. The gate turned the three conservative errors
+into refusals. On the refined pipeline it refused two more sections, test_02 and
+test_07, where the model found 5 and 8 payload particles against the expert's 12
+and 13. The two remaining raw unsafe errors (test_03, test_04) had enough particles:
+the raw estimator put their association near 100% where the expert-mask value
+was under 11%. That is the broken raw particle identity the refinement exists to
+fix, which is why the shipped pipeline is the refined one.
+
+Refinement does not reduce disagreement. It removes the confident errors,
+unsafe ones included, leaving only requests for review. **Zero unsafe in 12 is an observation,
 not a rate**: the exact one-sided 95% upper bound on the unsafe rate is
 **22.1%**. The thresholds were not locked before this evaluation, and three of
 the advisor's four thresholds are marked **UNSOURCED placeholder** in
@@ -220,9 +234,15 @@ a field is met for the model forward pass, but end-to-end field time is not
 recorded in a report file. The 30 s p95 target for a full image is **not met** on
 this CPU. Section preparation is not included. No GPU timing exists yet.
 
-**A single field is not the section.** The dashboard's fast Live Field Mode
-gives the same advice as the full section on only **4 of 12** held-out sections
-(`reports/s2_section_stats.json`).
+**A single field is not the section.** One centre field held 0-20
+payload-bearing particles and matched the whole section's advice on **0 of 12**
+held-out sections once the evidence gate applies (4 of 12 before it,
+`reports/s2_section_stats.json`). The live path therefore samples **six fields**
+across the section: they match the whole section's advice on **9 of 12**
+(`reports/field_sampling_s2.json`). The six-field grid was fixed by a latency
+budget before this was measured, not chosen on the test set. Live end to end,
+including the on-screen progress, six fields took 17.2 s on this CPU in one
+dashboard run. That is a single observation, not a measured distribution.
 
 ## 11. Limitations
 

@@ -20,7 +20,7 @@ from src.modal import ModalResult
 
 
 def _result(liberation=0.9, payload=0.05, ore_area=0.8, n_particles=12,
-            payload_pixels=500, extra_roles=None):
+            payload_pixels=500, extra_roles=None, n_payload_particles=12):
     role_fractions = {"payload": payload, "gangue": 1.0 - payload}
     if extra_roles:
         role_fractions.update(extra_roles)
@@ -31,6 +31,7 @@ def _result(liberation=0.9, payload=0.05, ore_area=0.8, n_particles=12,
         liberation=liberation,
         n_particles=n_particles,
         payload_pixels=payload_pixels,
+        n_payload_particles=n_payload_particles,
     )
 
 
