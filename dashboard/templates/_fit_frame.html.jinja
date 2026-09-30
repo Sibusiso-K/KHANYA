@@ -46,7 +46,15 @@
   {% if bring_into_view %}
   // After the frame has been resized: on load alone the page has not settled
   // yet and the jump is lost (measured at phone width, 30 Sept).
-  function bring() { try { window.frameElement.scrollIntoView({block: "start"}); } catch (e) {} }
+  // Scroll to the result's tab bar when there is one, so "Explore grains" and
+  // "Report" stay in sight; otherwise to this frame.
+  function bring() {
+    try {
+      var frame = window.frameElement;
+      var target = (frame.closest && frame.closest('[data-testid="stTabs"]')) || frame;
+      target.scrollIntoView({block: "start"});
+    } catch (e) {}
+  }
   setTimeout(bring, 450);
   setTimeout(bring, 1600);
   {% endif %}

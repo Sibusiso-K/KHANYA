@@ -327,3 +327,48 @@ def test_strip_says_whether_the_sample_may_drive_the_simulator():
     assert "confidence gate 85% (provisional)" in unverified
     verified = render.render(*args, plant=held, sample_stem="test_11")
     assert "VERIFIED SAMPLE · test_11" in verified and "UNVERIFIED" not in verified
+
+
+def _grain_fixture():
+    import numpy as np
+
+    from src import grains, modal
+    from src.segmentation import lumenstone as ls
+
+    labels = np.zeros((120, 120), dtype=np.int64)
+    labels[10:40, 10:40] = 1
+    labels[60:110, 60:110] = 3
+    labels[80:90, 80:90] = 4
+    result = modal.analyse(labels, ls.CLASS_NAMES, refine=True)
+    return labels, result, grains.grain_report(labels, ls.CLASS_NAMES, phase_fractions=result.phase_fractions)
+
+
+def test_explore_view_carries_every_grain_and_says_its_units():
+    import json
+    import re
+
+    from PIL import Image
+
+    labels, result, report = _grain_fixture()
+    html = render.render_explore(Image.new("RGB", (120, 120)), labels, report, result.phase_fractions)
+    grains = json.loads(re.search(r"var GRAINS = (\{.*?\});", html).group(1))
+    assert len(grains) == report.n_grains
+    assert "tap a grain" in html.lower() and "Est. weight %" in html
+    assert "Sizes are in pixels" in html or report.microns_per_pixel
+
+
+def test_report_is_self_contained_and_escapes_its_data():
+    from dashboard.control import unverified_status
+    from src.advisor import advise
+
+    labels, result, report = _grain_fixture()
+    recommendation = advise(result, 0.9)
+    html = render.render_report(
+        report, result.phase_fractions, file_name="a</script><script>alert(1).png", file_sha="0" * 64,
+        sample_stem=None, mode_label="Quick", elapsed_seconds=35.0, checkpoint_sha="d" * 64,
+        recommendation=recommendation, mean_confidence=0.9, result=result,
+        evidence_scope="six fields", plant=unverified_status(0.0), opcua_status=None)
+    assert "<script>alert(1)" not in html
+    assert "advisory only, nothing published or commanded" in html
+    assert "Download grains (.csv)" in html and "Print or save as PDF" in html
+    assert "not an assay" in html and "South African ore" in html
