@@ -3672,3 +3672,6 @@ per team decision to wait on official acceptance.
 **Next:** Lethabo — accept the GitHub invite (check email/GitHub notifications).
 Once accepted, pull `main` and read `DATA-SOURCES.md` + `reports/KHANYA-01-research-phase.md`
 before touching code.
+
+## 2026-09-30 continuation — responsive application
+See reports/WORKBENCH-HANDOVER-2026-09-30.md first for the new React + FastAPI workbench, localhost:8510, actual test evidence and remaining cloud/integration work. Source implementation in frontend/ and webapi/. Do not confuse this application's Kaggle checkpoint with the stronger historical baseline.
