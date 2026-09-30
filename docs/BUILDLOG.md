@@ -22,7 +22,7 @@ it is a press release.
 
 ---
 
-## 2026-09-30 — REEFPRINT design-skill setup (commit recorded in follow-up)
+## 2026-09-30 — REEFPRINT design-skill setup — `3d382a3`
 
 ### Attempted
 
