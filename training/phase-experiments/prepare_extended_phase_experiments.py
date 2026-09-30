@@ -3,7 +3,7 @@ No test evaluation, no automatic deployment, no credentials or raw data bundled.
 """
 import ast, base64, copy, hashlib, io, json, re, zipfile
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[1]
+ROOT=next(p for p in Path(__file__).resolve().parents if (p/'training/matched_ce_control_20260930/matched_ce_control.ipynb').exists())
 base=json.loads((ROOT/'training/matched_ce_control_20260930/matched_ce_control.ipynb').read_text())
 combined='\n'.join(''.join(c['source']) for c in base['cells'] if c['cell_type']=='code')
 encoded=re.search(r'source_bundle_b64 = """(.*?)"""',combined,re.S).group(1)
