@@ -1,13 +1,27 @@
 import pytest
 pytest.importorskip("fastapi")
-from webapi.app import refusal,MODEL_SHA
+import webapi.app as workbench
+from webapi.app import refusal
 import time
 
+# CI has no checkpoint file, so pin an approved host explicitly; the gates below
+# must not depend on which model happens to be on the test machine.
+APPROVED = "a" * 64
+
+@pytest.fixture(autouse=True)
+def approved_host(monkeypatch):
+    monkeypatch.setattr(workbench, "MODEL_SHA", APPROVED)
+    monkeypatch.setattr(workbench, "APPROVED_MODEL_SHA", APPROVED)
+
 def result(**changes):
-    r={"verified":True,"verified_sample":"test_01","model_sha":MODEL_SHA,"mode":"field","confidence":.95,
+    r={"verified":True,"verified_sample":"test_01","model_sha":APPROVED,"mode":"field","confidence":.95,
        "created_at":time.time(),"advisory":{"action":"Grind finer"}}
     r.update(changes)
     return r
+
+def test_unapproved_checkpoint_is_held_even_when_confident(monkeypatch):
+    monkeypatch.setattr(workbench, "MODEL_SHA", "b" * 64)
+    assert "not approved" in refusal(result(model_sha="b" * 64, confidence=.95))
 
 def test_unknown_upload_never_commands_even_when_confident():
     assert "Unverified" in refusal(result(verified=False))

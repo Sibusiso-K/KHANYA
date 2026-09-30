@@ -36,3 +36,14 @@ def test_unknown_checkpoint_has_no_reported_metrics(monkeypatch):
     assert report["report_source"] is None
     assert report["metrics_message"] == "Unknown checkpoint; no metrics are available for this SHA-256."
     assert not any(model["active"] for model in report["known_checkpoints"])
+
+
+def test_approval_contract_distinguishes_approved_and_other_checkpoints(monkeypatch):
+    client = TestClient(api.app)
+    for sha, approved in ((next(iter(KNOWN)), True), (list(KNOWN)[1], False), ("0" * 64, False)):
+        monkeypatch.setattr(api, "MODEL_SHA", sha)
+        health = client.get("/api/health").json()
+        report = client.get("/api/report").json()
+        assert health["model_approved"] is approved
+        assert report["model_approved"] is approved
+        assert health["approved_model_sha"] == report["approved_model_sha"]

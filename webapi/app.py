@@ -1,6 +1,6 @@
 """REEFPRINT API: loopback research demo or authenticated Supabase workspace."""
 from __future__ import annotations
-import hashlib, io, json, time, uuid, warnings, threading, os, re
+import hashlib, io, json, time, uuid, warnings, threading, os, re, logging
 from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
@@ -43,7 +43,14 @@ plants: dict[str, float] = {}
 plant_sessions: set[str] = set()
 app = FastAPI(title="REEFPRINT local research API", version="0.1.0")
 CHECKPOINT_METRICS_PATH = ROOT / "reports" / "checkpoint-metrics.json"
-CHECKPOINT_METRICS = json.loads(CHECKPOINT_METRICS_PATH.read_text(encoding="utf-8"))["checkpoints"]
+CHECKPOINT_RECORD = json.loads(CHECKPOINT_METRICS_PATH.read_text(encoding="utf-8"))
+CHECKPOINT_METRICS = CHECKPOINT_RECORD["checkpoints"]
+APPROVED_MODEL_SHA = CHECKPOINT_RECORD.get("approved_for_demo", "")
+APPROVED_REASON = CHECKPOINT_RECORD.get("approved_reason", "")
+_startup_record = CHECKPOINT_METRICS.get(MODEL_SHA)
+logging.getLogger(__name__).info("KHANYA model active sha=%s mIoU=%s %s", MODEL_SHA[:8] or "none",
+    _startup_record.get("mean_iou", "unknown") if _startup_record else "unknown",
+    "APPROVED" if MODEL_SHA and MODEL_SHA == APPROVED_MODEL_SHA else "NOT APPROVED")
 
 def tenant():
     return cloud.state(STORE, {sid: path for sid, path in samples.items() if sid in verified_hashes})
@@ -146,6 +153,8 @@ def blank_result(sid):
 @app.get("/api/health")
 def health():
     return {"status":"ok","checkpoint_available": bool(MODEL_SHA), "model_sha":MODEL_SHA,
+            "model_approved": bool(MODEL_SHA and MODEL_SHA == APPROVED_MODEL_SHA),
+            "approved_model_sha": APPROVED_MODEL_SHA,
             "sample_count":len(workspace_samples()),"deployment":"public" if cloud.config()["auth_required"] else "local","cloud_sync":cloud.config()["cloud_sync"],"auth_required":cloud.config()["auth_required"]}
 
 @app.get("/api/samples")
@@ -454,6 +463,7 @@ def refusal(r):
     if not r.get("verified"):return "Unverified upload: advisory only. Nothing sent to OPC UA."
     if not r.get("verified_sample"):return "No byte-for-byte held-out sample match; advisory only. Nothing sent to OPC UA."
     if r.get("model_sha")!=MODEL_SHA:return "Checkpoint mismatch: generate a new prediction."
+    if MODEL_SHA != APPROVED_MODEL_SHA:return "Checkpoint is not approved for demo control. Setting held."
     if r.get("mode")!="field":return "Full-section results are advisory only."
     if r.get("confidence",0)<.85:return "Confidence below the provisional 85% floor. Setting held."
     if time.time()-r.get("created_at",0)>1800:return "Result is older than 30 minutes. Run a fresh analysis."
@@ -485,7 +495,8 @@ def simulate(req:SimulationRequest):
 def report():
     checkpoint=CHECKPOINT_METRICS.get(MODEL_SHA)
     metrics={key: checkpoint[key] for key in ("mean_iou","pixel_accuracy","n_test_images","classes")} if checkpoint else None
-    return {"model_sha":MODEL_SHA,"checkpoint_available":bool(MODEL_SHA),"checkpoint_matches_report":checkpoint is not None,
+    return {"model_sha":MODEL_SHA,"checkpoint_available":bool(MODEL_SHA),"model_approved":bool(MODEL_SHA and MODEL_SHA == APPROVED_MODEL_SHA),
+        "approved_model_sha":APPROVED_MODEL_SHA,"approved_reason":APPROVED_REASON,"checkpoint_matches_report":checkpoint is not None,
         "report_source":checkpoint["source"] if checkpoint else None,
         "metrics":metrics,
         "metrics_message":None if checkpoint else "Unknown checkpoint; no metrics are available for this SHA-256.",
