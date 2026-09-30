@@ -1,3 +1,17 @@
+## 2026-09-30 — Codex — grain liberation labels and API CI dependencies
+
+**Did:** Updated the visible Grain Explorer to report no valuable mineral, locked, or free using the advisor’s 50% rule. Small nonzero payload percentages retain enough precision to remain visibly nonzero; each state has a matching explanation. Pinned the image-analysis dependencies used by API tests, including SciPy and headless OpenCV, and installed them with the API pins in CI without Streamlit. Inference test failures now show the job error before reading its result.
+
+**Changed:** `frontend/src/GrainExplorer.tsx`, `frontend/src/GrainInspector.tsx`, `frontend/src/grainSelection.js`, grain unit/Playwright tests, built bundle; `.github/workflows/ci.yml`, `requirements-lock.txt`, `tests/test_workbench_inference.py`.
+
+**Verified:** `npm ci`, frontend build; grain pixel tests (2), grain selection/state/letterbox tests (3), Spatial contracts (12), Playwright (2); all workbench API tests (68 passed, 1 skipped); dependency install dry run. On the current Cloud workbench UI, actual cached Quick inference for `test_11` was opened at 375px; physical clicks selected grain 12 (pyrrhotite 100%, payload 0), which displayed **NO VALUABLE MINERALS**, and grain 31 (pentlandite 100%, payload 1), which displayed **FREE**. Its real inference had completed in 99.8 s with six fields, 18.2% coverage, and 24 grains / 10 with valuable mineral. Test image and checkpoint were read from the sibling checkout, never committed.
+
+**Blocked on:** Waiting for all PR checks to pass on this revision.
+
+**Next:** Review the updated PR checks.
+
+---
+
 ## 2026-09-30 — authenticated Cloudflare demo and white workbench
 
 White responsive React workbench now has Dashboard, Workspace, Samples, Spatial, Process and Reports; exact result-bound grain selection/export, keyboard navigation, protected image/download loading, account-scoped browser caches and private Supabase records. Supabase RLS/storage/schema deployed; bearer auth fails closed in public mode. Simulator sessions remain host-local and isolated, not durable cloud controls. No real plant connection.

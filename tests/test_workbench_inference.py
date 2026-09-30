@@ -52,7 +52,9 @@ def test_quick_inference_uses_six_field_predictor_and_records_measured_scope(tmp
     monkeypatch.setattr(safety, "check_input_colour", lambda image: None)
     monkeypatch.setattr(safety, "input_evidence", lambda raw: {"verified": True, "verified_sample": "test_11"})
     api.run_inference("job", "sample", "field")
-    assert api.jobs["job"]["status"] == "complete", api.jobs["job"].get("error")
+    assert api.jobs["job"]["status"] == "complete", (
+        f"Quick inference failed: {api.jobs['job'].get('error', 'no error details returned')}"
+    )
     result = api.jobs["job"]["result"]
     assert len(calls) == 1 and calls[0][1:] == ((1600, 1100), "cpu")
     assert result["field_count"] == 6
