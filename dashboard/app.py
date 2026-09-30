@@ -21,7 +21,7 @@ from src.segmentation import config
 
 SUBSET = os.environ.get("KHANYA_SUBSET", "S2").upper()
 CKPT = config.ROOT / "checkpoints" / f"lumenstone_{SUBSET.lower()}_patches" / "best.pt"
-RESULT_FRAME_HEIGHT = 1500
+RESULT_FRAME_HEIGHT = 1900
 LANDING_FRAME_HEIGHT = 700
 
 # Streamlit remains the upload/model bridge, but it must not look like a
@@ -186,21 +186,24 @@ mode = st.radio(
 
 if "force_stale_opcua" not in st.session_state:
     st.session_state.force_stale_opcua = False
-stale_demo = st.button(
-    "TRIGGER STALE OPC UA REFUSAL",
-    help="The next live result is emitted with an expired validity window so the separate consumer must refuse it.",
-)
-if stale_demo:
-    st.session_state.force_stale_opcua = True
-    st.info("Stale refusal armed for the next upload. It is not applied to a result already on screen.")
+stale_demo = False
+reset_plant = False
+with st.expander("Developer and simulator controls", expanded=False):
+    stale_demo = st.button(
+        "TRIGGER STALE OPC UA REFUSAL",
+        help="The next live result is emitted with an expired validity window so the separate consumer must refuse it.",
+    )
+    if stale_demo:
+        st.session_state.force_stale_opcua = True
+        st.info("Stale refusal armed for the next upload. It is not applied to a result already on screen.")
 
-# The simulated plant outlives a single upload, so a command's before/after is real state.
-# A command belongs to one upload in one mode: Streamlit reruns the whole script on every
-# click, and without `commanded` a Reset would immediately re-command the image on screen.
-reset_plant = st.button(
-    "RESET SIMULATED PLANT",
-    help="Return the simulated regrind tag to 0 (bypass) and clear the command log.",
-)
+    # The simulated plant outlives a single upload, so a command's before/after is real state.
+    # A command belongs to one upload in one mode: Streamlit reruns the whole script on every
+    # click, and without `commanded` a Reset would immediately re-command the image on screen.
+    reset_plant = st.button(
+        "RESET SIMULATED PLANT",
+        help="Return the simulated regrind tag to 0 (bypass) and clear the command log.",
+    )
 if "plant" not in st.session_state:
     st.session_state.plant = {"regrind_enabled": 0.0, "log": [], "commanded": None, "status": None}
 if reset_plant:
@@ -253,14 +256,41 @@ uploaded = st.file_uploader(
     "REFLECTED-LIGHT MICROGRAPH OF A POLISHED SECTION",
     type=["jpg", "jpeg", "png", "tif", "tiff"],
 )
-if uploaded is None:
+if "use_heldout_example" not in st.session_state:
+    st.session_state.use_heldout_example = False
+col_upload, col_example = st.columns([3, 1])
+with col_example:
+    if st.button("RUN HELD-OUT EXAMPLE", help="Run a real S2 test-split micrograph through the model; its ground-truth mask is not used for this prediction."):
+        st.session_state.use_heldout_example = True
+    if st.session_state.use_heldout_example and st.button("CLEAR EXAMPLE"):
+        st.session_state.use_heldout_example = False
+
+if uploaded is not None:
+    st.session_state.use_heldout_example = False
+benchmark_image_path = None
+if uploaded is None and st.session_state.use_heldout_example:
+    from src.segmentation import lumenstone as ls
+    benchmark_image_path = ls.DATA_DIR / "imgs" / "test" / "test_01.jpg"
+
+if uploaded is None and benchmark_image_path is None:
     show_landing(reason)
 else:
     if reason:
         show_landing(reason)
         st.stop()
     try:
-        image_bytes = uploaded.getvalue()
+        if uploaded is not None:
+            image_bytes = uploaded.getvalue()
+            image_name = uploaded.name
+            image_key = uploaded.file_id
+            sample_title = f"Uploaded micrograph · {image_name}"
+            sample_caption = "User-supplied reflected-light micrograph. Prediction values are measured from this image; they are not lab assay results."
+        else:
+            image_bytes = benchmark_image_path.read_bytes()
+            image_name = "LumenStone S2 held-out test_01"
+            image_key = "benchmark:test_01"
+            sample_title = image_name
+            sample_caption = "Real held-out benchmark image · centre field for Live Field Mode. Not South African ore, not a plant sample; ground truth is not used in prediction."
         load_image(image_bytes)  # Decode before starting expensive model work.
         from src import modal
         from src.advisor import advise
@@ -325,7 +355,7 @@ else:
             on_event=lambda message: opcua_slot.info(message),
         )
         plant = st.session_state.plant
-        command_key = (uploaded.file_id, mode)
+        command_key = (image_key, mode)
         if command_key != plant["commanded"] or stale_requested:
             command = send_command(
                 recommendation.action, plant[REGRIND_HEAD], stale=stale_requested,
@@ -334,37 +364,35 @@ else:
             plant.update({REGRIND_HEAD: command.after, "commanded": command_key, "status": command})
             plant["log"].append({
                 "time": time.strftime("%H:%M:%S"),
-                "image": uploaded.name,
+                "image": image_name,
                 "advisory": recommendation.action,
                 "command": command.state,
                 "regrind_enabled": f"{command.before:g} → {command.after:g}",
                 "reason": command.reason,
             })
         command = plant["status"]
-        html = render.render(image, labels, mean_confidence, result, recommendation,
-                             mode_label=mode_label, elapsed_seconds=elapsed,
-                             opcua_status=opcua_status)
+        html = render.render(
+            image, labels, mean_confidence, result, recommendation,
+            mode_label=mode_label, elapsed_seconds=elapsed,
+            opcua_status=opcua_status,
+            sample_title=sample_title,
+            sample_caption=sample_caption,
+            simulation_preview={
+                "parameter": REGRIND_HEAD,
+                "before": f"{command.before:g}",
+                "after": f"{command.after:g}",
+                "state": command.state,
+            } if command else None,
+        )
     except (ImportError, OSError, RuntimeError, ValueError) as exc:
         show_landing(f"Analysis could not complete: {exc}")
     else:
         landing_slot.empty()
         progress_slot.empty()
         opcua_slot.empty()
-        st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
-        st.subheader("Simulated plant response")
-        st.caption(
-            "One illustrative tag, regrind_enabled (1 = regrind, 0 = bypass), commanded "
-            "over a real local OPC UA exchange. Simulated: no real plant or PLC is connected."
-        )
-        if command is None:
-            st.write(f"Simulated plant reset: regrind_enabled = "
-                     f"{st.session_state.plant['regrind_enabled']:g}. Upload an image to command it.")
-        else:
-            before_col, after_col, state_col = st.columns(3)
-            before_col.metric("regrind_enabled before", f"{command.before:g}")
-            after_col.metric("regrind_enabled after", f"{command.after:g}",
-                             delta=(f"{command.after - command.before:+g}"
-                                    if command.after != command.before else None))
-            state_col.metric("command", command.state.upper())
-            st.write(command.reason)
-        st.dataframe(st.session_state.plant["log"], use_container_width=True, hide_index=True)
+        st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=False)
+        with st.expander("Local OPC UA event log", expanded=False):
+            st.caption(
+                "Simulated exchange only. This local OPC UA endpoint is not a plant PLC."
+            )
+            st.dataframe(st.session_state.plant["log"], width="stretch", hide_index=True)
