@@ -94,3 +94,17 @@ def test_atomic_failure_keeps_previous_record(client, monkeypatch):
     with pytest.raises(OSError):
         client.put(url, json={"expected_version": 1, "record": {"notes": "Second"}})
     assert client.get(url).json() == first
+
+
+@pytest.mark.parametrize("identifier", ["../x", "..%2Fx", "test_11.json", "unknown"])
+def test_record_paths_reject_crafted_and_unknown_identifiers(client, tmp_path, identifier):
+    api.samples["test_11.json"] = tmp_path / "sample.json"
+    encoded = identifier.replace("%", "%25").replace("/", "%2F")
+    base = f"/api/samples/{encoded}/record"
+    payload = {"expected_version": 0, "record": {"notes": "must not escape"}}
+    get_response = client.get(base)
+    put_response = client.put(base, json=payload)
+    assert get_response.status_code in (400, 404)
+    assert put_response.status_code in (400, 404, 405)
+    assert not (tmp_path.parent / "x.json").exists()
+    assert not (tmp_path / "records" / "test_11.json.json").exists()
