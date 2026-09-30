@@ -20,6 +20,7 @@
       // less than the frame itself, so a frame could only ever grow (e.g. after
       // turning a phone sideways, or a desktop first draw taller than the page).
       var height = Math.ceil(document.body.getBoundingClientRect().bottom + window.scrollY);
+      if (height < 10) return;   // inside a hidden tab: measure when it is shown
       if (Math.abs(frame.getBoundingClientRect().height - height) > 2) {
         frame.style.height = height + "px";
         frame.setAttribute("height", height);
@@ -45,7 +46,15 @@
   {% if bring_into_view %}
   // After the frame has been resized: on load alone the page has not settled
   // yet and the jump is lost (measured at phone width, 30 Sept).
-  function bring() { try { window.frameElement.scrollIntoView({block: "start"}); } catch (e) {} }
+  // Scroll to the result's tab bar when there is one, so "Explore grains" and
+  // "Report" stay in sight; otherwise to this frame.
+  function bring() {
+    try {
+      var frame = window.frameElement;
+      var target = (frame.closest && frame.closest('[data-testid="stTabs"]')) || frame;
+      target.scrollIntoView({block: "start"});
+    } catch (e) {}
+  }
   setTimeout(bring, 450);
   setTimeout(bring, 1600);
   {% endif %}

@@ -364,3 +364,147 @@ def render(image, labels, mean_confidence, result, recommendation,
                             else _thumbnail_b64(lighting["shifted_image"])),
         },
     )
+
+
+EXPLORE_MAX_SIDE = 1600
+
+
+def _ids_png_b64(grain_map):
+    """Grain ids as a 24-bit RGB PNG (id = R + 256 G + 65536 B), read back in the page."""
+    ids = np.asarray(grain_map).astype(np.uint32)
+    rgb = np.stack([(ids & 255), (ids >> 8) & 255, (ids >> 16) & 255], axis=-1).astype(np.uint8)
+    buf = io.BytesIO()
+    Image.fromarray(rgb).save(buf, format="PNG", compress_level=1)
+    return base64.b64encode(buf.getvalue()).decode("ascii")
+
+
+def _nearest(array, size):
+    """Resize a label or id map to `size` (w, h) without inventing new values."""
+    return np.asarray(Image.fromarray(np.asarray(array).astype(np.int32)).resize(size, Image.Resampling.NEAREST))
+
+
+def render_explore(image, labels, report, phase_fractions, scope_note=""):
+    """The Explore grains view: tap a grain for its composition; ore tables beside it.
+
+    image and labels must share a shape (the live path's mosaic, or the full
+    section). Both are shown at no more than EXPLORE_MAX_SIDE pixels; grain
+    geometry is scaled to match, and sizes are reported in original pixels (or
+    microns when src/grains.MICRONS_PER_PIXEL is set).
+    """
+    import json
+
+    from src.segmentation import lumenstone as ls
+
+    labels = np.asarray(labels)
+    height, width = labels.shape
+    scale = min(1.0, EXPLORE_MAX_SIDE / max(width, height))
+    size = (max(1, round(width * scale)), max(1, round(height * scale)))
+    rgb = image.convert("RGB")
+    if rgb.size != (width, height):
+        rgb = rgb.resize((width, height), Image.Resampling.BILINEAR)
+    shown = rgb.resize(size, Image.Resampling.BILINEAR) if scale < 1.0 else rgb
+    shown_labels = _nearest(labels, size) if scale < 1.0 else labels
+    shown_ids = _nearest(report.grain_map, size) if scale < 1.0 else report.grain_map
+    buf = io.BytesIO()
+    shown.save(buf, format="JPEG", quality=85)
+    tables = _ore_tables(report, phase_fractions)
+    colours = tables["colours"]
+    unit = report.microns_per_pixel
+    grains = {}
+    for g in report.grains:
+        d = g.as_dict()
+        d["bbox"] = [int(v * scale) for v in d["bbox"]]   # display pixels, for the highlight only
+        grains[g.id] = d                                     # ecd_px stays in original image pixels
+    template = _env.get_template("explore.html.jinja")
+    return template.render(
+        micrograph_b64=base64.b64encode(buf.getvalue()).decode("ascii"),
+        phases_b64=_colourise_png_b64(shown_labels),
+        ids_b64=_ids_png_b64(shown_ids),
+        grains_json=json.dumps(grains),
+        colours_json=json.dumps(colours),
+        # microns per original image pixel, or null: every size shown is in original pixels
+        microns_per_pixel_json=json.dumps(unit),
+        width=size[0], height=size[1],
+        n_grains=report.n_grains, n_payload_grains=report.n_payload_grains,
+        phases=tables["phases"], association=tables["association"], colour_of=tables["colour_of"],
+        by_size=tables["by_size"], size_unit=tables["size_unit"], unit_note=tables["unit_note"],
+        scope_note=scope_note,
+    )
+
+
+def _ore_tables(report, phase_fractions):
+    """Composition, contacts and liberation-by-size rows, shared by Explore and the report."""
+    from src.segmentation import lumenstone as ls
+
+    colours = dict(zip(ls.CLASS_NAMES, ls.CLASS_COLORS))
+    unit = report.microns_per_pixel
+    fmt = (lambda v: f"{v * unit:.0f}") if unit else (lambda v: f"{v:g}")
+    return {
+        "colours": colours,
+        "colour_of": {**colours, "resin": "#000000"},
+        "phases": [{"name": name, "colour": colours[name],
+                    "area_pct": 100.0 * phase_fractions.get(name, 0.0),
+                    "wt_pct": report.weight_percent.get(name, 0.0)}
+                   for name in ls.CLASS_NAMES if name != "background"],
+        "association": [(name, sorted(parts.items(), key=lambda kv: -kv[1]), parts.get("resin", 0.0))
+                        for name, parts in report.association.items()],
+        "by_size": [{**b, "label": (f"{fmt(b['from_px'])}–{fmt(b['to_px'])}" if b["to_px"] is not None
+                                    else f"≥ {fmt(b['from_px'])}")}
+                    for b in report.liberation_by_size],
+        "size_unit": "µm" if unit else "pixels",
+        "unit_note": ("" if unit else "Sizes are in pixels: the imaging scale (microns per pixel) has not "
+                      "been confirmed for these images."),
+    }
+
+
+def render_report(report, phase_fractions, *, file_name, file_sha, sample_stem, mode_label,
+                  elapsed_seconds, checkpoint_sha, recommendation, mean_confidence, result,
+                  evidence_scope, plant, opcua_status):
+    """The printable sample report, with a client-side sample record and downloads."""
+    import json
+
+    from src.segmentation import lumenstone as ls
+
+    tables = _ore_tables(report, phase_fractions)
+    css_class, state_label = verdict_state(recommendation.action)
+    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    phase_names = [n for n in ls.CLASS_NAMES if n != "background"]
+    data = {
+        "file_name": file_name, "file_sha256": file_sha, "validated_sample": sample_stem,
+        "generated_at": generated_at, "mode": mode_label, "seconds_upload_to_result": round(elapsed_seconds, 1),
+        "checkpoint_sha256": checkpoint_sha,
+        "decision": {"action": recommendation.action, "reason": recommendation.reason, "state": state_label,
+                     "model_confidence": round(float(mean_confidence), 4),
+                     "confidence_gate": advisor_module.CONFIDENCE_FLOOR,
+                     "payload_particles": result.n_payload_particles,
+                     "payload_particle_floor": advisor_module.MIN_PAYLOAD_PARTICLES,
+                     "association_index": None if result.liberation is None else round(float(result.liberation), 4)},
+        "plant": None if plant is None else {"state": plant.state, "before": plant.before, "after": plant.after,
+                                             "reason": plant.reason},
+        "opcua": None if opcua_status is None else {"state": opcua_status.state, "message": opcua_status.message},
+        "composition": {p["name"]: {"area_pct": round(p["area_pct"], 3), "est_weight_pct": round(p["wt_pct"], 3)}
+                        for p in tables["phases"]},
+        "mineral_contacts_pct": report.association,
+        "liberation_by_size": report.liberation_by_size,
+        "microns_per_pixel": report.microns_per_pixel,
+        "phase_names": phase_names,
+        "grains": [g.as_dict() for g in report.grains],
+    }
+    template = _env.get_template("report.html.jinja")
+    return template.render(
+        # JSON inside a <script>: no value (a file name is user input) may form a tag
+        data_json=(json.dumps(data).replace("<", "\\u003c").replace(">", "\\u003e")
+                   .replace("&", "\\u0026")),
+        file_name=file_name, file_sha=file_sha, sample_stem=sample_stem, generated_at=generated_at,
+        mode_label=mode_label, elapsed=elapsed_seconds, checkpoint_sha=checkpoint_sha,
+        action=recommendation.action.replace(" - ", " — "), reason=recommendation.reason,
+        confidence=mean_confidence, confidence_floor=advisor_module.CONFIDENCE_FLOOR,
+        n_payload=result.n_payload_particles if result.n_payload_particles is not None else "?",
+        min_payload=advisor_module.MIN_PAYLOAD_PARTICLES, evidence_scope=evidence_scope,
+        plant_state=plant.state if plant else "none",
+        plant_before=f"{plant.before:g}" if plant else "–", plant_after=f"{plant.after:g}" if plant else "–",
+        plant_reason=plant.reason if plant else "no command",
+        opcua=(f"{opcua_status.state}: {opcua_status.message}" if opcua_status else "not published"),
+        phases=tables["phases"], association=tables["association"], by_size=tables["by_size"],
+        size_unit=tables["size_unit"], unit_note=tables["unit_note"], n_grains=report.n_grains,
+    )

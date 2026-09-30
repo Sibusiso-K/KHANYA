@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{# Explore grains: tap any grain on the predicted phase map to see what it is made
+   of. Inline and offline. The grain ids travel as a 24-bit RGB PNG
+   (id = R + 256 G + 65536 B) read back from a hidden canvas; the table of grains
+   comes from src/grains.py, the same particle split the advisor counts. #}
+<style>
+:root { --bg:#00131D; --panel:#0B2230; --line:#1E3E4B; --text:#E3EAEB; --muted:#8CA6AE; --ok:#2EA043; --warn:#D29922; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 'Segoe UI', system-ui, sans-serif; }
+.wrap { padding:14px; display:grid; grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr); gap:16px; }
+@media (max-width: 900px) { .wrap { grid-template-columns:1fr; } }
+.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+h2 { font:700 12px/1.2 Consolas, monospace; letter-spacing:.16em; color:var(--muted); margin:0 0 10px; text-transform:uppercase; }
+.stage { position:relative; width:100%; touch-action:manipulation; }
+.stage canvas { position:absolute; left:0; top:0; width:100%; height:100%; }
+.stage img { display:block; width:100%; height:auto; border-radius:4px; }
+.controls { display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center; margin:10px 0 0; font-size:13px; color:var(--muted); }
+.controls input[type=range] { width:140px; }
+.legend { display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:8px; font-size:13px; }
+.sw { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; border:1px solid #0006; }
+.card { min-height:120px; }
+.hint { color:var(--muted); font-size:13px; }
+.bar { height:10px; border-radius:5px; background:#12303d; overflow:hidden; display:flex; }
+.bar i { display:block; height:100%; }
+.row { display:grid; grid-template-columns:118px 1fr 58px; gap:8px; align-items:center; margin:6px 0; font-size:13px; }
+.row b { font-weight:600; }
+.num { text-align:right; font-family:Consolas, monospace; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th, td { text-align:left; padding:5px 6px; border-bottom:1px solid var(--line); }
+th { color:var(--muted); font-weight:600; }
+td.num, th.num { text-align:right; }
+.tag { font:700 12px Consolas, monospace; letter-spacing:.1em; padding:2px 8px; border-radius:4px; color:#00131D; }
+.note { color:var(--muted); font-size:12px; margin-top:8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="panel">
+    <h2>Explore grains · tap a grain</h2>
+    <div class="stage" id="stage">
+      <img id="micro" src="data:image/jpeg;base64,{{ micrograph_b64 }}" alt="Analysed micrograph">
+      <canvas id="phases"></canvas>
+      <canvas id="highlight"></canvas>
+    </div>
+    <div class="controls">
+      <label>Phase map <input id="opacity" type="range" min="0" max="100" value="55"></label>
+      <span>{{ n_grains }} grains · {{ n_payload_grains }} carry valuable minerals</span>
+    </div>
+    <div class="legend">
+      {% for p in phases %}<span><i class="sw" style="background:{{ p.colour }}"></i>{{ p.name|capitalize }}</span>{% endfor %}
+      <span><i class="sw" style="background:#000"></i>Resin (not ore)</span>
+    </div>
+    <p class="note">{{ scope_note }}</p>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div class="panel card" id="card">
+      <h2>Selected grain</h2>
+      <p class="hint">Tap or click any grain on the image to see its composition, size, and whether its valuable minerals are free or locked.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Composition of the ore</h2>
+      <table>
+        <tr><th>Mineral</th><th class="num">Area %</th><th class="num">Est. weight %</th></tr>
+        {% for p in phases %}<tr><td><i class="sw" style="background:{{ p.colour }}"></i>{{ p.name|capitalize }}</td><td class="num">{{ "%.1f"|format(p.area_pct) }}</td><td class="num">{{ "%.1f"|format(p.wt_pct) }}</td></tr>{% endfor %}
+      </table>
+      <p class="note">Area % of ore (resin excluded). Weight % is estimated: area % × typical density (mindat.org midpoints), which assumes area stands for volume on a random section. An estimate, not an assay.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Which minerals touch which</h2>
+      <div class="row" style="color:var(--muted);font-size:12px"><span></span><span>contacts, share of boundary</span><span class="num">free</span></div>
+      {% for name, parts, free in association %}
+      <div class="row"><b>{{ name|capitalize }}</b><div class="bar">{% for n, pct in parts %}<i title="{{ n }} {{ pct }}%" style="width:{{ pct }}%;background:{{ colour_of[n] }}"></i>{% endfor %}</div><span class="num">{{ free }}%</span></div>
+      <div class="hint" style="margin:-2px 0 8px 126px;font-size:12px">{% for n, pct in parts %}{{ n }} {{ pct }}%{% if not loop.last %} · {% endif %}{% endfor %}</div>
+      {% endfor %}
+      <p class="note">Share of each mineral's grain boundary in contact with each neighbour; "resin" is free surface. Measured on the predicted map.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Liberation by grain size</h2>
+      <table>
+        <tr><th>Size ({{ size_unit }})</th><th class="num">Grains</th><th>Valuable minerals free</th></tr>
+        {% for b in by_size %}<tr><td>{{ b.label }}</td><td class="num">{{ b.payload_grains }}</td><td>{% if b.liberated_share is not none %}<div class="bar" style="max-width:160px;display:inline-flex;width:60%;vertical-align:middle"><i style="width:{{ (b.liberated_share * 100)|round(1) }}%;background:var(--ok)"></i></div> {{ "%.0f"|format(b.liberated_share * 100) }}%{% else %}<span class="hint">–</span>{% endif %}</td></tr>{% endfor %}
+      </table>
+      <p class="note">Grains carrying valuable minerals, by equivalent circle diameter; "free" = share of their valuable-mineral area in grains at least half valuable mineral. {{ unit_note }}</p>
+    </div>
+  </section>
+</div>
+<img id="ids" src="data:image/png;base64,{{ ids_b64 }}" alt="" style="display:none">
+<img id="phasemap" src="data:image/png;base64,{{ phases_b64 }}" alt="" style="display:none">
+<script>
+(function () {
+  var GRAINS = {{ grains_json|safe }};
+  var COLOURS = {{ colours_json|safe }};
+  var SCALE = {{ microns_per_pixel_json|safe }};   // microns per original image pixel, or null
+  var W = {{ width }}, H = {{ height }};
+  var stage = document.getElementById("stage"), micro = document.getElementById("micro");
+  var phasesCanvas = document.getElementById("phases"), hl = document.getElementById("highlight");
+  var ids = null;
+
+  function sizeCanvases() {
+    [phasesCanvas, hl].forEach(function (c) { c.width = W; c.height = H; });
+  }
+  function readIds(img) {
+    var c = document.createElement("canvas"); c.width = W; c.height = H;
+    var ctx = c.getContext("2d", { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0);
+    ids = ctx.getImageData(0, 0, W, H).data;
+  }
+  function idAt(x, y) {
+    if (!ids) return 0;
+    var i = (y * W + x) * 4;
+    return ids[i] + 256 * ids[i + 1] + 65536 * ids[i + 2];
+  }
+  function drawPhases(img) {
+    var ctx = phasesCanvas.getContext("2d");
+    ctx.clearRect(0, 0, W, H); ctx.drawImage(img, 0, 0);
+    phasesCanvas.style.opacity = document.getElementById("opacity").value / 100;
+  }
+  function size(px) {
+    return SCALE ? (px * SCALE).toFixed(1) + " µm" : Math.round(px) + " px";
+  }
+  function show(id) {
+    var g = GRAINS[id], card = document.getElementById("card"), ctx = hl.getContext("2d");
+    ctx.clearRect(0, 0, W, H);
+    if (!g) {
+      card.innerHTML = '<h2>Selected grain</h2><p class="hint">No grain here: that point is resin or a fragment below the ' +
+        '64-pixel minimum the advisor counts. Tap inside a grain.</p>';
+      return;
+    }
+    var b = g.bbox, img = ctx.createImageData(b[2] - b[0] + 1, b[3] - b[1] + 1);
+    for (var y = b[1]; y <= b[3]; y++) for (var x = b[0]; x <= b[2]; x++) {
+      if (idAt(x, y) === id) { var k = ((y - b[1]) * img.width + (x - b[0])) * 4; img.data[k] = 255; img.data[k + 1] = 255; img.data[k + 2] = 255; img.data[k + 3] = 150; }
+    }
+    ctx.putImageData(img, b[0], b[1]);
+    ctx.strokeStyle = "#FFB539"; ctx.lineWidth = Math.max(2, W / 400);
+    ctx.strokeRect(b[0] - 3, b[1] - 3, b[2] - b[0] + 7, b[3] - b[1] + 7);
+    var rows = Object.keys(g.phases).sort(function (a, c) { return g.phases[c] - g.phases[a]; }).map(function (p) {
+      var pct = (100 * g.phases[p]).toFixed(1);
+      return '<div class="row"><b>' + p.charAt(0).toUpperCase() + p.slice(1) + '</b><div class="bar"><i style="width:' + pct +
+        '%;background:' + (COLOURS[p] || "#888") + '"></i></div><span class="num">' + pct + '%</span></div>';
+    }).join("");
+    var hasValue = g.payload_fraction > 0;
+    var tag = !hasValue ? '<span class="tag" style="background:#8CA6AE">NO VALUABLE MINERALS</span>'
+      : g.liberated ? '<span class="tag" style="background:#2EA043">FREE</span>' : '<span class="tag" style="background:#D29922">LOCKED</span>';
+    card.innerHTML = '<h2>Grain ' + id + '</h2>' + tag +
+      '<p style="margin:10px 0 6px">Size ' + size(g.ecd_px) + ' across (equivalent circle) · valuable minerals ' +
+      (100 * g.payload_fraction).toFixed(1) + '% of the grain</p>' + rows +
+      '<p class="note">' + (hasValue ? (g.liberated ? "At least half of this grain is valuable mineral, so it counts as free."
+        : "Less than half of this grain is valuable mineral, so its valuable part counts as locked; grinding finer may free it.") : "") + '</p>';
+  }
+  function onPick(evt) {
+    var r = stage.getBoundingClientRect();
+    var t = evt.touches ? evt.touches[0] : evt;
+    var x = Math.floor((t.clientX - r.left) / r.width * W), y = Math.floor((t.clientY - r.top) / r.height * H);
+    if (x >= 0 && y >= 0 && x < W && y < H) show(idAt(x, y));
+  }
+  sizeCanvases();
+  var idsImg = document.getElementById("ids"), phaseImg = document.getElementById("phasemap");
+  function ready(img, fn) { if (img.complete && img.naturalWidth) fn(img); else img.addEventListener("load", function () { fn(img); }); }
+  ready(idsImg, readIds);
+  ready(phaseImg, drawPhases);
+  document.getElementById("opacity").addEventListener("input", function () { phasesCanvas.style.opacity = this.value / 100; });
+  stage.addEventListener("click", onPick);
+  window.khanyaPickGrain = show;   // used by the test harness
+})();
+</script>
+{% with bring_into_view=false %}{% include "_fit_frame.html.jinja" %}{% endwith %}
+</body>
+</html>

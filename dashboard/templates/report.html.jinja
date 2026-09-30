@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{# The sample report: a sample record typed here, printed or saved as PDF, and
+   the grain table and full record downloaded as files. All client-side, so
+   filling it in never re-runs the model. Inline and offline. #}
+<title>KHANYA analysis report</title>
+<style>
+:root { --bg:#00131D; --panel:#0B2230; --line:#1E3E4B; --text:#E3EAEB; --muted:#8CA6AE; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.5 'Segoe UI', system-ui, sans-serif; }
+.wrap { padding:14px; max-width:1100px; }
+.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; margin-bottom:14px; }
+h1 { font-size:20px; margin:0 0 4px; } h2 { font:700 12px Consolas, monospace; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin:0 0 10px; }
+.form { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; }
+.form label { display:flex; flex-direction:column; gap:4px; font-size:13px; color:var(--muted); }
+.form input, .form textarea { font:14px 'Segoe UI', sans-serif; padding:8px; border-radius:6px; border:1px solid var(--line); background:#06202b; color:var(--text); }
+.actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+button { font:600 14px 'Segoe UI', sans-serif; padding:10px 14px; border-radius:6px; border:1px solid #2EA5BC; background:#0e3342; color:var(--text); cursor:pointer; }
+button:hover { background:#154659; }
+table { width:100%; border-collapse:collapse; font-size:13px; } th, td { text-align:left; padding:5px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { color:var(--muted); font-weight:600; } .num { text-align:right; font-family:Consolas, monospace; }
+.kv td:first-child { color:var(--muted); width:38%; }
+.note { color:var(--muted); font-size:12px; }
+@media print {
+  body { background:#fff; color:#000; } .panel { background:#fff; border-color:#999; break-inside:avoid; }
+  .no-print { display:none !important; } h2, .note, th, .kv td:first-child { color:#333; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="panel no-print">
+    <h2>Sample record</h2>
+    <div class="form">
+      <label>Sample ID<input id="f_sample" autocomplete="off"></label>
+      <label>Hole ID<input id="f_hole" autocomplete="off"></label>
+      <label>Depth from (m)<input id="f_from" inputmode="decimal" autocomplete="off"></label>
+      <label>Depth to (m)<input id="f_to" inputmode="decimal" autocomplete="off"></label>
+      <label>Analyst<input id="f_analyst" autocomplete="off"></label>
+      <label style="grid-column:1/-1">Notes<textarea id="f_notes" rows="2"></textarea></label>
+    </div>
+    <div class="actions">
+      <button id="b_print">Print or save as PDF</button>
+      <button id="b_html">Download report (.html)</button>
+      <button id="b_csv">Download grains (.csv)</button>
+      <button id="b_json">Download all data (.json)</button>
+    </div>
+    <p class="note">Typed here, kept in this page only. Nothing is sent anywhere and the analysis does not re-run.</p>
+  </section>
+
+  <div id="report">
+  <section class="panel">
+    <h1>KHANYA analysis report</h1>
+    <table class="kv">
+      <tr><td>Sample ID</td><td data-field="sample">–</td></tr>
+      <tr><td>Hole · depth</td><td><span data-field="hole">–</span> · <span data-field="from">–</span> to <span data-field="to">–</span> m</td></tr>
+      <tr><td>Analyst</td><td data-field="analyst">–</td></tr>
+      <tr><td>Notes</td><td data-field="notes">–</td></tr>
+      <tr><td>Image</td><td>{{ file_name }} · sha256 {{ file_sha[:12] }}…</td></tr>
+      <tr><td>Validated sample</td><td>{{ ("yes, " ~ sample_stem ~ " (may command the simulator)") if sample_stem else "no: advisory only, nothing published or commanded" }}</td></tr>
+      <tr><td>Analysed</td><td>{{ generated_at }} · {{ mode_label }} · {{ "%.1f"|format(elapsed) }} s from upload to result</td></tr>
+      <tr><td>Model</td><td>DeepLabV3 · ResNet-50, checkpoint sha256 {{ checkpoint_sha[:12] }}… (LumenStone S2, Norilsk analogue)</td></tr>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Decision</h2>
+    <p style="font-size:18px;margin:0 0 6px"><strong>{{ action }}</strong></p>
+    <p style="margin:0 0 8px">{{ reason }}</p>
+    <table class="kv">
+      <tr><td>Model confidence</td><td>{{ "%.0f"|format(confidence * 100) }}% (gate {{ "%.0f"|format(confidence_floor * 100) }}%, provisional)</td></tr>
+      <tr><td>Payload-bearing particles</td><td>{{ n_payload }} (provisional floor {{ min_payload }})</td></tr>
+      <tr><td>Evidence</td><td>{{ evidence_scope }}</td></tr>
+      <tr><td>Simulated plant</td><td>{{ plant_state|upper }} · regrind_enabled {{ plant_before }} → {{ plant_after }} · {{ plant_reason }}</td></tr>
+      <tr><td>OPC UA</td><td>{{ opcua }}</td></tr>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Composition of the ore</h2>
+    <table><tr><th>Mineral</th><th class="num">Area %</th><th class="num">Est. weight %</th></tr>
+    {% for p in phases %}<tr><td>{{ p.name|capitalize }}</td><td class="num">{{ "%.1f"|format(p.area_pct) }}</td><td class="num">{{ "%.1f"|format(p.wt_pct) }}</td></tr>{% endfor %}
+    </table>
+    <p class="note">Area % of ore, resin excluded. Weight % estimated from area % × typical density (mindat.org midpoints); not an assay.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Mineral contacts (share of each mineral's boundary)</h2>
+    <table><tr><th>Mineral</th><th>Touches</th></tr>
+    {% for name, parts, free in association %}<tr><td>{{ name|capitalize }}</td><td>{% for n, pct in parts %}{{ n }} {{ pct }}%{% if not loop.last %} · {% endif %}{% endfor %}</td></tr>{% endfor %}
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Liberation by grain size</h2>
+    <table><tr><th>Size ({{ size_unit }})</th><th class="num">Grains with valuable minerals</th><th class="num">Valuable minerals free</th></tr>
+    {% for b in by_size %}<tr><td>{{ b.label }}</td><td class="num">{{ b.payload_grains }}</td><td class="num">{{ ("%.0f%%"|format(b.liberated_share * 100)) if b.liberated_share is not none else "–" }}</td></tr>{% endfor %}
+    </table>
+    <p class="note">{{ n_grains }} grains measured. {{ unit_note }}</p>
+  </section>
+
+  <section class="panel">
+    <h2>Limits</h2>
+    <p class="note" style="font-size:13px">A research prototype. The model was trained on LumenStone S2 (Norilsk Ni-Cu sulphide analogue) and has not been validated on South African ore; it cannot see chromite or PGM minerals, and it misses magnetite. Every number here is measured from the model's predicted mask on a flat section: association and liberation are 2D estimates, weight % is estimated, and this is advice, not an assay. The simulated plant is one illustrative tag over a local OPC UA link; no real plant is connected.</p>
+  </section>
+  </div>
+</div>
+<script>
+(function () {
+  var DATA = {{ data_json|safe }};
+  var fields = ["sample", "hole", "from", "to", "analyst", "notes"];
+  function val(f) { return document.getElementById("f_" + f).value.trim(); }
+  function sync() {
+    fields.forEach(function (f) {
+      document.querySelectorAll('[data-field="' + f + '"]').forEach(function (el) { el.textContent = val(f) || "–"; });
+    });
+  }
+  fields.forEach(function (f) { document.getElementById("f_" + f).addEventListener("input", sync); });
+  function record() { var r = {}; fields.forEach(function (f) { r[f] = val(f) || null; }); return r; }
+  function stem() { return (val("sample") || DATA.file_name.replace(/\.[^.]+$/, "") || "sample").replace(/[^A-Za-z0-9_.-]+/g, "_"); }
+  function save(name, type, text) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type: type }));
+    a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  function csvCell(v) { v = v === null || v === undefined ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  document.getElementById("b_print").addEventListener("click", function () { sync(); window.print(); });
+  document.getElementById("b_html").addEventListener("click", function () {
+    sync();
+    var html = "<!DOCTYPE html><html><head><meta charset='utf-8'><title>KHANYA report " + stem() + "</title><style>" +
+      document.querySelector("style").textContent + "</style></head><body style='background:#fff;color:#000'><div class='wrap'>" +
+      document.getElementById("report").innerHTML + "</div></body></html>";
+    save("khanya_report_" + stem() + ".html", "text/html", html);
+  });
+  document.getElementById("b_csv").addEventListener("click", function () {
+    var phases = DATA.phase_names, head = ["sample_id", "grain_id", "area_px", "ecd_px", "valuable_fraction", "free"].concat(phases);
+    var rec = record(), lines = [head.join(",")];
+    DATA.grains.forEach(function (g) {
+      lines.push([rec.sample, g.id, g.area_px, g.ecd_px, g.payload_fraction, g.liberated]
+        .concat(phases.map(function (p) { return g.phases[p] || 0; })).map(csvCell).join(","));
+    });
+    save("khanya_grains_" + stem() + ".csv", "text/csv", lines.join("\n") + "\n");
+  });
+  document.getElementById("b_json").addEventListener("click", function () {
+    save("khanya_" + stem() + ".json", "application/json", JSON.stringify(Object.assign({ sample_record: record() }, DATA), null, 2));
+  });
+})();
+</script>
+{% with bring_into_view=false %}{% include "_fit_frame.html.jinja" %}{% endwith %}
+</body>
+</html>

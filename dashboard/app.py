@@ -516,13 +516,32 @@ else:
                               f"{coverage:.0%} of the image")
         else:
             evidence_scope = "whole section, native resolution"
+        elapsed_total = time.perf_counter() - received
         html = render.render(image, labels, mean_confidence, result, recommendation,
                              mode_label=mode_label,
-                             elapsed_seconds=time.perf_counter() - received,
+                             elapsed_seconds=elapsed_total,
                              opcua_status=opcua_status, plant=command,
                              lighting=lighting, evidence_scope=evidence_scope,
                              advisory_only=mode != LIVE_FIELD_LABEL,
                              sample_stem=sample_stem)
+        # Grain-level view and the sample report: computed after the decision and
+        # outside its timer, from the same predicted mask and particle split.
+        import hashlib
+        from src import grains as grain_module
+        grain_report = grain_module.grain_report(labels, ls.CLASS_NAMES,
+                                                 phase_fractions=result.phase_fractions)
+        explore_html = render.render_explore(
+            image, labels, grain_report, result.phase_fractions,
+            scope_note=("The six analysed fields (each 512 px), shown side by side; grains are "
+                        "measured within each field." if mode == LIVE_FIELD_LABEL
+                        else "The whole section at native resolution."))
+        report_html = render.render_report(
+            grain_report, result.phase_fractions, file_name=uploaded.name,
+            file_sha=hashlib.sha256(image_bytes).hexdigest(), sample_stem=sample_stem,
+            mode_label=mode_label, elapsed_seconds=elapsed_total,
+            checkpoint_sha=checkpoint_sha256(checkpoint_key), recommendation=recommendation,
+            mean_confidence=mean_confidence, result=result, evidence_scope=evidence_scope,
+            plant=command, opcua_status=opcua_status)
     except (ImportError, OSError, RuntimeError, ValueError) as exc:
         show_landing(f"Analysis could not complete: {exc}")
     else:
@@ -530,9 +549,15 @@ else:
         progress_slot.empty()
         opcua_slot.empty()
         result_view = result_slot.container()
-        with result_view:
+        decision_tab, explore_tab, report_tab = result_view.tabs(
+            ["Decision", "Explore grains", "Report"])
+        with explore_tab:
+            st.components.v1.html(explore_html, height=900, scrolling=True)
+        with report_tab:
+            st.components.v1.html(report_html, height=900, scrolling=True)
+        with decision_tab:
             st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
-        with result_view.expander("Command log and lighting-check detail", expanded=False):
+        with decision_tab.expander("Command log and lighting-check detail", expanded=False):
             if lighting is not None:
                 st.caption(
                     "Simulated lighting-perturbation check: an input-sensitivity diagnostic, "
