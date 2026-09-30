@@ -1,0 +1,53 @@
+{# Size this frame to its content, so a phone never scrolls a box inside a page,
+   and optionally bring it into view once drawn (board review, 30 Sept: the
+   result was a 3,315 px page in a 1,500 px scrolling box, below the controls).
+   Inline and offline: no network. The srcdoc frame is same-origin with the app,
+   so it may resize its own frame element. Capped, so a layout that grows with
+   its frame can never loop. #}
+<script>
+(function () {
+  var fits = 0, lastWidth = -1;
+  function fit() {
+    try {
+      var frame = window.frameElement;
+      if (!frame) return;
+      // The cap guards against a layout that grows with its frame; a real width
+      // change (a phone turned sideways) is a new layout and earns a fresh budget.
+      var width = document.documentElement.clientWidth;
+      if (width !== lastWidth) { lastWidth = width; fits = 0; }
+      if (fits > 20) return;
+      // The body's own extent, not documentElement.scrollHeight: that is never
+      // less than the frame itself, so a frame could only ever grow (e.g. after
+      // turning a phone sideways, or a desktop first draw taller than the page).
+      var height = Math.ceil(document.body.getBoundingClientRect().bottom + window.scrollY);
+      if (Math.abs(frame.getBoundingClientRect().height - height) > 2) {
+        frame.style.height = height + "px";
+        frame.setAttribute("height", height);
+        // Streamlit's wrapper keeps the height the frame was created with; without
+        // this the grown frame overlaps whatever is drawn below it. If the wrapper
+        // is ever renamed, this finds nothing and the frame keeps its own scrollbar.
+        var box = frame.closest && frame.closest('[data-testid="stElementContainer"]');
+        if (box) box.style.height = height + "px";
+        fits += 1;
+      }
+    } catch (e) {}
+  }
+  window.addEventListener("load", fit);
+  // Streamlit sets the frame's width a moment after the window changes, so a
+  // window resize event alone measures too early: watch this page's own body.
+  try { new ResizeObserver(fit).observe(document.body); } catch (e) {}
+  try { window.parent.addEventListener("resize", function () { setTimeout(fit, 350); }); } catch (e) {}
+  setTimeout(fit, 300);
+  setTimeout(fit, 1500);
+  // Safety net for any missed event (late fonts or images, a throttled tab):
+  // one measurement a second, and a change only when the size really differs.
+  setInterval(fit, 1000);
+  {% if bring_into_view %}
+  // After the frame has been resized: on load alone the page has not settled
+  // yet and the jump is lost (measured at phone width, 30 Sept).
+  function bring() { try { window.frameElement.scrollIntoView({block: "start"}); } catch (e) {} }
+  setTimeout(bring, 450);
+  setTimeout(bring, 1600);
+  {% endif %}
+})();
+</script>

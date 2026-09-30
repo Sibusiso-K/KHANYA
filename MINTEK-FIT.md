@@ -65,8 +65,26 @@ know is a triage system; a system that always answers confidently is not.
 judging criterion and the cheapest to move with a real number instead of an
 adjective).
 
+> **Updated 30 September (PR #17), and this replaces the 50% below as the
+> number to quote.** The deployed live pipeline gives a confident, actionable
+> answer on **2 of 12** held-out sections: test_11 and test_12, both Grind
+> finer, both matching the expert annotation. That pipeline is six fields,
+> the evidence floor of 9 particles and the provisional 85% confidence gate
+> (`reports/confidence_gate_test_descriptive.json`). The exact 95% interval on
+> 2 of 12 is [2.1%, 48.4%]. The other 10 are withheld or routed to "verify".
+> On the 37 training and validation sections the rate is 3 of 37.
+>
+> So the honest operating point is roughly **1 section in 6 answered on the
+> bench, 5 in 6 routed to the instrument**. It is not half. The "verify"
+> flags have still not been compared with what QEMSCAN or a mineralogist
+> would flag. Until they are, this is a routing mechanism with a measured
+> operating point, not a demonstrated saving.
+>
+> The table below is the earlier figure, kept for the record. It is the
+> whole-section advisor before the evidence floor and the confidence gate.
+
 On the 12 held-out S2 test sections — patches model, topology-refined, the
-validated pipeline (report §5.0.9) — the deployed recommendation is:
+validated pipeline (report §5.0.9) — the recommendation *was*:
 
 | Recommendation | Sections |
 |---|---|
@@ -92,8 +110,9 @@ requisite communication/organisation. Surcharges may apply" — implying
 standard turnaround already exceeds a week before anyone pays to jump the
 queue.
 
-**The claim, stated at the precision the evidence supports:** on this
-held-out set, roughly half of sections got a confident answer from a
+**The claim as first written (superseded by the 30 September update above,
+which is ~1 in 6, not half):** on this held-out set, roughly half of
+sections got a confident answer from a
 reflected-light microscope in seconds, with no queue and no per-sample fee;
 the other half were correctly flagged for the instrument that should see
 them. That is a **triage mechanism with a measured operating point**, not

@@ -9,6 +9,8 @@
 @font-face { font-family:'JetBrains Mono'; src:url('data:font/ttf;base64,{{ font_mono_regular_b64 }}') format('truetype'); font-weight:400; font-display:swap; }
 @font-face { font-family:'JetBrains Mono'; src:url('data:font/ttf;base64,{{ font_mono_bold_b64 }}') format('truetype'); font-weight:700; font-display:swap; }
 html, body { margin:0; background:#00131D; color:#E3EAEB; font-family:'Plus Jakarta Sans',sans-serif; overflow-x:hidden; }
+/* Phones: keep the card short so the upload is on the first screen (board review, 30 Sept). */
+@media (max-width: 640px) { .ks-hide-phone { display:none !important; } }
 .landing-grid { background-image:linear-gradient(to right,rgba(30,62,75,.2) 1px,transparent 1px),linear-gradient(to bottom,rgba(30,62,75,.2) 1px,transparent 1px); background-size:40px 40px; }
 </style>
 </head>
@@ -30,13 +32,13 @@ html, body { margin:0; background:#00131D; color:#E3EAEB; font-family:'Plus Jaka
     <div class="flex flex-col gap-3">
       <span class="font-mono text-[10px] tracking-[0.25em] text-primary uppercase font-bold">Ore processability advisor</span>
       <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-on-surface">{{ 'Analysis unavailable' if refusal_reason else 'Plants learn what is in their ore days too late.' }}</h1>
-      {% if not refusal_reason %}<p class="text-sm text-on-surface max-w-2xl leading-relaxed">KHANYA reads a polished-section micrograph, turns it into a processing advisory and a simulated plant command, and <strong>refuses to advise</strong> when the evidence is too thin or changes with the lighting.</p>{% endif %}
+      {% if not refusal_reason %}<p class="text-sm text-on-surface max-w-2xl leading-relaxed">KHANYA reads a polished-section micrograph, turns it into a processing advisory, and <strong>declines to advise</strong> when the evidence is too thin or the model is not confident. Only validated samples can move the simulated plant. Performance on a new ore body is not established.</p>{% endif %}
       {% if refusal_reason %}
       <p role="alert" class="text-sm text-warning max-w-2xl leading-relaxed">{{ refusal_reason }} No recommendation has been issued.</p>
       {% else %}
-      <p class="text-sm text-on-surface-variant max-w-2xl leading-relaxed">Choose an original polished-section micrograph below. Use the raw image, not a report montage, plot, or predicted mask. The prototype measures modal mineralogy and an apparent 2D sulphide association index from its prediction; performance on a new ore body is not established.</p>
+      <p class="ks-hide-phone text-sm text-on-surface-variant max-w-2xl leading-relaxed">Choose an original polished-section micrograph below. Use the raw image, not a report montage, plot, or predicted mask. The prototype measures modal mineralogy and an apparent 2D sulphide association index from its prediction; performance on a new ore body is not established.</p>
       {% endif %}
-      <div class="flex flex-wrap gap-3 font-mono text-[10px] tracking-wider text-on-surface-variant uppercase">
+      <div class="ks-hide-phone flex flex-wrap gap-3 font-mono text-[10px] tracking-wider text-on-surface-variant uppercase">
         <span class="px-2.5 py-0.5 rounded border border-outline bg-surface-container">No sliders</span>
         <span class="px-2.5 py-0.5 rounded border border-outline bg-surface-container">No network required</span>
         <span class="px-2.5 py-0.5 rounded border border-outline bg-surface-container">Measured values only</span>
@@ -44,5 +46,6 @@ html, body { margin:0; background:#00131D; color:#E3EAEB; font-family:'Plus Jaka
     </div>
   </section>
 </main>
+{% with bring_into_view=false %}{% include "_fit_frame.html.jinja" %}{% endwith %}
 </body>
 </html>

@@ -11,7 +11,7 @@
 
   <!-- DECISION -->
   <div class="rounded-lg bg-surface border border-outline shadow-elevation-1" style="padding:20px;border-left:6px solid {{ decision_colour }}">
-    <div class="font-mono" style="font-size:11px;letter-spacing:.2em;color:{{ muted }};font-weight:700">DECISION</div>
+    <div class="font-mono" style="font-size:12px;letter-spacing:.2em;color:{{ muted }};font-weight:700">DECISION</div>
     <div style="font-size:30px;font-weight:700;color:{{ text }};line-height:1.15;margin-top:10px">{{ action_headline }}</div>
     <div class="font-mono" style="font-size:12px;letter-spacing:.14em;color:{{ decision_colour }};font-weight:700;margin-top:10px;text-transform:uppercase">{{ state_label }}</div>
     <div style="font-size:13px;color:{{ muted }};line-height:1.5;margin-top:10px">{{ reason_first_sentence }}</div>
@@ -19,7 +19,7 @@
 
   <!-- EVIDENCE -->
   <div class="rounded-lg bg-surface border border-outline shadow-elevation-1" style="padding:20px">
-    <div class="font-mono" style="font-size:11px;letter-spacing:.2em;color:{{ muted }};font-weight:700">EVIDENCE</div>
+    <div class="font-mono" style="font-size:12px;letter-spacing:.2em;color:{{ muted }};font-weight:700">EVIDENCE</div>
     {% set enough = n_payload_particles is not none and n_payload_particles >= min_payload_particles %}
     <div style="display:flex;align-items:baseline;gap:8px;margin-top:10px">
       <span class="font-mono" style="font-size:34px;font-weight:700;color:{{ ok if enough else bad }}">{{ n_payload_particles if n_payload_particles is not none else "?" }}</span>
@@ -30,7 +30,7 @@
     {% if lighting and lighting.off %}
     <div style="margin-top:14px;padding:8px 10px;border:1px solid {{ dim }};border-radius:4px">
       <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ muted }}">LIGHTING CHECK OFF · CONFIDENCE GATE ON</div>
-      <div style="font-size:11px;color:{{ muted }};line-height:1.35">the optional lighting diagnostic did not run; the confidence gate still applies</div>
+      <div style="font-size:12px;color:{{ muted }};line-height:1.35">the optional lighting diagnostic did not run; the confidence gate still applies</div>
     </div>
     {% elif lighting %}
     {% set lc = ok if lighting.stable else (muted if lighting.abstained else bad) %}
@@ -42,54 +42,73 @@
       {% endif %}
       <div>
         <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ lc }}">SIMULATED LIGHTING: {{ "STABLE" if lighting.stable else ("N/A" if lighting.abstained else "UNSTABLE") }}</div>
-        <div style="font-size:11px;color:{{ muted }};line-height:1.35">darker copy (RGB offset): {{ lighting.after_shift }}</div>
+        <div style="font-size:12px;color:{{ muted }};line-height:1.35">darker copy (RGB offset): {{ lighting.after_shift }}</div>
       </div>
     </div>
     {% elif advisory_only %}
     <div style="margin-top:14px;padding:8px 10px;border:1px solid {{ warn }};border-radius:4px">
       <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ warn }}">ADVISORY ONLY · NO LIGHTING CHECK</div>
-      <div style="font-size:11px;color:{{ muted }};line-height:1.35">the lighting check runs only in live sampled-fields mode, so this path issues no plant command</div>
+      <div style="font-size:12px;color:{{ muted }};line-height:1.35">the lighting check runs only in live sampled-fields mode, so this path issues no plant command</div>
     </div>
     {% else %}
-    <div style="margin-top:14px;font-size:11px;color:{{ muted }}">Lighting check runs in live sampled-fields mode.</div>
+    <div style="margin-top:14px;font-size:12px;color:{{ muted }}">Lighting check runs in live sampled-fields mode.</div>
     {% endif %}
   </div>
 
   <!-- PLANT (simulated) -->
   <div class="rounded-lg bg-surface border border-outline shadow-elevation-1" style="padding:20px">
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <div class="font-mono" style="font-size:11px;letter-spacing:.2em;color:{{ muted }};font-weight:700">PLANT · SIMULATED CIRCUIT</div>
+      <div class="font-mono" style="font-size:12px;letter-spacing:.2em;color:{{ muted }};font-weight:700">PLANT · SIMULATED CIRCUIT</div>
       {% if plant %}
       {% set pc = {"applied": ok, "unchanged": ok, "held": warn, "refused": bad}.get(plant.state, muted) %}
       <span class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:#00131D;background:{{ pc }};padding:3px 10px;border-radius:4px">{{ plant.state|upper }}</span>
       {% endif %}
     </div>
     {% set on = plant and plant.after >= 0.5 %}
-    <svg viewBox="0 0 400 120" style="width:100%;height:auto;margin-top:8px" role="img" aria-label="Simulated flotation circuit; regrind {{ 'enabled' if on else 'bypassed' }}">
+    <svg viewBox="0 0 400 108" style="width:100%;height:auto;margin-top:8px" role="img" aria-label="Simulated flotation circuit; regrind {{ 'enabled' if on else 'bypassed' }}">
       <defs><marker id="ah" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="{{ muted }}"/></marker></defs>
-      {% macro unit(x, y, w, label, colour=dim) %}<rect x="{{ x }}" y="{{ y }}" width="{{ w }}" height="26" rx="4" fill="#0B2230" stroke="{{ colour }}" stroke-width="1.5"/><text x="{{ x + w/2 }}" y="{{ y + 17 }}" text-anchor="middle" font-size="10" font-family="monospace" fill="{{ text }}">{{ label }}</text>{% endmacro %}
+      {% macro unit(x, y, w, label, colour=dim) %}<rect x="{{ x }}" y="{{ y }}" width="{{ w }}" height="26" rx="4" fill="#0B2230" stroke="{{ colour }}" stroke-width="1.5"/><text x="{{ x + w/2 }}" y="{{ y + 17 }}" text-anchor="middle" font-size="12" font-family="monospace" fill="{{ text }}">{{ label }}</text>{% endmacro %}
       {{ unit(4, 20, 44, "FEED") }}{{ unit(66, 20, 44, "MILL") }}{{ unit(128, 20, 66, "ROUGHER") }}{{ unit(318, 20, 78, "CLEANER") }}
       {{ unit(222, 78, 74, "REGRIND", ok if on else dim) }}
       <line x1="48" y1="33" x2="64" y2="33" stroke="{{ muted }}" stroke-width="1.5" marker-end="url(#ah)"/>
       <line x1="110" y1="33" x2="126" y2="33" stroke="{{ muted }}" stroke-width="1.5" marker-end="url(#ah)"/>
       <!-- bypass: rougher concentrate straight to cleaner -->
       <line x1="194" y1="33" x2="316" y2="33" stroke="{{ dim if on else ok }}" stroke-width="{{ 1.5 if on else 3 }}" {% if on %}stroke-dasharray="4 4"{% endif %} marker-end="url(#ah)"/>
-      <text x="255" y="26" text-anchor="middle" font-size="9" font-family="monospace" fill="{{ muted }}">bypass</text>
+      <text x="255" y="25" text-anchor="middle" font-size="11" font-family="monospace" fill="{{ muted }}">bypass</text>
       <!-- regrind loop -->
       <polyline points="200,33 200,91 220,91" fill="none" stroke="{{ ok if on else dim }}" stroke-width="{{ 3 if on else 1.5 }}" {% if not on %}stroke-dasharray="4 4"{% endif %} marker-end="url(#ah)"/>
       <polyline points="296,91 340,91 340,48" fill="none" stroke="{{ ok if on else dim }}" stroke-width="{{ 3 if on else 1.5 }}" {% if not on %}stroke-dasharray="4 4"{% endif %} marker-end="url(#ah)"/>
-      <text x="4" y="112" font-size="9" font-family="monospace" fill="{{ muted }}">regrind_enabled = {{ "%g"|format(plant.after) if plant else "–" }} · illustrative tag over local OPC UA · no plant connected</text>
     </svg>
+    <div class="font-mono" style="font-size:12px;color:{{ muted }};margin-top:4px;line-height:1.4">regrind_enabled = {{ "%g"|format(plant.after) if plant else "–" }} · illustrative tag over local OPC UA · no plant connected</div>
     {% if plant %}
     <div style="font-size:12px;color:{{ muted }};margin-top:6px;line-height:1.4"><span class="font-mono" style="color:{{ text }}">{{ "%g"|format(plant.before) }} → {{ "%g"|format(plant.after) }}</span> · {{ plant.reason }}</div>
     {% endif %}
     {% if sample_stem %}
-    <div class="font-mono" style="margin-top:8px;font-size:11px;font-weight:700;letter-spacing:.1em;color:{{ ok }}">VERIFIED SAMPLE · {{ sample_stem }} · MAY COMMAND THE SIMULATOR</div>
+    <div class="font-mono" style="margin-top:8px;font-size:12px;font-weight:700;letter-spacing:.1em;color:{{ ok }}">VERIFIED SAMPLE · {{ sample_stem }} · MAY COMMAND THE SIMULATOR</div>
     {% else %}
     <div style="margin-top:8px;padding:6px 8px;border:1px solid {{ warn }};border-radius:4px">
-      <div class="font-mono" style="font-size:11px;font-weight:700;letter-spacing:.1em;color:{{ warn }}">UNVERIFIED SAMPLE · ADVISORY ONLY</div>
-      <div style="font-size:11px;color:{{ muted }};line-height:1.35">nothing published, nothing commanded: only the 12 validated held-out sections, byte for byte, may drive the simulator</div>
+      <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.1em;color:{{ warn }}">UNVERIFIED SAMPLE · ADVISORY ONLY</div>
+      <div style="font-size:12px;color:{{ muted }};line-height:1.35">nothing published, nothing commanded: only the 12 validated held-out sections, byte for byte, may drive the simulator</div>
     </div>
     {% endif %}
   </div>
 </section>
+<details class="ks-guide" style="margin-top:14px;border:1px solid {{ dim }};border-radius:6px;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:{{ text }};font-weight:600">What these terms mean</summary>
+  <dl style="margin:10px 0 0;font-size:13px;line-height:1.5;color:{{ muted }}">
+    <dt style="color:{{ text }};font-weight:600">Decision</dt>
+    <dd style="margin:0 0 8px">What the system recommends for the grind. "No recommendation" means it declines, and the line under it says why.</dd>
+    <dt style="color:{{ text }};font-weight:600">Payload-bearing particles</dt>
+    <dd style="margin:0 0 8px">Grains that contain the valuable minerals (here chalcopyrite and pentlandite). It needs at least {{ min_payload_particles }} before it will advise: a provisional operating rule, not a statistical bound.</dd>
+    <dt style="color:{{ text }};font-weight:600">Apparent 2D sulphide association index</dt>
+    <dd style="margin:0 0 8px">Of all the valuable-mineral area, the share sitting in grains that are at least half valuable mineral. High: mostly free. Low: locked inside other minerals, so grinding finer may free it. Measured on a flat polished slice, so it estimates true 3D liberation rather than measuring it.</dd>
+    <dt style="color:{{ text }};font-weight:600">Marginal, verify before acting</dt>
+    <dd style="margin:0 0 8px">The index is closer to the 50% decision line than the method's measured error (±33.5 points), so a person should check before acting.</dd>
+    <dt style="color:{{ text }};font-weight:600">Model confidence and the confidence gate</dt>
+    <dd style="margin:0 0 8px">How sure the model is of each pixel's mineral, averaged. Below {{ "%.0f"|format(confidence_floor * 100) }}% it withholds advice. The {{ "%.0f"|format(confidence_floor * 100) }}% line is a provisional operating rule.</dd>
+    <dt style="color:{{ text }};font-weight:600">Verified sample</dt>
+    <dd style="margin:0 0 8px">One of the 12 held-out sections the accuracy report checks against expert annotation, recognised byte for byte. Only these can move the simulated plant; any other image gets advice only.</dd>
+    <dt style="color:{{ text }};font-weight:600">Simulated circuit</dt>
+    <dd style="margin:0">One illustrative setting (regrind on or off) sent over a local OPC UA link. No real plant is connected.</dd>
+  </dl>
+</details>

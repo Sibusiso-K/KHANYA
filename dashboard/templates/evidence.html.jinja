@@ -3,6 +3,7 @@
 @font-face{font-family:mono;src:url(data:font/ttf;base64,{{ font_mono_regular_b64 }})}
 *{box-sizing:border-box}body{margin:0;background:#00131D;color:#E3EAEB;font-family:mono,monospace;padding:22px}
 .eyebrow{font-size:11px;letter-spacing:.2em;color:#FFB539;font-weight:700}.title{font-size:23px;margin:8px 0 6px}.note{font-size:11px;color:#8CA6AE;line-height:1.6;max-width:1000px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}.panel{border:1px solid #194D5C;border-radius:6px;padding:11px;background:#071C27}.label{font-size:10px;color:#8CA6AE;text-transform:uppercase;letter-spacing:.12em;margin-bottom:9px}.panel img{display:block;width:100%;height:330px;object-fit:contain;background:#00131D}.footer{margin-top:14px;color:#8CA6AE;font-size:11px}.footer strong{color:#E3EAEB}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+@media(max-width:700px){.eyebrow,.note,.label,.footer{font-size:12px !important}}
 </style></head><body>
 <div class="eyebrow">EVIDENCE VIEW · HELD-OUT VALIDATION</div>
 <div class="title">Known test section: {{ stem }}</div>
@@ -15,11 +16,12 @@
 {% if scores and scores.mismatch %}
 <div class="panel" style="margin-top:14px;border-color:#D29922"><div class="label">Scorecard hidden</div><div class="footer" style="margin-top:0">The saved section scores and advisories were produced by checkpoint {{ scores.report_sha }}…, not the active checkpoint {{ scores.active_sha }}…. They are not shown beside this prediction.</div></div>
 {% elif scores %}
-<div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:14px">
+<div class="grid" style="margin-top:14px">
   <div class="panel"><div class="label">Section mean IoU</div><div style="font-size:28px;font-weight:700">{{ "%.2f"|format(scores.section_iou) }}</div><div class="footer" style="margin-top:4px">mean IoU on this section alone · all 12 pooled: {{ "%.4f"|format(scores.pooled_iou) }}</div></div>
   <div class="panel"><div class="label">Model's advice (whole section)</div><div style="font-size:16px;font-weight:700">{{ scores.model_advice }}</div>{% if withheld_by_gate %}<div class="footer" style="margin-top:4px;color:#D29922">advisor rules only · at {{ "%.0f"|format(confidence * 100) }}% confidence the live pipeline withholds it (gate: {{ "%.0f"|format(confidence_floor * 100) }}%)</div>{% endif %}</div>
   <div class="panel" style="border-color:{{ '#2EA043' if scores.agree else '#D29922' }}"><div class="label">Expert annotation's advice</div><div style="font-size:16px;font-weight:700">{{ scores.expert_advice }}</div><div class="footer" style="margin-top:4px;color:{{ '#2EA043' if scores.agree else '#D29922' }}">{{ "Agrees with the model" if scores.agree else "Differs from the model" }}</div></div>
 </div>
 {% endif %}
 <div class="footer">Mean prediction confidence (measured): <strong>{{ "%.1f"|format(confidence * 100) }}%</strong> · LumenStone S2 v2 · offline evidence{% if source %} · prediction {{ source }}{% endif %}</div>
+{% with bring_into_view=true %}{% include "_fit_frame.html.jinja" %}{% endwith %}
 </body></html>

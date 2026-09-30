@@ -46,7 +46,7 @@ def test_pre_upload_state_is_stitch_rendered_without_fabricated_claims():
     html = render.render_landing()
 
     assert "Plants learn what is in their ore days too late." in html
-    assert "refuses to advise" in html
+    assert "declines to advise" in html and "changes with the lighting" not in html
     assert "in seconds" not in html   # not true while the lighting check doubles the live pass
     assert "REEFPRINT :: KHANYA" in html
     assert "No network required" in html
@@ -65,7 +65,9 @@ def test_startup_refusal_is_visible_and_escapes_untrusted_text():
     assert "Analysis unavailable" in html
     assert "No recommendation has been issued" in html
     assert "&lt;script&gt;" in html
-    assert "<script>" not in html
+    assert "<script>alert(1)" not in html
+    # the only script on the page is the trusted frame-sizing one (_fit_frame.html.jinja)
+    assert html.count("<script>") == 1 and "window.frameElement" in html
 
 
 @pytest.mark.parametrize("liberation, expected", [
