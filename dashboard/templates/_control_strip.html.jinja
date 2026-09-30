@@ -3,7 +3,11 @@
    offline from the classes already in use, so a new utility class would not exist. #}
 {% set ok = "#2EA043" %}{% set warn = "#D29922" %}{% set bad = "#F85149" %}{% set dim = "#3A4A57" %}{% set text = "#E6EDF3" %}{% set muted = "#8B9BA8" %}
 {% set decision_colour = {"grind": ok, "": ok, "hold": warn}.get(verdict_class, warn) %}
-<section style="display:grid;grid-template-columns:1.05fr 1fr 1.35fr;gap:20px" class="animate-fade-up">
+<style>
+  .ks-strip{display:grid;grid-template-columns:1.05fr 1fr 1.35fr;gap:20px}
+  @media (max-width: 900px){.ks-strip{grid-template-columns:1fr}}
+</style>
+<section class="ks-strip animate-fade-up">
 
   <!-- DECISION -->
   <div class="rounded-lg bg-surface border border-outline shadow-elevation-1" style="padding:20px;border-left:6px solid {{ decision_colour }}">
@@ -19,18 +23,25 @@
     {% set enough = n_payload_particles is not none and n_payload_particles >= min_payload_particles %}
     <div style="display:flex;align-items:baseline;gap:8px;margin-top:10px">
       <span class="font-mono" style="font-size:34px;font-weight:700;color:{{ ok if enough else bad }}">{{ n_payload_particles if n_payload_particles is not none else "?" }}</span>
-      <span style="font-size:13px;color:{{ muted }}">payload-bearing particles · need ≥ {{ min_payload_particles }}</span>
+      <span style="font-size:13px;color:{{ muted }}">payload-bearing particles · provisional floor {{ min_payload_particles }}</span>
     </div>
     <div style="font-size:12px;color:{{ muted }};margin-top:2px">{{ evidence_scope }}</div>
-    {% if lighting %}
+    {% if lighting and lighting.off %}
+    <div style="margin-top:14px;padding:8px 10px;border:1px solid {{ bad }};border-radius:4px">
+      <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ bad }}">LIGHTING CHECK OFF · UNGUARDED</div>
+      <div style="font-size:11px;color:{{ muted }};line-height:1.35">shown for comparison; the advice has not been tested against a simulated lighting change</div>
+    </div>
+    {% elif lighting %}
     {% set lc = ok if lighting.stable else (muted if lighting.abstained else bad) %}
     <div style="margin-top:14px;display:flex;gap:10px;align-items:center">
       <img src="data:image/png;base64,{{ lighting.as_imaged_b64 }}" alt="fields as imaged" style="width:64px;height:auto;border:1px solid {{ dim }};border-radius:4px">
+      {% if lighting.shifted_b64 %}
       <span style="color:{{ muted }};font-size:18px">→</span>
-      <img src="data:image/png;base64,{{ lighting.shifted_b64 }}" alt="fields after the re-imaging shift" style="width:64px;height:auto;border:1px solid {{ dim }};border-radius:4px">
+      <img src="data:image/png;base64,{{ lighting.shifted_b64 }}" alt="simulated darker copy (fixed RGB offset)" style="width:64px;height:auto;border:1px solid {{ dim }};border-radius:4px">
+      {% endif %}
       <div>
-        <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ lc }}">LIGHTING {{ "STABLE" if lighting.stable else ("N/A" if lighting.abstained else "UNSTABLE") }}</div>
-        <div style="font-size:11px;color:{{ muted }};line-height:1.35">darker lamp: {{ lighting.after_shift }}</div>
+        <div class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:{{ lc }}">SIMULATED LIGHTING: {{ "STABLE" if lighting.stable else ("N/A" if lighting.abstained else "UNSTABLE") }}</div>
+        <div style="font-size:11px;color:{{ muted }};line-height:1.35">darker copy (RGB offset): {{ lighting.after_shift }}</div>
       </div>
     </div>
     {% else %}
@@ -43,7 +54,7 @@
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div class="font-mono" style="font-size:11px;letter-spacing:.2em;color:{{ muted }};font-weight:700">PLANT · SIMULATED CIRCUIT</div>
       {% if plant %}
-      {% set pc = {"applied": ok, "held": warn, "refused": bad}.get(plant.state, muted) %}
+      {% set pc = {"applied": ok, "unchanged": ok, "held": warn, "refused": bad}.get(plant.state, muted) %}
       <span class="font-mono" style="font-size:12px;font-weight:700;letter-spacing:.12em;color:#00131D;background:{{ pc }};padding:3px 10px;border-radius:4px">{{ plant.state|upper }}</span>
       {% endif %}
     </div>
