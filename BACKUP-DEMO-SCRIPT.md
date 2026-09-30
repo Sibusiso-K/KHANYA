@@ -152,6 +152,34 @@ match on 9 of 12.
 it on. `python -m src.preflight` times one pass on the presenting laptop itself.
 Rehearse the pause.
 
+### Beat 5 — see inside the answer (PRs #19-#22)
+
+Straight after beat 4's `test_11` result (no new upload needed):
+
+1. While it runs, point at the progress frame: **"Mineral mix so far"** updates
+   with every field. The model is visibly working, not a spinner.
+2. **Explore grains** tab: tap the big yellow-orange grain. The card shows its
+   composition and **FREE / LOCKED**. Say: *"Every grain, what it's made of,
+   and whether the valuable part is free: the thing a metallurgist grinds for."*
+   Beside it: area % and estimated weight %, which minerals touch which, and
+   liberation by grain size.
+3. **3D view** tab: drag to turn and tilt. Towers are where the valuable
+   minerals are. Tap a tower for its grain. Say it before anyone asks: *"This
+   is a 3D view of a flat section, not a 3D model of the rock; that needs
+   survey data or X-ray CT, which is what we'd do with Mintek."*
+4. **Report** tab: type a sample ID and hole, then **Print or save as PDF**,
+   or download the grain table (.csv). Nothing re-runs.
+5. Switch the mode to **Geology — Bushveld context**. Tap **Zoom to the PGE and
+   chromium cluster**: the Bushveld limbs appear from the public USGS sites
+   alone. Pick a Thaba hole: its chromitite seams by depth with Cr₂O₃ and
+   Pt + Pd. Say: *"This is where a section's result belongs, by hole and
+   depth. The public holes have no coordinates, so we don't pretend to place
+   them."*
+
+Do not call the 3D view a reconstruction, the weight % an assay, or the MRDS
+map current (USGS stopped updating it in 2011). Grain sizes are in pixels
+until the imaging scale is confirmed (`KHANYA_MICRONS_PER_PIXEL`).
+
 ## What NOT to show live if the venue timing is tight
 
 The actual native-resolution inference is measured, not estimated:
