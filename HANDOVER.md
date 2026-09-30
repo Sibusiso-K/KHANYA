@@ -1,3 +1,16 @@
+## 2026-09-30 — Codex — grain evidence inspector and source layout
+
+**Did:** Added a result-bound grain inspector to Workspace. Clicks on the predicted phase map decode the exact lossless 24-bit grain ID, highlight the selected region, and display advisor-matched grain measurements plus explicitly estimated phase-weight, mineral-contact and size-bin liberation evidence. Added a Playwright click test and narrow 375px layout coverage. Moved the workbench input-check helper and hash-only held-out manifest under `src/`; updated all imports and tests.
+
+**Changed:** `frontend/src/GrainInspector.tsx`, `frontend/src/App.tsx`, `frontend/src/grainSelection.js`, `frontend/src/grainPixels.js`, styles, tests, built offline bundle; moved `dashboard/inputs.py` and `dashboard/validated_samples.json` to `src/input_checks.py` and `src/data/validated_samples.json`.
+
+**Verified:** `npm run build`; grain pixel/selection tests (2); Spatial contract tests (12); `npm run test:e2e` (2, including physical selection of mocked grain 7 at 375px); focused Python suite (52 passed, 1 skipped). Attempted a real `test_11.jpg` browser inference against the sibling checkout's checkpoint and data: API health confirmed checkpoint SHA `de7135a…` and 12 samples, but browser inference did not complete within the run window, so a real-image grain click is **not verified**. The checkpoint and images remain outside this repository.
+
+**Blocked on:** Nothing for code review; re-run the real-image browser test on a machine/runtime where checkpoint inference completes.
+
+**Next:** Review PR #15 and verify the real Quick-mode grain click on the presentation laptop.
+
+---
 # Handover Log
 
 Required for every collaborator. Before pushing, read the latest entry below.
@@ -3744,4 +3757,5 @@ Read reports/SPATIAL-UI-HANDOVER-2026-09-30.md for the current UI/spatial/decisi
 
 
 Latest backend continuation: reports/LOCAL-RECORDS-HANDOVER-2026-09-30.md (versioned notes/assays and cloud login blockers).
+
 
