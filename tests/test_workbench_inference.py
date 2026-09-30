@@ -37,7 +37,7 @@ def test_quick_inference_uses_six_field_predictor_and_records_measured_scope(tmp
     calls = []
     def predict(model, image, device, progress_callback=None):
         calls.append((model, image.size, device))
-        progress_callback(1,6,None,(0,0,512,512),.91)
+        progress_callback(1,6,np.zeros((1100,1600),dtype=np.int64),(0,0,512,512),.91)
         assert api.jobs["job"]["progress"]["completed"] == 1
         labels = np.zeros((1026, 1540), dtype=np.int64)
         mosaic = Image.new("RGB", (1540, 1026), (190, 130, 80))
@@ -58,6 +58,11 @@ def test_quick_inference_uses_six_field_predictor_and_records_measured_scope(tmp
         f"Quick inference failed: {api.jobs['job'].get('error', 'no error details returned')}"
     )
     result = api.jobs["job"]["result"]
+    progress = api.jobs["job"]["progress"]
+    assert progress["stage"] == "measuring"
+    assert progress["evidence"]["analysed_pixels"] == 512 * 512
+    assert progress["evidence"]["phases"][0]["area_pct"] == 100
+    assert progress["evidence"]["unknown_pixels"] == 1600 * 1100 - 512 * 512
     assert len(calls) == 1 and calls[0][1:] == ((1600, 1100), "cpu")
     assert result["field_count"] == 6
     assert result["field_coverage"] == pytest.approx(6 * 512 * 512 / (1600 * 1100))

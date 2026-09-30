@@ -1,3 +1,9 @@
+## Latest verified application update — 1 October 2026
+
+Actual model tiles now produce live previews/counts, with unknown pixels excluded. White workbench polish, original/prediction comparison, spatial map/sections/layers and voice/evidence assistant are implemented. 71 backend checks and seven serial browser tests passed, plus production build. Real test_11 inference took78.475s; no improved held-out accuracy claimed. Both extended Kaggle runs completed and are being audited. Public release/push status is documented in BUILDLOG. See LIVE-UI-RELEASE-2026-10-01.md for source snapshot, limitations and resume prompt. Current hosted model is unapproved fb78727d, so simulator HOLD is expected.
+
+Historical status follows; the entries below must not be read as the current release state.
+
 ## 2026-09-30 — authenticated Cloudflare demo and white workbench
 
 White responsive React workbench now has Dashboard, Workspace, Samples, Spatial, Process and Reports; exact result-bound grain selection/export, keyboard navigation, protected image/download loading, account-scoped browser caches and private Supabase records. Supabase RLS/storage/schema deployed; bearer auth fails closed in public mode. Simulator sessions remain host-local and isolated, not durable cloud controls. No real plant connection.

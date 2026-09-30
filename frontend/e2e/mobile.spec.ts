@@ -32,9 +32,9 @@ test('all workbench pages remain legible and unclipped at 375px', async ({page})
     expect(check.small, `${name} text smaller than 12px`).toEqual([]);
     if (name === 'Spatial') {
       await expect(page.getByRole('heading', {name:'No survey imported'})).toBeVisible();
-      await expect(page.getByText('SYNTHETIC · NOT DATA')).toHaveCount(0);
+      await expect(page.getByText('Synthetic scene · not measured data')).toHaveCount(0);
       await page.getByRole('checkbox', {name:'Show synthetic demo scene (not real data)'}).check();
-      await expect(page.getByText('SYNTHETIC · NOT DATA')).toBeVisible();
+      await expect(page.getByText('Synthetic scene · not measured data')).toBeVisible();
     }
   }
   expect(externalRequests,'local offline runtime must not request remote assets, APIs or auth services').toEqual([]);

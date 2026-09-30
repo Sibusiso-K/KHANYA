@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Literal
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse, Response, JSONResponse
-from webapi import cloud
+from webapi import cloud, assistant
 import contextvars
 import ipaddress
 from fastapi.staticfiles import StaticFiles
@@ -374,10 +374,15 @@ def run_inference(jid,sid,mode):
         coverage = None
         if mode == "field":
             field_count, coverage = field_coverage(image.width, image.height)
-        def field_progress(completed,total,_labels,box,_confidence):
+        from webapi.progress import InferenceEvidence
+        evidence = InferenceEvidence(workspace_store(), jid, image.size, CLASSES, COLORS, mode)
+        source_size = list(image.size)
+        def field_progress(completed,total,labels,box,confidence):
+            snapshot = evidence.publish(completed, total, labels, box, confidence)
             workspace_jobs()[jid]["progress"]={"stage":"segmenting","completed":completed,"total":total,
-                                              "box":list(box),"image_size":[image.width,image.height]}
-        workspace_jobs()[jid]["progress"]={"stage":"segmenting","completed":0,"total":field_count or 0}
+                                              "box":list(box),"image_size":source_size,"evidence":snapshot}
+        workspace_jobs()[jid]["progress"]={"stage":"segmenting","completed":0,"total":field_count or 0,
+                                          "image_size":source_size,"evidence":evidence.empty()}
         with torch.inference_mode():
             if mode=="field":
                 labels, confidence, mosaic_image, _boxes = multi_field_predict(model, image, "cpu",progress_callback=field_progress)
@@ -387,7 +392,7 @@ def run_inference(jid,sid,mode):
                 image = mosaic_image
             else:
                 labels,confidence=sliding_window_predict(model,image,"cpu",progress_callback=field_progress)
-        workspace_jobs()[jid]["progress"]={"stage":"measuring"}
+        workspace_jobs()[jid]["progress"]={**workspace_jobs()[jid]["progress"],"stage":"measuring"}
         measured=modal.analyse(labels,CLASSES,refine=True)
         rec = advisor.confidence_gate(advisor.advise(measured, float(confidence)), float(confidence))
         action, reason = rec.action, rec.reason
@@ -419,7 +424,7 @@ def run_inference(jid,sid,mode):
         for layer in ("raw","mask","overlay"):
             r[layer+"_url"]=f"/api/samples/{sid}/image?layer={layer}&result_id={rid}"
         if cloud.identity.get():
-            workspace_jobs()[jid]["progress"]={"stage":"saving"}
+            workspace_jobs()[jid]["progress"]={**workspace_jobs()[jid]["progress"],"stage":"saving"}
             cloud.save_result(r, directory)
         (directory/"result.json").write_text(json.dumps(r,indent=2))
         workspace_results()[rid]=r
@@ -437,7 +442,8 @@ def infer(req:InferenceRequest):
     if cloud.identity.get() and req.sample_id in verified_hashes:
         cloud.save_sample(req.sample_id, sample_path(req.sample_id))
     jid=uuid.uuid4().hex
-    workspace_jobs()[jid]={"id":jid,"status":"queued"}
+    workspace_jobs()[jid]={"id":jid,"status":"queued","sample_id":req.sample_id,"mode":req.mode,
+                           "model_sha":MODEL_SHA,"created_at":time.time()}
     if cloud.identity.get():
         pool.submit(contextvars.copy_context().run,run_inference,jid,req.sample_id,req.mode)
     else:
@@ -449,6 +455,22 @@ def job(jid:str):
     if jid not in workspace_jobs():
         raise HTTPException(404,"Job not found")
     return workspace_jobs()[jid]
+
+@app.get("/api/jobs/{jid}/preview")
+def job_preview(jid:str, revision:int|None=None):
+    # Job membership is the access boundary, even if a file exists in another
+    # workspace. A revision only busts browser caches; this is the latest
+    # bounded preview, not an archive of past predictions.
+    if jid not in workspace_jobs():
+        raise HTTPException(404,"Job not found")
+    from webapi.progress import read_preview
+    try:
+        data, current_revision = read_preview(workspace_store(), jid)
+    except (FileNotFoundError, ValueError):
+        raise HTTPException(404,"No completed model tile is available yet.")
+    return Response(data, media_type="image/png", headers={
+        "Cache-Control":"private, no-store", "X-Reefprint-Preview-Revision":str(current_revision),
+        "X-Reefprint-Provisional":"true"})
 
 class SimulationRequest(BaseModel):
     result_id:str
@@ -513,6 +535,42 @@ def report():
         "Runtime reports server-side decode, inference and analysis; it excludes network upload.",
         "No measured recovery gain, physical XRF device, or live plant connection."],
         "download_url":"/api/report/download"}
+
+class AssistantRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    question: str = Field(min_length=1, max_length=3000)
+    sample_id: str = Field(min_length=1, max_length=100, pattern=r"^[A-Za-z0-9_-]+$")
+    result_id: str | None = Field(default=None, min_length=1, max_length=100)
+    use_provider: bool = False
+    context_opt_in: bool = False
+
+
+@app.get("/api/assistant/status")
+def assistant_status():
+    return assistant.get_status()
+
+
+@app.post("/api/assistant")
+def assistant_respond(request: AssistantRequest):
+    source = sample_path(request.sample_id)
+    selected = None
+    if request.result_id:
+        selected = workspace_results().get(request.result_id)
+        if selected is None:
+            cached = current_result(request.sample_id)
+            selected = cached if cached and cached.get("result_id") == request.result_id else None
+        if (selected is None or selected.get("id") != request.sample_id
+                or selected.get("model_sha") != MODEL_SHA
+                or selected.get("image_sha") != hashlib.sha256(source.read_bytes()).hexdigest()):
+            raise HTTPException(404, "That result is unavailable for the selected sample and active model.")
+    context = {"sample_id": request.sample_id, "result": selected,
+               "report": report(), "model_architecture": "DeepLabV3 / ResNet-50",
+               "runtime": "local CPU"}
+    try:
+        return assistant.respond(request.question, context, request.use_provider, request.context_opt_in)
+    except assistant.AssistantError as exc:
+        raise HTTPException(exc.status_code, str(exc)) from None
+
 
 @app.get("/api/decisions/{result_id}/download")
 def decision_download(result_id: str, event_time: float):
