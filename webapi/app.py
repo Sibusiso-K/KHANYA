@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 from PIL import Image
+from PIL import UnidentifiedImageError
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data/raw/lumenstone/S2_v2/imgs/test"
@@ -35,7 +36,8 @@ model_lock = threading.Lock()
 simulation_lock = threading.Lock()
 record_lock = threading.Lock()
 model = None
-plant = 0.0
+plants: dict[str, float] = {}
+plant_sessions: set[str] = set()
 app = FastAPI(title="REEFPRINT local research API", version="0.1.0")
 CHECKPOINT_METRICS_PATH = ROOT / "reports" / "checkpoint-metrics.json"
 CHECKPOINT_METRICS = json.loads(CHECKPOINT_METRICS_PATH.read_text(encoding="utf-8"))["checkpoints"]
@@ -179,6 +181,45 @@ def image(sid:str, layer:Literal["original","raw","overlay","mask"]="original", 
         raise HTTPException(404,"Image layer unavailable.")
     return FileResponse(f,media_type="image/png")
 
+
+def grain_evidence_for_result(result_id: str):
+    """Return paths for evidence only when its result and source image are current."""
+    r = results.get(result_id)
+    if not r or r.get("result_id") != result_id or r.get("model_sha") != MODEL_SHA:
+        raise HTTPException(404, "Grain evidence is unavailable for this result.")
+    try:
+        source = sample_path(r["id"])
+        if hashlib.sha256(source.read_bytes()).hexdigest() != r.get("image_sha"):
+            raise HTTPException(404, "This inference is stale because its source image changed.")
+    except (KeyError, OSError):
+        raise HTTPException(404, "Grain evidence is unavailable for this result.")
+    directory = STORE / (r["id"] + "-" + result_id)
+    try:
+        saved = json.loads((directory / "result.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        raise HTTPException(404, "Grain evidence is unavailable for this result.")
+    if (saved.get("result_id") != result_id or saved.get("model_sha") != MODEL_SHA
+            or saved.get("image_sha") != r.get("image_sha")):
+        raise HTTPException(404, "Grain evidence is unavailable for this result.")
+    report_path = directory / "grain-report.json"
+    ids_path = directory / "grain-ids.png"
+    if not report_path.is_file() or not ids_path.is_file():
+        raise HTTPException(404, "Grain evidence is unavailable for this result.")
+    return report_path, ids_path
+
+
+@app.get("/api/results/{result_id}/grains")
+def result_grains(result_id: str):
+    report_path, _ = grain_evidence_for_result(result_id)
+    return json.loads(report_path.read_text(encoding="utf-8"))
+
+
+@app.get("/api/results/{result_id}/grain-ids.png")
+def result_grain_ids(result_id: str):
+    _, ids_path = grain_evidence_for_result(result_id)
+    return FileResponse(ids_path, media_type="image/png")
+
+
 @app.post("/api/upload")
 async def upload(file:UploadFile=File(...)):
     raw=await file.read(25*1024*1024+1)
@@ -195,7 +236,10 @@ async def upload(file:UploadFile=File(...)):
                 if im.format not in ("PNG","JPEG","TIFF"):
                     raise ValueError("Use a PNG, JPEG or TIFF micrograph.")
                 check_input_colour(im)
-    except Exception as exc:
+    except (UnidentifiedImageError, OSError, SyntaxError, Image.DecompressionBombError,
+            Image.DecompressionBombWarning):
+        raise HTTPException(400,"This file could not be read as an image. Choose an intact JPG, PNG or TIFF micrograph.")
+    except ValueError as exc:
         raise HTTPException(400,f"Cannot analyse this upload: {exc}")
     sid="upload_"+uuid.uuid4().hex[:12]
     path=UPLOADS/sid
@@ -252,6 +296,8 @@ def run_inference(jid,sid,mode):
         rid=uuid.uuid4().hex
         directory=STORE/(sid+"-"+rid)
         directory.mkdir()
+        from webapi.grain_evidence import write_grain_evidence
+        grain_evidence = write_grain_evidence(labels, CLASSES, measured.phase_fractions, directory)
         image.save(directory/"raw.png")
         rgb=np.zeros((*labels.shape,3),dtype=np.uint8)
         for i,color in enumerate(COLORS):
@@ -266,6 +312,8 @@ def run_inference(jid,sid,mode):
            "scope":(f"Quick: {field_count} × 512 px fields across the section · "
                     f"{coverage:.1%} area coverage · mosaic") if mode=="field" else "Full section · advisory only",
            "field_count":field_count,"field_coverage":coverage,
+           "grain_count":grain_evidence["n_grains"],
+           "payload_grain_count":grain_evidence["n_payload_grains"],
            "mode":mode,
            "association_index":None if measured.liberation is None else float(measured.liberation),
            "created_at":time.time()}
@@ -298,6 +346,15 @@ def job(jid:str):
 
 class SimulationRequest(BaseModel):
     result_id:str
+    session_id:str
+
+@app.post("/api/simulation-sessions")
+def create_simulation_session():
+    session_id = uuid.uuid4().hex
+    with simulation_lock:
+        plants[session_id] = 0.0
+        plant_sessions.add(session_id)
+    return {"session_id": session_id, "setpoint": plants[session_id]}
 
 def refusal(r):
     if not r.get("verified"):return "Unverified upload: advisory only. Nothing sent to OPC UA."
@@ -311,21 +368,23 @@ def refusal(r):
 
 @app.post("/api/simulate")
 def simulate(req:SimulationRequest):
-    global plant
     r=results.get(req.result_id)
     if not r:
         raise HTTPException(404,"Result unavailable; open or analyse the sample first.")
     with simulation_lock:
+        if req.session_id not in plant_sessions:
+            raise HTTPException(404,"Simulator session unavailable. Start a new local session.")
         reason=refusal(r)
         if reason:
-            event={"state":"held","before":plant,"after":plant,"reason":reason}
+            current=plants[req.session_id]
+            event={"state":"held","before":current,"after":current,"reason":reason}
         else:
             from dashboard.control import send_command
-            event=asdict(send_command("Grind finer",plant))
-            plant=event["after"]
+            event=asdict(send_command("Grind finer",plants[req.session_id]))
+        plants[req.session_id] = event["after"]
         event.update(result_id=req.result_id,created_at=time.time(),simulator_only=True)
         with (STORE/"simulation-events.jsonl").open("a") as f:
-            f.write(json.dumps(event)+"\n")
+            f.write(json.dumps({**event,"session_id":req.session_id})+"\n")
         return event
 
 @app.get("/api/report")
@@ -379,4 +438,7 @@ def report_download():
 dist=ROOT/"frontend/dist"
 if dist.is_dir():
     app.mount("/",StaticFiles(directory=dist,html=True),name="frontend")
+
+
+
 
