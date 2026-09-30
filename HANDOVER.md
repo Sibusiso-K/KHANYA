@@ -19,6 +19,53 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-09-30 — Sibusiso (78) — every judge-review point on #10-#12 addressed
+
+**Lethabo's reviews were right on every point; all fixed, pushed and verified
+live on the full stack.**
+
+- **#10:** the minimum of 9 payload particles is now a **provisional operating
+  floor, not a statistical bound**. The binomial derivation doesn't hold for an
+  area-weighted index over dependent particles. The on-screen "even a perfect
+  segmentation cannot..." is gone.
+  The **six-field sampler no longer repeats or overlaps crops** on small
+  uploads (a 512x512 upload got the same crop six times): the grid shrinks to
+  fit, overlap is asserted, and coverage is computed. Tested on 200 random
+  sizes.
+- **#11:** now a **simulated lighting-perturbation check / input-sensitivity
+  diagnostic**. It is the same image with a fixed RGB offset, not a second
+  capture, and the offset is shown. **Gauge R&R comparison withdrawn.** The
+  costs (4 of 5 correct confident calls discarded, double the time) sit at the
+  top of the report. Validation re-run with the renamed refusal: **identical
+  numbers, deterministic**.
+- **#12:**
+  - **Continue at current setpoint no longer switches regrind off.** It is a
+    no-op (UNCHANGED), and the declared regrind-on preset is removed.
+  - A **visible guarded/unguarded toggle** replaces the preset.
+  - The tile says "provisional floor", coverage is computed rather than
+    asserted, and the strip stacks on phones.
+
+**Verified live (BACKUP-DEMO-SCRIPT beat 4, all six steps):**
+- test_11, check ON: UNSTABLE, HELD 0.
+- Check OFF: *Grind finer*, UNGUARDED, **0 -> 1**.
+- test_04: provisional floor, HELD.
+- test_01: *Continue*, STABLE, **UNCHANGED 1 -> 1**.
+- Stale refusal: REFUSED, stays 0.
+- Phone width: one column.
+
+Script bug found while verifying: arming the stale refusal and *then* toggling
+spends it on the image on screen. Order fixed in the script.
+
+Presenter note: in the in-app browser pane, pointer clicks on the toggle
+didn't register but keyboard Space did. Check it on the presenting laptop
+during rehearsal.
+
+Suite 141 passed; offline guard clean.
+
+**Next:** Lethabo - re-review #10 -> #13 in order.
+
+---
+
 ## 2026-09-30 — Sibusiso (77) — fewer spinners: faster live path, instant evidence, offline config (PR D)
 
 **Profiled first:** of a live six-field pass, the model's six forward passes
