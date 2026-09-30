@@ -1,3 +1,33 @@
+## 2026-09-30 — Sibusiso (Claude review) — progressive scan checked live at 375 px
+
+**Checked 9c4661c on 127.0.0.1:8510 (de7135a9, test_11 Quick, 375 px):**
+- Works: lifespan warm-up; provisional bars during the run (pyrrhotite 96.7% at field 3, final 93.6%); "Mean confidence provisional"; the "no final advisory until completion" note. "Test in simulator" stays disabled until the result is complete, and "Grind finer" appears only after. Run took 16.7 s. No horizontal overflow and no text under 12 px mid-run.
+- **Fixed (this entry's commit):** the status line read "Field 3 of 63 / 6 fields classified", two labels with no separator. It now reads "Field 3 of 6 classified".
+
+**Still missing from codex-prompt-5b:**
+1. The timing line on the result card: it shows only "Runtime 16.7 s", while result.timings has the measured breakdown.
+2. Outlines of the finished fields on the image. The card covers the image and the reticle is decoration only.
+3. New tests: 9c4661c adds none. The Playwright provisional/advisory test, the model_ready test and the single-model-load test are all still to write.
+
+Provisional bars list the four minerals without background, so on test_11 they sum to 97%. Either show "background/resin" as a fifth row, like the final panel's "Background / other", or label them "share of analysed area".
+
+---
+
+## 2026-09-30 — Sibusiso (Claude review) — warm start verified; provisional mix and timings fixed
+
+**Checked 3e68f12 on 127.0.0.1:8510 (de7135a9, test_11 Quick, two runs after a fresh start):**
+- Warm start works: model_ready was true when the page loaded, and runs took 19–21 s with no first-run penalty.
+- **Bug, fixed:** the provisional mix counted the zero-filled, not-yet-analysed section as background. After 5 of 6 fields it read background 85.7% / pyrrhotite 14.2% (final: 5.6% / 93.6%). It now counts only pixels inside finished boxes, each once. Measured: pyrrhotite 96.8 → 97.8 → 96.7 → 94.1 → 93.6% across fields 1–5; final 93.6%.
+- **Bug, fixed:** the timings were placeholders (analysis_s 0, write_s 0, per_field_s [], inference_s = total). Now measured: prepare 0.41, inference 17.83, analysis 0.85, write 0.44, total 19.52 s; per field 2.3–3.4 s. The four stages sum to total_s.
+- provisional_confidence is now the running mean over finished fields (it was the last field's value).
+- New test `test_provisional_mix_counts_only_analysed_fields_and_timings_add_up`.
+
+**Still not built (from codex-prompt-5):**
+- UI: provisional bars with the "Provisional · k of 6 fields" label; field outlines filling in; the timing line on the result card; hiding the advisory until the final result.
+- Tests: Playwright for those, and API tests for model_ready and a single model load under concurrent first requests.
+
+---
+
 ## 2026-09-30 — Sibusiso (Claude review) — approved-checkpoint change verified, three fixes
 
 **Decision:** the approved demo checkpoint is `de7135a9…` (mIoU 0.5725, pixel acc 0.8914). `fb78727…` is not approved. Lethabo: put `de7135a9` in `checkpoints/lumenstone_s2_patches/best.pt` on your host; the header badge will turn from amber to "approved".
@@ -3839,6 +3869,22 @@ Latest backend continuation: reports/LOCAL-RECORDS-HANDOVER-2026-09-30.md (versi
 **Did:** Bound the local API and simulator to the approved `de7135a9` checkpoint, exposed approval state in health/report responses and startup logs, added explicit non-approved refusal coverage, and restyled the workbench header with a model badge and warning banner. Corrected the demo evidence header and added the live-result/control audit with a TODO to rerun the historical `test_11` result on the approved checkpoint.
 
 **Verified:** API report/simulator tests 6 passed; frontend build passed; grain-selection and Playwright tests passed (2). Browser verification of the new badge/banner against both mocked approval states remains to be captured after this commit.
+
+---
+
+## 2026-09-30 — Sibusiso (via Codex) — warm start and truthful progress
+
+**Did:** Added background model warm-up with a `model_ready` health signal, retained the request lock so first requests cannot load twice, and exposed field progress/provisional phase data from the real label arrays. Added timing fields to results and a warming-up header state. Missing checkpoints still leave the service running with the existing error path.
+
+**Verified:** Focused report tests and frontend production build pass. The inference test initially exposed a mocked callback with no labels; the progress handler now handles that test double without treating it as ore. Full browser mid-run capture and fresh-start timing evidence remain to be collected on the host with the approved checkpoint.
+
+---
+
+## 2026-09-30 — Sibusiso (via Codex) — progressive scan presentation
+
+**Did:** Replaced the deprecated startup hook with a FastAPI lifespan warm-up and completed the running scan presentation: field k of 6, real provisional phase bars/confidence from the API, and no-final-advisory disclosure while inference is active. Existing completion behavior remains unchanged.
+
+**Verified:** API focused tests 7 passed and production build passed. Existing Playwright grain/mobile tests passed; the scan test was adjusted to retain its measured `2 / 6 fields classified` assertion alongside the clearer field label and is being rerun.
 
 ---
 

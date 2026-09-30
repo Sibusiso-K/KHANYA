@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse, Response, JSONResponse
 from webapi import cloud, assistant
 import contextvars
 import ipaddress
+from contextlib import asynccontextmanager
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 from PIL import Image
@@ -39,9 +40,15 @@ model_lock = threading.Lock()
 simulation_lock = threading.Lock()
 record_lock = threading.Lock()
 model = None
+model_ready = False
 plants: dict[str, float] = {}
 plant_sessions: set[str] = set()
-app = FastAPI(title="REEFPRINT local research API", version="0.1.0")
+@asynccontextmanager
+async def lifespan(_app):
+    threading.Thread(target=_warm_model, name="khanya-model-warmup", daemon=True).start()
+    yield
+
+app = FastAPI(title="REEFPRINT local research API", version="0.1.0", lifespan=lifespan)
 CHECKPOINT_METRICS_PATH = ROOT / "reports" / "checkpoint-metrics.json"
 CHECKPOINT_RECORD = json.loads(CHECKPOINT_METRICS_PATH.read_text(encoding="utf-8"))
 CHECKPOINT_METRICS = CHECKPOINT_RECORD["checkpoints"]
@@ -54,6 +61,27 @@ logging.getLogger("uvicorn.error").log(
     "KHANYA model active sha=%s mIoU=%s %s", MODEL_SHA[:8] or "none",
     _startup_record.get("mean_iou", "unknown") if _startup_record else "unknown",
     "APPROVED" if MODEL_SHA and MODEL_SHA == APPROVED_MODEL_SHA else "NOT APPROVED")
+
+def _warm_model():
+    global model, model_ready
+    if not CKPT.exists():
+        logging.getLogger("uvicorn.error").warning("KHANYA warm-up skipped: checkpoint is missing")
+        return
+    try:
+        import torch
+        torch.set_num_threads(2)
+        from src.segmentation.model import build_model
+        with model_lock:
+            if model is None:
+                model = build_model(num_classes=5, pretrained=False)
+                model.load_state_dict(torch.load(CKPT, map_location="cpu", weights_only=True))
+                model.eval()
+            ready = model
+            with torch.inference_mode():
+                model(torch.zeros((1, 3, 512, 512)))
+        model_ready = True
+    except Exception as exc:
+        logging.getLogger("uvicorn.error").warning("KHANYA warm-up failed: %s", exc)
 
 def tenant():
     return cloud.state(STORE, {sid: path for sid, path in samples.items() if sid in verified_hashes})
@@ -158,6 +186,7 @@ def health():
     return {"status":"ok","checkpoint_available": bool(MODEL_SHA), "model_sha":MODEL_SHA,
             "model_approved": bool(MODEL_SHA and MODEL_SHA == APPROVED_MODEL_SHA),
             "approved_model_sha": APPROVED_MODEL_SHA,
+            "model_ready": model_ready,
             "sample_count":len(workspace_samples()),"deployment":"public" if cloud.config()["auth_required"] else "local","cloud_sync":cloud.config()["cloud_sync"],"auth_required":cloud.config()["auth_required"]}
 
 @app.get("/api/samples")
@@ -377,12 +406,21 @@ def run_inference(jid,sid,mode):
         from webapi.progress import InferenceEvidence
         evidence = InferenceEvidence(workspace_store(), jid, image.size, CLASSES, COLORS, mode)
         source_size = list(image.size)
+        tally={"field_s":[],"confidences":[]}
         def field_progress(completed,total,labels,box,confidence):
+            now=time.perf_counter()
+            tally["field_s"].append(round(now-tally["last"],3))
+            tally["last"]=now
+            tally["confidences"].append(float(confidence))
             snapshot = evidence.publish(completed, total, labels, box, confidence)
             workspace_jobs()[jid]["progress"]={"stage":"segmenting","completed":completed,"total":total,
-                                              "box":list(box),"image_size":source_size,"evidence":snapshot}
+                                              "box":list(box),"image_size":source_size,"evidence":snapshot,
+                                              "fields_done":completed,"fields_total":total,
+                                              "provisional_phases":snapshot["phases"],
+                                              "provisional_confidence":float(np.mean(tally["confidences"]))}
         workspace_jobs()[jid]["progress"]={"stage":"segmenting","completed":0,"total":field_count or 0,
                                           "image_size":source_size,"evidence":evidence.empty()}
+        t_inference=tally["last"]=time.perf_counter()
         with torch.inference_mode():
             if mode=="field":
                 labels, confidence, mosaic_image, _boxes = multi_field_predict(model, image, "cpu",progress_callback=field_progress)
@@ -392,6 +430,7 @@ def run_inference(jid,sid,mode):
                 image = mosaic_image
             else:
                 labels,confidence=sliding_window_predict(model,image,"cpu",progress_callback=field_progress)
+        t_analysis=time.perf_counter()
         workspace_jobs()[jid]["progress"]={**workspace_jobs()[jid]["progress"],"stage":"measuring"}
         measured=modal.analyse(labels,CLASSES,refine=True)
         rec = advisor.confidence_gate(advisor.advise(measured, float(confidence)), float(confidence))
@@ -401,6 +440,7 @@ def run_inference(jid,sid,mode):
         directory.mkdir()
         from webapi.grain_evidence import write_grain_evidence
         grain_evidence = write_grain_evidence(labels, CLASSES, measured.phase_fractions, directory)
+        t_write=time.perf_counter()
         image.save(directory/"raw.png")
         rgb=np.zeros((*labels.shape,3),dtype=np.uint8)
         for i,color in enumerate(COLORS):
@@ -409,9 +449,16 @@ def run_inference(jid,sid,mode):
         mask.save(directory/"mask.png")
         Image.blend(image.convert("RGB"),mask,.6).save(directory/"overlay.png")
         phases=[{"name":name,"area_pct":float(np.mean(labels==i)*100),"color":COLORS[i]} for i,name in enumerate(CLASSES)]
+        t_end=time.perf_counter()
+        # Measured stage boundaries; the four stages sum to total_s.
+        timings={"prepare_s":round(t_inference-start,3),"inference_s":round(t_analysis-t_inference,3),
+                 "analysis_s":round(t_write-t_analysis,3),"write_s":round(t_end-t_write,3),
+                 "total_s":round(t_end-start,3),"per_field_s":tally["field_s"],
+                 "torch_threads":torch.get_num_threads()}
         r={"contract":1,"id":sid,"result_id":rid,"prediction_source":"fresh","phases":phases,
            "confidence":float(confidence),"advisory":{"action":action,"reason":reason},
-           "model_sha":MODEL_SHA,"image_sha":image_sha,"elapsed_seconds":round(time.perf_counter()-start,3),
+           "timings":timings,
+           "model_sha":MODEL_SHA,"image_sha":image_sha,"elapsed_seconds":timings["total_s"],
            "scope":(f"Quick: {field_count} × 512 px fields across the section · "
                     f"{coverage:.1%} area coverage · mosaic") if mode=="field" else "Full section · advisory only",
            "field_count":field_count,"field_coverage":coverage,
