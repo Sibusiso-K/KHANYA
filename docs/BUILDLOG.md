@@ -22,6 +22,30 @@ it is a press release.
 
 ---
 
+## 2026-09-30 — REEFPRINT design-skill setup (commit recorded in follow-up)
+
+### Attempted
+
+Add reusable UI implementation guidance to the REEFPRINT project for the planned responsive web app, using the supplied white dashboard and dark field-capture mockups as visual references.
+
+### Worked
+
+- Installed the upstream DaisyUI Codex skill into `.agents/skills/daisyui` with the documented `npx skills add saadeghi/daisyui --agent codex --yes` command; the installer reported one skill installed and no security alerts.
+- Added `skills-lock.json` to pin the DaisyUI source and content hash.
+- Verified Impeccable and Frontend Design already exist in the user's shared skill directory.
+- Kept scope as design guidance only: the current dashboard is Streamlit/Jinja and does not use Tailwind, so DaisyUI is for the planned web-app UI rather than an unrelated dependency added to the prototype.
+
+### Did not work
+
+- TypeUI is distributed as an authenticated remote MCP connection, not a downloadable local skill. Its documented `codex mcp add typeui --url https://mcp.typeui.sh/mcp` could not be verified because this shell's Codex CLI fails with `failed to resolve CODEX_HOME: Could not find home directory`.
+- OpenDesign's Codex plugin requires its desktop application version 0.17.0 or newer. No installation was found at the standard Windows application paths; per its installer instructions, the desktop installer step awaits user confirmation.
+
+### Left open
+
+Connect TypeUI after the Codex CLI can access its configuration, then install and verify OpenDesign's local MCP/plugin only after its desktop-app prerequisite is installed. The supplied mockups remain the visual acceptance references for future UI work.
+
+---
+
 ## 2026-09-30 — grounded model improvement and live product specification
 
 ### Attempted
