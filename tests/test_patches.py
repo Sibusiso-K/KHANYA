@@ -108,3 +108,18 @@ def test_mosaic_keeps_fields_apart_so_particles_cannot_merge():
     assert (labels[512:512 + FIELD_GAP, :] == 0).all()   # horizontal gap is background
     from src import modal
     assert modal.liberation_stats(labels, labels == 1)[1] == 6  # six separate particles
+
+
+def test_small_uploads_get_fewer_distinct_fields_never_repeated_crops():
+    from src.segmentation.patches import field_boxes, field_coverage
+    assert field_boxes(512, 512) == [(0, 0, 512, 512)]
+    assert field_coverage(512, 512) == (1, 1.0)
+    assert len(field_boxes(1100, 700)) == 2          # 2 columns x 1 row fit
+    count, coverage = field_coverage(3396, 2547)
+    assert count == 6 and round(coverage, 3) == 0.182
+    import random
+    rng = random.Random(0)
+    for _ in range(200):
+        w, h = rng.randint(512, 5000), rng.randint(512, 5000)
+        boxes = field_boxes(w, h)                     # raises if any two overlap
+        assert len(set(boxes)) == len(boxes)

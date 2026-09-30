@@ -314,8 +314,8 @@ else:
                     image_bytes, checkpoint_key, on_field
                 )
             with st.spinner(
-                "Lighting check: the same six fields, re-measured after the "
-                "lighting shift measured between real re-imagings of the same sections."
+                "Simulated lighting-perturbation check: the same fields, recomputed on "
+                "a copy darkened by a fixed RGB offset (R -34.8, G -32.5, B -29.6)."
             ):
                 from src.stability import reimaged
                 field_image = reimaged(load_image(image_bytes))
@@ -411,11 +411,19 @@ else:
         st.components.v1.html(html, height=RESULT_FRAME_HEIGHT, scrolling=True)
         with st.expander("Command log and lighting-check detail", expanded=False):
             if lighting is not None:
+                st.caption(
+                    "Simulated lighting-perturbation check: an input-sensitivity diagnostic, "
+                    "not a second capture. The same fields are recomputed on a copy of this "
+                    "image with a fixed RGB offset subtracted (R -34.8, G -32.5, B -29.6: the "
+                    "median darkening between real re-imagings of ten LumenStone V1 sections). "
+                    "On validation data it discarded 4 of 5 correct confident calls while "
+                    "catching 5 of 8 wrong ones (reports/LIGHTING-CHECK-2026-09-30.md)."
+                )
                 imaged_col, shifted_col = st.columns(2)
                 imaged_col.image(lighting["image"], caption=f"As imaged: {lighting['as_imaged']}",
                                  use_container_width=True)
                 shifted_col.image(lighting["shifted_image"],
-                                  caption=f"After the re-imaging shift: {lighting['after_shift']}",
+                                  caption=f"Simulated darker copy (fixed RGB offset): {lighting['after_shift']}",
                                   use_container_width=True)
             if command is None:
                 st.write(f"Simulated plant reset: regrind_enabled = "

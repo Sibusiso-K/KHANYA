@@ -81,7 +81,8 @@ request for manual verification.
 **Say this, not the old line:** *"repairing particle topology did not make the
 system more accurate. On the 12 held-out S2 sections, the raw pipeline made
 confident errors, two of them unsafe; with repair, and with the rule that it
-will not advise on fewer than nine payload particles, every one became a request
+will not advise on fewer than nine payload particles (a provisional operating floor,
+not a statistical bound), every one became a request
 for a human to look. We saw none left, which on 12 sections is an observation,
 not a guarantee."* That is the refusal thesis, measured, on two datasets.
 
