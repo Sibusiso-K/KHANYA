@@ -35,8 +35,10 @@ def test_quick_inference_uses_six_field_predictor_and_records_measured_scope(tmp
     monkeypatch.setattr(api, "model", object())
     monkeypatch.setattr(api, "jobs", {"job": {"id": "job", "status": "queued"}})
     calls = []
-    def predict(model, image, device):
+    def predict(model, image, device, progress_callback=None):
         calls.append((model, image.size, device))
+        progress_callback(1,6,None,(0,0,512,512),.91)
+        assert api.jobs["job"]["progress"]["completed"] == 1
         labels = np.zeros((1026, 1540), dtype=np.int64)
         mosaic = Image.new("RGB", (1540, 1026), (190, 130, 80))
         return labels, .91, mosaic, [(0, 0, 512, 512)] * 6

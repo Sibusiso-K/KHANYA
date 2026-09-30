@@ -334,7 +334,7 @@ class InferenceRequest(BaseModel):
 
 def run_inference(jid,sid,mode):
     global model
-    workspace_jobs()[jid]["status"]="running"
+    workspace_jobs()[jid].update(status="running",progress={"stage":"preparing"})
     try:
         import torch
         import numpy as np
@@ -362,15 +362,20 @@ def run_inference(jid,sid,mode):
         coverage = None
         if mode == "field":
             field_count, coverage = field_coverage(image.width, image.height)
+        def field_progress(completed,total,_labels,box,_confidence):
+            workspace_jobs()[jid]["progress"]={"stage":"segmenting","completed":completed,"total":total,
+                                              "box":list(box),"image_size":[image.width,image.height]}
+        workspace_jobs()[jid]["progress"]={"stage":"segmenting","completed":0,"total":field_count or 0}
         with torch.inference_mode():
             if mode=="field":
-                labels, confidence, mosaic_image, _boxes = multi_field_predict(model, image, "cpu")
+                labels, confidence, mosaic_image, _boxes = multi_field_predict(model, image, "cpu",progress_callback=field_progress)
                 # The prediction is a mosaic of actual fields, not a full-section mask.
                 # Keep all stored layers aligned and preserve the full-source image at
                 # /api/samples/{id}/image?layer=original.
                 image = mosaic_image
             else:
-                labels,confidence=sliding_window_predict(model,image,"cpu")
+                labels,confidence=sliding_window_predict(model,image,"cpu",progress_callback=field_progress)
+        workspace_jobs()[jid]["progress"]={"stage":"measuring"}
         measured=modal.analyse(labels,CLASSES,refine=True)
         rec = advisor.confidence_gate(advisor.advise(measured, float(confidence)), float(confidence))
         action, reason = rec.action, rec.reason
@@ -402,6 +407,7 @@ def run_inference(jid,sid,mode):
         for layer in ("raw","mask","overlay"):
             r[layer+"_url"]=f"/api/samples/{sid}/image?layer={layer}&result_id={rid}"
         if cloud.identity.get():
+            workspace_jobs()[jid]["progress"]={"stage":"saving"}
             cloud.save_result(r, directory)
         (directory/"result.json").write_text(json.dumps(r,indent=2))
         workspace_results()[rid]=r
