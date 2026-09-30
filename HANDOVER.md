@@ -3865,3 +3865,11 @@ Latest backend continuation: reports/LOCAL-RECORDS-HANDOVER-2026-09-30.md (versi
 
 ---
 
+## 2026-09-30 — Sibusiso (via Codex) — progressive scan presentation
+
+**Did:** Replaced the deprecated startup hook with a FastAPI lifespan warm-up and completed the running scan presentation: field k of 6, real provisional phase bars/confidence from the API, and no-final-advisory disclosure while inference is active. Existing completion behavior remains unchanged.
+
+**Verified:** API focused tests 7 passed and production build passed. Existing Playwright grain/mobile tests passed; the scan test was adjusted to retain its measured `2 / 6 fields classified` assertion alongside the clearer field label and is being rerun.
+
+---
+

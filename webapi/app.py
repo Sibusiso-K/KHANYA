@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse, Response, JSONResponse
 from webapi import cloud
 import contextvars
 import ipaddress
+from contextlib import asynccontextmanager
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 from PIL import Image
@@ -42,7 +43,12 @@ model = None
 model_ready = False
 plants: dict[str, float] = {}
 plant_sessions: set[str] = set()
-app = FastAPI(title="REEFPRINT local research API", version="0.1.0")
+@asynccontextmanager
+async def lifespan(_app):
+    threading.Thread(target=_warm_model, name="khanya-model-warmup", daemon=True).start()
+    yield
+
+app = FastAPI(title="REEFPRINT local research API", version="0.1.0", lifespan=lifespan)
 CHECKPOINT_METRICS_PATH = ROOT / "reports" / "checkpoint-metrics.json"
 CHECKPOINT_RECORD = json.loads(CHECKPOINT_METRICS_PATH.read_text(encoding="utf-8"))
 CHECKPOINT_METRICS = CHECKPOINT_RECORD["checkpoints"]
@@ -75,10 +81,6 @@ def _warm_model():
         model_ready = True
     except Exception as exc:
         logging.getLogger("uvicorn.error").warning("KHANYA warm-up failed: %s", exc)
-
-@app.on_event("startup")
-async def warm_model_on_startup():
-    threading.Thread(target=_warm_model, name="khanya-model-warmup", daemon=True).start()
 
 def tenant():
     return cloud.state(STORE, {sid: path for sid, path in samples.items() if sid in verified_hashes})
