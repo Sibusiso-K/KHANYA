@@ -123,7 +123,7 @@ git worktree add --detach ~/Desktop/REEFPRINT origin/reefprint
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt pytest
+python -m pip install -r requirements-lock.txt pytest   # exact tested versions
 ```
 
 Datasets are gitignored (`data/raw/`) — see `DATA-SOURCES.md` for download
@@ -142,11 +142,42 @@ streamlit run dashboard/app.py                       # offline demo
 The test suite runs without any dataset — it covers the decision layer, the
 conformal calibration, the liberation measurement (including the sparse-upload
 crash fixed in entry 23) and the archive parsing on the REEFPRINT seam. CI runs
-it on every push, and separately asserts that `dashboard/` contains no network
+it on every push, and `tests/test_offline.py` asserts that nothing the dashboard serves (code, templates, styles) contains a network
 references, because "runs offline" is a claim made on stage with the wifi off.
 
 `KHANYA_SUBSET=S1` (or `S2`, `S3`) selects the dataset; unset defaults to S2,
 which reproduces every number in the report exactly.
+
+### Setting up a presenting laptop
+
+A fresh clone runs the tests but cannot run the demo: the model, the data and
+the OPC UA transport all live outside Git. `python -m src.preflight` says
+exactly which of these is missing, and prints `READY TO PRESENT` only when
+all of them are right.
+
+1. **Exact versions.** Install `requirements-lock.txt`, not `requirements.txt`.
+   The lock holds the versions every reported number was produced with
+   (Python 3.13). CI installs the same file.
+2. **The model checkpoint.** It is not in Git and is not published: it was
+   trained on LumenStone, whose terms allow research use with citation but say
+   nothing about redistribution (`reports/REDISTRIBUTION-CONTRADICTION-2026-09-15.md`).
+   Get `best.pt` from a team member and place it at
+   `checkpoints/lumenstone_s2_patches/best.pt`. It must be sha256
+   `de7135a96541a46dc0981a991cb954186c7cd669ea1c1b33914d1929ae9b1357` (168,313,587
+   bytes); the preflight refuses anything else. The 29 September Kaggle retrain
+   (`fb78727d…`, 0.4543 mean IoU) is weaker and must not be placed there.
+3. **The data.** The 12 held-out S2 sections under `data/raw/lumenstone/S2_v2/`
+   (see `DATA-SOURCES.md`).
+4. **REEFPRINT at the pinned commit.** The OPC UA transport is REEFPRINT code,
+   imported unchanged (ADR-0003):
+   ```bash
+   git worktree add --detach ~/Desktop/REEFPRINT 29254718be5d76b62fabfcdd885f7ce0fe09bbc9
+   ```
+   or set `REEFPRINT_SRC` to a checkout's `src/`. The preflight fingerprints
+   `reefprint/integrate/*.py` and refuses code that differs from that commit.
+5. **Run `python -m src.preflight`, then once with the wifi off.** It also
+   times one live pass on this machine, so the number said on stage is this
+   laptop's number.
 
 ## Rules we hold ourselves to
 
