@@ -57,7 +57,7 @@
       "reference": "Marginal - verify before acting",
       "original": "Continue at current setpoint",
       "reimaged": "Marginal - verify before acting",
-      "gated": "No recommendation - advice changes under a lighting shift",
+      "gated": "No recommendation - advice changes under a simulated lighting shift",
       "held_by_check": true,
       "severity_before": "unsafe",
       "severity_after": "flagged"
@@ -79,7 +79,7 @@
       "reference": "Marginal - verify before acting",
       "original": "Continue at current setpoint",
       "reimaged": "Grind finer",
-      "gated": "No recommendation - advice changes under a lighting shift",
+      "gated": "No recommendation - advice changes under a simulated lighting shift",
       "held_by_check": true,
       "severity_before": "unsafe",
       "severity_after": "flagged"
@@ -90,7 +90,7 @@
       "reference": "Grind finer",
       "original": "Grind finer",
       "reimaged": "Marginal - verify before acting",
-      "gated": "No recommendation - advice changes under a lighting shift",
+      "gated": "No recommendation - advice changes under a simulated lighting shift",
       "held_by_check": true,
       "severity_before": "agrees",
       "severity_after": "flagged"
@@ -123,7 +123,7 @@
       "reference": "Marginal - verify before acting",
       "original": "Continue at current setpoint",
       "reimaged": "Grind finer",
-      "gated": "No recommendation - advice changes under a lighting shift",
+      "gated": "No recommendation - advice changes under a simulated lighting shift",
       "held_by_check": true,
       "severity_before": "unsafe",
       "severity_after": "flagged"
@@ -189,7 +189,7 @@
       "reference": "Marginal - verify before acting",
       "original": "Continue at current setpoint",
       "reimaged": "No recommendation - too few payload particles",
-      "gated": "No recommendation - advice changes under a lighting shift",
+      "gated": "No recommendation - advice changes under a simulated lighting shift",
       "held_by_check": true,
       "severity_before": "unsafe",
       "severity_after": "flagged"
@@ -244,7 +244,7 @@
       "reference": "Marginal - verify before acting",
       "original": "Continue at current setpoint",
       "reimaged": "Marginal - verify before acting",
-      "gated": "No recommendation - advice changes under a lighting shift",
+      "gated": "No recommendation - advice changes under a simulated lighting shift",
       "held_by_check": true,
       "severity_before": "unsafe",
       "severity_after": "flagged"
@@ -288,7 +288,7 @@
       "reference": "Grind finer",
       "original": "Grind finer",
       "reimaged": "Flag for manual review - low payload signal",
-      "gated": "No recommendation - advice changes under a lighting shift",
+      "gated": "No recommendation - advice changes under a simulated lighting shift",
       "held_by_check": true,
       "severity_before": "agrees",
       "severity_after": "flagged"
@@ -343,7 +343,7 @@
       "reference": "Grind finer",
       "original": "Grind finer",
       "reimaged": "Flag for manual review - low payload signal",
-      "gated": "No recommendation - advice changes under a lighting shift",
+      "gated": "No recommendation - advice changes under a simulated lighting shift",
       "held_by_check": true,
       "severity_before": "agrees",
       "severity_after": "flagged"
@@ -420,7 +420,7 @@
       "reference": "Grind finer",
       "original": "Grind finer",
       "reimaged": "Flag for manual review - low payload signal",
-      "gated": "No recommendation - advice changes under a lighting shift",
+      "gated": "No recommendation - advice changes under a simulated lighting shift",
       "held_by_check": true,
       "severity_before": "agrees",
       "severity_after": "flagged"
