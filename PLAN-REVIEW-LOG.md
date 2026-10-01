@@ -35,3 +35,46 @@ VERDICT: REVISE
 
 ### Claude's response
 Accepted all 8. Fixed the kinetics path; slide 11 now says area-share proxy, hypothetical curve and 'calibrate on this ore first'; the refusal result is attributed to historical checkpoint de7135a9 as policy-defined unsafe disagreements; triage savings are made conditional on a prospective pilot, with a 2017 list price; FloatStar wording is corrected (it stabilises levels and flows); the ensemble is moved to future tense with a ROADMAP tag; 'today's basket price' becomes Valterra's reported H1 2026 price. Added slide 15 (measured spectra) and re-checked it. Deck v3.
+
+## Round 2 — Codex (gpt-6-astra, medium)
+
+Remaining material issues:
+
+1. **Spectral contrast is presented as demonstrated identification.** [build_deck.py:831](/C:/Users/USER/Desktop/REEFPRINT/presentation/deck-src/build_deck.py:831), line 859, and `script_notes.json:19` claim narrow bands separate minerals that RGB confuses and that “Blue light finds platinum.” The **18.5-point** and **0.9-point** differences are correct, but reference spectra alone establish neither RGB failure nor reliable identification on real sections.  
+   **Fix:** Say “Reference spectra suggest candidate bands; discrimination and improvement over RGB remain untested.”
+
+2. **The proposed instrument is multispectral, not hyperspectral.** [build_deck.py:830](/C:/Users/USER/Desktop/REEFPRINT/presentation/deck-src/build_deck.py:830) and `script_notes.json:19` call the proposed 6–8 selected LED bands hyperspectral. Hyperspectral imaging samples many narrow, contiguous bands; selected discrete bands constitute multispectral imaging. [NASA terminology](https://csdap.earthdata.nasa.gov/).  
+   **Fix:** Rename the proposed build “multispectral reflectance microscopy.”
+
+3. **Both scientific curves use misleading horizontal spacing.** [build_deck.py:834](/C:/Users/USER/Desktop/REEFPRINT/presentation/deck-src/build_deck.py:834) supplies uneven wavelengths to a category line chart: 520–600 nm occupies the same distance as 680–700 nm. Lines 682–685 likewise give 15 seconds and 13 minutes equal horizontal widths, distorting kinetic slopes.  
+   **Fix:** Use XY charts with numeric wavelength/time coordinates and straight segments between tabulated points.
+
+4. **Policy consistency is still called measured safety.** [build_deck.py:570](/C:/Users/USER/Desktop/REEFPRINT/presentation/deck-src/build_deck.py:570) says “We also measure whether the answer is safe to act on.” The accuracy report explicitly limits the evaluation to consistency with reference rules, not metallurgical correctness (`ACCURACY-REPORT.md:169`).  
+   **Fix:** Replace with “We check evidence sufficiency and agreement with a reference advisory policy.”
+
+5. **Unvalidated laboratory substitution remains elsewhere.** [build_deck.py:606](/C:/Users/USER/Desktop/REEFPRINT/presentation/deck-src/build_deck.py:606), line 705, and `PRESENTER-SCRIPT.md:91` still say only uncertain samples go to QEMSCAN, despite the revised value slide correctly making that substitution conditional on validation.  
+   **Fix:** State that selective referral is a proposed workflow requiring prospective validation and reference checks of confident answers.
+
+6. **The Q&A retains the rejected liberation-equivalence claim.** [PRESENTER-SCRIPT.md:96](/C:/Users/USER/Desktop/REEFPRINT/presentation/PRESENTER-SCRIPT.md:96) still says “our grains drop straight into your liberation classes,” contradicting the revised slide’s explicit unvalidated area-share proxy.  
+   **Fix:** Say “We reuse the numerical boundaries with an unvalidated area-share proxy for free-surface exposure.”
+
+7. **Polarisation is described as a current input.** [PRESENTER-SCRIPT.md:67](/C:/Users/USER/Desktop/REEFPRINT/presentation/PRESENTER-SCRIPT.md:67) says “We read reflected colour, brightness and polarisation,” while the generator places polarimetry and the rotating-polariser build on the roadmap.  
+   **Fix:** Say “Today we analyse reflected-light RGB images; polarisation channels are proposed.”
+
+8. **The lab pilot promises a recovery-gain measurement.** [script_notes.json:11](/C:/Users/USER/Desktop/REEFPRINT/presentation/deck-src/script_notes.json:11), repeated at `PRESENTER-SCRIPT.md:42`, follows the illustrative recovery gain with “The pilot will.” The stated initial pilot is lab shadow mode; the flotation trial comes later.  
+   **Fix:** Say “The lab pilot will assess accuracy and turnaround; recovery effects require a later controlled flotation trial.”
+
+VERDICT: REVISE
+
+### Claude's response (MAX_ROUNDS reached; fixes applied, not re-reviewed)
+Accepted all 8:
+1. The spectral slide says reference spectra *suggest* bands, and discrimination/gain over RGB is untested.
+2. The proposed instrument is renamed multispectral.
+3. Both curves are now XY charts with numeric wavelength and time axes.
+4. The slide 9 headline says 'check whether the evidence is sufficient'.
+5. QEMSCAN referral is framed as a workflow to validate (slides 9 and 11, script, Q&A).
+6. The 'drop straight into your classes' Q&A line was already replaced before this round.
+7. The Q&A says today's input is RGB, with polarisation proposed.
+8. The script says the lab pilot measures accuracy and turnaround, and recovery needs a later flotation trial.
+
+Deck v4. Codex has not seen the v4 text: deadlock rule, the human signs off.

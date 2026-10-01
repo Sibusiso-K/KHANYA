@@ -12,7 +12,7 @@ from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
-from pptx.chart.data import CategoryChartData
+from pptx.chart.data import CategoryChartData, XyChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION, XL_LABEL_POSITION
 from pptx.oxml.ns import qn
 
@@ -567,7 +567,7 @@ notes(s, "SCRIPT_8")
 s = new()
 brand(s); pagenum(s, 9)
 eyebrow(s, 0.6, 0.85, "Competition and what sets us apart")
-headline(s, "Everyone measures minerals. We also measure\nwhether the answer is safe to act on.", y=1.15, size=30)
+headline(s, "Everyone measures minerals. We also check\nwhether the evidence is sufficient to act on.", y=1.15, size=30)
 cols = ["", "Mineral phases", "Liberation", "Time to answer", "Where it runs", "Refuses with a reason", "Drives a setpoint"]
 rowsd = [("SEM automated mineralogy\nQEMSCAN · MLA · TIMA · Mineralogic", "✓", "✓", "days – weeks", "central lab", "—", "—"),
          ("XRD", "✓ bulk", "—", "hours – days", "lab", "—", "—"),
@@ -603,7 +603,7 @@ for r in range(len(rowsd) + 1):
         cell.fill.solid()
         cell.fill.fore_color.rgb = NAVY if r == 0 else (PYRR if r == len(rowsd) else (WHITE if r % 2 else PAPER))
 text(s, 0.6, 6.45, 12.1, 0.55, [[("Complementary, not a replacement: ", {"font": BODYB, "bold": True}),
-                                ("REEFPRINT routes only the uncertain samples to QEMSCAN, and hands checked setpoints to the controllers plants already run.", {})]],
+                                ("REEFPRINT proposes referring uncertain samples to QEMSCAN — a workflow to validate prospectively — and handing checked setpoints to the controllers plants already run.", {})]],
      size=13)
 source(s, "Capability summary from public product descriptions; “—” means not that tool's role. *SWIR hyperspectral identifies minerals by vibrational absorption features, which opaque phases such as chromite lack.", y=7.0)
 pic(s, G["lens_a"], 11.95, 0.7, w=0.8, name="!!lens")
@@ -678,31 +678,32 @@ pl.data_labels.number_format = '0.0'; pl.data_labels.number_format_is_linked = F
 pl.data_labels.position = XL_LABEL_POSITION.OUTSIDE_END; pl.data_labels.font.size = Pt(9)
 ch.value_axis.visible = False; ch.value_axis.has_major_gridlines = False
 ch.category_axis.tick_labels.font.size = Pt(8.5); ch.category_axis.format.line.color.rgb = LINE
-cd2 = CategoryChartData()
-tkeys = ["0.25", "0.5", "1", "3", "7", "20"]
-cd2.categories = ["15 s", "30 s", "1 min", "3 min", "7 min", "20 min"]
-cd2.add_series("Predicted cumulative recovery (%)", tuple(round(KIN["R"][k] * 100, 1) for k in tkeys))
-gf = s.shapes.add_chart(XL_CHART_TYPE.LINE_MARKERS, Inches(4.95), Inches(1.95), Inches(4.3), Inches(3.1), cd2)
+cd2 = XyChartData()
+ser2 = cd2.add_series("Hypothetical cumulative recovery (%)")
+for tk in ["0.25", "0.5", "1", "3", "7", "20"]:
+    ser2.add_data_point(float(tk), round(KIN["R"][tk] * 100, 1))
+gf = s.shapes.add_chart(XL_CHART_TYPE.XY_SCATTER_LINES, Inches(4.95), Inches(1.95), Inches(4.3), Inches(3.1), cd2)
 ch = gf.chart
-style_chart(ch, [PYRR], legend=False, size=9)
-ch.plots[0].series[0].format.line.color.rgb = PYRR
-ch.plots[0].series[0].format.line.width = Pt(2.5)
-ch.plots[0].series[0].smooth = False
+ch.has_legend = False
+ch.font.name = BODY; ch.font.size = Pt(9); ch.font.color.rgb = INK
+sr = ch.plots[0].series[0]
+sr.format.line.color.rgb = PYRR; sr.format.line.width = Pt(2.5); sr.smooth = False
+sr.marker.format.fill.solid(); sr.marker.format.fill.fore_color.rgb = PYRR
 ch.has_title = True
-ch.chart_title.text_frame.text = "2 · Hypothetical curve with the paper's borrowed rates"
+ch.chart_title.text_frame.text = "2 · Hypothetical curve, borrowed rates (min)"
 ch.chart_title.text_frame.paragraphs[0].runs[0].font.size = Pt(10.5)
 ch.chart_title.text_frame.paragraphs[0].runs[0].font.bold = True
-pl = ch.plots[0]; pl.has_data_labels = True
-pl.data_labels.number_format = '0"%"'; pl.data_labels.number_format_is_linked = False
-pl.data_labels.position = XL_LABEL_POSITION.ABOVE; pl.data_labels.font.size = Pt(9)
-va = ch.value_axis; va.maximum_scale = 100; va.minimum_scale = 0; va.visible = False; va.has_major_gridlines = False
-ch.category_axis.tick_labels.font.size = Pt(9); ch.category_axis.format.line.color.rgb = LINE
+va = ch.value_axis; va.maximum_scale = 100; va.minimum_scale = 0; va.has_major_gridlines = True
+va.major_gridlines.format.line.color.rgb = LINE; va.tick_labels.font.size = Pt(8.5)
+xa = ch.category_axis; xa.minimum_scale = 0; xa.maximum_scale = 20; xa.major_unit = 5
+xa.tick_labels.font.size = Pt(8.5); xa.format.line.color.rgb = LINE; xa.has_major_gridlines = False
+text(s, 5.1, 5.02, 4.1, 0.3, "  ·  ".join(f"{lbl} {KIN['R'][k]*100:.0f}%" for lbl, k in [("15 s", "0.25"), ("30 s", "0.5"), ("1 min", "1"), ("3 min", "3"), ("20 min", "20")]), size=9, color=MUTED)
 box(s, 9.45, 1.95, 3.3, 4.6, fill=NAVY, radius=0.14)
 text(s, 9.7, 2.1, 2.9, 0.3, "3 · HYPOTHESES FOR THE NEXT TEST", size=10, color=RGBColor(0xF2, 0x9A, 0x6A), font=BODYB, bold=True)
 recs = [[("Add 15 s and 30 s concentrates. ", {"font": BODYB, "bold": True, "color": WHITE}),
          (f"Under the borrowed rates ≈{KIN['R']['1']*100:.0f}% of payload floats in the first minute — the interval the paper could not resolve. Calibrate on this ore first.", {"color": RGBColor(0xC9, 0xD5, 0xE3)})],
         [("Screen every timed concentrate optically. ", {"font": BODYB, "bold": True, "color": WHITE}),
-         ("The paper's stated future work is mineralogy of the timed concentrates; send only uncertain ones to QEMSCAN.", {"color": RGBColor(0xC9, 0xD5, 0xE3)})],
+         ("The paper's stated future work is mineralogy of the timed concentrates; refer uncertain ones to QEMSCAN (workflow to be validated).", {"color": RGBColor(0xC9, 0xD5, 0xE3)})],
         [("Regrind only if locked is material. ", {"font": BODYB, "bold": True, "color": WHITE}),
          (f"Here {KIN['share']['LOCK']*100:.1f}% of payload area is locked.", {"color": RGBColor(0xC9, 0xD5, 0xE3)})]]
 text(s, 9.7, 2.5, 2.9, 4.0, recs, size=10.5, spacing=9, line=1.05)
@@ -827,41 +828,44 @@ notes(s, "SCRIPT_13")
 SPEC = json.load(open(os.path.join(D, "spectra.json"), encoding="utf-8"))
 s = new()
 brand(s); pagenum(s, 0)
-eyebrow(s, 0.6, 0.85, "Hyperspectral, at the scale platinum lives")
-headline(s, "A few colours of light separate platinum minerals\nthat an ordinary camera blurs together.", y=1.15, size=28)
+eyebrow(s, 0.6, 0.85, "Spectral imaging, at the scale platinum lives")
+headline(s, "Reference spectra suggest a few narrow colours of\nlight could separate platinum minerals.", y=1.15, size=28)
 order = [("sperrylite", "Sperrylite PtAs₂", COPPER), ("cooperite", "Cooperite PtS", MAG), ("pentlandite", "Pentlandite", PENT),
          ("pyrrhotite", "Pyrrhotite", PYRR), ("chalcopyrite", "Chalcopyrite", CHALC), ("magnetite", "Magnetite", MUTED), ("chromite", "Chromite", INK)]
-wls = [400, 440, 480, 520, 600, 640, 680, 700]
-cd = CategoryChartData()
-cd.categories = [str(w) for w in wls]
+cd = XyChartData()
 for key, label, col in order:
-    cd.add_series(label, tuple(round(SPEC["spectra"][key][str(w)], 1) for w in wls))
-gf = s.shapes.add_chart(XL_CHART_TYPE.LINE, Inches(0.5), Inches(2.25), Inches(7.6), Inches(4.45), cd)
+    ser = cd.add_series(label)
+    for w in range(400, 701, 20):
+        if key == "cooperite" and w == 560:
+            continue  # printed R2 at 560 nm is out of sequence in the source; point omitted
+        ser.add_data_point(w, round(SPEC["spectra"][key][str(w)], 1))
+gf = s.shapes.add_chart(XL_CHART_TYPE.XY_SCATTER_LINES_NO_MARKERS, Inches(0.5), Inches(2.25), Inches(7.6), Inches(4.45), cd)
 ch = gf.chart
-style_chart(ch, [c for _, _, c in order], legend=True, size=9)
-ch.legend.position = XL_LEGEND_POSITION.RIGHT
+ch.font.name = BODY; ch.font.size = Pt(9); ch.font.color.rgb = INK
+ch.has_legend = True; ch.legend.position = XL_LEGEND_POSITION.RIGHT; ch.legend.include_in_layout = False; ch.legend.font.size = Pt(9)
 for ser, (_, _, col) in zip(ch.plots[0].series, order):
     ser.format.line.color.rgb = col
     ser.format.line.width = Pt(3 if ser.name.startswith(("Sperrylite", "Cooperite")) else 1.75)
-    ser.smooth = True
+    ser.smooth = False
 ch.has_title = True
-ch.chart_title.text_frame.text = "Reflectance in air (%) vs wavelength (nm) — measured spectra"
+ch.chart_title.text_frame.text = "Reference reflectance in air (%) vs wavelength (nm)"
 ch.chart_title.text_frame.paragraphs[0].runs[0].font.size = Pt(11)
 ch.chart_title.text_frame.paragraphs[0].runs[0].font.bold = True
 va = ch.value_axis; va.minimum_scale = 0; va.maximum_scale = 60
 va.has_major_gridlines = True; va.major_gridlines.format.line.color.rgb = LINE; va.tick_labels.font.size = Pt(9)
-ch.category_axis.tick_labels.font.size = Pt(9); ch.category_axis.format.line.color.rgb = LINE
+xa = ch.category_axis; xa.minimum_scale = 400; xa.maximum_scale = 700; xa.major_unit = 50
+xa.tick_labels.font.size = Pt(9); xa.format.line.color.rgb = LINE; xa.has_major_gridlines = False
 F = SPEC["features"]
 gap420 = F["sperrylite"]["R420"] - F["pentlandite"]["R420"]
 gap640 = abs(F["sperrylite"]["R640"] - F["pentlandite"]["R640"])
 x0 = 8.4
 text(s, x0, 2.3, 4.3, 0.6, f"{gap420:.1f} pts", size=36, font=HEAD, bold=True, color=COPPER)
-text(s, x0, 2.95, 4.3, 0.6, f"gap between sperrylite (Pt) and pentlandite at 420 nm — but only {gap640:.1f} pts at 640 nm. Blue light finds platinum.", size=11.5, color=MUTED, line=1.05)
+text(s, x0, 2.95, 4.3, 0.6, f"gap between sperrylite (Pt) and pentlandite at 420 nm — only {gap640:.1f} pts at 640 nm. Discrimination on real sections, and any gain over RGB, are still untested.", size=11.5, color=MUTED, line=1.05)
 tag(s, x0, 3.65, "SOURCE")
 text(s, x0, 4.05, 4.3, 0.6, "Why not core-scale SWIR?", size=13, font=BODYB, bold=True)
 text(s, x0, 4.38, 4.3, 1.0, "PGM grains are microns across and opaque; SWIR identifies minerals by vibrational absorption that opaque sulphides and chromite lack. The spectrum must be read through the microscope.", size=10.5, color=MUTED, line=1.05)
 text(s, x0, 5.4, 4.3, 0.35, "Our build", size=13, font=BODYB, bold=True)
-text(s, x0, 5.72, 4.3, 0.9, "6–8 narrow LED bands + a rotating polariser on the microscope, labelled pixel-for-pixel by QEMSCAN maps of the same polished sections.", size=10.5, color=MUTED, line=1.05)
+text(s, x0, 5.72, 4.3, 0.9, "Multispectral reflectance microscopy: 6–8 narrow LED bands + a rotating polariser, labelled pixel-for-pixel by QEMSCAN maps of the same polished sections.", size=10.5, color=MUTED, line=1.05)
 tag(s, x0, 6.62, "ROADMAP")
 source(s, "Spectra: Handbook of Mineralogy (Mineralogical Society of America), reflectance in air, mean of R1/R2 where bireflectant, from the IMA/COM Quantitative Data File. Two printed typos handled and logged in spectra.json.", y=6.98)
 pic(s, G["lens_a"], 11.95, 0.7, w=0.8, name="!!lens")
@@ -876,7 +880,7 @@ headline(s, "From a working demo to every concentrator.", y=1.15, size=32)
 phases = [("Today", "Oct 2026", "Working app · 3 phases · accuracy report · gated simulator · offline", PYRR),
           ("0–3 months", "Lab shadow pilot", "R210k · QEMSCAN-labelled sections from a partner lab · measured turnaround", CHALC),
           ("3–9 months", "Advisory pilot", "Specialist ensemble · UG2 + chromite domain · one concentrator, metallurgist approves", PENT),
-          ("9–18 months", "Closed loop", "Flotation trial with plant control · QEMSCAN-labelled multispectral / hyperspectral reflectance + polarisation microscopy", MAG),
+          ("9–18 months", "Closed loop", "Flotation trial with plant control · QEMSCAN-labelled multispectral reflectance + polarisation microscopy", MAG),
           ("18 months +", "Product", "Multi-site service across PGM, chrome, base metals and iron ore", INK)]
 ln = s.shapes.add_connector(1, Inches(0.8), Inches(2.62), Inches(12.6), Inches(2.62))
 ln.line.color.rgb = LINE
@@ -989,6 +993,6 @@ if os.path.exists(script_path):
         if key in SC:
             tf.text = SC[key]
 
-name = os.path.join(OUT, "REEFPRINT-KHANYA-Team-Sonar-pitch-v3.pptx")
+name = os.path.join(OUT, "REEFPRINT-KHANYA-Team-Sonar-pitch-v4.pptx")
 prs.save(name)
 print("saved", name, len(prs.slides), "slides")
