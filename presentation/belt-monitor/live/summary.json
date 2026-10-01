@@ -1219,7 +1219,7 @@
    },
    "all pyrrhotite (baseline)": {
     "pn_iou": 0.0,
-    "pn_precision": NaN,
+    "pn_precision": null,
     "pn_recall": 0.0
    }
   },

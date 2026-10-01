@@ -91,6 +91,7 @@ Deck v7 slide 13 ("31 of 33 minerals beat the average guess") is literally true 
 - **Server security checks passed:** traversal and source files 404, bad host or origin 403, no token 401, oversize 413.
 - **Camera.** Quality gates only, ending in a refusal.
 - **Bug found by the browser test, not by the syntax check:** the `S.plant` store was not initialised, so boot failed. It is fixed.
+- **Second bug found the same way:** the pentlandite baseline's undefined precision was written as `NaN`, which is invalid JSON, so the whole app failed to load. `build_live.py` now converts NaN and Infinity to null, writes with `allow_nan=False`, and every JSON file under `live/` is validated. Lesson: the end-to-end browser check after every rebuild is a required step, not optional.
 
 ## 2026-10-01 (evening) — Refinement for the Top-5 round: v5 hyperspectral, moving-belt simulation, cheap cameras, Belt Monitor restyle
 

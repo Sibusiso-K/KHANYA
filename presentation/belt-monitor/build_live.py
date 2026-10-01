@@ -144,7 +144,18 @@ summary = {"built": "2026-10-01", "hashes_sha256": hashes, "showcase": show, "ev
                       "actions": {"Cu rec": "Send the sample to the microscope; review collector dose", "Mo rec": "Notify the moly circuit",
                                   "Lime cons": "Review lime pre-dosing", "WI": "Review feed rate with the control room"},
                       "ood": "pass <= calibration p95 < borderline <= p99 < refused"}}
-json.dump(summary, open(os.path.join(LIVE, "summary.json"), "w"), indent=1)
+def _clean(o):
+    """JSON has no NaN/Infinity: undefined rates (e.g. precision of a class never predicted) become null."""
+    if isinstance(o, float) and (o != o or o in (float("inf"), float("-inf"))):
+        return None
+    if isinstance(o, dict):
+        return {k: _clean(v) for k, v in o.items()}
+    if isinstance(o, list):
+        return [_clean(v) for v in o]
+    return o
+
+
+json.dump(_clean(summary), open(os.path.join(LIVE, "summary.json"), "w"), indent=1, allow_nan=False)
 size = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(LIVE) for f in fs)
 print("live/ built:", {k: len(v) for k, v in show.items()}, "showcase samples;", round(size / 1e6, 1), "MB total")
 print("decision targets (beat strongest baseline):", {rec: [k for k, v in e.items() if v["used_in_decision"]] for rec, e in evidence.items()})
