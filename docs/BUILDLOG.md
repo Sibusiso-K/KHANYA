@@ -22,6 +22,57 @@ it is a press release.
 
 ---
 
+## 2026-10-01 (evening) — Refinement for the Top-5 round: v5 hyperspectral, moving-belt simulation, cheap cameras, Belt Monitor restyle
+
+**Why.** After the v6 pitch the judges asked us to refine. The team asked whether to keep the belt; what else is on the
+market; who decides what; where the system sits; and what cheaper images could do. Plan and reasoning:
+`docs/15-refinement-top5-strategy.md`. The verdict: keep the belt as layer 1 of one system (belt → microscope → QEMSCAN
+teacher → one control-room screen), not a pivot.
+
+**v5 training (Kaggle `lethabomh14/reefprint-hidsag-v5-belt`, 799 s, all four HIDSAG records)**
+- **What changed.** Spectra are resampled onto a common grid, with brightness-normalised means, derivatives,
+  continuum-removed band depths and bag-of-spectra k-means fractions (fitted on training folds only).
+  PLS / ridge / extra-trees are **chosen per target by inner CV**. This removes the v3 "best of two on the same OOF
+  score" optimism.
+- **Three gates against a v3-style PLS in the same folds.**
+- **GEOMET.** Cu recovery R² 0.42 [0.31, 0.51] — **better** than v3-style 0.26, all three gates. Mo recovery 0.45, Bond
+  work index 0.48 and lime 0.32 have higher point estimates, but there is no significant difference against v3-style.
+  pH (0.33) no longer beats the average guess under the gates, so it is dropped from the belt screen.
+- **MINERAL1.** 30 of 33 minerals beat the average guess (grouped by 36 composites); chalcopyrite R² 0.90.
+- **MINERAL2 (n = 20) and GEOCHEM (n = 28) are too small to learn from.** GEOCHEM Ca 0.77 is the standout (carbonate).
+- **Moving-belt `sim_`.** ±15% lighting costs about 0 R² with the new features, against 0.04–0.58 lost by v3-style
+  features. Fewer than ~100 pixels hurts. The combined belt case (100 px, +10% light, 2% noise) costs 0.07–0.20 R².
+- **Blended ore is the open problem.** Median blend R² is −0.08 on MINERAL1. Next run trains on simulated blends.
+
+**Cheap cameras (`sensor_bands.py`, local, mean spectra only).**
+- **VNIR hyperspectral (silicon) alone:** kept ~98–109% of the full VNIR + SWIR skill on the median target, though Cu
+  recovery still gained from SWIR.
+- **6-band LED mono camera:** 65–90%.
+- **RGB:** 53–60%.
+- **Caveats:** talc's 2.31 µm feature is SWIR-only, and this is not PGM ore.
+
+**Bug caught before reporting.** `sensor_bands.py` first failed because the v3 jsonl stores targets as `vars.<name>`;
+fixed by normalising the key. **Not a bug, but recorded:** Playwright full-page screenshots of tall pages captured blank
+mains mid-animation. The real browser renders correctly (checked via computed opacity); viewport screenshots are used
+instead.
+
+**Belt Monitor restyled to match the workbench (`presentation/belt-monitor/`).**
+- **Look.** Public Sans (bundled, OFL), the two-layer brand mark with launch motion, and the masthead, panels,
+  provenance block and copper active tab of the main app.
+- **Themes.** White workbench / Mineral night / Field paper, with tokens copied from `codex/themes-launch`.
+- **Four views.**
+  - Belt: spectrum / absorption features / photo, predictions, and act · verify · conservative default.
+  - Feed mineralogy: MINERAL1/2, GEOCHEM.
+  - Belt robustness: sim tables and the cheap-camera table.
+  - Where it sits: placement and a roles table.
+- **Advice wording follows rule 5.** It shows a conservative default, never "hold the last setpoint". The first dark
+  version is kept as `index-v1-dark.html`.
+
+**Market and facts.** Plotlogic, Scantech/Thermo PGNAA, MineSense, TOMRA, Metso froth cameras, Mintek MillStar /
+FloatStar, NVCL, USGS splib07, the UG2 Cr₂O₃ penalty and talc/CMC are all from web-search summaries and marked
+**[indicative]** in docs/15 until read in full. The USGS ScienceBase download sits behind a browser check, so it is not
+automated; a person downloads it.
+
 ## 2026-10-01 (afternoon) — Hyperspectral belt track on HIDSAG, Belt Monitor, deck v7, first ensemble member
 
 **Why.** The team asked for hyperspectral imaging as the data, decided before grinding, with a place for it on site. The

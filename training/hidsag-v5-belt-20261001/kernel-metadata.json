@@ -1,0 +1,14 @@
+{
+  "id": "lethabomh14/reefprint-hidsag-v5-belt",
+  "title": "reefprint-hidsag-v5-belt",
+  "code_file": "run_v5.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": []
+}

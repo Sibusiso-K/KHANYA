@@ -20,6 +20,7 @@ from the upstream repository in this project's own records · **BLOCKED** do not
 |---|---|---|---|
 | Python 3.12 | PSF-2.0 | OK | |
 | `numpy` | BSD-3-Clause | OK | |
+| Public Sans (font, `@fontsource-variable/public-sans`) | OFL-1.1 | OK | Bundled as `presentation/belt-monitor/fonts/` with its licence file; the workbench already loads it via fontsource. Added to the SBOM 2026-10-01. |
 | `scipy` | BSD-3-Clause | OK | |
 | `scikit-image` | BSD-3-Clause | OK | |
 | `tifffile` | BSD-3-Clause | OK | **Preferred OME-TIFF reader/writer.** See Bio-Formats below. |

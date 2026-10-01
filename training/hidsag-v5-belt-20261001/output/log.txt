@@ -1,0 +1,134 @@
+downloading GEOMET
+downloaded GEOMET 3.26 GB in 87 s
+GEOMET zip members 1316 metadata files 146
+example GEOMET GEOMET/GMET-0001 vars: ['Cu rec', 'Mo rec', 'PH', 'Lime cons', 'WI'] tags: []
+example GEOMET GEOMET/GMET-0002 vars: ['Cu rec', 'Mo rec', 'PH', 'Lime cons', 'WI'] tags: []
+example GEOMET GEOMET/GMET-0003 vars: ['Cu rec', 'Mo rec', 'PH', 'Lime cons', 'WI'] tags: []
+GEOMET samples with both sensors 146 skipped 0
+GEOMET n 146 targets 5 groups none (one per sample)
+GEOMET fold 1/5 done in 8s
+GEOMET fold 2/5 done in 8s
+GEOMET fold 3/5 done in 8s
+GEOMET fold 4/5 done in 8s
+GEOMET fold 5/5 done in 8s
+GEOMET Cu rec                   v3pls R2=0.261  v5 R2=0.422 [0.31,0.51]  vs v3: better (dMAE -0.36, delta -0.13)  belt_combo R2=0.324  v3 bright115 R2=0.141
+GEOMET Lime cons                v3pls R2=0.159  v5 R2=0.317 [0.20,0.44]  vs v3: no significant difference (dMAE -0.0121, delta -0.11)  belt_combo R2=0.133  v3 bright115 R2=0.102
+GEOMET Mo rec                   v3pls R2=0.296  v5 R2=0.451 [0.33,0.55]  vs v3: no significant difference (dMAE -1.96, delta -0.11)  belt_combo R2=0.289  v3 bright115 R2=0.163
+GEOMET PH                       v3pls R2=0.306  v5 R2=0.328 [0.17,0.46]  vs v3: no significant difference (dMAE -0.0145, delta -0.01)  belt_combo R2=0.187  v3 bright115 R2=0.260
+GEOMET WI                       v3pls R2=0.316  v5 R2=0.479 [0.30,0.59]  vs v3: no significant difference (dMAE -0.15, delta -0.08)  belt_combo R2=0.352  v3 bright115 R2=0.275
+downloading MINERAL1
+downloaded MINERAL1 4.68 GB in 126 s
+MINERAL1 zip members 893 metadata files 99
+example MINERAL1 MINERAL1/M1-0001 vars: ['Chalcopyrite', 'Bornite', 'Chalcosite/Digenite', 'Covelite', 'Pyrite', 'Molybdenite', 'Fe Oxides', 'Rutile', 'Quartz', 'K-Feldspar', 'Anorthite', 'Bytownite_An80', 'Labradorite_An60', 'Andesina_An40', 'Oligoclasa_An20', 'Albite', 'Tourmaline', 'Muscovite/Sericite', 'Kaolinite', 'Biotite', 'Chlorite', 'Epidote', 'Actinolite', 'Other Amphibole', 'Pyroxene', 'Fe-Clays', 'Calcite', 'Siderite', 'Others Carbonates', 'Anhydrite/Gypsum', 'Apatite', 'Others Ti Minerals', 'Others'] tags: ['P1', 'S1', 'coarse']
+example MINERAL1 MINERAL1/M1-0002 vars: ['Chalcopyrite', 'Bornite', 'Chalcosite/Digenite', 'Covelite', 'Pyrite', 'Molybdenite', 'Fe Oxides', 'Rutile', 'Quartz', 'K-Feldspar', 'Anorthite', 'Bytownite_An80', 'Labradorite_An60', 'Andesina_An40', 'Oligoclasa_An20', 'Albite', 'Tourmaline', 'Muscovite/Sericite', 'Kaolinite', 'Biotite', 'Chlorite', 'Epidote', 'Actinolite', 'Other Amphibole', 'Pyroxene', 'Fe-Clays', 'Calcite', 'Siderite', 'Others Carbonates', 'Anhydrite/Gypsum', 'Apatite', 'Others Ti Minerals', 'Others'] tags: ['P2', 'S1', 'coarse']
+example MINERAL1 MINERAL1/M1-0003 vars: ['Chalcopyrite', 'Bornite', 'Chalcosite/Digenite', 'Covelite', 'Pyrite', 'Molybdenite', 'Fe Oxides', 'Rutile', 'Quartz', 'K-Feldspar', 'Anorthite', 'Bytownite_An80', 'Labradorite_An60', 'Andesina_An40', 'Oligoclasa_An20', 'Albite', 'Tourmaline', 'Muscovite/Sericite', 'Kaolinite', 'Biotite', 'Chlorite', 'Epidote', 'Actinolite', 'Other Amphibole', 'Pyroxene', 'Fe-Clays', 'Calcite', 'Siderite', 'Others Carbonates', 'Anhydrite/Gypsum', 'Apatite', 'Others Ti Minerals', 'Others'] tags: ['P3', 'S1', 'coarse']
+MINERAL1 samples with both sensors 99 skipped 0
+MINERAL1 n 99 targets 33 groups 36
+MINERAL1 fold 1/5 done in 16s
+MINERAL1 fold 2/5 done in 16s
+MINERAL1 fold 3/5 done in 16s
+MINERAL1 fold 4/5 done in 16s
+MINERAL1 fold 5/5 done in 16s
+MINERAL1 Actinolite               v3pls R2=0.034  v5 R2=0.043 [-0.22,0.24]  vs v3: no significant difference (dMAE -0.00265, delta -0.08)  belt_combo R2=-0.690  v3 bright115 R2=-0.012
+MINERAL1 Albite                   v3pls R2=0.362  v5 R2=0.354 [-0.03,0.57]  vs v3: no significant difference (dMAE +0.0166, delta +0.02)  belt_combo R2=-0.146  v3 bright115 R2=-0.070
+MINERAL1 Andesina_An40            v3pls R2=0.178  v5 R2=0.197 [-0.06,0.35]  vs v3: no significant difference (dMAE -0.014, delta -0.04)  belt_combo R2=0.187  v3 bright115 R2=-0.131
+MINERAL1 Anhydrite/Gypsum         v3pls R2=0.926  v5 R2=0.924 [0.87,0.96]  vs v3: no significant difference (dMAE -0.0145, delta -0.01)  belt_combo R2=0.849  v3 bright115 R2=0.828
+MINERAL1 Anorthite                v3pls R2=0.806  v5 R2=0.777 [0.66,0.86]  vs v3: no significant difference (dMAE +0.0132, delta -0.01)  belt_combo R2=0.707  v3 bright115 R2=0.232
+MINERAL1 Apatite                  v3pls R2=0.162  v5 R2=0.246 [0.02,0.44]  vs v3: no significant difference (dMAE -0.00227, delta +0.00)  belt_combo R2=0.324  v3 bright115 R2=-0.049
+MINERAL1 Biotite                  v3pls R2=0.936  v5 R2=0.932 [0.89,0.96]  vs v3: no significant difference (dMAE +0.0119, delta +0.01)  belt_combo R2=0.881  v3 bright115 R2=0.517
+MINERAL1 Bornite                  v3pls R2=0.683  v5 R2=0.720 [0.63,0.80]  vs v3: no significant difference (dMAE -0.00682, delta -0.08)  belt_combo R2=0.683  v3 bright115 R2=0.517
+MINERAL1 Bytownite_An80           v3pls R2=0.768  v5 R2=0.774 [0.62,0.87]  vs v3: no significant difference (dMAE +0.00194, delta +0.03)  belt_combo R2=0.693  v3 bright115 R2=0.082
+MINERAL1 Calcite                  v3pls R2=0.716  v5 R2=0.750 [0.59,0.88]  vs v3: better (dMAE -0.00943, delta -0.17)  belt_combo R2=0.667  v3 bright115 R2=0.640
+MINERAL1 Chalcopyrite             v3pls R2=0.894  v5 R2=0.900 [0.86,0.93]  vs v3: no significant difference (dMAE -0.0105, delta -0.06)  belt_combo R2=0.855  v3 bright115 R2=0.850
+MINERAL1 Chalcosite/Digenite      v3pls R2=0.591  v5 R2=0.715 [0.57,0.81]  vs v3: better (dMAE -0.00836, delta -0.26)  belt_combo R2=0.694  v3 bright115 R2=0.387
+MINERAL1 Chlorite                 v3pls R2=0.810  v5 R2=0.798 [0.69,0.88]  vs v3: no significant difference (dMAE +0.0153, delta +0.02)  belt_combo R2=0.668  v3 bright115 R2=0.564
+MINERAL1 Covelite                 v3pls R2=0.596  v5 R2=0.628 [0.54,0.72]  vs v3: no significant difference (dMAE -0.00087, delta -0.16)  belt_combo R2=0.635  v3 bright115 R2=0.409
+MINERAL1 Epidote                  v3pls R2=0.147  v5 R2=0.148 [-0.09,0.33]  vs v3: no significant difference (dMAE -0.00178, delta -0.06)  belt_combo R2=0.117  v3 bright115 R2=0.024
+MINERAL1 Fe Oxides                v3pls R2=0.381  v5 R2=0.459 [0.25,0.66]  vs v3: no significant difference (dMAE -0.00712, delta -0.02)  belt_combo R2=0.397  v3 bright115 R2=0.171
+MINERAL1 Fe-Clays                 v3pls R2=0.712  v5 R2=0.746 [0.66,0.81]  vs v3: no significant difference (dMAE -0.0052, delta -0.03)  belt_combo R2=0.404  v3 bright115 R2=0.165
+MINERAL1 K-Feldspar               v3pls R2=0.816  v5 R2=0.824 [0.75,0.87]  vs v3: no significant difference (dMAE -0.0264, delta -0.06)  belt_combo R2=0.745  v3 bright115 R2=0.774
+MINERAL1 Kaolinite                v3pls R2=0.637  v5 R2=0.652 [0.49,0.75]  vs v3: no significant difference (dMAE -0.00981, delta -0.07)  belt_combo R2=0.614  v3 bright115 R2=0.600
+MINERAL1 Labradorite_An60         v3pls R2=0.505  v5 R2=0.455 [0.22,0.59]  vs v3: no significant difference (dMAE +0.0123, delta -0.00)  belt_combo R2=0.332  v3 bright115 R2=0.403
+MINERAL1 Molybdenite              v3pls R2=0.174  v5 R2=0.271 [0.04,0.49]  vs v3: no significant difference (dMAE -0.000895, delta -0.02)  belt_combo R2=0.257  v3 bright115 R2=0.151
+MINERAL1 Muscovite/Sericite       v3pls R2=0.885  v5 R2=0.926 [0.89,0.95]  vs v3: no significant difference (dMAE -0.203, delta -0.08)  belt_combo R2=0.859  v3 bright115 R2=0.679
+MINERAL1 Oligoclasa_An20          v3pls R2=0.336  v5 R2=0.382 [0.14,0.55]  vs v3: no significant difference (dMAE -0.0689, delta -0.07)  belt_combo R2=0.274  v3 bright115 R2=-0.044
+MINERAL1 Other Amphibole          v3pls R2=0.356  v5 R2=0.321 [0.09,0.56]  vs v3: no significant difference (dMAE -0.00135, delta -0.07)  belt_combo R2=0.309  v3 bright115 R2=-0.169
+MINERAL1 Others                   v3pls R2=0.469  v5 R2=0.440 [0.25,0.61]  vs v3: no significant difference (dMAE +0.000244, delta -0.02)  belt_combo R2=0.412  v3 bright115 R2=0.430
+MINERAL1 Others Carbonates        v3pls R2=0.300  v5 R2=0.248 [0.02,0.52]  vs v3: no significant difference (dMAE +0.00282, delta +0.04)  belt_combo R2=0.219  v3 bright115 R2=-0.089
+MINERAL1 Others Ti Minerals       v3pls R2=-0.224  v5 R2=0.022 [-0.17,0.18]  vs v3: no significant difference (dMAE -0.0222, delta -0.04)  belt_combo R2=-0.084  v3 bright115 R2=-1.400
+MINERAL1 Pyrite                   v3pls R2=0.757  v5 R2=0.873 [0.83,0.91]  vs v3: better (dMAE -0.147, delta -0.15)  belt_combo R2=0.784  v3 bright115 R2=0.585
+MINERAL1 Pyroxene                 v3pls R2=0.778  v5 R2=0.798 [0.72,0.88]  vs v3: no significant difference (dMAE -0.00411, delta -0.17)  belt_combo R2=0.684  v3 bright115 R2=0.736
+MINERAL1 Quartz                   v3pls R2=0.776  v5 R2=0.774 [0.64,0.86]  vs v3: no significant difference (dMAE -0.00607, delta -0.02)  belt_combo R2=0.725  v3 bright115 R2=0.605
+MINERAL1 Rutile                   v3pls R2=0.478  v5 R2=0.485 [0.30,0.58]  vs v3: no significant difference (dMAE -0.00219, delta -0.04)  belt_combo R2=0.474  v3 bright115 R2=0.335
+MINERAL1 Siderite                 v3pls R2=0.431  v5 R2=0.615 [0.27,0.74]  vs v3: better (dMAE -0.0177, delta -0.29)  belt_combo R2=0.567  v3 bright115 R2=0.178
+MINERAL1 Tourmaline               v3pls R2=0.333  v5 R2=0.306 [0.14,0.45]  vs v3: no significant difference (dMAE -0.00569, delta -0.03)  belt_combo R2=0.096  v3 bright115 R2=-0.062
+downloading MINERAL2
+downloaded MINERAL2 1.48 GB in 39 s
+MINERAL2 zip members 182 metadata files 20
+example MINERAL2 MINERAL2/M2-0001 vars: ['Quartz', 'Muscovite', 'Phengite', 'Plagioclase', 'Clinochlore', 'Illite', 'Orthoclase', 'Kaolin group', 'Hematite', 'Pirit', 'Chalcopyrite', 'Bornite', 'Molybdenite', 'Chalcocite', 'Sphalerite', 'Tenantite', 'Tetrahedrite', 'Enargite', 'Calcite', 'Alunite', 'Siderite', 'Gypsum', 'Ankerite', 'Pyrophyllite', 'Apatite'] tags: []
+example MINERAL2 MINERAL2/M2-0002 vars: ['Quartz', 'Muscovite', 'Phengite', 'Plagioclase', 'Clinochlore', 'Illite', 'Orthoclase', 'Kaolin group', 'Hematite', 'Pirit', 'Chalcopyrite', 'Bornite', 'Molybdenite', 'Chalcocite', 'Sphalerite', 'Tenantite', 'Tetrahedrite', 'Enargite', 'Calcite', 'Alunite', 'Siderite', 'Gypsum', 'Ankerite', 'Pyrophyllite', 'Apatite'] tags: []
+example MINERAL2 MINERAL2/M2-0003 vars: ['Quartz', 'Muscovite', 'Phengite', 'Plagioclase', 'Clinochlore', 'Illite', 'Orthoclase', 'Kaolin group', 'Hematite', 'Pirit', 'Chalcopyrite', 'Bornite', 'Molybdenite', 'Chalcocite', 'Sphalerite', 'Tenantite', 'Tetrahedrite', 'Enargite', 'Calcite', 'Alunite', 'Siderite', 'Gypsum', 'Ankerite', 'Pyrophyllite', 'Apatite'] tags: []
+MINERAL2 samples with both sensors 20 skipped 0
+MINERAL2 n 20 targets 25 groups none (one per sample)
+MINERAL2 fold 1/5 done in 8s
+MINERAL2 fold 2/5 done in 8s
+MINERAL2 fold 3/5 done in 8s
+MINERAL2 fold 4/5 done in 7s
+MINERAL2 fold 5/5 done in 8s
+MINERAL2 Alunite                  v3pls R2=-0.167  v5 R2=0.049 [-3.76,0.71]  vs v3: better (dMAE -0.985, delta -0.56)  belt_combo R2=0.073  v3 bright115 R2=-0.242
+MINERAL2 Ankerite                 v3pls R2=-0.416  v5 R2=-0.145 [-0.23,-0.11]  vs v3: no significant difference (dMAE -0.00767, delta -0.25)  belt_combo R2=-0.164  v3 bright115 R2=-0.541
+MINERAL2 Apatite                  v3pls R2=-0.524  v5 R2=-0.148 [-0.24,-0.10]  vs v3: better (dMAE -0.111, delta -0.34)  belt_combo R2=-0.127  v3 bright115 R2=-0.737
+MINERAL2 Bornite                  v3pls R2=-0.394  v5 R2=-0.148 [-0.26,-0.10]  vs v3: no significant difference (dMAE -0.0169, delta -0.26)  belt_combo R2=-0.141  v3 bright115 R2=-0.491
+MINERAL2 Calcite                  v3pls R2=-0.535  v5 R2=-0.217 [-0.98,-0.14]  vs v3: no significant difference (dMAE -0.235, delta -0.20)  belt_combo R2=-0.208  v3 bright115 R2=-0.744
+MINERAL2 Chalcocite               v3pls R2=-0.300  v5 R2=-0.108 [-1.42,0.32]  vs v3: no significant difference (dMAE -0.106, delta -0.20)  belt_combo R2=-0.171  v3 bright115 R2=-0.495
+MINERAL2 Chalcopyrite             v3pls R2=-0.596  v5 R2=-0.003 [-1.24,0.44]  vs v3: no significant difference (dMAE -0.232, delta -0.10)  belt_combo R2=-0.288  v3 bright115 R2=-0.765
+MINERAL2 Clinochlore              v3pls R2=-0.406  v5 R2=0.072 [-1.35,0.43]  vs v3: better (dMAE -0.411, delta -0.32)  belt_combo R2=-0.013  v3 bright115 R2=-0.606
+MINERAL2 Enargite                 v3pls R2=0.205  v5 R2=0.187 [-3.11,0.60]  vs v3: no significant difference (dMAE -0.0152, delta -0.09)  belt_combo R2=0.179  v3 bright115 R2=-0.082
+MINERAL2 Gypsum                   v3pls R2=-0.477  v5 R2=-0.208 [-17.42,-0.15]  vs v3: no significant difference (dMAE -0.0301, delta -0.26)  belt_combo R2=-0.217  v3 bright115 R2=-0.541
+MINERAL2 Hematite                 v3pls R2=-0.176  v5 R2=-0.386 [-3.32,-0.10]  vs v3: no significant difference (dMAE +0.0633, delta +0.12)  belt_combo R2=-0.341  v3 bright115 R2=-0.228
+MINERAL2 Illite                   v3pls R2=-1.393  v5 R2=-0.543 [-0.98,-0.22]  vs v3: no significant difference (dMAE -0.969, delta -0.15)  belt_combo R2=-0.469  v3 bright115 R2=-1.344
+MINERAL2 Kaolin group             v3pls R2=-0.076  v5 R2=0.242 [-0.10,0.64]  vs v3: no significant difference (dMAE -0.431, delta -0.28)  belt_combo R2=0.218  v3 bright115 R2=-0.171
+MINERAL2 Molybdenite              v3pls R2=-0.423  v5 R2=-0.046 [-1.51,0.33]  vs v3: no significant difference (dMAE -0.00995, delta -0.21)  belt_combo R2=0.031  v3 bright115 R2=-0.873
+MINERAL2 Muscovite                v3pls R2=-1.177  v5 R2=-0.460 [-2.87,0.12]  vs v3: no significant difference (dMAE -1.64, delta -0.17)  belt_combo R2=-1.036  v3 bright115 R2=-1.379
+MINERAL2 Orthoclase               v3pls R2=-0.368  v5 R2=-0.259 [-8.40,-0.06]  vs v3: no significant difference (dMAE -0.292, delta -0.11)  belt_combo R2=-0.265  v3 bright115 R2=-0.588
+MINERAL2 Phengite                 v3pls R2=-0.214  v5 R2=0.004 [-0.63,0.28]  vs v3: no significant difference (dMAE +0.0208, delta +0.07)  belt_combo R2=-0.071  v3 bright115 R2=-0.292
+MINERAL2 Pirit                    v3pls R2=0.538  v5 R2=0.422 [-0.35,0.67]  vs v3: no significant difference (dMAE +0.131, delta +0.14)  belt_combo R2=0.358  v3 bright115 R2=0.256
+MINERAL2 Plagioclase              v3pls R2=-1.888  v5 R2=-0.308 [-1.17,-0.10]  vs v3: no significant difference (dMAE -0.601, delta -0.25)  belt_combo R2=-0.185  v3 bright115 R2=-2.256
+MINERAL2 Pyrophyllite             v3pls R2=0.194  v5 R2=0.498 [0.03,0.71]  vs v3: no significant difference (dMAE -0.929, delta -0.22)  belt_combo R2=0.504  v3 bright115 R2=0.071
+MINERAL2 Quartz                   v3pls R2=-0.065  v5 R2=-0.163 [-0.85,0.07]  vs v3: no significant difference (dMAE -0.163, delta -0.09)  belt_combo R2=-0.189  v3 bright115 R2=-0.155
+MINERAL2 Siderite                 v3pls R2=-0.792  v5 R2=-0.104 [-6.71,0.43]  vs v3: better (dMAE -0.394, delta -0.42)  belt_combo R2=-0.143  v3 bright115 R2=-1.159
+MINERAL2 Sphalerite               v3pls R2=0.486  v5 R2=0.411 [0.14,0.65]  vs v3: no significant difference (dMAE -0.00193, delta -0.10)  belt_combo R2=0.468  v3 bright115 R2=0.426
+MINERAL2 Tenantite                v3pls R2=-0.319  v5 R2=0.128 [-0.50,0.32]  vs v3: no significant difference (dMAE -0.101, delta -0.25)  belt_combo R2=0.099  v3 bright115 R2=-0.561
+MINERAL2 Tetrahedrite             v3pls R2=-0.572  v5 R2=-0.185 [-1.32,-0.08]  vs v3: no significant difference (dMAE -0.0225, delta -0.20)  belt_combo R2=-0.216  v3 bright115 R2=-0.927
+downloading GEOCHEM
+downloaded GEOCHEM 6.2 GB in 158 s
+GEOCHEM zip members 800 metadata files 28
+example GEOCHEM GEOCHEM/GCH-0001 vars: ['Al', 'Si', 'P', 'S', 'K', 'Ca', 'Ti', 'Fe', 'Cu', 'Zn', 'As', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Pb'] tags: ['coarse', 'fine']
+example GEOCHEM GEOCHEM/GCH-0002 vars: ['Al', 'Si', 'P', 'S', 'K', 'Ca', 'Ti', 'Fe', 'Cu', 'Zn', 'As', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Pb'] tags: ['coarse', 'fine']
+example GEOCHEM GEOCHEM/GCH-0003 vars: ['Al', 'Si', 'P', 'S', 'K', 'Ca', 'Ti', 'Fe', 'Cu', 'Zn', 'As', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Pb'] tags: ['coarse', 'fine']
+GEOCHEM samples with both sensors 28 skipped 0
+GEOCHEM n 28 targets 18 groups none (one per sample)
+GEOCHEM fold 1/5 done in 8s
+GEOCHEM fold 2/5 done in 8s
+GEOCHEM fold 3/5 done in 7s
+GEOCHEM fold 4/5 done in 7s
+GEOCHEM fold 5/5 done in 7s
+GEOCHEM Al                       v3pls R2=0.291  v5 R2=0.504 [-0.03,0.70]  vs v3: no significant difference (dMAE -0.0181, delta -0.05)  belt_combo R2=-0.043  v3 bright115 R2=-0.044
+GEOCHEM As                       v3pls R2=0.342  v5 R2=0.486 [0.26,0.61]  vs v3: no significant difference (dMAE -0.000185, delta -0.01)  belt_combo R2=0.030  v3 bright115 R2=-0.341
+GEOCHEM Ca                       v3pls R2=0.596  v5 R2=0.771 [0.50,0.90]  vs v3: no significant difference (dMAE -0.0436, delta -0.23)  belt_combo R2=0.272  v3 bright115 R2=0.013
+GEOCHEM Cu                       v3pls R2=0.422  v5 R2=0.232 [-0.65,0.55]  vs v3: no significant difference (dMAE +0.0239, delta +0.13)  belt_combo R2=-0.623  v3 bright115 R2=0.081
+GEOCHEM Fe                       v3pls R2=0.566  v5 R2=0.402 [-0.03,0.66]  vs v3: no significant difference (dMAE +0.0398, delta +0.03)  belt_combo R2=0.284  v3 bright115 R2=-1.962
+GEOCHEM K                        v3pls R2=-0.424  v5 R2=-0.547 [-1.00,-0.23]  vs v3: no significant difference (dMAE +0.00396, delta +0.00)  belt_combo R2=-0.619  v3 bright115 R2=-1.888
+GEOCHEM Mo                       v3pls R2=-0.750  v5 R2=-0.536 [-1.80,0.08]  vs v3: no significant difference (dMAE -0.00124, delta -0.08)  belt_combo R2=-1.438  v3 bright115 R2=-0.868
+GEOCHEM Nb                       v3pls R2=-1.605  v5 R2=-0.487 [-0.89,-0.33]  vs v3: no significant difference (dMAE -0.000233, delta -0.13)  belt_combo R2=-0.327  v3 bright115 R2=-3.583
+GEOCHEM P                        v3pls R2=0.096  v5 R2=0.299 [-0.04,0.52]  vs v3: no significant difference (dMAE -0.00722, delta -0.24)  belt_combo R2=0.105  v3 bright115 R2=-0.112
+GEOCHEM Pb                       v3pls R2=-0.366  v5 R2=-0.208 [-0.62,-0.04]  vs v3: no significant difference (dMAE -0.000409, delta -0.11)  belt_combo R2=-0.180  v3 bright115 R2=-0.752
+GEOCHEM Rb                       v3pls R2=-0.694  v5 R2=-0.527 [-1.07,-0.11]  vs v3: no significant difference (dMAE -9.96e-05, delta -0.11)  belt_combo R2=-0.570  v3 bright115 R2=-2.037
+GEOCHEM S                        v3pls R2=0.359  v5 R2=0.514 [0.04,0.75]  vs v3: no significant difference (dMAE -0.0124, delta -0.01)  belt_combo R2=0.309  v3 bright115 R2=0.189
+GEOCHEM Si                       v3pls R2=-0.514  v5 R2=0.027 [-0.35,0.26]  vs v3: no significant difference (dMAE -0.145, delta -0.18)  belt_combo R2=-0.089  v3 bright115 R2=-1.831
+GEOCHEM Sr                       v3pls R2=0.035  v5 R2=0.402 [0.04,0.58]  vs v3: better (dMAE -0.00154, delta -0.27)  belt_combo R2=0.207  v3 bright115 R2=-0.419
+GEOCHEM Ti                       v3pls R2=-0.296  v5 R2=-0.037 [-0.49,0.21]  vs v3: no significant difference (dMAE -0.00716, delta -0.11)  belt_combo R2=-0.984  v3 bright115 R2=-0.736
+GEOCHEM Y                        v3pls R2=0.165  v5 R2=0.308 [-0.21,0.58]  vs v3: no significant difference (dMAE -4.18e-05, delta -0.04)  belt_combo R2=0.109  v3 bright115 R2=-0.930
+GEOCHEM Zn                       v3pls R2=-0.587  v5 R2=0.014 [-0.31,0.22]  vs v3: better (dMAE -0.00336, delta -0.30)  belt_combo R2=0.038  v3 bright115 R2=-1.090
+GEOCHEM Zr                       v3pls R2=-0.435  v5 R2=-0.186 [-0.66,-0.01]  vs v3: no significant difference (dMAE -8.83e-05, delta +0.01)  belt_combo R2=0.159  v3 bright115 R2=-0.356
+done in 799 s
