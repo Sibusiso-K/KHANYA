@@ -3901,3 +3901,11 @@ Latest backend continuation: reports/LOCAL-RECORDS-HANDOVER-2026-09-30.md (versi
 
 ---
 
+## 2026-10-01 — Sibusiso (via Codex) — optional assistant and warm-up guard
+
+**Did:** Made `httpx` optional at import time so the local evidence assistant and API still start without provider dependencies; provider status now reports the missing client. The analysis button waits for `model_ready`, polls health every second, and labels warm-up explicitly. Result provenance now includes measured stage timing breakdowns when present, while live provisional evidence retains the background/resin row.
+
+**Verified:** Assistant/API tests 29 passed; frontend build passed; Playwright 7 passed. The prior assistant provider tests failed after the strict lazy import until the compatibility seam was added, then passed unchanged. No model, field placement, confidence gate, or progress counting rule changed.
+
+---
+

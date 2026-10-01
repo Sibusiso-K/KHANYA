@@ -11,8 +11,6 @@ import os
 import re
 import threading
 
-import httpx
-
 PROVIDERS = {
     "aimlapi": "https://api.aimlapi.com/v1",
     "featherless": "https://api.featherless.ai/v1",
@@ -21,6 +19,15 @@ PROVIDERS = {
 }
 ALLOWED_ACTIONS = frozenset({"openReports", "openSpatial", "runAnalysis", "addNote"})
 _provider_slots = threading.BoundedSemaphore(2)
+
+class _OptionalHttpx:
+    ConnectError = Exception
+    HTTPError = Exception
+    def Client(self, **kwargs):
+        import httpx
+        return httpx.Client(**kwargs)
+
+httpx = _OptionalHttpx()  # compatibility seam; the package is still imported only on provider use
 
 
 class AssistantError(ValueError):
@@ -43,9 +50,15 @@ def _configuration():
 
 def get_status():
     provider, _, model, _, ready = _configuration()
-    return {"local_available": True, "provider_ready": ready,
+    try:
+        import httpx  # optional: local evidence mode must not depend on it
+        provider_error = None
+    except ImportError:
+        provider_error = "Optional provider client unavailable (httpx is not installed)."
+    return {"local_available": True, "provider_ready": bool(ready and provider_error is None),
             "provider": provider if provider in PROVIDERS else None,
             "model": model if ready else None,
+            "provider_error": provider_error,
             "context_policy": "Question and bounded result/report facts only; no images, audio, notes or coordinates.",
             "actions": sorted(ALLOWED_ACTIONS)}
 
@@ -156,6 +169,10 @@ def _local(question, data):
 
 
 def _provider_answer(question, data):
+    try:
+        import httpx as _httpx
+    except ImportError:
+        raise AssistantError("The optional assistant provider is unavailable; use the local evidence helper.", 503) from None
     provider, base, model, key, ready = _configuration()
     if not ready:
         raise AssistantError("An assistant provider is not configured on the server. Use the local evidence helper.", 503)
@@ -191,7 +208,7 @@ def _provider_answer(question, data):
         return answer.strip()[:10000], provider, model
     except AssistantError:
         raise
-    except (httpx.HTTPError, KeyError, IndexError, ValueError, TypeError):
+    except (Exception, KeyError, IndexError, ValueError, TypeError):
         # Do not return provider error bodies, request headers, URLs with secrets,
         # stack traces or exception text to the client or logs.
         raise AssistantError("The assistant provider could not respond. Use local evidence or try again.", 502) from None
