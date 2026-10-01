@@ -105,6 +105,7 @@ failure, and a supply-chain surface, in exchange for nothing.
 | **Week 5** — offline packaging | `uv sync --extra ml` then export ONNX | `onnxruntime` | MIT |
 | **If the OPC UA demo survives the kill list** | `uv sync --extra integrate` | `asyncua` | **LGPL-3.0 — CONDITION** |
 | **Dev-time inspection only, never the demo** | `uv sync --extra viz` | `napari[pyqt6]` | BSD-3 (PyQt6 is GPL/commercial — *this is why napari is dev-only and the demo UI is matplotlib*) |
+| **Kaggle kernels only — hyperspectral track** | installed inside the kernel by `run.py` | `h5py` | BSD-3 |
 | **When data volume justifies it** | `uv tool install dvc` | `dvc` | Apache-2.0 |
 | **When there are runs worth comparing** | `uv add --dev mlflow` | `mlflow` | Apache-2.0 |
 

@@ -1,0 +1,24 @@
+[
+  {
+    "slug": "fcn-seed42",
+    "kernel": "lethabomh14/reefprint-s2-fcn-seed42-ensemble-validation",
+    "source_bundle_sha256": "9d5faf9e42f630fb1f35e34a2c5e128e8dc722af12fd04550f9491a154f9491d",
+    "protocol_sha256": "0a8788214a30b9f63d32ec3a485d1663bf93a0147fcbfa6d935774f0b24a35a3",
+    "notebook_sha256": "a70fd189ac36df51e8aa472493addbf37e6fdfee75018714a9ee408d1adeda5c",
+    "runtime_script_sha256": "716537eb7624079bd48173824c3a66d5675050548a6fe2680a47f54e6debdb97",
+    "changed_modules": [
+      "src/segmentation/model.py"
+    ],
+    "max_kernel_runtime_seconds": 7200
+  },
+  {
+    "slug": "deeplab-seed43",
+    "kernel": "lethabomh14/reefprint-s2-deeplab-seed43-ensemble-validation",
+    "source_bundle_sha256": "4cffd60c88fea1a7553f8f154040cf2ce93f7312f0571f3dc6784b5938988528",
+    "protocol_sha256": "a9d51eb48045c8b0d7964b40ef4b253969c7356420d104c02564c87a15de4fae",
+    "notebook_sha256": "81283869b4eede50714dbe6ab6af2555a7d4cff1bd4bdabca19b5cd97e30a4ee",
+    "runtime_script_sha256": "716537eb7624079bd48173824c3a66d5675050548a6fe2680a47f54e6debdb97",
+    "changed_modules": [],
+    "max_kernel_runtime_seconds": 7200
+  }
+]

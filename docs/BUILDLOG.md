@@ -22,6 +22,44 @@ it is a press release.
 
 ---
 
+## 2026-10-01 (afternoon) — Hyperspectral belt track on HIDSAG, Belt Monitor, deck v7, first ensemble member
+
+**Why.** The team asked for hyperspectral imaging as the data, decided before grinding, with a place for it on site. The
+honest version: a belt camera reads the host rock (gangue and alteration minerals) at millimetre pixels; platinum and
+base-metal sulphide grains are microns and opaque, so they stay with the microscope. Two scales, one control room.
+
+**What ran (Kaggle, `lethabomh14/reefprint-hidsag-hyperspectral`).** Per-sample VNIR + SWIR statistics (mean, std, p10,
+p90, slope) → PLS or ridge, scored out-of-fold against the training-mean baseline.
+
+- **GEOMET (v3), 146 drill-core samples, KFold 5 over samples.** All five lab results beat the average guess, modestly:
+  Cu recovery R² 0.374 [0.14, 0.52], Mo recovery 0.374 [0.21, 0.51], Bond work index 0.355 [0.14, 0.48], pH 0.317
+  [0.16, 0.45], lime consumption 0.270 [0.14, 0.38]; MAE 19.5–24.6% below baseline. **Limitation:** drill-hole IDs are
+  not in the published metadata, so a by-hole (locality) split could not be enforced — may be optimistic (rule 2).
+- **MINERAL1 — v3 was wrong, v4 is the result.** v3 read tags from a top-level key that does not exist (HIDSAG keeps
+  them in `crops[].tags`), so every sample became its own group and size fractions of one composite could straddle
+  folds. Caught on reading the metadata before reporting; v4 groups by composite (process line × month, 36 groups from
+  99 samples) and now **refuses to run** if grouping collapses to ~one group per sample. `grouped_ci.py` re-sizes the
+  CIs by cluster bootstrap over composites (rule 4). Result: 31 of 33 minerals beat the average guess (paired MAE
+  difference CI excludes zero); chalcopyrite R² 0.894 [0.85, 0.93], sericite 0.898, biotite 0.906, anhydrite/gypsum
+  0.936; failures: andesine, other Ti minerals. Read narrowly: sulphides have no SWIR features, so chalcopyrite is
+  predicted through the alteration minerals that travel with it in this deposit — site-specific, needs site QEMSCAN.
+- **Selection note:** the better of PLS/ridge per target is picked on the same out-of-fold score — mild optimism, stated
+  on the slide.
+
+**Belt Monitor** (`presentation/belt-monitor/`, offline, `python -m http.server 8530 --directory presentation/belt-monitor`):
+replays 60 held-out GEOMET samples — spectrum, out-of-fold predictions with typical error and lab marker, an
+illustrative quartile-based decision card. Labelled on screen as a replay, not a live belt. Narrated clip (Ryan, en-GB):
+`presentation/video/REEFPRINT-belt-monitor-demo.mp4` (67 s), silent embed for the deck.
+
+**Deck v7** (`presentation/output/REEFPRINT-KHANYA-Team-Sonar-pitch-v7.pptx`, 25 slides): + "Where it sits on site",
++ GEOMET results with the embedded clip, + "QEMSCAN teaches, the camera predicts" (MINERAL1); reference-spectra slide
+moved to the appendix; notes trimmed and retimed by word count to ~10:16 at 165 wpm.
+
+**Ensemble (validation only, no test set touched).** FCN seed 42 finished: alone 0.657 mIoU on the six validation
+sections; equal-probability average with the quarantined candidate 42646cfa scored 0.691 vs 0.704 for 42646cfa alone —
+**did not help mIoU**, though NLL/Brier/ECE improved. Pre-declared gate not passed; it stays out. DeepLab seed 43 still
+running at 13:22.
+
 ## 2026-10-01 (05:15–10:15) — British re-voice, the 10-minute deck, and the themes branch
 
 ### Attempted

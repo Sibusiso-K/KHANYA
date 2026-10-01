@@ -106,5 +106,29 @@
  [
   "n18s",
   "Deliverable three: a plant parameter. This model isn't approved for control, so the simulator holds the setting. REEFPRINT refuses, rather than guesses."
+ ],
+ [
+  "h01",
+  "Before the ore reaches the mill, it rides a conveyor belt. That is where a hyperspectral camera can sit."
+ ],
+ [
+  "h02",
+  "It scans every sample in visible and short-wave infrared light. Clays, micas and other gangue minerals leave absorption features that an ordinary camera cannot see."
+ ],
+ [
+  "h03",
+  "From that spectrum alone, the model predicts the lab results: copper and molybdenum recovery, lime use, pH, and how hard the ore will be to grind."
+ ],
+ [
+  "h04",
+  "Every prediction here comes from a model that never saw that sample. The white marker is the real lab test, and the typical error is printed beside it."
+ ],
+ [
+  "h05",
+  "When a prediction drifts outside the usual range, the shift is warned: harder ore, lower recovery, more lime. And that sample goes to the REEFPRINT microscope for a liberation check."
+ ],
+ [
+  "h06",
+  "This is a replay of public drill core from Chile: not a live belt, and not platinum ore. On site, it would be calibrated on the mine's own samples."
  ]
 ]

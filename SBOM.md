@@ -72,6 +72,7 @@ licence here before any weight is used in a graded artefact.
 | `mlflow` | Apache-2.0 | DEV |
 | `dvc` | Apache-2.0 | DEV |
 | `napari` | BSD-3-Clause | DEV — dev-time visual inspection. The demo UI must not depend on it. |
+| `h5py` | BSD-3-Clause | DEV — Kaggle-only, reads the HIDSAG hyperspectral cubes in `training/hidsag-hyperspectral-20261001/run.py` (installed in the kernel if absent). Not a runtime dependency. Added 2026-10-01. |
 
 ## Flagged — resolve before it becomes load-bearing
 
@@ -94,6 +95,7 @@ Licence of *data* is separate from licence of *code*, and it constrains what may
 | LumenStone (S1, S2, S3, V1) | **Terms of use confirmed 2026-09-14** — no named OSI licence, but an explicit written grant, quoted verbatim from `imaging.cs.msu.ru/en/research/geology/lumenstone`: *"You are free to use the provided data in your own research work. If you intend to publish research work that uses this dataset, you have to cite the references whenever appropriate."* Citations: Korshunov et al. 2025, doi:10.17073/2500-0632-2025-05-416 (dataset authors' own paper). **V1 (colour-adaptation subset) downloaded 2026-09-15** directly from the dataset's own Yandex Disk link (`imaging.cs.msu.ru`'s summary table → 100 MB), verified as 30 images (10 samples × 3 imaging variations) matching the published description; staged at `data/lumenstone/V1_v1.zip` (gitignored, DVC-tracked convention) and uploaded as a private Kaggle dataset, `lethabomh14/lumenstone-v1-reefprint`, for use from either branch's kernels. | **CONDITION, no longer VERIFY** — usable, citation required whenever published. The petroscope README and library remain a **separate, blocked** dependency (GPL-3.0, row above) — this row covers the *data* only. |
 | IronOreRLM | 563 reflected-light images. ScienceDirect `S2352340925002720`. | VERIFY — check before training on it |
 | MUMDMC2025 | 14,400 photomicrographs, 5 silicate classes, 72 rotational positions at 5° over 360°, PPL + XPL. *Nature Sci Data* 2025. | VERIFY. **Transmitted light on granite silicates** — exercises the rotation pipeline, carries none of the reflected-light ore physics. Do not cite it as ore evidence. |
+| HIDSAG (Ehrenfeld et al., *Scientific Data* 2023) | Figshare collection 10.6084/m9.figshare.c.5983921 — records marked **CC0** on Figshare (read 2026-10-01); the paper is CC BY 4.0. Porphyry Cu-Mo, Chile: GEOMET (146 drill-core samples with flotation and grinding tests), MINERAL1 (99 plant-feed size-fraction samples, QEMSCAN wt%). VNIR + SWIR cubes. Used for the belt hyperspectral track, 2026-10-01. | **OK** — cite the paper. Not PGM ore: results transfer as a method, not as numbers. |
 | CGS National Core Library specimens | Sampling policy — open question 2 | VERIFY — phone call |
 | Craig & Vaughan, *Ore Microscopy and Ore Petrography* 2nd ed. | Open access, MSA | Reference only; do not reproduce figures without checking |
 | Mine-sourced specimens | Possible MTA restrictions | Blind spot 3 — an MTA can make the open benchmark unreleasable |

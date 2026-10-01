@@ -1,0 +1,13 @@
+{
+  "checks_passed": true,
+  "synthetic_model_shape_checked": true,
+  "native_pair_helper_matches_frozen_tiling_on_synthetic_edges": true,
+  "unfitted_probability_diagnostics_checked": true,
+  "source_and_protocol_hashes_checked": true,
+  "two_hour_caps_checked": true,
+  "local_test_runtime": {
+    "torch": "2.13.0+cpu",
+    "torchvision": "0.28.0+cpu"
+  },
+  "note": "Local CPU package versions differ from pinned Kaggle runtime. No real pixels, checkpoints, training, network or test-set evaluation used."
+}

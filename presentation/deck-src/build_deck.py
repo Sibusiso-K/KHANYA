@@ -566,6 +566,48 @@ pic(s, G["lens_orig"], 11.95, 0.7, w=0.8, name="!!lens")
 morph(s)
 notes(s, "SCRIPT_6")
 
+# ---- 6b WHERE IT SITS ON SITE
+s = new()
+brand(s); pagenum(s, 0)
+eyebrow(s, 0.6, 0.85, "Where it sits on site")
+headline(s, "Three instruments, three speeds,\none screen in the control room.", y=1.15, size=30)
+steps = ["Pit & stockpile", "Crusher", "Mill-feed belt", "Mill & cyclones", "Flotation", "Concentrate"]
+for i, st in enumerate(steps):
+    x = 0.6 + i * 2.06
+    hot = st in ("Mill-feed belt", "Mill & cyclones")
+    box(s, x, 2.45, 1.8, 0.62, fill=(NAVY if hot else PAPER), radius=0.1)
+    text(s, x, 2.45, 1.8, 0.62, st, size=12, font=BODYB, bold=True, color=(WHITE if hot else INK), align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    if i < len(steps) - 1:
+        a = s.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, Inches(x + 1.83), Inches(2.66), Inches(0.2), Inches(0.2))
+        a.fill.solid(); a.fill.fore_color.rgb = LINE; a.line.fill.background()
+cards = [
+    (0.6, "1 · Belt hyperspectral camera", "SECONDS · EVERY TONNE", PYRR,
+     "VNIR + SWIR line scan over the mill-feed belt, edge PC beside it. Reads the gangue and alteration minerals (clays, micas, carbonates) that drive hardness, reagent use and recovery.",
+     "Early warning: “ore change — harder, lower recovery, more lime”. Tested on public drill core: next slides.", "ROADMAP"),
+    (4.78, "2 · REEFPRINT microscope", "WITHIN THE SHIFT", COPPER,
+     "A polished section from the cyclone overflow or flotation feed, on any lab microscope camera. Sees the payable sulphides and how they are locked: liberation, not just chemistry.",
+     "Grind and reagent advice — act · verify · hold — with a stated reason, an audit record and a refusal path.", "LIVE APP"),
+    (8.96, "3 · QEMSCAN & lab assays", "DAYS · THE TEACHER", PENT,
+     "Automated mineralogy and metallurgical tests on composites. Too slow to steer a shift, exact enough to label training data for both instruments.",
+     "Re-trains the belt and microscope models; takes the samples REEFPRINT refuses.", "ROADMAP"),
+]
+for x, t1, t2, col, body, out, tg in cards:
+    box(s, x, 3.35, 3.95, 3.0, fill=PAPER, radius=0.12)
+    box(s, x + 0.2, 3.52, 0.3, 0.3, fill=col, shape=MSO_SHAPE.OVAL)
+    text(s, x + 0.62, 3.5, 3.2, 0.35, t1, size=13.5, font=BODYB, bold=True)
+    text(s, x + 0.62, 3.83, 3.2, 0.3, t2, size=9.5, font=BODYB, bold=True, color=col)
+    text(s, x + 0.2, 4.2, 3.6, 1.2, body, size=10.5, color=MUTED, line=1.05)
+    text(s, x + 0.2, 5.35, 3.6, 0.8, out, size=10.5, font=BODYB, bold=True, line=1.05)
+    tag(s, x + 0.2, 6.0, tg)
+box(s, 0.6, 6.5, 12.3, 0.42, fill=NAVY, radius=0.1)
+text(s, 0.8, 6.5, 12.0, 0.42, [[("Control room:  ", {"font": BODYB, "bold": True, "color": RGBColor(0xF2, 0x9A, 0x6A)}),
+     ("belt flag + microscope advisory + audit trail on one dashboard. Only a person-approved setpoint reaches the plant (OPC UA).", {"color": WHITE})]],
+     size=11.5, anchor=MSO_ANCHOR.MIDDLE)
+source(s, "Why two scales: a belt camera sees millimetre pixels of the host rock; platinum-group and base-metal sulphide grains are microns across and opaque (appendix: reference spectra). Belt placement is a design proposal, not an installation.", y=7.02)
+pic(s, G["lens_a"], 11.95, 0.7, w=0.8, name="!!lens")
+morph(s)
+notes(s, "SCRIPT_6b")
+
 # ---- 7 DEMO VIDEO
 s = new(dark=True)
 brand(s, dark=True); pagenum(s, 7, dark=True)
@@ -634,6 +676,139 @@ source(s, "Scope: LumenStone S2 (Norilsk Ni-Cu-PGE sulphide) — an assemblage a
 pic(s, G["lens_phase"], 11.95, 0.7, w=0.8, name="!!lens")
 morph(s)
 notes(s, "SCRIPT_8")
+
+# ---- 8b HYPERSPECTRAL BEFORE GRINDING (measured, HIDSAG)
+HS_PATH = r"C:\Users\USER\Desktop\REEFPRINT\training\hidsag-hyperspectral-20261001\output\hidsag_results.json"
+HS_SHOT = r"C:\Users\USER\Desktop\REEFPRINT\presentation\belt-monitor\screenshot.png"
+HS_CLIP = r"C:\Users\USER\Desktop\REEFPRINT\presentation\video\REEFPRINT-belt-monitor-embed.mp4"
+if os.path.exists(HS_PATH):
+    HS = json.load(open(HS_PATH, encoding="utf-8"))
+    geo = HS["records"]["GEOMET"]["targets"]
+    NICE_T = {"Cu rec": "Cu recovery", "Mo rec": "Mo recovery", "Lime cons": "Lime consumption", "PH": "Flotation pH", "WI": "Bond work index"}
+    rows_hs = []
+    for k, r in geo.items():
+        sk = k.split(".")[-1]
+        if sk not in NICE_T:
+            continue
+        b = r["best_model"]
+        red = 100.0 * (1 - r[b]["mae"] / r["baseline"]["mae"])
+        rows_hs.append((NICE_T[sk], r["n"], r[b]["r2"], r[b]["r2_ci95"], red, r["beats_baseline_mae"], b))
+    rows_hs.sort(key=lambda t: -t[4])
+    for t in rows_hs:
+        print(f"HS {t[0]:18s} n={t[1]} R2={t[2]:.3f} [{t[3][0]:.2f},{t[3][1]:.2f}] err-reduction={t[4]:.1f}% beats={t[5]} model={t[6]}")
+    wins = [t for t in rows_hs if t[5] and t[3][0] > 0]
+    s = new()
+    brand(s); pagenum(s, 0)
+    eyebrow(s, 0.6, 0.85, "Hyperspectral, before grinding — measured, not promised")
+    if wins:
+        lo_r2, hi_r2 = min(t[2] for t in wins), max(t[2] for t in wins)
+        hl = (f"From the spectrum alone, {len(wins)} of {len(rows_hs)} lab results beat the\naverage guess before milling — modestly (R² {lo_r2:.2f}–{hi_r2:.2f}).")
+    else:
+        hl = "Belt-style spectra did not yet beat the average guess.\nWe report it anyway."
+    headline(s, hl, y=1.15, size=28)
+    cd = CategoryChartData()
+    cd.categories = [f"{t[0]} · R² {t[2]:.2f} [{t[3][0]:.2f}, {t[3][1]:.2f}]" for t in rows_hs]
+    cd.add_series("Error reduction vs average-guess baseline (%)", [round(t[4], 1) for t in rows_hs])
+    gf = s.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, Inches(0.5), Inches(2.3), Inches(6.3), Inches(4.0), cd)
+    ch = gf.chart
+    style_chart(ch, [PYRR], legend=False, size=10)
+    ch.has_title = True
+    ch.chart_title.text_frame.text = f"Error reduction vs predicting the average — out-of-fold, n = {rows_hs[0][1]} (R², 95% bootstrap CI)"
+    ch.chart_title.text_frame.paragraphs[0].runs[0].font.size = Pt(11)
+    ch.chart_title.text_frame.paragraphs[0].runs[0].font.bold = True
+    pl = ch.plots[0]
+    pl.gap_width = 60
+    pl.has_data_labels = True
+    pl.data_labels.number_format = '0"%"'
+    pl.data_labels.number_format_is_linked = False
+    pl.data_labels.font.size = Pt(10)
+    for i, t in enumerate(rows_hs):
+        pt = pl.series[0].points[i]
+        pt.format.fill.solid()
+        pt.format.fill.fore_color.rgb = PYRR if (t[5] and t[3][0] > 0) else LINE
+    va = ch.value_axis
+    va.has_major_gridlines = True; va.major_gridlines.format.line.color.rgb = LINE; va.tick_labels.font.size = Pt(9)
+    va.tick_labels.number_format = '0"%"'; va.tick_labels.number_format_is_linked = False
+    ch.category_axis.tick_labels.font.size = Pt(10); ch.category_axis.format.line.color.rgb = LINE
+    ch.category_axis.reverse_order = True
+    if os.path.exists(HS_CLIP) and os.path.exists(HS_SHOT):
+        mv = s.shapes.add_movie(HS_CLIP, Inches(6.95), Inches(2.3), Inches(5.8), Inches(3.2625), poster_frame_image=HS_SHOT, mime_type="video/mp4")
+        mv.name = "belt_video"
+    elif os.path.exists(HS_SHOT):
+        pic(s, HS_SHOT, 6.95, 2.3, w=5.8)
+    text(s, 6.95, 5.62, 5.8, 0.3, "Belt Monitor (built today) replays held-out samples one by one, as a belt would. Silent here; narrated cut in presentation/video.", size=9.5, color=MUTED, line=1.0)
+    tag(s, 6.95, 5.95, "RECORDED")
+    box(s, 6.95, 6.3, 5.8, 0.62, fill=PAPER, radius=0.1)
+    text(s, 7.1, 6.34, 5.55, 0.56, [[("Scope, said first: ", {"font": BODYB, "bold": True}),
+         (f"{rows_hs[0][1]} porphyry Cu-Mo drill-core samples from Chile — not PGM ore, not a live belt. A site needs its own calibration samples.", {"color": MUTED})]],
+         size=9.5, line=1.0, anchor=MSO_ANCHOR.MIDDLE)
+    source(s, "Data: HIDSAG (Ehrenfeld et al., Scientific Data 2023), CC0, Figshare 10.6084/m9.figshare.c.5983921. VNIR+SWIR spectral statistics → PLS or ridge, 5-fold CV; "
+              "the better of the two per target is chosen on the same out-of-fold score (mild optimism). Grey bars: not better than the average guess. Run: Kaggle, 1 Oct 2026.", y=7.0)
+    pic(s, G["lens_a"], 11.95, 0.7, w=0.8, name="!!lens")
+    morph(s)
+    notes(s, "SCRIPT_8b")
+
+# ---- 8c QEMSCAN TEACHES, HYPERSPECTRAL PREDICTS (HIDSAG MINERAL1, grouped by composite)
+M1_PATH = r"C:\Users\USER\Desktop\REEFPRINT\training\hidsag-hyperspectral-20261001\output_v4\mineral1_grouped_ci.json"
+if os.path.exists(M1_PATH):
+    M1 = json.load(open(M1_PATH, encoding="utf-8"))["targets"]
+    NICE_M = {"Anhydrite/Gypsum": "Anhydrite / gypsum", "Muscovite/Sericite": "Sericite (muscovite)", "Chalcosite/Digenite": "Chalcocite / digenite",
+              "Covelite": "Covellite", "Bytownite_An80": "Bytownite", "Labradorite_An60": "Labradorite", "Andesina_An40": "Andesine",
+              "Oligoclasa_An20": "Oligoclase", "Others Ti Minerals": "Other Ti minerals"}
+    ranked = sorted(M1.items(), key=lambda kv: -kv[1]["r2"])
+    n_t = len(ranked)
+    n_win = sum(1 for _, t in ranked if t["beats_baseline_ci_excludes_zero"])
+    n_comp = ranked[0][1]["n_composites"]
+    n_samp = ranked[0][1]["n_samples"]
+    pick = ranked[:8] + [kv for kv in ranked if kv[0] == "Molybdenite"] + ranked[-2:]
+    print(f"M1 {n_win}/{n_t} beat baseline (cluster CI); composites={n_comp}")
+    s = new()
+    brand(s); pagenum(s, 0)
+    eyebrow(s, 0.6, 0.85, "QEMSCAN teaches · the camera predicts — the new part")
+    headline(s, f"Taught by QEMSCAN, the camera read unseen feed:\n{n_win} of {n_t} minerals beat the average guess.", y=1.15, size=28)
+    cd = CategoryChartData()
+    cd.categories = [NICE_M.get(k, k) for k, _ in pick]
+    cd.add_series("R² out-of-fold", [round(t["r2"], 2) for _, t in pick])
+    gf = s.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, Inches(0.5), Inches(2.3), Inches(6.3), Inches(4.35), cd)
+    ch = gf.chart
+    style_chart(ch, [PENT], legend=False, size=10)
+    ch.has_title = True
+    ch.chart_title.text_frame.text = f"R² on held-out composites (QEMSCAN wt% as truth) — top 8, molybdenite, bottom 2 of {n_t}"
+    ch.chart_title.text_frame.paragraphs[0].runs[0].font.size = Pt(10.5)
+    ch.chart_title.text_frame.paragraphs[0].runs[0].font.bold = True
+    pl = ch.plots[0]
+    pl.gap_width = 55
+    pl.has_data_labels = True
+    pl.data_labels.number_format = '0.00'
+    pl.data_labels.number_format_is_linked = False
+    pl.data_labels.font.size = Pt(9.5)
+    for i, (k, t) in enumerate(pick):
+        pt = pl.series[0].points[i]
+        pt.format.fill.solid()
+        pt.format.fill.fore_color.rgb = (CHALC if k in ("Chalcopyrite", "Pyrite", "Molybdenite") else PENT) if t["beats_baseline_ci_excludes_zero"] else LINE
+    va = ch.value_axis
+    va.minimum_scale = 0; va.maximum_scale = 1.0
+    va.has_major_gridlines = True; va.major_gridlines.format.line.color.rgb = LINE; va.tick_labels.font.size = Pt(9)
+    ch.category_axis.tick_labels.font.size = Pt(10); ch.category_axis.format.line.color.rgb = LINE
+    ch.category_axis.reverse_order = True
+    cp = M1["Chalcopyrite"]
+    x0 = 7.15
+    text(s, x0, 2.3, 5.6, 0.6, f"{cp['r2']:.2f}", size=36, font=HEAD, bold=True, color=CHALC)
+    text(s, x0 + 1.35, 2.38, 4.25, 0.7, f"R² for chalcopyrite, the copper mineral [95% CI {cp['r2_ci95_cluster'][0]:.2f}–{cp['r2_ci95_cluster'][1]:.2f}, resampling {cp['n_composites']} composites]. Typical error {cp['mae']:.2f} wt% vs {cp['baseline_mae']:.2f} for the average guess.",
+         size=10.5, color=MUTED, line=1.05)
+    tag(s, x0, 3.12, "RECORDED")
+    text(s, x0, 3.5, 5.6, 0.35, "Read it honestly", size=13, font=BODYB, bold=True)
+    text(s, x0, 3.82, 5.6, 1.1, "Sulphides have no SWIR fingerprint. The camera reads the sericite, biotite and gypsum that travel with chalcopyrite in this deposit. That link is site-specific, so every mine calibrates on its own QEMSCAN — which is exactly the job QEMSCAN keeps.",
+         size=10.5, color=MUTED, line=1.05)
+    text(s, x0, 4.98, 5.6, 0.35, "For Bushveld ore — untested", size=13, font=BODYB, bold=True)
+    text(s, x0, 5.3, 5.6, 0.9, "The same loop would track the silicate gangue — pyroxene, plagioclase, chlorite, talc — that sets hardness and depressant demand. Platinum minerals stay with the microscope.",
+         size=10.5, color=MUTED, line=1.05)
+    tag(s, x0, 6.2, "ROADMAP")
+    source(s, f"Data: HIDSAG MINERAL1 (CC0) — {n_samp} plant-feed size-fraction samples from {n_comp} composites (process line × month), porphyry Cu-Mo, Chile. GroupKFold by composite; CIs by cluster bootstrap over composites. "
+              "Purple/orange: model error below the average guess with a 95% CI excluding zero; grey: not. Run: Kaggle v4, 1 Oct 2026; v3 grouping bug found and fixed the same day.", y=6.9)
+    pic(s, G["lens_a"], 11.95, 0.7, w=0.8, name="!!lens")
+    morph(s)
+    notes(s, "SCRIPT_8c")
 
 # ---- 9 COMPETITION
 s = new()
@@ -896,54 +1071,6 @@ pic(s, G["lens_phase"], 11.95, 0.7, w=0.8, name="!!lens")
 morph(s)
 notes(s, "SCRIPT_13")
 
-# ---- 13b SPECTRAL (hyperspectral at the right scale)
-SPEC = json.load(open(os.path.join(D, "spectra.json"), encoding="utf-8"))
-s = new()
-brand(s); pagenum(s, 0)
-eyebrow(s, 0.6, 0.85, "Spectral imaging, at the scale platinum lives")
-headline(s, "Reference spectra suggest a few narrow colours of\nlight could separate platinum minerals.", y=1.15, size=28)
-order = [("sperrylite", "Sperrylite PtAs₂", COPPER), ("cooperite", "Cooperite PtS", MAG), ("pentlandite", "Pentlandite", PENT),
-         ("pyrrhotite", "Pyrrhotite", PYRR), ("chalcopyrite", "Chalcopyrite", CHALC), ("magnetite", "Magnetite", MUTED), ("chromite", "Chromite", INK)]
-cd = XyChartData()
-for key, label, col in order:
-    ser = cd.add_series(label)
-    for w in range(400, 701, 20):
-        if key == "cooperite" and w == 560:
-            continue  # printed R2 at 560 nm is out of sequence in the source; point omitted
-        ser.add_data_point(w, round(SPEC["spectra"][key][str(w)], 1))
-gf = s.shapes.add_chart(XL_CHART_TYPE.XY_SCATTER_LINES_NO_MARKERS, Inches(0.5), Inches(2.25), Inches(7.6), Inches(4.45), cd)
-ch = gf.chart
-ch.font.name = BODY; ch.font.size = Pt(9); ch.font.color.rgb = INK
-ch.has_legend = True; ch.legend.position = XL_LEGEND_POSITION.RIGHT; ch.legend.include_in_layout = False; ch.legend.font.size = Pt(9)
-for ser, (_, _, col) in zip(ch.plots[0].series, order):
-    ser.format.line.color.rgb = col
-    ser.format.line.width = Pt(3 if ser.name.startswith(("Sperrylite", "Cooperite")) else 1.75)
-    ser.smooth = False
-ch.has_title = True
-ch.chart_title.text_frame.text = "Reference reflectance in air (%) vs wavelength (nm)"
-ch.chart_title.text_frame.paragraphs[0].runs[0].font.size = Pt(11)
-ch.chart_title.text_frame.paragraphs[0].runs[0].font.bold = True
-va = ch.value_axis; va.minimum_scale = 0; va.maximum_scale = 60
-va.has_major_gridlines = True; va.major_gridlines.format.line.color.rgb = LINE; va.tick_labels.font.size = Pt(9)
-xa = ch.category_axis; xa.minimum_scale = 400; xa.maximum_scale = 700; xa.major_unit = 50
-xa.tick_labels.font.size = Pt(9); xa.format.line.color.rgb = LINE; xa.has_major_gridlines = False
-F = SPEC["features"]
-gap420 = F["sperrylite"]["R420"] - F["pentlandite"]["R420"]
-gap640 = abs(F["sperrylite"]["R640"] - F["pentlandite"]["R640"])
-x0 = 8.4
-text(s, x0, 2.3, 4.3, 0.6, f"{gap420:.1f} pts", size=36, font=HEAD, bold=True, color=COPPER)
-text(s, x0, 2.95, 4.3, 0.6, f"gap between sperrylite (Pt) and pentlandite at 420 nm — only {gap640:.1f} pts at 640 nm. Discrimination on real sections, and any gain over RGB, are still untested.", size=11.5, color=MUTED, line=1.05)
-tag(s, x0, 3.65, "SOURCE")
-text(s, x0, 4.05, 4.3, 0.6, "Why not core-scale SWIR?", size=13, font=BODYB, bold=True)
-text(s, x0, 4.38, 4.3, 1.0, "PGM grains are microns across and opaque; SWIR identifies minerals by vibrational absorption that opaque sulphides and chromite lack. The spectrum must be read through the microscope.", size=10.5, color=MUTED, line=1.05)
-text(s, x0, 5.4, 4.3, 0.35, "Our build", size=13, font=BODYB, bold=True)
-text(s, x0, 5.72, 4.3, 0.9, "Multispectral reflectance microscopy: 6–8 narrow LED bands + a rotating polariser, labelled pixel-for-pixel by QEMSCAN maps of the same polished sections.", size=10.5, color=MUTED, line=1.05)
-tag(s, x0, 6.62, "ROADMAP")
-source(s, "Spectra: Handbook of Mineralogy (Mineralogical Society of America), reflectance in air, mean of R1/R2 where bireflectant, from the IMA/COM Quantitative Data File. Two printed typos handled and logged in spectra.json.", y=6.98)
-pic(s, G["lens_a"], 11.95, 0.7, w=0.8, name="!!lens")
-morph(s)
-notes(s, "SCRIPT_13b")
-
 # ---- 14 ROADMAP & HYPOTHESES
 s = new()
 brand(s); pagenum(s, 14)
@@ -1018,6 +1145,54 @@ text(s, 2.1, 6.86, 6, 0.3, "Background: Mixkit stock footage.", size=8.5, color=
 morph(s)
 notes(s, "SCRIPT_16")
 
+# ---- APPENDIX 0 (was 13b) SPECTRAL (hyperspectral at the right scale)
+SPEC = json.load(open(os.path.join(D, "spectra.json"), encoding="utf-8"))
+s = new()
+brand(s); pagenum(s, 0)
+eyebrow(s, 0.6, 0.85, "Appendix · spectral imaging, at the scale platinum lives")
+headline(s, "Reference spectra suggest a few narrow colours of\nlight could separate platinum minerals.", y=1.15, size=28)
+order = [("sperrylite", "Sperrylite PtAs₂", COPPER), ("cooperite", "Cooperite PtS", MAG), ("pentlandite", "Pentlandite", PENT),
+         ("pyrrhotite", "Pyrrhotite", PYRR), ("chalcopyrite", "Chalcopyrite", CHALC), ("magnetite", "Magnetite", MUTED), ("chromite", "Chromite", INK)]
+cd = XyChartData()
+for key, label, col in order:
+    ser = cd.add_series(label)
+    for w in range(400, 701, 20):
+        if key == "cooperite" and w == 560:
+            continue  # printed R2 at 560 nm is out of sequence in the source; point omitted
+        ser.add_data_point(w, round(SPEC["spectra"][key][str(w)], 1))
+gf = s.shapes.add_chart(XL_CHART_TYPE.XY_SCATTER_LINES_NO_MARKERS, Inches(0.5), Inches(2.25), Inches(7.6), Inches(4.45), cd)
+ch = gf.chart
+ch.font.name = BODY; ch.font.size = Pt(9); ch.font.color.rgb = INK
+ch.has_legend = True; ch.legend.position = XL_LEGEND_POSITION.RIGHT; ch.legend.include_in_layout = False; ch.legend.font.size = Pt(9)
+for ser, (_, _, col) in zip(ch.plots[0].series, order):
+    ser.format.line.color.rgb = col
+    ser.format.line.width = Pt(3 if ser.name.startswith(("Sperrylite", "Cooperite")) else 1.75)
+    ser.smooth = False
+ch.has_title = True
+ch.chart_title.text_frame.text = "Reference reflectance in air (%) vs wavelength (nm)"
+ch.chart_title.text_frame.paragraphs[0].runs[0].font.size = Pt(11)
+ch.chart_title.text_frame.paragraphs[0].runs[0].font.bold = True
+va = ch.value_axis; va.minimum_scale = 0; va.maximum_scale = 60
+va.has_major_gridlines = True; va.major_gridlines.format.line.color.rgb = LINE; va.tick_labels.font.size = Pt(9)
+xa = ch.category_axis; xa.minimum_scale = 400; xa.maximum_scale = 700; xa.major_unit = 50
+xa.tick_labels.font.size = Pt(9); xa.format.line.color.rgb = LINE; xa.has_major_gridlines = False
+F = SPEC["features"]
+gap420 = F["sperrylite"]["R420"] - F["pentlandite"]["R420"]
+gap640 = abs(F["sperrylite"]["R640"] - F["pentlandite"]["R640"])
+x0 = 8.4
+text(s, x0, 2.3, 4.3, 0.6, f"{gap420:.1f} pts", size=36, font=HEAD, bold=True, color=COPPER)
+text(s, x0, 2.95, 4.3, 0.6, f"gap between sperrylite (Pt) and pentlandite at 420 nm — only {gap640:.1f} pts at 640 nm. Discrimination on real sections, and any gain over RGB, are still untested.", size=11.5, color=MUTED, line=1.05)
+tag(s, x0, 3.65, "SOURCE")
+text(s, x0, 4.05, 4.3, 0.6, "Why not SWIR for the platinum itself?", size=13, font=BODYB, bold=True)
+text(s, x0, 4.38, 4.3, 1.0, "PGM grains are microns across and opaque; SWIR identifies minerals by vibrational absorption that opaque sulphides and chromite lack. The spectrum must be read through the microscope.", size=10.5, color=MUTED, line=1.05)
+text(s, x0, 5.4, 4.3, 0.35, "Our build", size=13, font=BODYB, bold=True)
+text(s, x0, 5.72, 4.3, 0.9, "Multispectral reflectance microscopy: 6–8 narrow LED bands + a rotating polariser, labelled pixel-for-pixel by QEMSCAN maps of the same polished sections.", size=10.5, color=MUTED, line=1.05)
+tag(s, x0, 6.62, "ROADMAP")
+source(s, "Spectra: Handbook of Mineralogy (Mineralogical Society of America), reflectance in air, mean of R1/R2 where bireflectant, from the IMA/COM Quantitative Data File. Two printed typos handled and logged in spectra.json.", y=6.98)
+pic(s, G["lens_a"], 11.95, 0.7, w=0.8, name="!!lens")
+morph(s)
+notes(s, "SCRIPT_13b")
+
 # ---- APPENDIX A: SOURCES
 s = new()
 brand(s); pagenum(s, 17)
@@ -1065,6 +1240,6 @@ if os.path.exists(script_path):
         if key in SC:
             tf.text = SC[key]
 
-name = os.path.join(OUT, "REEFPRINT-KHANYA-Team-Sonar-pitch-v6.pptx")
+name = os.path.join(OUT, "REEFPRINT-KHANYA-Team-Sonar-pitch-v7.pptx")
 prs.save(name)
 print("saved", name, len(prs.slides), "slides")
