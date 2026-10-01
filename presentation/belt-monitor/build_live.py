@@ -139,6 +139,7 @@ summary = {"built": "2026-10-01", "hashes_sha256": hashes, "showcase": show, "ev
            "bushveld": {"data": BV["data"], "n_intervals": BV["n_intervals"], "n_projects": BV["n_projects"], "n_boreholes": BV["n_boreholes"],
                         "seam": BV["seam_classification"],
                         "targets": {t: {k: v for k, v in x.items() if k.startswith("r2") or k.startswith("coverage") or k.startswith("Q") or k.startswith("seam_only")} for t, x in BV["targets"].items()}},
+           "pentlandite": (lambda d: {"pooled": d["pooled"], "per_section": {k: {m: v[m]["pn_iou"] for m in ("brightness only", "colour only", "colour + texture")} for k, v in d["per_section"].items()}, "val_sections": d["val_sections"], "train_sections": d["train_sections"]})(json.load(open(os.path.join(T, "pentlandite-diagnostic-20261001", "results.json")))),
            "policy": {"version": "belt-policy-1", "alpha": 0.2, "adverse": {"Cu rec": "low", "Mo rec": "low", "Lime cons": "high", "WI": "high", "PH": "none"},
                       "actions": {"Cu rec": "Send the sample to the microscope; review collector dose", "Mo rec": "Notify the moly circuit",
                                   "Lime cons": "Review lime pre-dosing", "WI": "Review feed rate with the control room"},

@@ -1,0 +1,170 @@
+{
+ "note": "T2 exploratory diagnostic: how separable are pentlandite and pyrrhotite from colour and texture, once the sulphides\nare found?  (\"PGM-relevant base-metal-sulphide discrimination on Norilsk sections\" \u2014 PLAN-live-v6.md \u00a7D)\n\nPentlandite is the main Pd carrier among Bushveld base-metal sulphides; pyrrhotite is the bright, similar-looking\nsulphide it must be told apart from. REEFPRINT's physics thesis is that a rotating analyser separates them\n(pentlandite isotropic, pyrrhotite anisotropic). This asks how far ordinary reflected-light colour and texture get.\n\nData: LumenStone S2 v2 (written research grant; images and derived weights are NOT shipped). Codes: 5 pyrrhotite,\n7 pentlandite. Split: the audited protocol's 6 validation sections (train_06, 21, 13, 10, 23, 27) are the evaluation\nset; the other 31 training sections train. The 12 test sections are never opened.\nORACLE: only pixels whose true class is pyrrhotite or pentlandite are classified (stage 1 assumed perfect), so these\nnumbers isolate the Pn/Po discrimination and are not comparable to full-segmentation IoU.\nModels: colour-only vs colour + multi-scale texture, HistGradientBoosting, balanced pixel sampling. Baseline:\n\"all pyrrhotite\" (pentlandite IoU 0) and a brightness-only classifier. n = 6 sections: exploratory, no gates claimed.\n",
+ "train_sections": 31,
+ "val_sections": [
+  "train_06",
+  "train_21",
+  "train_13",
+  "train_10",
+  "train_23",
+  "train_27"
+ ],
+ "downsample": 2,
+ "train_pixels": 290058,
+ "per_section": {
+  "train_06": {
+   "po_pixels": 232065,
+   "pn_pixels": 131197,
+   "brightness only": {
+    "pn_iou": 0.360385872981123,
+    "pn_precision": 0.830650280784569,
+    "pn_recall": 0.3889646866925311,
+    "po_iou": 0.7099263045629678
+   },
+   "colour only": {
+    "pn_iou": 0.5758731502305598,
+    "pn_precision": 0.6190707959920009,
+    "pn_recall": 0.8919258824515804,
+    "po_iou": 0.6500097464303699
+   },
+   "colour + texture": {
+    "pn_iou": 0.5239933359803846,
+    "pn_precision": 0.5309194973248724,
+    "pn_recall": 0.9757082860126375,
+    "po_iou": 0.5056917688266199
+   }
+  },
+  "train_21": {
+   "po_pixels": 1394495,
+   "pn_pixels": 505868,
+   "brightness only": {
+    "pn_iou": 0.3909238436451359,
+    "pn_precision": 0.770656703054513,
+    "pn_recall": 0.4423901096728791,
+    "po_iou": 0.7920304048976126
+   },
+   "colour only": {
+    "pn_iou": 0.25217796777071094,
+    "pn_precision": 0.4853104290101609,
+    "pn_recall": 0.34424395296796795,
+    "po_iou": 0.700843634737383
+   },
+   "colour + texture": {
+    "pn_iou": 0.302697199205554,
+    "pn_precision": 0.6255871057526328,
+    "pn_recall": 0.3696675812662592,
+    "po_iou": 0.7485723957603773
+   }
+  },
+  "train_13": {
+   "po_pixels": 273025,
+   "pn_pixels": 9361,
+   "brightness only": {
+    "pn_iou": 0.13732085405089206,
+    "pn_precision": 0.3032455998708219,
+    "pn_recall": 0.20061959192393974,
+    "po_iou": 0.9579405934946597
+   },
+   "colour only": {
+    "pn_iou": 0.21358479553496515,
+    "pn_precision": 0.24490734931191702,
+    "pn_recall": 0.6254673645977994,
+    "po_iou": 0.9220412901266043
+   },
+   "colour + texture": {
+    "pn_iou": 0.3010074318744839,
+    "pn_precision": 0.30349352249641987,
+    "pn_recall": 0.9735071039418866,
+    "po_iou": 0.9225609555279884
+   }
+  },
+  "train_10": {
+   "po_pixels": 251083,
+   "pn_pixels": 117766,
+   "brightness only": {
+    "pn_iou": 0.3078367494683498,
+    "pn_precision": 0.7333860333087799,
+    "pn_recall": 0.3466280590323183,
+    "po_iou": 0.7201915690124013
+   },
+   "colour only": {
+    "pn_iou": 0.5743371853877296,
+    "pn_precision": 0.6524017993413126,
+    "pn_recall": 0.8275818147852521,
+    "po_iou": 0.7338423216944007
+   },
+   "colour + texture": {
+    "pn_iou": 0.675361549524415,
+    "pn_precision": 0.712060965371825,
+    "pn_recall": 0.929096683253231,
+    "po_iou": 0.7972694298720672
+   }
+  },
+  "train_23": {
+   "po_pixels": 7837,
+   "pn_pixels": 430589,
+   "brightness only": {
+    "pn_iou": 0.3836832294976573,
+    "pn_precision": 0.9891197424508898,
+    "pn_recall": 0.38530942499692283,
+    "po_iou": 0.022061089991046397
+   },
+   "colour only": {
+    "pn_iou": 0.8808020726482487,
+    "pn_precision": 0.9866790056810879,
+    "pn_recall": 0.8914022420451986,
+    "po_iou": 0.04862815487746804
+   },
+   "colour + texture": {
+    "pn_iou": 0.9186747333212594,
+    "pn_precision": 0.9861936579423383,
+    "pn_recall": 0.9306438390205045,
+    "po_iou": 0.05907005119227607
+   }
+  },
+  "train_27": {
+   "po_pixels": 1951765,
+   "pn_pixels": 0,
+   "brightness only": {
+    "pn_iou": 0.0,
+    "pn_precision": 0.0,
+    "pn_recall": 0.0,
+    "po_iou": 0.8012045507527802
+   },
+   "colour only": {
+    "pn_iou": 0.0,
+    "pn_precision": 0.0,
+    "pn_recall": 0.0,
+    "po_iou": 0.9220157139819599
+   },
+   "colour + texture": {
+    "pn_iou": 0.0,
+    "pn_precision": 0.0,
+    "pn_recall": 0.0,
+    "po_iou": 0.906724938709322
+   }
+  }
+ },
+ "pooled": {
+  "brightness only": {
+   "pn_iou": 0.2876254041312116,
+   "pn_precision": 0.4986827120658211,
+   "pn_recall": 0.4046189217940359
+  },
+  "colour only": {
+   "pn_iou": 0.4635971211022869,
+   "pn_precision": 0.6165467853861022,
+   "pn_recall": 0.651419799946601
+  },
+  "colour + texture": {
+   "pn_iou": 0.4987779665698526,
+   "pn_precision": 0.6358218988071104,
+   "pn_recall": 0.6982593462735012
+  },
+  "all pyrrhotite (baseline)": {
+   "pn_iou": 0.0,
+   "pn_precision": NaN,
+   "pn_recall": 0.0
+  }
+ }
+}

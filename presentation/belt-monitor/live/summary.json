@@ -1200,6 +1200,71 @@
    }
   }
  },
+ "pentlandite": {
+  "pooled": {
+   "brightness only": {
+    "pn_iou": 0.2876254041312116,
+    "pn_precision": 0.4986827120658211,
+    "pn_recall": 0.4046189217940359
+   },
+   "colour only": {
+    "pn_iou": 0.4635971211022869,
+    "pn_precision": 0.6165467853861022,
+    "pn_recall": 0.651419799946601
+   },
+   "colour + texture": {
+    "pn_iou": 0.4987779665698526,
+    "pn_precision": 0.6358218988071104,
+    "pn_recall": 0.6982593462735012
+   },
+   "all pyrrhotite (baseline)": {
+    "pn_iou": 0.0,
+    "pn_precision": NaN,
+    "pn_recall": 0.0
+   }
+  },
+  "per_section": {
+   "train_06": {
+    "brightness only": 0.360385872981123,
+    "colour only": 0.5758731502305598,
+    "colour + texture": 0.5239933359803846
+   },
+   "train_21": {
+    "brightness only": 0.3909238436451359,
+    "colour only": 0.25217796777071094,
+    "colour + texture": 0.302697199205554
+   },
+   "train_13": {
+    "brightness only": 0.13732085405089206,
+    "colour only": 0.21358479553496515,
+    "colour + texture": 0.3010074318744839
+   },
+   "train_10": {
+    "brightness only": 0.3078367494683498,
+    "colour only": 0.5743371853877296,
+    "colour + texture": 0.675361549524415
+   },
+   "train_23": {
+    "brightness only": 0.3836832294976573,
+    "colour only": 0.8808020726482487,
+    "colour + texture": 0.9186747333212594
+   },
+   "train_27": {
+    "brightness only": 0.0,
+    "colour only": 0.0,
+    "colour + texture": 0.0
+   }
+  },
+  "val_sections": [
+   "train_06",
+   "train_21",
+   "train_13",
+   "train_10",
+   "train_23",
+   "train_27"
+  ],
+  "train_sections": 31
+ },
  "policy": {
   "version": "belt-policy-1",
   "alpha": 0.2,

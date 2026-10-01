@@ -142,5 +142,49 @@
  [
   "h06",
   "This is a replay of public drill core from Chile: not a live belt, and not platinum ore. On site, it would be calibrated on the mine's own samples."
+ ],
+ [
+  "l01",
+  "This is REEFPRINT Live. Every screen replays real public data, and says so."
+ ],
+ [
+  "l02",
+  "A hyperspectral scan of drill core builds up line by line, in visible and short-wave infrared light."
+ ],
+ [
+  "l03",
+  "Absorption maps show what the camera actually sees: here, the aluminium-hydroxyl band of clays and micas."
+ ],
+ [
+  "l04",
+  "This is the real data cube: the image on the front, and the spectrum of every edge pixel behind it."
+ ],
+ [
+  "l05",
+  "The model predicts with an eighty percent interval. Only grinding hardness beat its baseline, so only hardness drives the decision. Here the interval crosses the band, so the shift is told to verify."
+ ],
+ [
+  "l06",
+  "On Bushveld chromitite, the chemistry a belt analyser measures predicts platinum and rhodium grade, with whole mining projects held out."
+ ],
+ [
+  "l07",
+  "On a real flotation plant, process tags alone don't beat the last lab assay. That is why we measure the ore before the plant."
+ ],
+ [
+  "l08",
+  "Lab results flow back through a typed registry. Bad rows are refused with a reason, and results export to the lab system, the historian and GIS."
+ ],
+ [
+  "l09",
+  "The evidence page shows what failed, including a claim we withdrew."
+ ],
+ [
+  "l10",
+  "Ask a question, and the assistant only routes it. Every number comes from code."
+ ],
+ [
+  "l11",
+  "REEFPRINT. Measured, honest, and ready for a pilot."
  ]
 ]

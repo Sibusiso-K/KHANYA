@@ -70,6 +70,13 @@ Deck v7 slide 13 ("31 of 33 minerals beat the average guess") is literally true 
 - **Seam from chemistry.** Balanced accuracy 0.42 vs 0.125.
 - **Coverage.** 80–87% per project.
 
+### T2 pentlandite diagnostic (`training/pentlandite-diagnostic-20261001`, exploratory)
+
+- **Setup.** Oracle sulphide mask, so only pentlandite vs pyrrhotite is classified. HistGB on colour and texture. Trained on 31 sections, scored on the 6 audited validation sections; test sections never opened.
+- **Result (pooled pentlandite IoU).** Colour + texture **0.499**, colour only 0.464, brightness only 0.288, all-pyrrhotite baseline 0.
+- **Spread across sections.** From 0.92 (train_23) to 0 (train_27).
+- **Reading.** Even with perfect sulphide detection, colour and texture reach only about 0.5. The Pn/Po confusion is a ceiling for ordinary reflected light. This is the case for the rotating-analyser axis (isotropic pentlandite vs anisotropic pyrrhotite). S2 images and weights are not shipped.
+
 ### REEFPRINT Live (`presentation/belt-monitor/`)
 
 - **Views:** Live scan, Bushveld PGE, Plant, Lab & exports, Evidence, Where it sits. All six use the workbench design and three themes.
