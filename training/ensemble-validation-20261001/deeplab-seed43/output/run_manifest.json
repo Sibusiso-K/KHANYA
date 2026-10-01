@@ -1,0 +1,471 @@
+{
+  "run_id": "20261001-s2-deeplab-seed43-native-ensemble-v1",
+  "architecture": "DeepLabV3-ResNet50",
+  "training_seed": 43,
+  "split_seed": 42,
+  "protocol_sha256": "a9d51eb48045c8b0d7964b40ef4b253969c7356420d104c02564c87a15de4fae",
+  "source_bundle_sha256": "4cffd60c88fea1a7553f8f154040cf2ce93f7312f0571f3dc6784b5938988528",
+  "source_file_sha256": {
+    "src/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/advisor.py": "24777d35b4382f8975c06478936108e23952921d470a42c360bfab2c267c2d45",
+    "src/benchmark.py": "5a0a7e936d58a5c85a5ff3c758dee1fa6bba7687aa9220ba058cbb360e403c01",
+    "src/chromite_pge_falsification.py": "94cb394739463bb0c216b469b1fb733b393ef3481bbf2cb69c4bba34fd407b0d",
+    "src/config.py": "8009746cce6b1b0c5a3b6859d4d375b4eb3c095c470aa5314045fe400cde8d2f",
+    "src/conformal.py": "8fa79aa8a8afb65d5ea2a492d4c1fb00259983bba21b6af6b3e4780a0ba8ef55",
+    "src/data.py": "cdd8f9fd1f361f885f13b80c7e9b2fbd564416e7c53efe6716be8540f288868f",
+    "src/decision_gap.py": "992b49cb37ec86d58f0559de4ea40313855176a571e569b5924c8f4eaaa085b0",
+    "src/evaluate.py": "c5c671c87c6c40997a0f9dcf2c1dd4f9dcd5d8082e13c7558a8e988952d9b1f9",
+    "src/exposure_control.py": "fe7d10cce14a741942afa5330fb213c3686f8f211badeab2c55c9354885f98f2",
+    "src/inspect_pipeline.py": "dd4a26b0b15fd9f93ee93249e70dd2a7fb5432ba51bf7d3a0f18c5254b8f5ab4",
+    "src/modal.py": "efa0596e9c7835c03514df413acb219297faa37013158ecf5d960e840233d8b2",
+    "src/model.py": "2abcc3116eafe09ff98fc3b79ede6acc9a48a477b01e6ba057761aa8436db198",
+    "src/polarimetry.py": "4eaa86e9bd3cbcf6aefc9d0678a91ed7d59066a202e3715c4d6c9b626fb71a7f",
+    "src/preflight.py": "5f2e5a83d9594fd05989aed061f5a83ee55287f7e8217fd559658040051107bb",
+    "src/refinement_audit.py": "1fce9f863e9db099cbd61ce02be51f480d20cf872fa5606a7e462de7407ad7b3",
+    "src/robustness.py": "de030d9a6704470cc2ce74e32d02b7abf07041cd3e353461d529a71ac7fdb52f",
+    "src/s2_section_stats.py": "10e9a6f94194858c1453d4986ff579a19326c52f7c891f24a71f76ff936a8f20",
+    "src/sampling_error.py": "96ad04ffebe8ee0e213a9dc5fae7ce1fa9e066760a994526517da2a060bffd0a",
+    "src/segmentation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/segmentation/baselines.py": "ea9c1834551448aeb1bfb54beba24e3631fab9433f22c939b5b6efb201c19da0",
+    "src/segmentation/config.py": "2ea385edbb3414de681bf0aaa54321495e23538b30292c77be21ea5e18181056",
+    "src/segmentation/data.py": "404d63dc9f2e041144a051c7ef48c544d45c17243a27d16f9305acc78ba052f3",
+    "src/segmentation/evaluate.py": "2f728432e7303fc8892c3ebe5738f9caef682072d82ed7f090a9011f799a4d64",
+    "src/segmentation/latency_benchmark.py": "da8592c8d9eb3179e579a00ed17408f6286f280210e3b49e5b6b874bb2121bd9",
+    "src/segmentation/losses.py": "7c79986e5d4d46a7715a730dc885e93cd544e45cd21fa51f4605c131fdaf308e",
+    "src/segmentation/lumenstone.py": "bec3ae186358fee52152bf5062110186ddf2dbac9ad54c3201816f74ecc10654",
+    "src/segmentation/metrics.py": "799a0c62181164dbf24befb57aaa10588a2bd392c797aa559e68aa30ef7f33c2",
+    "src/segmentation/model.py": "2cead0f9daa832c9d6eeee9f6fb634b43909a188ca8969cd985d0eff65a575de",
+    "src/segmentation/patches.py": "98b59779d1c30c8902c62595d7f414f0e02cc0232a54c597cdcb60a9f5338e09",
+    "src/segmentation/train.py": "022efe6d0a7d640ede292fce16533e37b51b211a5a41d44c952643688e1501fb",
+    "src/segmentation/train_lumenstone.py": "144911df5a5cf93731b54050e83e29c03600eb47d36927a69648a8f8181ffcec",
+    "src/segmentation/train_patches.py": "f1323cf7edc20932112efb259dd468aa28626eed8c73d75aa7720bfb86ebf6b8",
+    "src/train.py": "caab5a4242b64d062413e9be95438da9d7e8221f6e0165f753788652704d9c1d",
+    "src/v1_consistency.py": "7e8ccae8809402769da6c472580d074a5bee32ff1d520919bb9081b82daed5f7"
+  },
+  "dataset_archive_sha256": "64aebd108b3306a8b2e83a945c01f2779bbfd1abeb187b1e2cedcac96cf40c1d",
+  "dataset_archive_bytes": 418742024,
+  "train_image_ids": [
+    "train_28",
+    "train_05",
+    "train_25",
+    "train_30",
+    "train_34",
+    "train_32",
+    "train_33",
+    "train_11",
+    "train_12",
+    "train_20",
+    "train_29",
+    "train_17",
+    "train_37",
+    "train_07",
+    "train_26",
+    "train_01",
+    "train_36",
+    "train_14",
+    "train_19",
+    "train_03",
+    "train_35",
+    "train_31",
+    "train_22",
+    "train_04",
+    "train_24",
+    "train_09",
+    "train_15",
+    "train_16",
+    "train_18",
+    "train_02",
+    "train_08"
+  ],
+  "validation_image_ids": [
+    "train_06",
+    "train_21",
+    "train_13",
+    "train_10",
+    "train_23",
+    "train_27"
+  ],
+  "test_image_ids": [
+    "test_01",
+    "test_02",
+    "test_03",
+    "test_04",
+    "test_05",
+    "test_06",
+    "test_07",
+    "test_08",
+    "test_09",
+    "test_10",
+    "test_11",
+    "test_12"
+  ],
+  "training_budget": {
+    "epochs": 24,
+    "patches_per_epoch": 192,
+    "validation_patches": 32,
+    "patch_px": 512,
+    "batch_size": 2,
+    "learning_rate": 0.0002
+  },
+  "completed_epochs": 24,
+  "training_timed_out": false,
+  "training_return_code": 0,
+  "test_evaluation_performed": false,
+  "test_metrics": null,
+  "test_used_for_selection": false,
+  "automatic_deployment": false,
+  "started_at_utc": "2026-10-01T09:54:51Z",
+  "runtime": {
+    "python": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+    "torch": "2.10.0+cu128",
+    "torchvision": "0.25.0+cu128",
+    "cuda": "12.8",
+    "gpu": "Tesla T4"
+  },
+  "initialization_artifact_sha256": {
+    "deeplabv3_resnet50_coco-cd0a2569.pth": "cd0a25694c4a0f7106b38f4938bf90a874f2f241cc410b8f63c7024399538f06"
+  },
+  "status": "training_complete",
+  "best_epoch": 19,
+  "best_validation": {
+    "iou_per_class": [
+      0.9377614440544761,
+      0.708768553370218,
+      0.1338739965435461,
+      0.8502836247401053,
+      0.437821316005778
+    ],
+    "mean_iou": 0.6137017869428247,
+    "pixel_accuracy": 0.9004843993772977,
+    "tp_per_class": [
+      23016837,
+      5866573,
+      17894,
+      15001730,
+      2830010
+    ],
+    "fp_per_class": [
+      777441,
+      1482850,
+      28413,
+      1190421,
+      1685503
+    ],
+    "fn_per_class": [
+      750170,
+      927712,
+      87356,
+      1451056,
+      1948334
+    ],
+    "recall_per_class": [
+      0.9684364968630673,
+      0.863457008353344,
+      0.1700142517814727,
+      0.911804845696042,
+      0.5922574850199148
+    ],
+    "precision_per_class": [
+      0.9673265564099066,
+      0.798235861509128,
+      0.3864210594510549,
+      0.9264816021046246,
+      0.6267305619538688
+    ],
+    "class_names": [
+      "background",
+      "chalcopyrite",
+      "magnetite",
+      "pyrrhotite",
+      "pentlandite"
+    ],
+    "n_validation_sections": 6,
+    "per_section": {
+      "train_06": {
+        "iou_per_class": [
+          0.9740852113607629,
+          0.7077404196710686,
+          0.0,
+          0.6167152338169861,
+          0.5173850348876148
+        ],
+        "mean_iou": 0.5631851799472865,
+        "pixel_accuracy": 0.9237544990457376,
+        "tp_per_class": [
+          6045542,
+          873564,
+          0,
+          692475,
+          378537
+        ],
+        "fp_per_class": [
+          95088,
+          148906,
+          13948,
+          194375,
+          207177
+        ],
+        "fn_per_class": [
+          65749,
+          211830,
+          0,
+          235994,
+          145921
+        ],
+        "recall_per_class": [
+          0.989241389421646,
+          0.8048358476276818,
+          null,
+          0.74582457788036,
+          0.7217679966746622
+        ],
+        "precision_per_class": [
+          0.984514943906407,
+          0.8543663872778663,
+          0.0,
+          0.7808253932457575,
+          0.6462829981868284
+        ]
+      },
+      "train_10": {
+        "iou_per_class": [
+          0.9558726465046787,
+          0.8603900554682758,
+          0.0,
+          0.7906121340460203,
+          0.6228496150395042
+        ],
+        "mean_iou": 0.6459448902116958,
+        "pixel_accuracy": 0.9396693169589573,
+        "tp_per_class": [
+          4499586,
+          2454057,
+          0,
+          803458,
+          370674
+        ],
+        "fp_per_class": [
+          120376,
+          267020,
+          507,
+          10587,
+          123347
+        ],
+        "fn_per_class": [
+          87345,
+          131184,
+          0,
+          202203,
+          101105
+        ],
+        "recall_per_class": [
+          0.9809578561351806,
+          0.9492565683431448,
+          null,
+          0.7989352276761255,
+          0.7856941491673007
+        ],
+        "precision_per_class": [
+          0.9739443744342486,
+          0.9018697376075723,
+          0.0,
+          0.9869945764669029,
+          0.7503203305122657
+        ]
+      },
+      "train_13": {
+        "iou_per_class": [
+          0.9755348276158694,
+          0.8826879045572263,
+          0.0,
+          0.8150638870208473,
+          0.14998649743451256
+        ],
+        "mean_iou": 0.5646546233256912,
+        "pixel_accuracy": 0.9576744020425425,
+        "tp_per_class": [
+          5965175,
+          1382073,
+          0,
+          902940,
+          33324
+        ],
+        "fp_per_class": [
+          77138,
+          86064,
+          5188,
+          12954,
+          184756
+        ],
+        "fn_per_class": [
+          72461,
+          97618,
+          0,
+          191921,
+          4100
+        ],
+        "recall_per_class": [
+          0.9879984483993404,
+          0.9340281180327514,
+          null,
+          0.824707428614226,
+          0.8904446344591705
+        ],
+        "precision_per_class": [
+          0.9872336967647986,
+          0.9413787677852953,
+          0.0,
+          0.9858564419026656,
+          0.15280630961115188
+        ]
+      },
+      "train_21": {
+        "iou_per_class": [
+          0.6869538294187797,
+          0.5679293471774675,
+          0.0327623181665504,
+          0.8477205281245275,
+          0.5853637831752428
+        ],
+        "mean_iou": 0.5441459612125136,
+        "pixel_accuracy": 0.8608172250963396,
+        "tp_per_class": [
+          583524,
+          118967,
+          2536,
+          5292638,
+          1448070
+        ],
+        "fp_per_class": [
+          86232,
+          3064,
+          1762,
+          661841,
+          450978
+        ],
+        "fn_per_class": [
+          179681,
+          87444,
+          73108,
+          288897,
+          574747
+        ],
+        "recall_per_class": [
+          0.7645704627197148,
+          0.5763597870268542,
+          0.033525461371688436,
+          0.9482405825637571,
+          0.7158680196972835
+        ],
+        "precision_per_class": [
+          0.871248633830828,
+          0.9748916258983373,
+          0.59004187994416,
+          0.888849889301818,
+          0.7625241700051816
+        ]
+      },
+      "train_23": {
+        "iou_per_class": [
+          0.9127125908680045,
+          0.4561101824301506,
+          0.41945703829136394,
+          0.07397153302807653,
+          0.3359104560083702
+        ],
+        "mean_iou": 0.43963236012519313,
+        "pixel_accuracy": 0.822385212192177,
+        "tp_per_class": [
+          5514238,
+          969724,
+          15358,
+          14588,
+          599405
+        ],
+        "fp_per_class": [
+          330739,
+          970115,
+          7008,
+          165884,
+          62553
+        ],
+        "fn_per_class": [
+          196616,
+          186235,
+          14248,
+          16739,
+          1122461
+        ],
+        "recall_per_class": [
+          0.9655715239787255,
+          0.8388913447622277,
+          0.5187462000945754,
+          0.46566859258786353,
+          0.34811361627443715
+        ],
+        "precision_per_class": [
+          0.9434148329411732,
+          0.4998992184402932,
+          0.6866672628096218,
+          0.08083248370938428,
+          0.9055030681704882
+        ]
+      },
+      "train_27": {
+        "iou_per_class": [
+          0.6540791541191568,
+          0.23572440972102188,
+          null,
+          0.9170304408919728,
+          0.0
+        ],
+        "mean_iou": 0.4517085011830379,
+        "pixel_accuracy": 0.8986057409280324,
+        "tp_per_class": [
+          408772,
+          68188,
+          0,
+          7295631,
+          0
+        ],
+        "fp_per_class": [
+          67868,
+          7681,
+          0,
+          144780,
+          656692
+        ],
+        "fn_per_class": [
+          148318,
+          213401,
+          0,
+          515302,
+          0
+        ],
+        "recall_per_class": [
+          0.7337629467411011,
+          0.24215434551775816,
+          null,
+          0.9340281116225168,
+          null
+        ],
+        "precision_per_class": [
+          0.8576116146357838,
+          0.8987597042270229,
+          null,
+          0.9805413975115085,
+          0.0
+        ]
+      }
+    },
+    "foreground_macro_iou": 0.5326868726649119,
+    "method": "sliding window, 512px patches at native resolution, whole sections, no downsampling"
+  },
+  "checkpoint_sha256": "aad65e9848c0928231fe39ad527af1296bced62dafdded5e10275c5c0adfd5c1",
+  "checkpoint_bytes": 168318771,
+  "checkpoint_relative_path": "checkpoints/20261001-s2-deeplab-seed43-native-ensemble-v1/best.pt",
+  "checkpoint_exported": true,
+  "ensemble_validation_performed": true,
+  "elapsed_seconds": 6550.96557072,
+  "finished_at_utc": "2026-10-01T11:44:02Z"
+}

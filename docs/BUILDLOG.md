@@ -58,7 +58,7 @@ moved to the appendix; notes trimmed and retimed by word count to ~10:16 at 165 
 **Ensemble (validation only, no test set touched).** FCN seed 42 finished: alone 0.657 mIoU on the six validation
 sections; equal-probability average with the quarantined candidate 42646cfa scored 0.691 vs 0.704 for 42646cfa alone —
 **did not help mIoU**, though NLL/Brier/ECE improved. Pre-declared gate not passed; it stays out. DeepLab seed 43 still
-running at 13:22.
+running at 13:22. *Update 14:10:* DeepLab seed 43 finished — alone 0.614; averaged with 42646cfa 0.709 vs 0.704 alone on the same six validation sections (+0.005, within noise on n = 6, and calibration got worse: ECE 0.091 vs 0.062). No significant difference; gate not passed; stays out.
 
 ## 2026-10-01 (05:15–10:15) — British re-voice, the 10-minute deck, and the themes branch
 
