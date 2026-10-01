@@ -1,3 +1,17 @@
+## 2026-10-01 — Sibusiso (Claude review) — prompt-6 fixes checked live
+
+**Checked c9fb323 on 127.0.0.1:8510 (de7135a9):**
+- Fix 1 works. Starting with httpx removed from the runtime, the API started, /api/health returned 200, and /api/assistant/status reported provider_ready false with "Optional provider client unavailable (httpx is not installed)". The local assistant answered (mIoU 0.573, magnetite 0.000). httpx was restored afterwards.
+- Fix 2 works. "Model warming up…" is disabled until model_ready, then reads "Run analysis".
+- Fix 3 works. "Background / resin 3.0%" row; provisional rows sum to 100.0% at field 3. Timing line: "inference 28.7 s · analysis 0.8 s · saving 0.8 s · 6 fields ≈ 4.8 s each".
+- **Fixed (this entry's commit):** mid-run, the card showed "Runtime: Not measured yet" beside the previous run's timing line. The line now shows only once this result is measured.
+
+**Process gaps:** c9fb323 is one commit, not three, and adds no tests, though the prompt named each test. The 29 API and 7 Playwright passes Codex reported are existing tests.
+
+**Power warning:** at 17% battery Windows starved the server (0 CPU-s over 5 s). One run took 88 s of inference (14.7 s per field) and looked hung at 5 of 6. That is power management, not a code fault, but on stage it would look like a crash. Present plugged in, on Best performance.
+
+---
+
 ## 2026-10-01 — Sibusiso (Claude review) — overnight commits reviewed live
 
 **Checked 2b763b2 on 127.0.0.1:8510 (de7135a9):** all four CI checks green. Progress telemetry correct (provisional pyrrhotite 96.8 → 93.6%; final 93.6%, Grind finer 0.9066). Assistant off by default and local-only, provider opt-in per question. Voice consent text present. Zero requests to other origins.
