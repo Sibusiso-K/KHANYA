@@ -154,11 +154,24 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 class Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
-    allow_reuse_address = True
+    # On Windows SO_REUSEADDR lets a second process bind the SAME port and silently take some requests, so a stale
+    # copy could answer without the key. Use exclusive binding there; keep normal reuse on POSIX.
+    allow_reuse_address = os.name != "nt"
+
+    def server_bind(self):
+        if os.name == "nt" and hasattr(__import__("socket"), "SO_EXCLUSIVEADDRUSE"):
+            import socket
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
 
 
 if __name__ == "__main__":
-    srv = Server(("127.0.0.1", PORT), Handler)
+    try:
+        srv = Server(("127.0.0.1", PORT), Handler)
+    except OSError:
+        sys.exit(f"Port {PORT} is already in use: another REEFPRINT server is running. Stop it (Ctrl+C in its window) or set REEFPRINT_PORT.")
+    if PROVIDER in PROVIDERS and KEY and MODEL and "/" not in MODEL:
+        print(f"Note: model id '{MODEL}' has no provider prefix; AIML ids look like 'openai/gpt-6-luna'. Check the provider's model list.")
     mode = f"{PROVIDER} ({MODEL})" if (PROVIDER in PROVIDERS and KEY and MODEL) else "offline parser (no LLM key configured)"
     print(f"REEFPRINT Live on http://127.0.0.1:{PORT}/  ·  assistant router: {mode}")
     srv.serve_forever()

@@ -31,8 +31,8 @@ PowerShell:
 
 ```
 $env:REEFPRINT_LLM_PROVIDER = "aiml"         # or "featherless"
-$env:AIML_API_KEY = "<your key>"             # or $env:FEATHERLESS_API_KEY
-$env:REEFPRINT_LLM_MODEL = "<model id from the provider's catalogue>"
+$env:AIML_API_KEY = Read-Host "AIML key"     # typed at the prompt, so it stays out of PowerShell history; or $env:FEATHERLESS_API_KEY
+$env:REEFPRINT_LLM_MODEL = "openai/gpt-6-luna"    # exact id from the provider's model list (AIML example)
 python presentation/belt-monitor/server.py
 ```
 
