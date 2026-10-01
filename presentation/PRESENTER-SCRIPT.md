@@ -1,6 +1,6 @@
 # REEFPRINT / KHANYA: presenter script (10 minutes)
 
-**Deck:** `presentation/output/REEFPRINT-KHANYA-Team-Sonar-pitch-v2.pptx` (19 slides; slide 11 is new). The script below is also in each slide's speaker notes.
+**Deck:** `presentation/output/REEFPRINT-KHANYA-Team-Sonar-pitch-v3.pptx` (20 slides: 18 main + 2 appendices). Reviewed by a two-round ClauDex loop (Codex gpt-6-astra); see `PLAN-REVIEW-LOG.md`.
 **Target:** 9:45 spoken, which leaves 15 s of slack. Slide 7 plays the 92-second demo video: click it once and say nothing while it runs.
 
 **Before you start:**
@@ -13,76 +13,59 @@
 
 | Slides | Speaker | Time |
 |---|---|---|
-| 1–4 (title, problem, who it affects, how it hurts) | Lethabo | 0:00–2:00 |
-| 5–7 (solution, how it works, demo) | Sibusiso | 2:00–4:50 |
-| 8–10 (evidence, competitors, value) | Ipeleng | 4:50–6:45 |
-| 11–14 (next lab test, business, technology, accuracy engine) | Sibusiso | 6:45–8:35 |
-| 15–17 (roadmap, compliance, the ask) | Lethabo | 8:35–9:45 |
+| 1–4 | Lethabo | 0:00–2:00 |
+| 5–7 | Sibusiso | 2:00–4:50 |
+| 8–11 | Ipeleng | 4:50–7:10 |
+| 12–15 | Sibusiso | 7:10–8:50 |
+| 16–18 | Lethabo | 8:50–9:45 |
 
 ## The script
 
 **1 · Title (0:00–0:20).** Good morning. We're Team Sonar: Lethabo, Sibusiso and Ipeleng. This is REEFPRINT, which we also call KHANYA. It gives you mineral intelligence from a micrograph in near real time, and, just as important, it's honest enough to say when it doesn't know.
 
-**2 · Problem (0:20–1:00).** Here's the problem, in the brief's own words. Laboratory SEM or XRD characterisation can take days. At a major commercial lab, one week is the *expedited* turnaround. One published price list puts a QEMSCAN liberation analysis at fifteen hundred dollars a sample. Meanwhile, ore changes by the hour. By the time the plant learns what was in its ore, that ore has already been milled and floated, and its metal is gone. Without real-time feedback, plants overspend on chemicals and lose yield.
+**2 · Problem (0:20–1:00).** Here's the problem, in the brief's own words. Laboratory SEM or XRD characterisation can take days. At a major commercial lab, one week is the expedited turnaround. One published price list puts a QEMSCAN liberation analysis at fifteen hundred dollars a sample. Meanwhile, ore changes by the hour. By the time the plant learns what was in its ore, that ore has already been milled and floated, and its metal is gone. Without real-time feedback, plants overspend on chemicals and lose yield.
 
 **3 · Who it affects (1:00–1:35).** Why does this matter here? In 2024 South Africa mined about seventy-one percent of the world's platinum, and it holds about three-quarters of the world's PGM reserves. Mining is six point one percent of GDP and directly employs almost four hundred and seventy-five thousand people. When recovery drops in these flotation cells, everyone feels it: metallurgists, mineralogists buried in routine samples, operators, the companies, and the communities and the fiscus that depend on the margin per ounce.
 
-**4 · How it hurts (1:35–2:00).** Here's how it hurts. The ore changes, and there's no feedback for days. So the grind is a guess: too fine wastes power, too coarse leaves valuable grains locked in rock. Reagents are dosed for yesterday's ore, and the locked metal goes to tailings. The plant already has the levers. What it's missing is a fast, trustworthy mineral reading that also knows when *not* to touch them.
+**4 · How it hurts (1:35–2:00).** Here's how it hurts. The ore changes, and there's no feedback for days. So the grind is a guess: too fine wastes power, too coarse leaves valuable grains locked in rock. Reagents are dosed for yesterday's ore, and the locked metal goes to tailings. The plant already has the levers. What it's missing is a fast, trustworthy mineral reading that also knows when not to touch them.
 
-**5 · Solution (2:00–2:40).** That's what REEFPRINT does. It takes a reflected-light micrograph of a polished section. On an ordinary laptop, in about a minute and a half, it delivers the brief's three deliverables.
-- **One:** it identifies mineral phases, pyrrhotite, pentlandite and chalcopyrite, pixel by pixel.
-- **Two:** it produces an accuracy report tied to the exact model checkpoint, zeros included.
-- **Three:** it turns the result into a plant parameter over OPC UA. Today that goes to a simulator, and the simulator holds the setting automatically while the model isn't approved.
+**5 · Solution (2:00–2:40).** That's what REEFPRINT does. It takes a reflected-light micrograph of a polished section. On an ordinary laptop, in about a minute and a half, it delivers the brief's three deliverables. One: it identifies mineral phases, pyrrhotite, pentlandite and chalcopyrite, pixel by pixel. Two: it produces an accuracy report tied to the exact model checkpoint, zeros included. Three: it turns the result into a plant parameter over OPC UA. Today that goes to a simulator, and the simulator holds the setting automatically while the model isn't approved. Around those three you also get grain liberation, XRF context, a spatial view and a phone view.
 
-Around those three you also get grain liberation, XRF context, a spatial view and a phone view.
+**6 · How it works (2:40–3:15).** Here's how it works. You use standard sample preparation and any lab microscope camera. First, a quality gate rejects bad images. Then there's exactly one learned stage: a DeepLabV3 network segments the mineral phases. Everything after that is deterministic and auditable. Grains are separated and marked free or locked. A conformal uncertainty band sits around every decision threshold. The advisor then says act, verify or hold, always with a reason. A setpoint only moves if the model is approved, and every step is recorded.
 
-**6 · How it works (2:40–3:15).** Here's how it works. You use standard sample preparation and any lab microscope camera. First, a quality gate rejects bad images. Then there's exactly one learned stage: a DeepLabV3 network segments the mineral phases. Everything after that is deterministic and auditable:
-- Grains are separated and marked free or locked.
-- A conformal uncertainty band sits around every decision threshold.
-- The advisor says act, verify or hold, always with a reason.
-- A setpoint only moves if the model is approved, and every step is recorded.
+**7 · Demo (3:15–4:50).** Let me show you the real app, running live. [CLICK TO PLAY — 92 seconds. Say nothing while it plays.]
 
-**7 · Demo (3:15–4:50).** Let me show you the real app, running live. *[Click to play. 92 seconds. Stay silent.]*
+**8 · Evidence (4:50–5:30).** Now the evidence, starting with what fails. On twelve held-out sections, the live model scores a mean IoU of zero point four five four and seventy-seven percent pixel accuracy. On magnetite it scores zero, and we show that zero. A retrained candidate reaches zero point six three two and finds eighty-nine percent of the magnetite, but only a quarter of its magnetite calls are correct, so it isn't deployed. A fresh analysis took ninety-eight seconds on a laptop CPU. And with our historical checkpoint, the refusal design produced zero policy-defined unsafe disagreements on that twelve-section benchmark. Every disagreement became a request for a human to verify.
 
-**8 · Evidence (4:50–5:30).** Now the evidence, starting with what fails. On twelve held-out sections, our live model scores a mean IoU of zero point four five four and seventy-seven percent pixel accuracy. On magnetite it scores zero, and we show that zero. A retrained candidate reaches zero point six three two and finds eighty-nine percent of the magnetite, but only a quarter of its magnetite calls are correct, so we haven't deployed it. A fresh analysis took ninety-eight seconds on a laptop CPU. The result we're proudest of: because the system is designed to refuse, it gave zero unsafe advisories on those twelve sections. Every disagreement became a request for a human to verify.
+**9 · Competition (5:30–6:05).** Who else is in this space? SEM automated mineralogy, meaning QEMSCAN, MLA, TIMA and Mineralogic, is the gold standard, but it sits in a central lab with a queue. XRD is bulk and slow. XRF is fast, but it measures elements, not minerals. Core-scale hyperspectral struggles with opaque minerals. Flotation control, such as Mintek's FloatStar, already stabilises levels and flows, and mineralogy could add a signal it doesn't have today. REEFPRINT identifies phases and liberation in minutes on a laptop, refuses with a reason, and gates any setpoint. It complements all of them.
 
-**9 · Competition (5:30–6:05).** Who else is in this space?
-- SEM automated mineralogy, meaning QEMSCAN, MLA, TIMA and Mineralogic, is the gold standard, but it sits in a central lab with a queue.
-- XRD is bulk and slow.
-- XRF is fast, but it measures elements, not minerals.
-- Hyperspectral struggles with opaque minerals such as chromite.
-- Flotation control acts in real time, but it needs a mineral signal to act on.
+**10 · Value (6:05–6:40).** Why would a PGM producer want this? First, triage. A third of our held-out sections got a confident optical answer. If a pilot proves those answers can safely replace the lab analysis, that's roughly fifty thousand dollars per hundred samples at a 2017 list price. Second, decisions happen inside the shift. Third, it never acts on thin evidence. Now the upside. On our assumed concentrator, two hundred and fifty thousand tonnes a month at four grams per tonne, at Valterra's reported H1 2026 basket price, every half a percentage point of recovery is worth about seven point four million rand a month. We haven't measured that gain. The pilot will.
 
-REEFPRINT is the only one here that identifies phases and liberation in minutes on a laptop, refuses with a reason, and drives a gated setpoint. It complements all of them: hard samples still go to QEMSCAN, and checked setpoints go to the controllers plants already run.
+**11 · Next lab test (mentor's paper) (6:40–7:10).** This slide builds on Mintek's own paper. Moodley, Govender and colleagues tied QEMSCAN liberation classes to rougher flotation kinetics. We bin our grains with their class boundaries, using area share as a proxy. Their constants come from a different ore, so this is a hypothetical curve, not a prediction. Even so, it says most of the valuable mineral could float in the first minute, which is the interval their test couldn't resolve. So the next test should add fifteen- and thirty-second concentrates, and each timed concentrate should be screened optically, which is their stated future work.
 
-**10 · Value (6:05–6:45).** Why would a PGM producer want this today? For three reasons.
-- **First, triage.** A third of our held-out sections got a confident optical answer. Across a hundred samples, that frees roughly fifty thousand dollars of QEMSCAN time for the hard cases.
-- **Second, decisions happen inside the shift,** in minutes rather than days.
-- **Third, it never acts on thin evidence.**
+**12 · Business model (7:10–7:40).** Commercially, there's a paid pilot of about two hundred and ten thousand rand, then a site licence of around twelve thousand rand a month plus a one-off deployment fee. These prices are hypotheses we'll test. REEFPRINT runs offline on a lab laptop, works on a phone, and connects to the plant through OPC UA. First buyers are South Africa's PGM and chrome producers, with labs such as Mintek as triage partners.
 
-Now the upside. Take a typical concentrator. Our *assumption* is two hundred and fifty thousand tonnes a month at four grams per tonne. At today's basket price, every half a percentage point of recovery is worth about seven point four million rand a month. We haven't measured that gain yet. That's what the pilot is for.
+**13 · Technology (7:40–8:00).** The technology is React and TypeScript in front, FastAPI and PyTorch behind, OPC UA to the plant and Supabase for storage. It's offline first, runs on a CPU, and is permissively licensed.
 
-**11 · Next lab test, built on the mentor's paper (6:45–7:15).** This next step is built on Mintek's own work. Moodley, Govender and colleagues showed that QEMSCAN liberation classes explain rougher flotation kinetics. REEFPRINT produces those same classes from a micrograph in minutes. Run through the paper's own rate constants, it predicts that about eighty-six percent of this sample's valuable mineral floats in the first minute, which is the interval the paper couldn't resolve. So the next lab test should add fifteen- and thirty-second concentrates, and each timed concentrate can be screened optically, which is the paper's stated future work. Those constants come from one copper ore, so this is a hypothesis to test, not a result.
+**14 · Accuracy engine (8:00–8:25).** Different models are good at different minerals. The live model misses magnetite, the candidate finds it, and the historical model is best on pyrrhotite and pentlandite. So next, a router will send each image to specialist models, combine them per mineral with weights learned on validation data, and let a conformal referee decide whether to answer, verify or hold. Two new ensemble members are training on Kaggle right now.
 
-**12 · Business model (7:15–7:45).** Commercially, a paid pilot costs about two hundred and ten thousand rand for eight to twelve weeks. After that, a site licence is around twelve thousand rand a month, plus a one-off deployment fee, and an enterprise tier covers multi-site operations. These prices are hypotheses to test. Customers can run REEFPRINT offline on a lab laptop, use it on a phone, or connect it to the plant through OPC UA. Our first buyers are South Africa's PGM and chrome producers, with labs such as Mintek as triage partners.
+**15 · Hyperspectral at the right scale (8:25–8:50).** And this is hyperspectral done at the scale where platinum lives. These are measured reflectance spectra. At four hundred and twenty nanometres, sperrylite, a platinum arsenide, is eighteen points brighter than pentlandite, but at six hundred and forty they're almost identical. So an ordinary camera blurs them, while a few narrow colour bands through the microscope separate them. Our build adds those bands and a polariser, labelled pixel for pixel by QEMSCAN maps of the same sections.
 
-These prices are hypotheses we'll test with buyers. Customers can run REEFPRINT offline on a lab laptop, sign in from a phone, or connect it to the plant through OPC UA. Our first buyers are South Africa's PGM and chrome producers, with mineralogy labs such as Mintek as triage partners.
+**16 · Pathway (8:50–9:10).** The pathway: a twelve-week lab shadow pilot with QEMSCAN labels, then specialist models and a UG2 and chromite domain at one concentrator, then a flotation trial with the spectral microscope. Every step has a hypothesis that could fail.
 
-**13 · Technology (7:45–8:05).** On the technology side, the front end is React and TypeScript, with FastAPI and PyTorch behind it, OPC UA to the plant and Supabase for secure storage. It works offline first, runs on a CPU, is permissively licensed, and scales by adding sites, not servers.
+**17 · Compliance (9:10–9:22).** It's built for a mine's reviews: POPIA, mine safety with an advisory-first design, SAMREC with process decisions rather than resource statements, permissive licences, and disclosed AI assistance.
 
-The system works offline first, runs on a CPU, is permissively licensed with an SBOM, and scales by adding sites, not servers.
+**18 · The ask (9:22–9:45).** So our ask: one concentrator, one mineralogist, QEMSCAN-labelled sections and twelve weeks. In return, you get measured answers: turnaround, accuracy on your own ore, refusal rates, and value on your own numbers. This has been REEFPRINT, also known as KHANYA. Thank you.
 
-**14 · Accuracy engine (8:05–8:35).** How does accuracy keep improving? Different models are good at different minerals. The live model misses magnetite, the candidate finds it, and the historical model is best on pyrrhotite and pentlandite. So a router sends each image to specialist models, combines their answers per mineral using weights learned on validation data, and a conformal referee decides whether to answer, verify or hold. Every QEMSCAN-labelled section retrains the specialists.
 
-Every QEMSCAN-labelled section retrains the specialists, and no model is promoted unless it holds up.
+## Facts to have ready if asked
 
-**15 · Pathway (8:35–9:05).** Here's the pathway. First, a twelve-week lab shadow pilot with QEMSCAN labels. Next, specialist models and a UG2 and chromite domain at one concentrator. After that, a flotation trial, plus QEMSCAN-labelled multispectral and hyperspectral reflectance microscopy with polarisation. Microscope-scale optics matter, because PGM grains are microns across and opaque. Every step has a hypothesis that could fail.
-
-Every step comes with a hypothesis that could fail, and we've said how it could fail.
-
-**16 · Compliance (9:05–9:20).** It's built for a mine's reviews: POPIA; mine safety, meaning it's advisory first and nothing moves without site authorisation; SAMREC, meaning these are process decisions, not resource statements; permissive licences; and disclosed AI assistance.
-
-**17 · The ask (9:20–9:45).** So our ask is simple: one concentrator, one mineralogist, QEMSCAN-labelled sections and twelve weeks. In return, you get measured answers: turnaround, accuracy on your own ore, refusal rates, and the value on your own numbers. This has been REEFPRINT, also known as KHANYA. Thank you.
+| If they ask… | Say |
+|---|---|
+| "How do you get a reflected-light image?" | "Crush a sample, set it in epoxy, then grind and polish the face. That's the same polished section QEMSCAN uses. Put it under a standard ore microscope with a camera. Prep is the slow part, and imaging takes minutes." |
+| "Is it cheap?" | "Most metallurgical labs already own the microscope. The marginal cost is the polished section, which QEMSCAN needs too. The QEMSCAN analysis step itself listed at $1,500 per sample on one 2017 price list." |
+| "What's the difference from QEMSCAN?" | "QEMSCAN is an electron microscope. It reads each spot's X-ray chemistry, so it identifies minerals by composition down to microns, but it's slow and expensive. We read reflected colour, brightness and polarisation, which is faster and cheaper but less certain. That's why we refuse when we're unsure and send those samples to QEMSCAN." |
+| "Is anything training now?" | "Yes. Two ensemble members, an FCN and a DeepLab, launched on Kaggle at 11:53 under a pre-registered protocol. Selection uses validation data only, with no test-set use and no automatic deployment." |
 
 ## User journey (a fictional example, for Q&A or if asked "who uses it?")
 
@@ -110,5 +93,5 @@ Every step comes with a hypothesis that could fail, and we've said how it could 
 | "Did you use AI?" | "Yes, coding assistants, and we disclose that (Appendix B). The problem framing, training, evaluation, measurements and failure logs are ours, and every number was checked against its source." |
 | "Aren't those QEMSCAN images?" | "No. They're ordinary reflected-light micrographs from the LumenStone dataset, taken with a lab microscope camera. That's the point: optical images in minutes, with QEMSCAN kept for the samples we flag as uncertain, and QEMSCAN maps used as our training labels." |
 | "Why not hyperspectral?" | "Core-scale SWIR hyperspectral identifies minerals by vibrational absorption. Opaque sulphides, chromite and micron-sized PGM grains don't give usable signals at that scale. Our roadmap is microscope-scale multispectral or hyperspectral *reflectance* with polarisation, labelled by QEMSCAN. That's the version of hyperspectral that can see PGM-bearing grains." |
-| "Where do your kinetics numbers come from?" | "From your own paper, Moodley et al. 2026, Table C.14. Those constants were fitted for one copper ore and one test condition, and the authors say they're not transferable, so we show it as a hypothesis. The real value is the method: our grains drop straight into your liberation classes." |
+| "Where do your kinetics numbers come from?" | "From your own paper, Moodley et al. 2026, Table C.14. Those constants were fitted for one copper ore and one test condition, and the authors say they're not transferable, so we show it as a hypothesis. We bin our grains with your class boundaries using area share, which is a proxy we still have to validate against your free-surface exposure. The value is designing the next test, not predicting this ore." |
 
