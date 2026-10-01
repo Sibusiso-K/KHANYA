@@ -16,7 +16,7 @@ export default function AssistantPanel({sampleId,resultId,onExecute,busy=false}:
  const current=useRef({sampleId,resultId});current.current={sampleId,resultId};const requestCounter=useRef(0),reply=useRef<HTMLElement>(null),conversation=useRef<HTMLDivElement>(null);
  useEffect(()=>{let cancelled=false;api<ProviderStatus>('/assistant/status').then(value=>{if(!cancelled)setStatus(value)}).catch(()=>{if(!cancelled)setStatus(null)});return()=>{cancelled=true}},[]);
  useEffect(()=>{requestCounter.current+=1;setExchanges([]);setQuestion('');setError('');setPending(false);setApplied({});setConsent(false)},[sampleId]);
- useEffect(()=>{const container=conversation.current,answer=reply.current;if(exchanges.length&&container&&answer)container.scrollTop+=answer.getBoundingClientRect().top-container.getBoundingClientRect().top},[exchanges.length]);
+ useEffect(()=>{const container=conversation.current,answer=reply.current;if(exchanges.length&&container&&answer)container.scrollTop+=answer.getBoundingClientRect().top-container.getBoundingClientRect().top},[exchanges]);
  async function ask(text=question){
   if(!text.trim()||pending||text.length>3000)return;const serial=++requestCounter.current,sample=sampleId,id=resultId;setPending(true);setError('');
   try{const response=await api<Answer>('/assistant',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:text.trim(),sample_id:sample,result_id:id||null,use_provider:external,context_opt_in:consent})});if(serial!==requestCounter.current||current.current.sampleId!==sample||current.current.resultId!==id)return;setExchanges(items=>[...items.slice(-5),{question:text.trim(),response,sampleId:sample,resultId:id}]);setQuestion('')}

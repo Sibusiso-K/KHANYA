@@ -1,0 +1,115 @@
+/* Account-scoped appearance. Mineral masks, photographs and measured data are never recoloured. */
+:root{--theme-subtle:#f8fafc;--theme-primary:#22578d;--theme-primary-hover:#16436c;--theme-accent:#22578d;--theme-copper:#b56d45;--theme-focus:#2e70df;--theme-success-bg:#e9f4ed;--theme-success-text:#276144;--theme-warning-bg:#fff7e8;--theme-warning-text:#7b551f;--theme-error-bg:#fff1ef;--theme-error-text:#993c2d;--theme-heading-font:"Public Sans Variable","Segoe UI",sans-serif;--theme-selection:#d8e7ff;--theme-selection-text:#133b83;}
+:root[data-reef-theme="mineral-night"]{--canvas:#0b151d;--surface:#14232e;--ink:#e9eef2;--muted:#acbecb;--line:#3b5161;--blue:#9cc9ff;--blue-light:#21394d;--theme-subtle:#192c3a;--theme-primary:#245d95;--theme-primary-hover:#1e507e;--theme-accent:#9cc9ff;--theme-copper:#dfb480;--theme-focus:#f3c986;--theme-success-bg:#17332f;--theme-success-text:#a3d9ba;--theme-warning-bg:#302719;--theme-warning-text:#f0cc82;--theme-error-bg:#381f24;--theme-error-text:#ffc4bc;--theme-selection:#335b7a;--theme-selection-text:#fff;}
+:root[data-reef-theme="field-paper"]{--canvas:#ede7da;--surface:#fbf8f0;--ink:#293731;--muted:#586657;--line:#cbc7b8;--blue:#2c6457;--blue-light:#e6eddf;--theme-subtle:#f4efdf;--theme-primary:#2c6457;--theme-primary-hover:#224f44;--theme-accent:#2c6457;--theme-copper:#926b45;--theme-focus:#1f655c;--theme-success-bg:#e3eddd;--theme-success-text:#365f3a;--theme-warning-bg:#f8edd7;--theme-warning-text:#745014;--theme-error-bg:#f8e6df;--theme-error-text:#8b392d;--theme-heading-font:Georgia,"Times New Roman",serif;--theme-selection:#cddfca;--theme-selection-text:#233d2a;}
+:root[data-reef-theme] body{background:var(--canvas);color:var(--ink);}
+:root[data-reef-theme] :is(h1,h2){font-family:var(--theme-heading-font);}
+:root[data-reef-theme] :is(.masthead,.skip-link,.button,.sample-item,.record-toggle,.assistant-toggle,.assistant-dock,.overview-specimens button,.geo-layout,.geo-points button,.geo-toolbar,.geo-bottom-controls,.geo-import-help,.geo-error,.deliverable-trail,.grain-active .grain-evidence,.auth-form input){background:var(--surface);color:var(--ink);border-color:var(--line);}
+:root[data-reef-theme] :is(.section-head,.viewer-toolbar,.search,.confidence-box,.evidence-note,.grain-summary,.grain-view-tools,.decision-export,.geo-instructions,.geo-inspector-note,.grain-comparison-panels>section,.compare-control,.assistant-dock-head,.assistant-question,.assistant-task blockquote,.assistant-working,.analysis-telemetry){background:var(--theme-subtle);border-color:var(--line);}
+:root[data-reef-theme] :is(.brand svg,.brand small,.breadcrumb,.workspace-heading p,.count,.sample-state,.library-footer,.opacity,.legend span,.phase-panel .section-head>svg,.background-row,.confidence-box>span,.provenance dt,.metric span,.evidence-note,.evidence-note p,.small-status,.record-body label,.app-footer,.app-footer>span:first-child,.loading-strip,.report-meta dt,.report-details li,.geo-properties dt,.geo-bottom-controls label,.geo-instructions,.geo-inspector-note,.geo-import-help span,.grain-panel small,.grain-hint,.grain-evidence p,.grain-contact span,.synthetic-toggle,.geo-record-filter label,.geo-no-records,.geo-view-note,.survey-map-tools small,.survey-map-disclosure,.survey-section-header span,.assistant-intro p,.voice-heading p,.assistant-scope small,.assistant-provider small,.assistant-empty,.assistant-mode,.assistant-sources small,.assistant-task p,.assistant-task small,.assistant-warning,.voice-notes,.voice-consent,.voice-disclosure,.voice-interim,.analysis-steps li,.telemetry-counts,.analysis-telemetry p,.telemetry-heading>span,.candidate-heading p,.candidate-caveat,.candidate-summary small,.candidate-summary dt,.candidate-report caption,.candidate-status){color:var(--muted);}
+:root[data-reef-theme] :is(.button,.icon-button,.sample-item,.segmented,.segmented button,.record-toggle,.viewer-toolbar,.viewer-footer,.geo-layout,.geo-toolbar,.geo-bottom-controls,.geo-layer-controls,.geo-inspector,.geo-import-help,.assistant-provider,.assistant-exchange,.assistant-composer,.voice-notes,.candidate-summary){border-color:var(--line);}
+:root[data-reef-theme] .button.primary{background:var(--theme-primary);border-color:var(--theme-primary);color:#fff;}
+:root[data-reef-theme] .button.primary:hover:not(:disabled){background:var(--theme-primary-hover);border-color:var(--theme-primary-hover);}
+:root[data-reef-theme] :is(.button:not(.primary):hover:not(:disabled),.icon-button:hover:not(:disabled),.sample-item:hover,.deliverable-trail button:hover,.overview-specimens button:hover,.geo-points button:hover,.sample-table tbody tr:hover,.assistant-prompts button:hover){background:var(--theme-subtle);border-color:var(--line);color:var(--ink);}
+:root[data-reef-theme] :is(.text-button,.sample-link,.metric strong,.confidence-box strong,.overview-score,.heading-icon>svg,.assistant-toggle,.grain-detail summary,.geo-import-help summary,.assistant-intro>svg,.voice-heading>svg,.telemetry-heading,.analysis-steps li.current){color:var(--theme-accent);}
+:root[data-reef-theme] .masthead nav button{color:var(--muted);}
+:root[data-reef-theme] .masthead nav button.active{color:var(--theme-accent);border-bottom-color:var(--theme-copper);}
+:root[data-reef-theme] :is(.sample-item.active,.sample-item.selected,.geo-points button.selected,.grain-table tr.selected,.grain-selected){background:var(--blue-light);border-color:var(--line);color:var(--ink);box-shadow:none;}
+:root[data-reef-theme] :is(select,.record-body input,.record-body textarea,.geo-record-filter input,.assistant-composer textarea,.voice-draft textarea,.assistant-prompts button){background:var(--surface);color:var(--ink);border-color:var(--line);}
+:root[data-reef-theme] input::placeholder,:root[data-reef-theme] textarea::placeholder{color:var(--muted);opacity:1;}
+:root[data-reef-theme] :is(.segmented,.track,.composition-stack){background:var(--theme-subtle);border-color:var(--line);}
+:root[data-reef-theme] .segmented button{color:var(--muted);}
+:root[data-reef-theme] .segmented button.selected{background:var(--surface);color:var(--theme-accent);border-color:var(--line);}
+:root[data-reef-theme] :is(.badge.neutral,.grain-state--none,.assistant-kind){background:var(--theme-subtle);color:var(--muted);}
+:root[data-reef-theme] :is(.badge.green,.model-badge.approved,.grain-state--free,.assistant-kind.measured){background:var(--theme-success-bg);color:var(--theme-success-text);border-color:var(--line);}
+:root[data-reef-theme] :is(.badge.amber,.checkpoint-warning,.model-badge.unapproved,.candidate-risk,.assistant-consent,.grain-state--locked,.assistant-kind.simulated){background:var(--theme-warning-bg);color:var(--theme-warning-text);border-color:var(--line);}
+:root[data-reef-theme] .candidate-risk p{color:var(--theme-warning-text);}
+:root[data-reef-theme] :is(.error-banner,.assistant-error,.voice-error){background:var(--theme-error-bg);color:var(--theme-error-text);}
+:root[data-reef-theme] :is(.live-badge,.assistant-scope){background:var(--blue-light);color:var(--theme-accent);border-color:var(--line);}
+:root[data-reef-theme] :is(.assistant-scope svg,.assistant-empty h3,.candidate-summary dd,.geo-import-help code,.candidate-summary>div){color:var(--ink);}
+:root[data-reef-theme] .candidate-summary,.candidate-provenance{border-color:var(--line);}
+:root[data-reef-theme] .step-title>span,:root[data-reef-theme] .deliverable-trail button span{background:var(--blue-light);color:var(--theme-accent);}
+:root[data-reef-theme] th{background:var(--theme-subtle);color:var(--muted);}
+:root[data-reef-theme] td{color:var(--ink);}
+:root[data-reef-theme] :is(td,th,.candidate-summary){border-color:var(--line);}
+:root[data-reef-theme] :focus-visible{outline:3px solid var(--theme-focus);outline-offset:3px;}
+:root[data-reef-theme] ::selection{background:var(--theme-selection);color:var(--theme-selection-text);}
+:root[data-reef-theme] :is(button,input,select,textarea){caret-color:var(--theme-accent);}
+:root[data-reef-theme] :is(.sample-list,.assistant-conversation,.masthead nav){scrollbar-color:var(--line) transparent;}
+:root[data-reef-theme="field-paper"] :is(h1,h2){font-weight:600;letter-spacing:-.025em;}
+.theme-picker{border:0;padding:0;margin:0;min-width:0;}
+.theme-picker legend{font-weight:650;font-size:14px;padding:0;margin-bottom:12px;color:var(--ink);}
+.theme-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.theme-choice{border:1px solid var(--line);border-radius:7px;background:var(--surface);padding:14px;display:grid;grid-template-columns:auto 1fr;gap:10px;min-width:0;cursor:pointer;}
+.theme-choice.selected{border-color:var(--theme-accent);box-shadow:inset 0 0 0 1px var(--theme-accent);}
+.theme-choice input{margin:3px 0 0;accent-color:var(--theme-accent);width:16px;height:16px;}
+.theme-choice-copy strong{font-size:13px;font-weight:650;display:block;}
+.theme-choice-copy small{font-size:12px;line-height:1.6;display:block;margin-top:5px;}
+.theme-swatches{grid-column:2;display:flex;gap:5px;margin-top:6px;}
+.theme-swatches i{display:block;width:24px;height:14px;border:1px solid var(--line);border-radius:3px;}
+.theme-notice{font-size:12px;color:var(--muted);margin-top:12px;}
+.theme-picker.compact{margin-top:24px;}
+.theme-picker.compact .theme-choices{gap:7px;}
+.theme-picker.compact .theme-choice{display:flex;align-items:center;gap:7px;padding:9px;min-height:44px;}
+.theme-picker.compact .theme-choice-copy strong{font-size:11px;}
+.theme-picker.compact .theme-swatches{display:none;}
+.settings-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;}
+.settings-appearance,.settings-assistant{grid-column:1/-1;}
+.settings-body{padding:20px 22px;}
+.settings-help{font-size:12px;max-width:96ch;margin-top:14px;}
+.settings-facts{display:grid;grid-template-columns:170px minmax(0,1fr);gap:12px 16px;margin:0;}
+.settings-facts dt{font-size:12px;color:var(--muted);}
+.settings-facts dd{font-size:13px;margin:0;overflow-wrap:anywhere;}
+.settings-sha{font-family:ui-monospace,Consolas,monospace;font-size:11px!important;line-height:1.8;}
+.settings-provider-status{display:flex;gap:12px;align-items:flex-start;}
+.settings-provider-status svg{color:var(--theme-success-text);margin-top:3px;}
+.settings-provider-status strong{font-size:14px;}
+.settings-provider-status p{margin-top:5px;}
+.settings-provider-help{border-top:1px solid var(--line);padding-top:14px;margin-top:18px;}
+.settings-provider-help summary{font-size:13px;font-weight:650;cursor:pointer;padding:5px 0;}
+.settings-provider-help p{margin-top:12px;max-width:96ch;}
+.settings-provider-help code{font-size:12px;overflow-wrap:anywhere;background:var(--theme-subtle);color:var(--ink);padding:2px 4px;border-radius:3px;}
+.settings-inputs .settings-body>p+p{margin-top:12px;}
+.settings-inputs .text-button{margin-top:12px;}
+.settings-error{display:flex;align-items:flex-start;gap:8px;color:var(--theme-error-text);}
+.auth-shell{max-width:1180px;gap:70px;min-height:min(680px,90vh);margin:3vh auto;}
+.auth-introduction .auth-brand-lockup{display:flex;align-items:center;gap:14px;margin-bottom:30px;color:var(--ink);}
+.auth-brand-lockup strong{font-size:24px;letter-spacing:-.025em;display:block;}
+.auth-brand-lockup span{display:block;font-size:12px;letter-spacing:.14em;color:var(--muted);margin-top:3px;}
+.auth-introduction h1{font-family:var(--theme-heading-font);font-size:46px;font-weight:650;letter-spacing:-.035em;line-height:1.17;}
+.auth-introduction>p{margin-top:20px;font-size:15px;line-height:1.75;max-width:44ch;}
+.auth-method{margin-top:26px;border-top:1px solid var(--line);padding-top:16px;display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:12px;}
+.auth-method span+span:before{content:' / ';margin-right:10px;color:var(--muted);}
+.auth-form{padding:28px 30px;}
+.auth-form h2{font-size:21px;}
+.auth-form>p{margin-top:8px;font-size:13px;}
+.auth-form input{color:var(--ink);background:var(--surface);}
+.auth-form .auth-submit{width:100%;margin-top:4px;}
+.auth-form .auth-create{width:100%;margin-top:10px;}
+.auth-notice{padding:10px 12px;background:var(--theme-success-bg);color:var(--theme-success-text)!important;border-radius:6px;margin:14px 0;}
+.auth-error{padding:10px 12px;background:var(--theme-error-bg);color:var(--theme-error-text)!important;border-radius:6px;margin:14px 0;}
+.auth-loading{max-width:500px;min-height:55vh;margin:15vh auto;display:flex;flex-direction:column;align-items:flex-start;gap:22px;}
+.auth-loading h1{font-size:24px;}
+.auth-state-line{display:flex;align-items:center;gap:9px;}
+.auth-brand-enter .reef-brand-upper{animation:reef-brand-drop 640ms cubic-bezier(.2,.9,.25,1) both;}
+.auth-brand-enter .reef-brand-lower{animation:reef-brand-rise 640ms 130ms cubic-bezier(.2,.9,.25,1) both;}
+.auth-form,.workbench-session{animation:reef-workspace-enter 220ms cubic-bezier(.23,1,.32,1);}
+@keyframes reef-brand-settle{from{transform:translateY(-4px);opacity:.65}to{transform:translateY(0);opacity:1}}
+@keyframes reef-brand-settle-lower{from{transform:translateY(3px);opacity:.7}to{transform:translateY(0);opacity:1}}
+@keyframes reef-workspace-enter{from{transform:translateY(3px);opacity:.92}to{transform:translateY(0);opacity:1}}
+@media(max-width:1250px){.masthead{height:auto;flex-wrap:wrap;min-height:84px;padding-top:14px;}.masthead nav{order:4;flex-basis:100%;min-height:52px;justify-content:flex-start;overflow-x:auto;max-width:100%;}.masthead nav button{flex:0 0 auto;min-width:80px;padding-inline:10px;}.connection{margin-left:auto;}}
+@media(max-width:850px){.settings-layout{grid-template-columns:1fr;}.settings-facts{grid-template-columns:155px minmax(0,1fr);}.auth-shell{gap:30px;}.theme-choice{padding:12px;}.auth-introduction h1{font-size:37px;}}
+@media(max-width:700px){.theme-choices{grid-template-columns:1fr;}.theme-choice{grid-template-columns:auto 1fr auto;align-items:center;min-height:62px;}.theme-swatches{grid-column:3;margin:0;}.theme-choice input{margin:0;}.settings-body{padding:16px;}.settings-facts{grid-template-columns:1fr;gap:5px;}.settings-facts dt:not(:first-child){margin-top:12px;}.settings-sha{font-size:12px!important;}.settings-assistant .section-head{align-items:flex-start;flex-direction:column;}.theme-picker.compact .theme-choices{grid-template-columns:1fr;}.theme-picker.compact .theme-choice{min-height:44px;}.theme-picker.compact .theme-choice-copy strong{font-size:12px;}.auth-shell{padding:24px 18px;min-height:0;margin:0 auto;}.auth-introduction .auth-brand-lockup{margin-bottom:24px;}.auth-introduction h1{font-size:34px;}.auth-introduction>p{font-size:14px;}.auth-form{padding:22px;margin-top:26px;}.auth-loading{padding:24px;margin:12vh auto;}.masthead nav button{min-width:70px;padding-inline:7px;}.workspace-heading>.button{max-width:148px;}}
+@media(prefers-reduced-motion:reduce){.auth-brand-enter .reef-brand-upper,.auth-brand-enter .reef-brand-lower,.auth-form,.workbench-session{animation:none!important;transform:none!important;opacity:1!important;}}
+@media print{:root[data-reef-theme]{--surface:#fff;--canvas:#fff;--ink:#1b2d40;--muted:#536779;--line:#dbe3e9;--theme-subtle:#f8fafc;--theme-accent:#22578d;--blue:#22578d;--blue-light:#edf3fa;--theme-warning-bg:#fff7e8;--theme-warning-text:#7b551f;}.theme-picker,.settings-assistant .button{display:none!important;}.settings-layout{display:block;}.settings-layout>.panel{margin-bottom:20px;}}
+
+/* Launch motion: the two layers of the mark assemble once, on real mount (no added wait). */
+@keyframes reef-brand-drop{from{transform:translateY(-14px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes reef-brand-rise{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+.masthead .brand svg path:first-of-type{animation:reef-brand-drop 640ms cubic-bezier(.2,.9,.25,1) both;}
+.masthead .brand svg path:last-of-type{animation:reef-brand-rise 640ms 130ms cubic-bezier(.2,.9,.25,1) both;}
+/* Workflow steps: readable in every theme, clearer as buttons. */
+:root[data-reef-theme] .deliverable-trail button{background:var(--surface);color:var(--ink);border-color:var(--line);font-size:12px;font-weight:600;}
+@media(prefers-reduced-motion:reduce){.masthead .brand svg path{animation:none!important;opacity:1!important;transform:none!important;}}
+/* Phone header: let the model-approval badge wrap instead of overflowing 375 px screens. */
+@media(max-width:700px){.model-badge{white-space:normal;max-width:calc(100vw - 32px);overflow-wrap:anywhere;}.connection{min-width:0;}}

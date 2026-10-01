@@ -1,0 +1,1484 @@
+{
+  "iou_per_class": [
+    0.8483593330708974,
+    0.7998412030394585,
+    0.24772996173704048,
+    0.8183079742869657,
+    0.4459516354990613
+  ],
+  "mean_iou": 0.6320380215266846,
+  "pixel_accuracy": 0.85509338453563,
+  "tp_per_class": [
+    22774980,
+    4458646,
+    733874,
+    51800961,
+    8986251
+  ],
+  "fp_per_class": [
+    949747,
+    300194,
+    2140808,
+    2755080,
+    8894803
+  ],
+  "fn_per_class": [
+    3121185,
+    815574,
+    87713,
+    8746484,
+    2269676
+  ],
+  "recall_per_class": [
+    0.8794730802804199,
+    0.8453659498466124,
+    0.8932395473638215,
+    0.8555433016207372,
+    0.7983572565813549
+  ],
+  "precision_per_class": [
+    0.9599680535839253,
+    0.9369186608501231,
+    0.2552887588957666,
+    0.9495000012922492,
+    0.5025571199550094
+  ],
+  "foreground_macro_iou": 0.5779576936406314,
+  "evaluated_class_count": 5,
+  "evaluated_foreground_class_count": 4,
+  "confusion_matrix": [
+    [
+      22774980,
+      86943,
+      2086611,
+      715711,
+      231920
+    ],
+    [
+      239294,
+      4458646,
+      29002,
+      56901,
+      490377
+    ],
+    [
+      49184,
+      0,
+      733874,
+      34649,
+      3880
+    ],
+    [
+      395113,
+      157693,
+      25052,
+      51800961,
+      8168626
+    ],
+    [
+      266156,
+      55558,
+      143,
+      1947819,
+      8986251
+    ]
+  ],
+  "ground_truth_pixels_per_class": [
+    25896165,
+    5274220,
+    821587,
+    60547445,
+    11255927
+  ],
+  "predicted_pixels_per_class": [
+    23724727,
+    4758840,
+    2874682,
+    54556041,
+    17881054
+  ],
+  "evaluation_id": "native-selected-test-20261001-v1",
+  "candidate_run_id": "20260930-s2-seed42-extended-dice-v1",
+  "candidate_epoch": 12,
+  "class_names": [
+    "background",
+    "chalcopyrite",
+    "magnetite",
+    "pyrrhotite",
+    "pentlandite"
+  ],
+  "class_codes": [
+    0,
+    1,
+    3,
+    5,
+    7
+  ],
+  "n_test_sections": 12,
+  "test_image_ids": [
+    "test_01",
+    "test_02",
+    "test_03",
+    "test_04",
+    "test_05",
+    "test_06",
+    "test_07",
+    "test_08",
+    "test_09",
+    "test_10",
+    "test_11",
+    "test_12"
+  ],
+  "per_section": {
+    "test_01": {
+      "iou_per_class": [
+        0.9693784867684738,
+        0.8896731088647637,
+        0.4992029284997343,
+        0.0037037371611306335,
+        0.7745918282819916
+      ],
+      "mean_iou": 0.6273100179152188,
+      "pixel_accuracy": 0.9513860274888631,
+      "tp_per_class": [
+        5874137,
+        1570483,
+        16910,
+        820,
+        766770
+      ],
+      "fp_per_class": [
+        143150,
+        96740,
+        2387,
+        5382,
+        172833
+      ],
+      "fn_per_class": [
+        42407,
+        98013,
+        14577,
+        215196,
+        50299
+      ],
+      "recall_per_class": [
+        0.9928324711182744,
+        0.9412566766716851,
+        0.5370470352844031,
+        0.0037960151099918527,
+        0.9384397156176528
+      ],
+      "precision_per_class": [
+        0.9762102090194468,
+        0.941975368621954,
+        0.8763020158573872,
+        0.13221541438245726,
+        0.8160574199954662
+      ],
+      "foreground_macro_iou": 0.541792900701905,
+      "evaluated_class_count": 5,
+      "evaluated_foreground_class_count": 4,
+      "confusion_matrix": [
+        [
+          5874137,
+          26702,
+          2017,
+          495,
+          13193
+        ],
+        [
+          75832,
+          1570483,
+          370,
+          4862,
+          16949
+        ],
+        [
+          14564,
+          0,
+          16910,
+          13,
+          0
+        ],
+        [
+          17595,
+          54910,
+          0,
+          820,
+          142691
+        ],
+        [
+          35159,
+          15128,
+          0,
+          12,
+          766770
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        5916544,
+        1668496,
+        31487,
+        216016,
+        817069
+      ],
+      "predicted_pixels_per_class": [
+        6017287,
+        1667223,
+        19297,
+        6202,
+        939603
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 12.360139518999972
+    },
+    "test_02": {
+      "iou_per_class": [
+        0.5792535629968902,
+        null,
+        0.0,
+        0.9859828611557527,
+        0.20232952240017185
+      ],
+      "mean_iou": 0.4418914866382037,
+      "pixel_accuracy": 0.9816284244888672,
+      "tp_per_class": [
+        126849,
+        0,
+        0,
+        8346902,
+        16954
+      ],
+      "fp_per_class": [
+        1685,
+        0,
+        40173,
+        116373,
+        676
+      ],
+      "fn_per_class": [
+        90453,
+        0,
+        0,
+        2290,
+        66164
+      ],
+      "recall_per_class": [
+        0.583745202529199,
+        null,
+        null,
+        0.9997257219620773,
+        0.20397507158497558
+      ],
+      "precision_per_class": [
+        0.9868906281606423,
+        null,
+        0.0,
+        0.9862496492197169,
+        0.961656267725468
+      ],
+      "foreground_macro_iou": 0.39610412785197485,
+      "evaluated_class_count": 4,
+      "evaluated_foreground_class_count": 3,
+      "confusion_matrix": [
+        [
+          126849,
+          0,
+          39901,
+          50256,
+          296
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1638,
+          0,
+          272,
+          8346902,
+          380
+        ],
+        [
+          47,
+          0,
+          0,
+          66117,
+          16954
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        217302,
+        0,
+        0,
+        8349192,
+        83118
+      ],
+      "predicted_pixels_per_class": [
+        128534,
+        0,
+        40173,
+        8463275,
+        17630
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 11.39480092000008
+    },
+    "test_03": {
+      "iou_per_class": [
+        0.9181544970736067,
+        0.9187480814617626,
+        0.0,
+        0.637362275164018,
+        0.4231536506161595
+      ],
+      "mean_iou": 0.5794837008631093,
+      "pixel_accuracy": 0.846775554787891,
+      "tp_per_class": [
+        2739504,
+        1825727,
+        0,
+        1914403,
+        844646
+      ],
+      "fp_per_class": [
+        118833,
+        37083,
+        4339,
+        109112,
+        1055965
+      ],
+      "fn_per_class": [
+        125370,
+        124380,
+        0,
+        980119,
+        95463
+      ],
+      "recall_per_class": [
+        0.9562389131249751,
+        0.9362188843996765,
+        null,
+        0.6613883052193074,
+        0.898455391874772
+      ],
+      "precision_per_class": [
+        0.9584258259260542,
+        0.9800929778130888,
+        0.0,
+        0.9460779880554382,
+        0.444407614183018
+      ],
+      "foreground_macro_iou": 0.494816001810485,
+      "evaluated_class_count": 5,
+      "evaluated_foreground_class_count": 4,
+      "confusion_matrix": [
+        [
+          2739504,
+          20673,
+          1821,
+          38997,
+          63879
+        ],
+        [
+          83981,
+          1825727,
+          0,
+          109,
+          40290
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          20929,
+          4876,
+          2518,
+          1914403,
+          951796
+        ],
+        [
+          13923,
+          11534,
+          0,
+          70006,
+          844646
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        2864874,
+        1950107,
+        0,
+        2894522,
+        940109
+      ],
+      "predicted_pixels_per_class": [
+        2858337,
+        1862810,
+        4339,
+        2023515,
+        1900611
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 11.209182033999923
+    },
+    "test_04": {
+      "iou_per_class": [
+        0.7702895466559674,
+        0.5580065320636852,
+        0.0048668013701552975,
+        0.7442137205506556,
+        0.33643164223424127
+      ],
+      "mean_iou": 0.48276164857494097,
+      "pixel_accuracy": 0.7735307664667502,
+      "tp_per_class": [
+        5210495,
+        117375,
+        7185,
+        1149482,
+        206204
+      ],
+      "fp_per_class": [
+        72899,
+        27840,
+        1468888,
+        5146,
+        384098
+      ],
+      "fn_per_class": [
+        1480939,
+        65132,
+        256,
+        389931,
+        22613
+      ],
+      "recall_per_class": [
+        0.7786813708391953,
+        0.6431260170842762,
+        0.9655960220400484,
+        0.7467015024558062,
+        0.901174300860513
+      ],
+      "precision_per_class": [
+        0.9862022404537689,
+        0.8082842681541164,
+        0.004867645434880254,
+        0.9955431532926622,
+        0.3493195008656586
+      ],
+      "foreground_macro_iou": 0.41087967405468434,
+      "evaluated_class_count": 5,
+      "evaluated_foreground_class_count": 4,
+      "confusion_matrix": [
+        [
+          5210495,
+          3756,
+          1461520,
+          3725,
+          11938
+        ],
+        [
+          17576,
+          117375,
+          15,
+          275,
+          47266
+        ],
+        [
+          256,
+          0,
+          7185,
+          0,
+          0
+        ],
+        [
+          46022,
+          11663,
+          7352,
+          1149482,
+          324894
+        ],
+        [
+          9045,
+          12421,
+          1,
+          1146,
+          206204
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        6691434,
+        182507,
+        7441,
+        1539413,
+        228817
+      ],
+      "predicted_pixels_per_class": [
+        5283394,
+        145215,
+        1476073,
+        1154628,
+        590302
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 11.535749990999989
+    },
+    "test_05": {
+      "iou_per_class": [
+        0.979997649224948,
+        0.8168471720818291,
+        0.4320668243642815,
+        0.921306468834818,
+        0.5509671188532287
+      ],
+      "mean_iou": 0.7402370466718211,
+      "pixel_accuracy": 0.9658867935347851,
+      "tp_per_class": [
+        5569554,
+        268126,
+        17535,
+        2252879,
+        246452
+      ],
+      "fp_per_class": [
+        84348,
+        37205,
+        15719,
+        12387,
+        145407
+      ],
+      "fn_per_class": [
+        29330,
+        22914,
+        7330,
+        180043,
+        55449
+      ],
+      "recall_per_class": [
+        0.9947614560330237,
+        0.9212685541506322,
+        0.705208123868892,
+        0.9259972165157782,
+        0.816333831289065
+      ],
+      "precision_per_class": [
+        0.9850814534811534,
+        0.8781486321402019,
+        0.527304985866362,
+        0.9945317680131164,
+        0.6289303040124127
+      ],
+      "foreground_macro_iou": 0.6802968960335394,
+      "evaluated_class_count": 5,
+      "evaluated_foreground_class_count": 4,
+      "confusion_matrix": [
+        [
+          5569554,
+          2498,
+          15570,
+          2762,
+          8500
+        ],
+        [
+          12687,
+          268126,
+          6,
+          112,
+          10109
+        ],
+        [
+          1912,
+          0,
+          17535,
+          5418,
+          0
+        ],
+        [
+          34878,
+          18232,
+          135,
+          2252879,
+          126798
+        ],
+        [
+          34871,
+          16475,
+          8,
+          4095,
+          246452
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        5598884,
+        291040,
+        24865,
+        2432922,
+        301901
+      ],
+      "predicted_pixels_per_class": [
+        5653902,
+        305331,
+        33254,
+        2265266,
+        391859
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 11.49300684800005
+    },
+    "test_06": {
+      "iou_per_class": [
+        0.7043375017457002,
+        0.5572720933812676,
+        0.6473479661462522,
+        0.7537084371318931,
+        0.0
+      ],
+      "mean_iou": 0.5325331996810225,
+      "pixel_accuracy": 0.7641156620666916,
+      "tp_per_class": [
+        1578576,
+        676929,
+        659935,
+        3693864,
+        0
+      ],
+      "fp_per_class": [
+        210215,
+        101326,
+        353232,
+        61918,
+        1313617
+      ],
+      "fn_per_class": [
+        452430,
+        436464,
+        6277,
+        1145137,
+        0
+      ],
+      "recall_per_class": [
+        0.7772384719690636,
+        0.6079874761202918,
+        0.9905780742466362,
+        0.7633526010843974,
+        null
+      ],
+      "precision_per_class": [
+        0.8824820786777214,
+        0.8698035990774232,
+        0.6513585618165614,
+        0.9835139526202532,
+        0.0
+      ],
+      "foreground_macro_iou": 0.48958212416485325,
+      "evaluated_class_count": 5,
+      "evaluated_foreground_class_count": 4,
+      "confusion_matrix": [
+        [
+          1578576,
+          33314,
+          310869,
+          53495,
+          54752
+        ],
+        [
+          46820,
+          676929,
+          28592,
+          7619,
+          353433
+        ],
+        [
+          5473,
+          0,
+          659935,
+          804,
+          0
+        ],
+        [
+          157922,
+          68012,
+          13771,
+          3693864,
+          905432
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        2031006,
+        1113393,
+        666212,
+        4839001,
+        0
+      ],
+      "predicted_pixels_per_class": [
+        1788791,
+        778255,
+        1013167,
+        3755782,
+        1313617
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 11.576623788999996
+    },
+    "test_07": {
+      "iou_per_class": [
+        0.7021862039184968,
+        0.0,
+        0.008576498422712934,
+        0.8345041451602968,
+        0.10106052510157171
+      ],
+      "mean_iou": 0.32926547452061566,
+      "pixel_accuracy": 0.8384346026157011,
+      "tp_per_class": [
+        279692,
+        0,
+        348,
+        6827973,
+        144121
+      ],
+      "fp_per_class": [
+        35862,
+        0,
+        38749,
+        98581,
+        1224286
+      ],
+      "fn_per_class": [
+        82762,
+        40,
+        1479,
+        1255518,
+        57679
+      ],
+      "recall_per_class": [
+        0.7716620591854415,
+        0.0,
+        0.19047619047619047,
+        0.8446812150839285,
+        0.714177403369673
+      ],
+      "precision_per_class": [
+        0.886352256666054,
+        null,
+        0.008900938690948155,
+        0.9857676703307301,
+        0.10532027386588931
+      ],
+      "foreground_macro_iou": 0.23603529217114536,
+      "evaluated_class_count": 5,
+      "evaluated_foreground_class_count": 4,
+      "confusion_matrix": [
+        [
+          279692,
+          0,
+          38461,
+          41909,
+          2392
+        ],
+        [
+          2,
+          0,
+          0,
+          0,
+          38
+        ],
+        [
+          922,
+          0,
+          348,
+          554,
+          3
+        ],
+        [
+          33377,
+          0,
+          288,
+          6827973,
+          1221853
+        ],
+        [
+          1561,
+          0,
+          0,
+          56118,
+          144121
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        362454,
+        40,
+        1827,
+        8083491,
+        201800
+      ],
+      "predicted_pixels_per_class": [
+        315554,
+        0,
+        39097,
+        6926554,
+        1368407
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 11.904094240999939
+    },
+    "test_08": {
+      "iou_per_class": [
+        0.6574238933910921,
+        0.0,
+        0.34966152923837834,
+        0.9221238302724225,
+        0.7988069721761825
+      ],
+      "mean_iou": 0.5456032450156151,
+      "pixel_accuracy": 0.9340843265570756,
+      "tp_per_class": [
+        286529,
+        0,
+        27996,
+        6088223,
+        1676719
+      ],
+      "fp_per_class": [
+        62631,
+        0,
+        12232,
+        471804,
+        23478
+      ],
+      "fn_per_class": [
+        86676,
+        2434,
+        39838,
+        42365,
+        398832
+      ],
+      "recall_per_class": [
+        0.7677523077129191,
+        0.0,
+        0.41271338856620576,
+        0.9930895698748635,
+        0.8078428330597514
+      ],
+      "precision_per_class": [
+        0.8206237827929889,
+        null,
+        0.6959331808690464,
+        0.9280789545530834,
+        0.9861910119827291
+      ],
+      "foreground_macro_iou": 0.5176480829217458,
+      "evaluated_class_count": 5,
+      "evaluated_foreground_class_count": 4,
+      "confusion_matrix": [
+        [
+          286529,
+          0,
+          12090,
+          73866,
+          720
+        ],
+        [
+          0,
+          0,
+          0,
+          2376,
+          58
+        ],
+        [
+          21737,
+          0,
+          27996,
+          18092,
+          9
+        ],
+        [
+          19601,
+          0,
+          73,
+          6088223,
+          22691
+        ],
+        [
+          21293,
+          0,
+          69,
+          377470,
+          1676719
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        373205,
+        2434,
+        67834,
+        6130588,
+        2075551
+      ],
+      "predicted_pixels_per_class": [
+        349160,
+        0,
+        40228,
+        6560027,
+        1700197
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 11.74743588399997
+    },
+    "test_09": {
+      "iou_per_class": [
+        0.5355855515867592,
+        0.0,
+        0.0390605216510509,
+        0.6771929891607587,
+        0.7809466466722924
+      ],
+      "mean_iou": 0.40655714181417224,
+      "pixel_accuracy": 0.8427441600848685,
+      "tp_per_class": [
+        262551,
+        0,
+        1234,
+        2480799,
+        4544826
+      ],
+      "fp_per_class": [
+        157561,
+        0,
+        26655,
+        1162870,
+        13116
+      ],
+      "fn_per_class": [
+        70101,
+        5016,
+        3703,
+        19687,
+        1261695
+      ],
+      "recall_per_class": [
+        0.7892662602359223,
+        0.0,
+        0.24994936196070489,
+        0.9921267305635785,
+        0.7827106799407081
+      ],
+      "precision_per_class": [
+        0.6249547739650378,
+        null,
+        0.04424683566997741,
+        0.6808519105330368,
+        0.9971223854976654
+      ],
+      "foreground_macro_iou": 0.3743000393710255,
+      "evaluated_class_count": 5,
+      "evaluated_foreground_class_count": 4,
+      "confusion_matrix": [
+        [
+          262551,
+          0,
+          26597,
+          39516,
+          3988
+        ],
+        [
+          234,
+          0,
+          0,
+          1592,
+          3190
+        ],
+        [
+          3614,
+          0,
+          1234,
+          57,
+          32
+        ],
+        [
+          13768,
+          0,
+          13,
+          2480799,
+          5906
+        ],
+        [
+          139945,
+          0,
+          45,
+          1121705,
+          4544826
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        332652,
+        5016,
+        4937,
+        2500486,
+        5806521
+      ],
+      "predicted_pixels_per_class": [
+        420112,
+        0,
+        27889,
+        3643669,
+        4557942
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 11.708356933000005
+    },
+    "test_10": {
+      "iou_per_class": [
+        0.5800883468574447,
+        0.00033211557622052476,
+        0.050826323233827145,
+        0.7480899990599754,
+        0.06540162744369787
+      ],
+      "mean_iou": 0.28894768243423313,
+      "pixel_accuracy": 0.7533636190848791,
+      "tp_per_class": [
+        289956,
+        6,
+        2731,
+        6088020,
+        135590
+      ],
+      "fp_per_class": [
+        18084,
+        0,
+        46486,
+        198914,
+        1869825
+      ],
+      "fn_per_class": [
+        191808,
+        18060,
+        4515,
+        1851151,
+        67775
+      ],
+      "recall_per_class": [
+        0.6018631529130446,
+        0.00033211557622052476,
+        0.3768975986751311,
+        0.7668332121829848,
+        0.6667322302264401
+      ],
+      "precision_per_class": [
+        0.941293338527464,
+        1.0,
+        0.05548895706767987,
+        0.9683607303655486,
+        0.06761194067063425
+      ],
+      "foreground_macro_iou": 0.21616251632843025,
+      "evaluated_class_count": 5,
+      "evaluated_foreground_class_count": 4,
+      "confusion_matrix": [
+        [
+          289956,
+          0,
+          46392,
+          118220,
+          27196
+        ],
+        [
+          563,
+          6,
+          18,
+          11831,
+          5648
+        ],
+        [
+          311,
+          0,
+          2731,
+          3052,
+          1152
+        ],
+        [
+          15266,
+          0,
+          56,
+          6088020,
+          1835829
+        ],
+        [
+          1944,
+          0,
+          20,
+          65811,
+          135590
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        481764,
+        18066,
+        7246,
+        7939171,
+        203365
+      ],
+      "predicted_pixels_per_class": [
+        308040,
+        6,
+        49217,
+        6286934,
+        2005415
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 11.816329916999962
+    },
+    "test_11": {
+      "iou_per_class": [
+        0.5500922537436671,
+        0.0,
+        0.0,
+        0.7535585949262573,
+        0.07476476635570425
+      ],
+      "mean_iou": 0.2756831230051257,
+      "pixel_accuracy": 0.7588230547219922,
+      "tp_per_class": [
+        323781,
+        0,
+        0,
+        6091094,
+        148650
+      ],
+      "fp_per_class": [
+        23711,
+        0,
+        48874,
+        261351,
+        1752151
+      ],
+      "fn_per_class": [
+        241102,
+        22001,
+        4888,
+        1730661,
+        87435
+      ],
+      "recall_per_class": [
+        0.5731824112249794,
+        0.0,
+        0.0,
+        0.7787375083980513,
+        0.6296461020395197
+      ],
+      "precision_per_class": [
+        0.9317653356048484,
+        null,
+        0.0,
+        0.958858203416165,
+        0.07820387299880419
+      ],
+      "foreground_macro_iou": 0.2070808403204904,
+      "evaluated_class_count": 5,
+      "evaluated_foreground_class_count": 4,
+      "confusion_matrix": [
+        [
+          323781,
+          0,
+          48763,
+          160960,
+          31379
+        ],
+        [
+          833,
+          0,
+          0,
+          12424,
+          8744
+        ],
+        [
+          231,
+          0,
+          0,
+          3052,
+          1605
+        ],
+        [
+          20127,
+          0,
+          111,
+          6091094,
+          1710423
+        ],
+        [
+          2520,
+          0,
+          0,
+          84915,
+          148650
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        564883,
+        22001,
+        4888,
+        7821755,
+        236085
+      ],
+      "predicted_pixels_per_class": [
+        347492,
+        0,
+        48874,
+        6352445,
+        1900801
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 11.955614004999916
+    },
+    "test_12": {
+      "iou_per_class": [
+        0.4842103952640523,
+        0.0,
+        0.0,
+        0.8527559788528004,
+        0.19625701991326286
+      ],
+      "mean_iou": 0.30664467880602314,
+      "pixel_accuracy": 0.8503476225291955,
+      "tp_per_class": [
+        233356,
+        0,
+        0,
+        6866502,
+        255319
+      ],
+      "fp_per_class": [
+        20768,
+        0,
+        83074,
+        251242,
+        939351
+      ],
+      "fn_per_class": [
+        227807,
+        21120,
+        4850,
+        934386,
+        106272
+      ],
+      "recall_per_class": [
+        0.5060163109356128,
+        0.0,
+        0.0,
+        0.8802205595055332,
+        0.7060988796734432
+      ],
+      "precision_per_class": [
+        0.9182761171711448,
+        null,
+        0.0,
+        0.9647020179427639,
+        0.21371508450032226
+      ],
+      "foreground_macro_iou": 0.2622532496915158,
+      "evaluated_class_count": 5,
+      "evaluated_foreground_class_count": 4,
+      "confusion_matrix": [
+        [
+          233356,
+          0,
+          82610,
+          131510,
+          13687
+        ],
+        [
+          766,
+          0,
+          1,
+          15701,
+          4652
+        ],
+        [
+          164,
+          0,
+          0,
+          3607,
+          1079
+        ],
+        [
+          13990,
+          0,
+          463,
+          6866502,
+          919933
+        ],
+        [
+          5848,
+          0,
+          0,
+          100424,
+          255319
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        461163,
+        21120,
+        4850,
+        7800888,
+        361591
+      ],
+      "predicted_pixels_per_class": [
+        254124,
+        0,
+        83074,
+        7117744,
+        1194670
+      ],
+      "image_width": 3396,
+      "image_height": 2547,
+      "elapsed_seconds": 12.03400142099997
+    }
+  },
+  "test_file_sha256": {
+    "test_01": {
+      "image_sha256": "dfde94393f4697960ce0c9590f3a3e3e9151957b91539eeac95413f356ca41f4",
+      "mask_sha256": "410f81318ef4d9b278581d79dc992de3bf4e84c552eb1cc46ed5fd470f4ce2ee"
+    },
+    "test_02": {
+      "image_sha256": "2ce0b6ecbad28834c16f7e63591e03078287c3945dae9957472a8c295d24803b",
+      "mask_sha256": "2459269a59c2e9effb01fb1ea409e784cdb7c409f39884422cc3be8af34f111b"
+    },
+    "test_03": {
+      "image_sha256": "522c1938fe55170e2838af5d88c617c07b2c6db2b88e54a7c37b4e7e3f293a4d",
+      "mask_sha256": "55aa71f090555878c11280e5553392a7eefc7bd5e00f287a6d1ab7775044bcbd"
+    },
+    "test_04": {
+      "image_sha256": "ada2f99df160eb40183f37e85181a491e6bb4d76f93b2857d246b550d9c4ba84",
+      "mask_sha256": "5b0af74af8d43a5541663da314060216ccf25a25694201976c21cedd79a81549"
+    },
+    "test_05": {
+      "image_sha256": "b427e6cc0e842318a3dbed00f8788ee835a2b3fb44a85fe1c420380c3f70ea0a",
+      "mask_sha256": "dea5f4a1c40c3d9c2fc18b40973c8888fa0e01bd52473d2232fa8c1d45e6646e"
+    },
+    "test_06": {
+      "image_sha256": "352ca663f776979174f009a8faec0475f800d563b49813c97497c62a3047c89a",
+      "mask_sha256": "4f737900642fe4060d698b868e035e1617de05cfadd2e3740a010a21751baa27"
+    },
+    "test_07": {
+      "image_sha256": "4c79f87721faed0c6032000492860a389643bd6415c5e7be26fe4709c16dc6db",
+      "mask_sha256": "ebfe535d340344162d0f8f404e012d5aa45fd06ea8fa4151c703ad9929d7a1ca"
+    },
+    "test_08": {
+      "image_sha256": "68b48f54ee3d99cabcc7f2bd3111b7aef43550bf02dd7f0c43096226ee5cecb6",
+      "mask_sha256": "91863d521763164bc4c59544ad5da3e11807ad62d44248f651db9e9282460060"
+    },
+    "test_09": {
+      "image_sha256": "a5a6ec27574f7ac871b6094c0f477e6deb180740a28f1022eec53394cc0a141c",
+      "mask_sha256": "e5f3fca31d82f20fd58a1290de9b14607fee6d0e7eb9d2212be9919cd2b58b66"
+    },
+    "test_10": {
+      "image_sha256": "871c3c6efcc69f94b6d25a488b01871fa5b2ceaa4ff4f75edab761336b160d83",
+      "mask_sha256": "036d25c8b132eed94243c8a1e3a76e1795241eb5e835a93c929dced3a54085f1"
+    },
+    "test_11": {
+      "image_sha256": "8f4f6899aa75a026935eb889c8b25ac218de4f46de2e319cb85eb80d76631976",
+      "mask_sha256": "68416dae0d65631bc2461981d4e98ad014d170fcdb06b0508634dc2db209ad26"
+    },
+    "test_12": {
+      "image_sha256": "d4c06582be115da9e93adc4f0d38cc48a1d4c1b4ef8ee58f837deb0b9e4bf504",
+      "mask_sha256": "33731a26a3a523d9711f907483d6bd758cbd1c975bfd3f05a4b72f88df0cdff0"
+    }
+  },
+  "checkpoint_sha256": "42646cfafbeac5398386dba17f7ad3531ffcea572e6342cc4fcba42ed0b44b3b",
+  "checkpoint_bytes": 168318771,
+  "source_bundle_sha256": "4cffd60c88fea1a7553f8f154040cf2ce93f7312f0571f3dc6784b5938988528",
+  "source_file_sha256": {
+    "src/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/advisor.py": "24777d35b4382f8975c06478936108e23952921d470a42c360bfab2c267c2d45",
+    "src/benchmark.py": "5a0a7e936d58a5c85a5ff3c758dee1fa6bba7687aa9220ba058cbb360e403c01",
+    "src/chromite_pge_falsification.py": "94cb394739463bb0c216b469b1fb733b393ef3481bbf2cb69c4bba34fd407b0d",
+    "src/config.py": "8009746cce6b1b0c5a3b6859d4d375b4eb3c095c470aa5314045fe400cde8d2f",
+    "src/conformal.py": "8fa79aa8a8afb65d5ea2a492d4c1fb00259983bba21b6af6b3e4780a0ba8ef55",
+    "src/data.py": "cdd8f9fd1f361f885f13b80c7e9b2fbd564416e7c53efe6716be8540f288868f",
+    "src/decision_gap.py": "992b49cb37ec86d58f0559de4ea40313855176a571e569b5924c8f4eaaa085b0",
+    "src/evaluate.py": "c5c671c87c6c40997a0f9dcf2c1dd4f9dcd5d8082e13c7558a8e988952d9b1f9",
+    "src/exposure_control.py": "fe7d10cce14a741942afa5330fb213c3686f8f211badeab2c55c9354885f98f2",
+    "src/inspect_pipeline.py": "dd4a26b0b15fd9f93ee93249e70dd2a7fb5432ba51bf7d3a0f18c5254b8f5ab4",
+    "src/modal.py": "efa0596e9c7835c03514df413acb219297faa37013158ecf5d960e840233d8b2",
+    "src/model.py": "2abcc3116eafe09ff98fc3b79ede6acc9a48a477b01e6ba057761aa8436db198",
+    "src/polarimetry.py": "4eaa86e9bd3cbcf6aefc9d0678a91ed7d59066a202e3715c4d6c9b626fb71a7f",
+    "src/preflight.py": "5f2e5a83d9594fd05989aed061f5a83ee55287f7e8217fd559658040051107bb",
+    "src/refinement_audit.py": "1fce9f863e9db099cbd61ce02be51f480d20cf872fa5606a7e462de7407ad7b3",
+    "src/robustness.py": "de030d9a6704470cc2ce74e32d02b7abf07041cd3e353461d529a71ac7fdb52f",
+    "src/s2_section_stats.py": "10e9a6f94194858c1453d4986ff579a19326c52f7c891f24a71f76ff936a8f20",
+    "src/sampling_error.py": "96ad04ffebe8ee0e213a9dc5fae7ce1fa9e066760a994526517da2a060bffd0a",
+    "src/segmentation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/segmentation/baselines.py": "ea9c1834551448aeb1bfb54beba24e3631fab9433f22c939b5b6efb201c19da0",
+    "src/segmentation/config.py": "2ea385edbb3414de681bf0aaa54321495e23538b30292c77be21ea5e18181056",
+    "src/segmentation/data.py": "404d63dc9f2e041144a051c7ef48c544d45c17243a27d16f9305acc78ba052f3",
+    "src/segmentation/evaluate.py": "2f728432e7303fc8892c3ebe5738f9caef682072d82ed7f090a9011f799a4d64",
+    "src/segmentation/latency_benchmark.py": "da8592c8d9eb3179e579a00ed17408f6286f280210e3b49e5b6b874bb2121bd9",
+    "src/segmentation/losses.py": "7c79986e5d4d46a7715a730dc885e93cd544e45cd21fa51f4605c131fdaf308e",
+    "src/segmentation/lumenstone.py": "bec3ae186358fee52152bf5062110186ddf2dbac9ad54c3201816f74ecc10654",
+    "src/segmentation/metrics.py": "799a0c62181164dbf24befb57aaa10588a2bd392c797aa559e68aa30ef7f33c2",
+    "src/segmentation/model.py": "2cead0f9daa832c9d6eeee9f6fb634b43909a188ca8969cd985d0eff65a575de",
+    "src/segmentation/patches.py": "98b59779d1c30c8902c62595d7f414f0e02cc0232a54c597cdcb60a9f5338e09",
+    "src/segmentation/train.py": "022efe6d0a7d640ede292fce16533e37b51b211a5a41d44c952643688e1501fb",
+    "src/segmentation/train_lumenstone.py": "144911df5a5cf93731b54050e83e29c03600eb47d36927a69648a8f8181ffcec",
+    "src/segmentation/train_patches.py": "f1323cf7edc20932112efb259dd468aa28626eed8c73d75aa7720bfb86ebf6b8",
+    "src/train.py": "caab5a4242b64d062413e9be95438da9d7e8221f6e0165f753788652704d9c1d",
+    "src/v1_consistency.py": "7e8ccae8809402769da6c472580d074a5bee32ff1d520919bb9081b82daed5f7"
+  },
+  "candidate_manifest_sha256": "cb431fd7101cf1263a613211783051fa7f5bc0d885df87c8a81e1db174853b03",
+  "protocol_sha256": "8acb5998b06b67d7b542507dac4630dfea6fc422398d71050ee8e6894a263614",
+  "dataset_archive_sha256": "64aebd108b3306a8b2e83a945c01f2779bbfd1abeb187b1e2cedcac96cf40c1d",
+  "dataset_archive_bytes": 418742024,
+  "dataset_delivery": "unchanged publisher archive attached with candidate kernel output",
+  "method": "sliding window, 512px patches, 64px overlap, native whole sections, average raw logits, no downsampling, all pixels, no void-border exclusion",
+  "confusion_orientation": "rows: ground truth, columns: prediction",
+  "selection_rule": "Highest foreground macro IoU on the fixed six whole native-resolution validation sections; chosen before this evaluation.",
+  "selected_validation_foreground_macro_iou": 0.6467023251884189,
+  "historical_test_caveat": "Publisher held-out sections have earlier baseline results. This is a fixed final regression set, not fresh blind prospective data; this candidate has no prior test evaluation. Do not tune checkpoint, preprocessing, thresholds, or model selection from these results.",
+  "per_section_note": "Each of the fixed twelve test images; an image is not a verified independent specimen/locality.",
+  "training_performed": false,
+  "test_used_for_selection": false,
+  "automatic_deployment": false,
+  "started_at_utc": "2026-09-30T22:31:23Z",
+  "finished_at_utc": "2026-09-30T22:33:44Z",
+  "elapsed_seconds": 141.29283260900002,
+  "runtime": {
+    "python": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+    "torch": "2.10.0+cu128",
+    "torchvision": "0.25.0+cu128",
+    "cuda": "12.8",
+    "gpu": "Tesla T4"
+  }
+}

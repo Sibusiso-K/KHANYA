@@ -1,0 +1,13 @@
+{
+  "is_private_verified": true,
+  "gpu_and_original_docker_verified": true,
+  "source_version1_reference_supplied_in_submission": true,
+  "server_metadata_kernel_sources": [
+    "lethabomh14/reefprint-s2-extended-dice"
+  ],
+  "source_version_note": "Kaggle metadata export normalizes the attachment to an unversioned slug. Exact selected checkpoint, manifest and 35 source module hashes were independently verified before test inference, and matched this predeclared version1 candidate.",
+  "selected_candidate_bytes_manifest_and_source_verified_in_runtime": true,
+  "submitted_executable_cells_identical_to_local": true,
+  "metadata_sha256": "1bfc46b7ed568d6340c5aacdd3da53ac92442eb26b65397bbd1bec4ec4c8b603",
+  "submitted_notebook_sha256_as_pulled": "3c566fc6009689682862132f6b60c13ef5de24f30e9160a537157255cadbd811"
+}

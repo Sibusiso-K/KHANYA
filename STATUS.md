@@ -1,3 +1,7 @@
+# Latest verified continuation — 1 October2026
+
+Read CONTINUE-REEFPRINT-2026-10-01.md. Candidate evaluation COMPLETE and audited; mIoU0.632038/pixelaccuracy0.855093 but weak magnetiteprecision/common-phase regressions. Live weights unchanged. CI allfourgreen2b763b2. Assistantreadingfixlive; candidate report UI integration next.
+
 ## Latest verified application update — 1 October 2026
 
 Actual model tiles now produce live previews/counts, with unknown pixels excluded. White workbench polish, original/prediction comparison, spatial map/sections/layers and voice/evidence assistant are implemented. 71 backend checks and seven serial browser tests passed, plus production build. Real test_11 inference took78.475s; no improved held-out accuracy claimed. Both extended Kaggle runs completed and are being audited. Public release/push status is documented in BUILDLOG. See LIVE-UI-RELEASE-2026-10-01.md for source snapshot, limitations and resume prompt. Current hosted model is unapproved fb78727d, so simulator HOLD is expected.

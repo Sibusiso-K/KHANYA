@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Literal
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse, Response, JSONResponse
-from webapi import cloud, assistant
+from webapi import cloud, assistant, candidate_report
 import contextvars
 import ipaddress
 from contextlib import asynccontextmanager
@@ -582,6 +582,27 @@ def report():
         "Runtime reports server-side decode, inference and analysis; it excludes network upload.",
         "No measured recovery gain, physical XRF device, or live plant connection."],
         "download_url":"/api/report/download"}
+
+CANDIDATE_EVIDENCE_DIR = ROOT / "reports" / "native-selected-test-20261001"
+
+@app.get("/api/reports/native-candidate")
+def candidate_evidence():
+    try:
+        return candidate_report.summary(CANDIDATE_EVIDENCE_DIR, MODEL_SHA)
+    except candidate_report.EvidenceUnavailable as exc:
+        raise HTTPException(503, str(exc)) from exc
+
+@app.get("/api/reports/native-candidate/download/{artifact_key}")
+def candidate_evidence_download(artifact_key: str):
+    try:
+        # Also binds every download to the measured checkpoint and frozen protocol.
+        candidate_report.summary(CANDIDATE_EVIDENCE_DIR, MODEL_SHA)
+        path, media_type = candidate_report.verified_artifact(CANDIDATE_EVIDENCE_DIR, artifact_key)
+    except KeyError as exc:
+        raise HTTPException(404, "Evidence artifact not found.") from exc
+    except candidate_report.EvidenceUnavailable as exc:
+        raise HTTPException(503, str(exc)) from exc
+    return FileResponse(path, media_type=media_type, filename="REEFPRINT-" + path.name)
 
 class AssistantRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)

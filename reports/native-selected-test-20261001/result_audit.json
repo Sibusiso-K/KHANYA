@@ -1,0 +1,27 @@
+{
+  "audit_passed": true,
+  "confusion_metrics_recomputed": true,
+  "twelve_section_matrices_sum_to_pooled": true,
+  "all_section_pixels_counted": true,
+  "provenance_matches_predeclared_protocol": true,
+  "five_class_mean_iou": 0.6320380215266846,
+  "foreground_macro_iou": 0.5779576936406314,
+  "pixel_accuracy": 0.85509338453563,
+  "iou_per_class": [
+    0.8483593330708974,
+    0.7998412030394585,
+    0.24772996173704048,
+    0.8183079742869657,
+    0.4459516354990613
+  ],
+  "recall_per_class": [
+    0.8794730802804199,
+    0.8453659498466124,
+    0.8932395473638215,
+    0.8555433016207372,
+    0.7983572565813549
+  ],
+  "results_file_sha256": "13bed0c61569fb840bdbb4039df8264655c14f3652d7ceb38dde8ed483c05692",
+  "automatic_deployment": false,
+  "note": "Fixed historical regression set; single-seed result. No training or checkpoint bytes used in this offline audit."
+}

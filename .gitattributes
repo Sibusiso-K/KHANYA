@@ -4,3 +4,10 @@
 *.png binary
 *.jpg binary
 *.zip binary
+
+# Downloaded, SHA-256-bound evaluation CSVs retain the publisher run's exact
+# bytes (including CRLF) across Linux CI and Windows checkout.
+/reports/native-selected-test-20261001/*.csv -text
+
+# Preserve the pre-submission notebook serialization for its recorded byte hash.
+/training/native-selected-test-20261001/evaluation.ipynb -text

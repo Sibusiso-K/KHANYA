@@ -1,0 +1,19 @@
+{
+  "reviewed_at_utc": "2026-09-30T22:40:54.895893+00:00",
+  "independent_review_passed": true,
+  "source_protocol_checkpoint_runtime_ids_and_class_map_verified": true,
+  "all_metrics_recomputed_from_confusion": true,
+  "twelve_section_matrices_sum_to_pooled": true,
+  "pooled_pixel_count": 103795344,
+  "csv_values_agree": true,
+  "results_sha256": "13bed0c61569fb840bdbb4039df8264655c14f3652d7ceb38dde8ed483c05692",
+  "magnetite_precision": 0.2552887588957666,
+  "magnetite_false_positives": 2140808,
+  "fraction_of_magnetite_false_positives_from_background": 0.974683857683641,
+  "fraction_of_magnetite_false_positives_in_test_04": 0.6861371967967235,
+  "fraction_of_magnetite_true_positives_in_test_06": 0.8992483723363957,
+  "matched_historical_test_uplift_comparison_cleared": false,
+  "historical_comparison_limitation": "The short Dice candidate has not been evaluated on this test set. Older report with mIoU about 0.5725 lacks verified candidate/source/dataset hash binding; do not describe this result as a matched test uplift.",
+  "interpretation": "Magnetite aggregate recall hides concentrated detection and overprediction. This fixed historical regression-set single-seed result is not prospective accuracy evidence. No tuning or deployment.",
+  "reviewer": "Independent training_completion_audit agent; no inference or file changes during review."
+}

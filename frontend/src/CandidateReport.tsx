@@ -1,0 +1,32 @@
+import {useEffect, useState} from 'react';
+import {AlertCircle, Download, FileCheck2, RefreshCw} from 'lucide-react';
+import {api, authenticatedDownload} from './client';
+import './candidate-report.css';
+
+type CandidateEvidence = {
+ evaluation_id:string; model_sha:string; active_model_sha:string; candidate_is_active:boolean; verified_evidence:boolean;
+ protocol_sha:string; completed_at:string; candidate_epoch:number; method:string; selection_rule:string;
+ metrics:{mean_iou:number; foreground_macro_iou:number; pixel_accuracy:number; n_test_sections:number; classes:{name:string; color:string; iou:number; recall:number; precision:number; support_pixels:number; false_positive_pixels:number}[]};
+ limitations:string[]; downloads:{key:string; filename:string; sha256:string; url:string}[];
+};
+const title=(name:string)=>name.charAt(0).toUpperCase()+name.slice(1);
+const percent=(value:number)=>(value*100).toFixed(1)+'%';
+export default function CandidateReport(){
+ const [evidence,setEvidence]=useState<CandidateEvidence|null>(null),[error,setError]=useState(''),[loading,setLoading]=useState(true),[retry,setRetry]=useState(0),[downloading,setDownloading]=useState(''),[downloadNotice,setDownloadNotice]=useState('');
+ useEffect(()=>{let alive=true;setLoading(true);setEvidence(null);setError('');api<CandidateEvidence>('/reports/native-candidate').then(value=>{if(!value?.verified_evidence||!value.metrics||!Array.isArray(value.metrics.classes)||value.metrics.classes.length!==5)throw Error('The service did not return verified candidate evidence. Retry after the backend update.');if(alive)setEvidence(value)}).catch(reason=>{if(alive)setError(reason.message)}).finally(()=>{if(alive)setLoading(false)});return()=>{alive=false}},[retry]);
+ async function save(key:string){const item=evidence?.downloads.find(file=>file.key===key);if(!item)return;setDownloading(key);setError('');setDownloadNotice('');try{await authenticatedDownload(item.url,'REEFPRINT-'+item.filename);setDownloadNotice('Download requested: '+item.filename+'.')}catch(reason:any){setError(reason.message)}finally{setDownloading('')}}
+ return <section className="panel candidate-report" aria-labelledby="candidate-report-heading">
+  <div className="candidate-heading"><div><h2 id="candidate-report-heading">Retrained candidate  /  measured test evidence</h2><p>A separate checkpoint, selected on validation before its fixed test evaluation.</p></div><span className="badge amber">{loading?'Checking candidate status':!evidence?'Status unavailable':evidence.candidate_is_active?'Candidate checkpoint is active':'Candidate not deployed'}</span></div>
+  {loading?<p className="candidate-status" role="status">Loading verified candidate evidence...</p>:!evidence?<div className="candidate-status"><p role="alert">{error||'Candidate evidence is not available.'}</p><button className="button" onClick={()=>setRetry(value=>value+1)}><RefreshCw size={15}/>Retry evidence</button></div>:<>
+   <div className="candidate-summary"><div><FileCheck2 size={18}/><span><strong>12 whole S2 sections</strong><small>Fixed regression set  /  one training seed  /  epoch {evidence.candidate_epoch}</small></span></div><dl><div><dt>Five-class mIoU</dt><dd>{evidence.metrics.mean_iou.toFixed(3)}</dd></div><div><dt>Mineral-only mean IoU</dt><dd>{evidence.metrics.foreground_macro_iou.toFixed(3)}</dd></div><div><dt>Pixel accuracy</dt><dd>{percent(evidence.metrics.pixel_accuracy)}</dd></div></dl></div>
+   <div className="candidate-risk"><AlertCircle size={20}/><div><h3>Magnetite recall is high, but false positives remain high</h3><p>Recall is {percent(evidence.metrics.classes.find(item=>item.name==='magnetite')!.recall)}; precision is only {percent(evidence.metrics.classes.find(item=>item.name==='magnetite')!.precision)}. Most predicted magnetite pixels are incorrect. Review the rare phase before any deployment decision.</p></div></div>
+   <p className="candidate-caveat"><strong>Common-phase review:</strong> the historical approved report has higher pyrrhotite IoU (0.870 vs 0.818), pentlandite IoU (0.547 vs 0.446), and pixel accuracy (89.1% vs 85.5%). Earlier source and mask hashes are not bound to this evaluation, so these scores do not establish a controlled training improvement.</p>
+   <div className="table-scroll"><table><caption>Measured pooled pixel scores  /  rows include background</caption><thead><tr><th scope="col">Phase</th><th scope="col">IoU</th><th scope="col">Recall</th><th scope="col">Precision</th><th scope="col">Labelled pixels</th></tr></thead><tbody>{evidence.metrics.classes.map(item=><tr key={item.name}><th scope="row"><span className="phase-label"><i style={{background:item.color}}/>{title(item.name)}</span></th><td>{item.iou.toFixed(4)}</td><td>{percent(item.recall)}</td><td>{percent(item.precision)}</td><td>{item.support_pixels.toLocaleString()}</td></tr>)}</tbody></table></div>
+   <details className="candidate-provenance"><summary>Protocol, checkpoint identity and limitations</summary><dl className="report-meta"><dt>Candidate SHA-256</dt><dd>{evidence.model_sha}</dd><dt>Currently served SHA-256</dt><dd>{evidence.active_model_sha||'No checkpoint loaded'}</dd><dt>Protocol SHA-256</dt><dd>{evidence.protocol_sha}</dd><dt>Evaluation</dt><dd>{evidence.evaluation_id}  /  {evidence.completed_at}</dd><dt>Inference protocol</dt><dd>{evidence.method}</dd><dt>Selection</dt><dd>{evidence.selection_rule}</dd></dl><ul>{evidence.limitations.map(text=><li key={text}>{text}</li>)}</ul><p>Source hashes and the full pixel confusion matrix are included in the JSON evidence.</p></details>
+   <p className="candidate-caveat">Historical publisher test images were used by earlier baselines. This is a fixed regression check, not new blind field validation. Common-phase regressions and magnetite false positives prevent an automatic deployment claim.</p>
+   <div className="candidate-actions">{[{key:'report',label:'Measured report'},{key:'classes',label:'Per-phase CSV'},{key:'sections',label:'Per-section CSV'},{key:'metrics',label:'Full evidence JSON'},{key:'protocol',label:'Protocol JSON'},{key:'confusion',label:'Confusion CSV'}].map(item=><button className="button" key={item.key} disabled={!!downloading} onClick={()=>save(item.key)}><Download size={15}/>{downloading===item.key?'Downloading...':item.label}</button>)}</div>
+   {!!downloadNotice&&<p className="candidate-status" role="status">{downloadNotice}</p>}
+   {!!error&&<p className="candidate-status" role="alert">{error}</p>}
+  </>}
+ </section>;
+}
