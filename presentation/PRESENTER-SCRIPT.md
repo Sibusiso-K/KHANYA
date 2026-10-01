@@ -1,6 +1,6 @@
 # REEFPRINT / KHANYA: presenter script (10 minutes)
 
-**Deck:** `presentation/output/REEFPRINT-KHANYA-Team-Sonar-pitch.pptx`. The script below is also in each slide's speaker notes.
+**Deck:** `presentation/output/REEFPRINT-KHANYA-Team-Sonar-pitch-v2.pptx` (19 slides; slide 11 is new). The script below is also in each slide's speaker notes.
 **Target:** 9:45 spoken, which leaves 15 s of slack. Slide 7 plays the 92-second demo video: click it once and say nothing while it runs.
 
 **Before you start:**
@@ -16,8 +16,8 @@
 | 1–4 (title, problem, who it affects, how it hurts) | Lethabo | 0:00–2:00 |
 | 5–7 (solution, how it works, demo) | Sibusiso | 2:00–4:50 |
 | 8–10 (evidence, competitors, value) | Ipeleng | 4:50–6:45 |
-| 11–13 (business, technology, accuracy engine) | Sibusiso | 6:45–8:25 |
-| 14–16 (roadmap, compliance, the ask) | Lethabo | 8:25–9:45 |
+| 11–14 (next lab test, business, technology, accuracy engine) | Sibusiso | 6:45–8:35 |
+| 15–17 (roadmap, compliance, the ask) | Lethabo | 8:35–9:45 |
 
 ## The script
 
@@ -62,41 +62,27 @@ REEFPRINT is the only one here that identifies phases and liberation in minutes 
 
 Now the upside. Take a typical concentrator. Our *assumption* is two hundred and fifty thousand tonnes a month at four grams per tonne. At today's basket price, every half a percentage point of recovery is worth about seven point four million rand a month. We haven't measured that gain yet. That's what the pilot is for.
 
-**11 · Business model (6:45–7:20).** Commercially, there are three tiers:
-- **Paid pilot:** about two hundred and ten thousand rand for eight to twelve weeks.
-- **Site licence:** after that, around twelve thousand rand a month, plus a one-off deployment fee.
-- **Enterprise:** for multi-site operations.
+**11 · Next lab test, built on the mentor's paper (6:45–7:15).** This next step is built on Mintek's own work. Moodley, Govender and colleagues showed that QEMSCAN liberation classes explain rougher flotation kinetics. REEFPRINT produces those same classes from a micrograph in minutes. Run through the paper's own rate constants, it predicts that about eighty-six percent of this sample's valuable mineral floats in the first minute, which is the interval the paper couldn't resolve. So the next lab test should add fifteen- and thirty-second concentrates, and each timed concentrate can be screened optically, which is the paper's stated future work. Those constants come from one copper ore, so this is a hypothesis to test, not a result.
+
+**12 · Business model (7:15–7:45).** Commercially, a paid pilot costs about two hundred and ten thousand rand for eight to twelve weeks. After that, a site licence is around twelve thousand rand a month, plus a one-off deployment fee, and an enterprise tier covers multi-site operations. These prices are hypotheses to test. Customers can run REEFPRINT offline on a lab laptop, use it on a phone, or connect it to the plant through OPC UA. Our first buyers are South Africa's PGM and chrome producers, with labs such as Mintek as triage partners.
 
 These prices are hypotheses we'll test with buyers. Customers can run REEFPRINT offline on a lab laptop, sign in from a phone, or connect it to the plant through OPC UA. Our first buyers are South Africa's PGM and chrome producers, with mineralogy labs such as Mintek as triage partners.
 
-**12 · Technology (7:20–7:50).** On the technology side:
-- The front end is React and TypeScript.
-- Behind it are FastAPI and PyTorch, OPC UA connects to the plant, and Supabase handles secure storage.
-- Every number carries its checkpoint and its source.
+**13 · Technology (7:45–8:05).** On the technology side, the front end is React and TypeScript, with FastAPI and PyTorch behind it, OPC UA to the plant and Supabase for secure storage. It works offline first, runs on a CPU, is permissively licensed, and scales by adding sites, not servers.
 
 The system works offline first, runs on a CPU, is permissively licensed with an SBOM, and scales by adding sites, not servers.
 
-**13 · Accuracy engine (7:50–8:25).** How does accuracy keep improving? Our own data shows that different models are good at different minerals. The live model misses magnetite, the candidate finds it, and the historical model is best on pyrrhotite and pentlandite. So instead of relying on one model:
-- A router sends each image to specialist models.
-- It combines their answers per mineral, using weights learned on validation data.
-- A referee, the conformal check, then decides whether to answer, verify or hold.
+**14 · Accuracy engine (8:05–8:35).** How does accuracy keep improving? Different models are good at different minerals. The live model misses magnetite, the candidate finds it, and the historical model is best on pyrrhotite and pentlandite. So a router sends each image to specialist models, combines their answers per mineral using weights learned on validation data, and a conformal referee decides whether to answer, verify or hold. Every QEMSCAN-labelled section retrains the specialists.
 
 Every QEMSCAN-labelled section retrains the specialists, and no model is promoted unless it holds up.
 
-**14 · Pathway (8:25–9:00).** Here's the pathway:
-1. A twelve-week lab shadow pilot with QEMSCAN labels.
-2. The specialist ensemble and a UG2 and chromite model, in an advisory pilot at one concentrator.
-3. A controlled flotation trial, plus our polarimetry optics, which can separate pentlandite from pyrrhotite by how each one treats polarised light.
+**15 · Pathway (8:35–9:05).** Here's the pathway. First, a twelve-week lab shadow pilot with QEMSCAN labels. Next, specialist models and a UG2 and chromite domain at one concentrator. After that, a flotation trial, plus QEMSCAN-labelled multispectral and hyperspectral reflectance microscopy with polarisation. Microscope-scale optics matter, because PGM grains are microns across and opaque. Every step has a hypothesis that could fail.
 
 Every step comes with a hypothesis that could fail, and we've said how it could fail.
 
-**15 · Compliance (9:00–9:20).** It's built to pass a mine's reviews:
-- **POPIA and mine-safety rules:** it's advisory first, and nothing moves without site authorisation.
-- **SAMREC:** its outputs are process decisions, not resource statements.
-- **Data and licences:** it respects data rights and uses permissive licences.
-- **Originality:** two clean git histories, with AI assistance disclosed.
+**16 · Compliance (9:05–9:20).** It's built for a mine's reviews: POPIA; mine safety, meaning it's advisory first and nothing moves without site authorisation; SAMREC, meaning these are process decisions, not resource statements; permissive licences; and disclosed AI assistance.
 
-**16 · The ask (9:20–9:45).** So our ask is simple: one concentrator, one mineralogist, QEMSCAN-labelled sections and twelve weeks. In return, you get measured answers: turnaround, accuracy on your own ore, refusal rates, and the value on your own numbers. This has been REEFPRINT, also known as KHANYA. Thank you.
+**17 · The ask (9:20–9:45).** So our ask is simple: one concentrator, one mineralogist, QEMSCAN-labelled sections and twelve weeks. In return, you get measured answers: turnaround, accuracy on your own ore, refusal rates, and the value on your own numbers. This has been REEFPRINT, also known as KHANYA. Thank you.
 
 ## User journey (a fictional example, for Q&A or if asked "who uses it?")
 
@@ -122,3 +108,7 @@ Every step comes with a hypothesis that could fail, and we've said how it could 
 | "How is this different from QEMSCAN?" | "It isn't a replacement. QEMSCAN is the reference. We screen everything optically and send only the uncertain samples to it, and QEMSCAN maps then become our training labels." |
 | "Who owns the IP?" | "Two clean git histories with dated failures. We'll follow Mintek's invention-credit process, and the shipped stack uses only permissive licences." |
 | "Did you use AI?" | "Yes, coding assistants, and we disclose that (Appendix B). The problem framing, training, evaluation, measurements and failure logs are ours, and every number was checked against its source." |
+| "Aren't those QEMSCAN images?" | "No. They're ordinary reflected-light micrographs from the LumenStone dataset, taken with a lab microscope camera. That's the point: optical images in minutes, with QEMSCAN kept for the samples we flag as uncertain, and QEMSCAN maps used as our training labels." |
+| "Why not hyperspectral?" | "Core-scale SWIR hyperspectral identifies minerals by vibrational absorption. Opaque sulphides, chromite and micron-sized PGM grains don't give usable signals at that scale. Our roadmap is microscope-scale multispectral or hyperspectral *reflectance* with polarisation, labelled by QEMSCAN. That's the version of hyperspectral that can see PGM-bearing grains." |
+| "Where do your kinetics numbers come from?" | "From your own paper, Moodley et al. 2026, Table C.14. Those constants were fitted for one copper ore and one test condition, and the authors say they're not transferable, so we show it as a hypothesis. The real value is the method: our grains drop straight into your liberation classes." |
+

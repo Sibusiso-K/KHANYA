@@ -288,6 +288,7 @@ def brand(slide, dark=False):
 
 
 def pagenum(slide, n, dark=False):
+    n = S.index(slide) + 1
     text(slide, 12.2, 0.35, 0.55, 0.3, f"{n:02d}", size=10.5, color=(RGBColor(0xB8, 0xC4, 0xD2) if dark else MUTED),
          align=PP_ALIGN.RIGHT, name="!!page")
 
@@ -656,6 +657,65 @@ pic(s, G["lens_phase"], 11.95, 0.7, w=0.8, name="!!lens")
 morph(s)
 notes(s, "SCRIPT_10")
 
+# ---- 10b NEXT LAB TEST (mentor framework)
+KIN = json.load(open(os.path.join(SCR, "kinetics_test11.json")))
+s = new()
+brand(s); pagenum(s, 0)
+eyebrow(s, 0.6, 0.85, "Processability · built on Mintek's own kinetics framework")
+headline(s, "Predict the next lab test before it runs.", y=1.15, size=32)
+cd = CategoryChartData()
+cd.categories = ["Locked\n0–30%", "Low mid.\n30–50%", "High mid.\n50–80%", "Liberated\n80–<100%", "Fully lib.\n100%"]
+cd.add_series("Share of valuable-mineral area", tuple(round(KIN["share"][c] * 100, 1) for c in ("LOCK", "LM", "HM", "LIB", "FUL")))
+gf = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.5), Inches(1.95), Inches(4.3), Inches(3.1), cd)
+ch = gf.chart
+style_chart(ch, [PENT], legend=False, size=9)
+ch.has_title = True
+ch.chart_title.text_frame.text = "1 · test_11 grains in the paper's liberation classes (%)"
+ch.chart_title.text_frame.paragraphs[0].runs[0].font.size = Pt(10.5)
+ch.chart_title.text_frame.paragraphs[0].runs[0].font.bold = True
+pl = ch.plots[0]; pl.gap_width = 50; pl.has_data_labels = True
+pl.data_labels.number_format = '0.0'; pl.data_labels.number_format_is_linked = False
+pl.data_labels.position = XL_LABEL_POSITION.OUTSIDE_END; pl.data_labels.font.size = Pt(9)
+ch.value_axis.visible = False; ch.value_axis.has_major_gridlines = False
+ch.category_axis.tick_labels.font.size = Pt(8.5); ch.category_axis.format.line.color.rgb = LINE
+cd2 = CategoryChartData()
+tkeys = ["0.25", "0.5", "1", "3", "7", "20"]
+cd2.categories = ["15 s", "30 s", "1 min", "3 min", "7 min", "20 min"]
+cd2.add_series("Predicted cumulative recovery (%)", tuple(round(KIN["R"][k] * 100, 1) for k in tkeys))
+gf = s.shapes.add_chart(XL_CHART_TYPE.LINE_MARKERS, Inches(4.95), Inches(1.95), Inches(4.3), Inches(3.1), cd2)
+ch = gf.chart
+style_chart(ch, [PYRR], legend=False, size=9)
+ch.plots[0].series[0].format.line.color.rgb = PYRR
+ch.plots[0].series[0].format.line.width = Pt(2.5)
+ch.plots[0].series[0].smooth = False
+ch.has_title = True
+ch.chart_title.text_frame.text = "2 · Predicted rougher recovery with the paper's class rates"
+ch.chart_title.text_frame.paragraphs[0].runs[0].font.size = Pt(10.5)
+ch.chart_title.text_frame.paragraphs[0].runs[0].font.bold = True
+pl = ch.plots[0]; pl.has_data_labels = True
+pl.data_labels.number_format = '0"%"'; pl.data_labels.number_format_is_linked = False
+pl.data_labels.position = XL_LABEL_POSITION.ABOVE; pl.data_labels.font.size = Pt(9)
+va = ch.value_axis; va.maximum_scale = 100; va.minimum_scale = 0; va.visible = False; va.has_major_gridlines = False
+ch.category_axis.tick_labels.font.size = Pt(9); ch.category_axis.format.line.color.rgb = LINE
+box(s, 9.45, 1.95, 3.3, 4.6, fill=NAVY, radius=0.14)
+text(s, 9.7, 2.1, 2.9, 0.3, "3 · THE NEXT TEST, SUGGESTED", size=10, color=RGBColor(0xF2, 0x9A, 0x6A), font=BODYB, bold=True)
+recs = [[("Add 15 s and 30 s concentrates. ", {"font": BODYB, "bold": True, "color": WHITE}),
+         (f"≈{KIN['R']['1']*100:.0f}% of payload is predicted to float in the first minute — the interval the paper could not resolve.", {"color": RGBColor(0xC9, 0xD5, 0xE3)})],
+        [("Screen every timed concentrate optically. ", {"font": BODYB, "bold": True, "color": WHITE}),
+         ("The paper's stated future work is mineralogy of the timed concentrates; send only uncertain ones to QEMSCAN.", {"color": RGBColor(0xC9, 0xD5, 0xE3)})],
+        [("Regrind only if locked is material. ", {"font": BODYB, "bold": True, "color": WHITE}),
+         (f"Here {KIN['share']['LOCK']*100:.1f}% of payload area is locked.", {"color": RGBColor(0xC9, 0xD5, 0xE3)})]]
+text(s, 9.7, 2.5, 2.9, 4.0, recs, size=10.5, spacing=9, line=1.05)
+tag(s, 0.6, 5.3, "ILLUSTRATIVE")
+tag(s, 2.05, 5.3, "SOURCE")
+text(s, 0.6, 5.68, 8.6, 1.25, [[("How it works: ", {"font": BODYB, "bold": True}),
+     ("REEFPRINT's grain map (minutes, optical) is binned into the five liberation classes of Moodley, Govender et al. (Mintek, 2026), then their first-order class rates predict recovery with time — before a flotation test or QEMSCAN run is booked.", {"color": MUTED})]],
+     size=10.5, line=1.06)
+source(s, "Rates kFUL 0.91, kLIB 6.0, kHM 3.0, kLM 1.0 min⁻¹: Moodley et al., Results in Engineering 32 (2026) 112959, Table C.14 — fitted for one low-grade Cu ore under one test condition; the authors state they are not transferable. Our classes use valuable-mineral area share as a proxy for free-surface exposure. test_11: 6 fields, 18% of the section, 23 grains; locked grains are left to the residual term.", y=6.88)
+pic(s, G["lens_phase"], 11.95, 0.7, w=0.8, name="!!lens")
+morph(s)
+notes(s, "SCRIPT_10b")
+
 # ---- 11 BUSINESS MODEL, ACCESS, MARKET
 s = new()
 brand(s); pagenum(s, 11)
@@ -770,7 +830,7 @@ headline(s, "From a working demo to every concentrator.", y=1.15, size=32)
 phases = [("Today", "Oct 2026", "Working app · 3 phases · accuracy report · gated simulator · offline", PYRR),
           ("0–3 months", "Lab shadow pilot", "R210k · QEMSCAN-labelled sections from a partner lab · measured turnaround", CHALC),
           ("3–9 months", "Advisory pilot", "Specialist ensemble · UG2 + chromite domain · one concentrator, metallurgist approves", PENT),
-          ("9–18 months", "Closed loop", "Controlled flotation trial with plant control · polarimetry rig · side-stream imaging", MAG),
+          ("9–18 months", "Closed loop", "Flotation trial with plant control · QEMSCAN-labelled multispectral / hyperspectral reflectance + polarisation microscopy", MAG),
           ("18 months +", "Product", "Multi-site service across PGM, chrome, base metals and iron ore", INK)]
 ln = s.shapes.add_connector(1, Inches(0.8), Inches(2.62), Inches(12.6), Inches(2.62))
 ln.line.color.rgb = LINE
@@ -879,10 +939,10 @@ if os.path.exists(script_path):
     SC = json.load(open(script_path, encoding="utf-8"))
     for i, sl in enumerate(prs.slides, 1):
         tf = sl.notes_slide.notes_text_frame
-        key = f"SCRIPT_{i}"
-        if tf.text.strip() == key and key in SC:
+        key = tf.text.strip()
+        if key in SC:
             tf.text = SC[key]
 
-name = os.path.join(OUT, "REEFPRINT-KHANYA-Team-Sonar-pitch.pptx")
+name = os.path.join(OUT, "REEFPRINT-KHANYA-Team-Sonar-pitch-v2.pptx")
 prs.save(name)
 print("saved", name, len(prs.slides), "slides")
