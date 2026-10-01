@@ -1,3 +1,16 @@
+## 2026-10-01 — Sibusiso (Claude review) — overnight commits reviewed live
+
+**Checked 2b763b2 on 127.0.0.1:8510 (de7135a9):** all four CI checks green. Progress telemetry correct (provisional pyrrhotite 96.8 → 93.6%; final 93.6%, Grind finer 0.9066). Assistant off by default and local-only, provider opt-in per question. Voice consent text present. Zero requests to other origins.
+
+**Found:**
+- `assistant.py` imports httpx at module top, so the app won't start without it. Locally I installed the pinned httpx 0.27.2 (+ httpcore 1.0.9, certifi, sniffio) into the git-ignored `.runtime_packages`. Ask: make the import lazy.
+- A run started before model_ready waits on warm-up (prepare 6.2 s).
+- On battery (35%), the bare model takes 31.6 s for six fields vs 23.3 s plugged in. Present plugged in.
+
+**Open:** the timing line on the result card; a background row in the provisional bars; gating "Run analysis" on model_ready. No approved PRs, so nothing merged.
+
+---
+
 ## 2026-09-30 — Sibusiso (Claude review) — progressive scan checked live at 375 px
 
 **Checked 9c4661c on 127.0.0.1:8510 (de7135a9, test_11 Quick, 375 px):**
