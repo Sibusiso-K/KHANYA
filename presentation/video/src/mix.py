@@ -9,7 +9,7 @@ from scipy.signal import butter, sosfilt
 
 S = os.path.dirname(os.path.abspath(__file__))
 SR = 48000
-VODIR = os.path.join(S, "vo", "en-ZA-LukeNeural")
+VODIR = os.path.join(S, "vo", os.environ.get("REEF_VOICE", "en-GB-RyanNeural"))
 TLN = sys.argv[1] if len(sys.argv) > 1 else "timeline.json"
 OUTN = sys.argv[2] if len(sys.argv) > 2 else "audio.wav"
 tl = json.load(open(os.path.join(S, "out", TLN)))

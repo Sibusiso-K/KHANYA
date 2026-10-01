@@ -12,16 +12,26 @@ OUT = os.path.join(HERE, "vo", VOICE)
 os.makedirs(OUT, exist_ok=True)
 
 
+# spoken respellings for a non-South-African voice; captions keep the real spelling
+SAY = {"bakkie": "bucky"}
+UNSAY = {v: k for k, v in SAY.items()}
+
+
 async def synth(key, text):
     mp3 = os.path.join(OUT, key + ".mp3")
-    comm = edge_tts.Communicate(text, VOICE, rate="-3%", boundary="WordBoundary")
+    spoken = text
+    if not VOICE.startswith("en-ZA"):
+        for a, b in SAY.items():
+            spoken = spoken.replace(a, b)
+    comm = edge_tts.Communicate(spoken, VOICE, rate=os.environ.get("REEF_RATE", "-3%"), boundary="WordBoundary")
     words = []
     with open(mp3, "wb") as fh:
         async for chunk in comm.stream():
             if chunk["type"] == "audio":
                 fh.write(chunk["data"])
             elif chunk["type"] == "WordBoundary":
-                words.append([chunk["text"], chunk["offset"] / 1e7, chunk["duration"] / 1e7])
+                w = UNSAY.get(chunk["text"], chunk["text"])
+                words.append([w, chunk["offset"] / 1e7, chunk["duration"] / 1e7])
     wav = os.path.join(OUT, key + ".wav")
     subprocess.run([FF, "-v", "error", "-y", "-i", mp3, "-ar", "48000", "-ac", "1", wav], check=True)
     r = subprocess.run([FF, "-i", wav], capture_output=True, text=True).stderr

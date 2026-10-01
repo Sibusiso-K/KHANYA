@@ -18,7 +18,7 @@ every element of the video. Read it before you show the video or answer a judge'
 | Retrained candidate | `42646cfa`: mIoU 0.632 and pixel accuracy 85.5 % on the same 12 sections; magnetite recall 89.3 % but precision 25.5 %. **Quarantined, not deployed.** The narration calls 0.632 a recorded figure, not an improvement, because the historical approved model still beats it on pyrrhotite and pentlandite. |
 | Simulator | Local simulator only. The screen shows "Checkpoint is not approved for demo control. Setting held." (0 → 0). No live plant, and no recovery gain is claimed. |
 | Spatial 3D, plan and section | The app's opt-in **synthetic** demo scene, labelled "Synthetic scene · not measured data" on screen. |
-| Narration | Synthetic voice: Microsoft `en-ZA-LukeNeural` via `edge-tts`. |
+| Narration | Synthetic voice: Microsoft `en-GB-RyanNeural` via `edge-tts` (British English; the first cut used `en-ZA-LukeNeural`, kept in `luke-voice/`). |
 | Music and sound effects | Original, synthesised from scratch in NumPy for this video (`make_music.py`). No samples. |
 | Typeface | Public Sans (SIL Open Font License), the same face the app uses. |
 
@@ -46,7 +46,7 @@ redistributed standalone, so the raw clips are kept out of git and out of this f
 
 ## Known limits of the video
 
-- At 3:44 it is longer than the 90-second demo slot in the deck. Use the 90-second cut for that slot if one exists in this folder; otherwise cue the full video from 0:51 (the app section).
+- At 3:44 the full cut is longer than the deck's 90-second demo slot; slide 7 embeds `REEFPRINT-promo-90s-embed.mp4` (the 1:32 cut, compressed).
 - Captions are burned in, and also supplied as `REEFPRINT-promo.en.srt`.
 - Stock scenes are not South African sites. The narration names the bakkie, the core yard and the plant office as places the app can be opened, not as places shown.
 - The phone beat shows the mobile UI **viewing** a result. A phone photograph of loose ore is outside the model's validated input, and the video never shows one being analysed.

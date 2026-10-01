@@ -15,7 +15,7 @@ FONTDIR = os.path.join(S, "fonts")
 FF = r"C:\Users\USER\Desktop\REEFPRINT\.workbench\media-tools\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe"
 MICRO = r"C:\Users\USER\Desktop\REEFPRINT\demo-images\test_11.jpg"
 W, H, FPS = 1920, 1080, 30
-VOICE = "en-ZA-LukeNeural"
+VOICE = os.environ.get("REEF_VOICE", "en-GB-RyanNeural")
 VODIR = os.path.join(S, "vo", VOICE)
 DUR = json.load(open(os.path.join(VODIR, "durations.json")))
 WORDS = json.load(open(os.path.join(VODIR, "words.json")))
@@ -1109,7 +1109,7 @@ DISCLOSE = [
     "Active model fb78727d: mean IoU 0.454 on 12 held-out sections, magnetite IoU 0. Not approved for control.",
     "Retrained candidate 42646cfa (mIoU 0.632, same 12 sections) is quarantined and not deployed.",
     "Plant actions run in a local simulator. There is no live plant connection and no recovery gain is claimed.",
-    "Narration is a synthetic voice (en-ZA). Music is an original composition made for this video.",
+    "Narration is a synthetic voice (en-GB). Music is an original composition made for this video.",
 ]
 
 

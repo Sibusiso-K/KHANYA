@@ -22,6 +22,61 @@ it is a press release.
 
 ---
 
+## 2026-10-01 (05:15–10:15) — British re-voice, the 10-minute deck, and the themes branch
+
+### Attempted
+
+Lethabo asked for a different English narration voice, the 10-minute PowerPoint and its script, the app
+themes with a launch animation, and answers on phone photos, API keys and model training.
+
+### Worked
+
+- **Re-voice.** Five voice samples were offered (en-ZA Leah, en-NZ Mitchell, en-GB Ryan and Thomas, en-AU
+  William), and Lethabo chose **en-GB-RyanNeural**.
+  - Narration was regenerated at +6% rate, so the full cut still runs 224.4 s and the short cut 91.8 s.
+    "bakkie" is respelled for speech only; the captions keep the real word.
+  - Both cuts were re-rendered with every word-synced overlay re-timed. The Luke versions are kept in
+    `presentation/video/luke-voice/`.
+- **Deck.** `presentation/output/REEFPRINT-KHANYA-Team-Sonar-pitch.pptx` has 16 slides plus 2 appendices,
+  built with python-pptx (`presentation/deck-src/build_deck.py`).
+  - It passes `validate.py` and was checked slide by slide as real PowerPoint renders.
+  - Charts are native; transitions are Morph with a recurring micrograph "lens".
+  - Every number carries a provenance tag (LIVE APP, RECORDED, SOURCE, ASSUMPTION, ILLUSTRATIVE), and
+    every derived figure is computed in the script.
+  - Sources: USGS MCS 2025 (SA ≈ 71% of 2024 platinum mine production; reserves 63,000 t of
+    >81,000 t), DMPR Mining Sector Performance 2024 (6.1% of GDP; 474,736 jobs), and Valterra H1 2026
+    (R45,993 per PGM ounce sold, read from the PDF).
+- **Script.** `presentation/PRESENTER-SCRIPT.md` is timed to 9:45, with a speaker split, a fictional
+  user journey and a Q&A crib. The same script is in the speaker notes.
+- **Themes branch.** `codex/themes-launch` (`540e29f`) finishes the uncommitted Codex theme pass in an
+  isolated worktree, without touching the live demo.
+  - It adds three themes, Settings, the brand-mark launch motion and the candidate report.
+  - Two defects were found and fixed: the Mineral-night step bar was unreadable, and the model badge
+    overflowed 375 px screens.
+  - Checks: tsc and vite build; `themes.spec.ts` 3/3 in Edge; 36 backend tests passed.
+
+### Did not work
+
+- Running two render processes at once ran out of memory again (7.7 GB machine). `drive.py` now renders
+  one process at a time and resumes from the last frame written.
+- `os.replace` onto an MP4 that was open in a player failed with WinError 5. The new cut was renamed
+  instead, and the old file moved to `luke-voice/`.
+- The first theme-test run timed out waiting for Vite, then failed because Playwright's bundled browser
+  was missing. Starting Vite manually and setting `REEFPRINT_BROWSER_CHANNEL=msedge` fixed both.
+
+### Learned
+
+- **The "half of sections answered" triage figure in `MINTEK-FIT.md` §3.1 is stale.** It predates the
+  30 September evidence gate. With the shipped refined pipeline, `decision_gap_patches_refined.json`
+  gives **4/12 confident answers** (1 continue, 3 grind finer); 8 are verify or too-few-particles.
+  The exact 95% interval is 10–65%. The deck uses 4/12, and `MINTEK-FIT.md` still needs correcting.
+
+### Left open
+
+- Promote `codex/themes-launch` to the live demo only after the presentation, or on Lethabo's
+  explicit say-so.
+- Model training toward a specialist ensemble is designed (deck slide 13) but has not been run.
+
 ## 2026-10-01 — promo video for the final, built from the live workbench
 
 ### Attempted
