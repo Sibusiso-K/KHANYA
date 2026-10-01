@@ -1,31 +1,69 @@
-# REEFPRINT Belt Monitor (hyperspectral, before grinding)
+# REEFPRINT Live: belt-to-decision showcase
 
-It has the same look as the KHANYA workbench: Public Sans, the brand mark, and the three themes (White workbench, Mineral night, Field paper). There are four views: Belt, Feed mineralogy, Belt robustness, and Where it sits. You can pick them with URL parameters, for example `?view=robust&theme=mineral-night&speed=3000`.
+An offline, single-page app in the KHANYA workbench design (Public Sans, the brand mark, and three themes). It replays **real public data** in three labelled evidence tracks plus an integration view.
 
-An offline, single-page replay of the belt hyperspectral track. It plays held-out HIDSAG drill-core samples one at a time, as a belt would: the measured VNIR + SWIR spectrum, the out-of-fold predictions of five lab results with their typical error and the real lab value, and an illustrative decision card.
+The plan behind it is `PLAN-live-v6.md`, reviewed in a ClauDex loop (Codex gpt-6-astra, 3 rounds, APPROVED; the argument is in `PLAN-live-v6-REVIEW-LOG.md`).
 
-It is a replay of public data. It is **not a live belt**, and the ore is **not PGM**. The page says so on screen.
+| View | Data | What it shows |
+|---|---|---|
+| **Live scan** | HIDSAG VNIR + SWIR cubes, CC0 | A real scan line by line, absorption and cluster maps, the spectrum under the cursor, a 3D data cube, predictions with 80% split-conformal intervals, the total decision table, reasons (occlusion) and an audit log |
+| **Bushveld PGE** | Bachmann et al. 2019 chromitite assays, CC BY 4.0 | Belt-type chemistry (Cr₂O₃, FeO, SiO₂, MgO, Al₂O₃, CaO) to seam and Pt / Rh / 4E grade, held out by project, with a downhole log |
+| **Plant** | Kaggle iron-ore flotation plant, CC0 | Real plant tags, a silica forecast against the lab assay and against persistence. It does **not** beat the last assay; that is shown |
+| **Lab & exports** | target registry | Typed import of QEMSCAN / XRF / XRD / assay CSVs with reasons for each rejection, reconciliation, and LIMS CSV, provenance JSON, OPC UA tag map, GeoJSON (null geometry) and shift report |
+| **Evidence** | all of the above | The scoreboard against strongest baselines, v5, and a cheaper camera, plus the MINERAL1 correction |
+| **Where it sits** | design | Orchestration (router, referee, policy) and roles |
+
+## Run it
 
 ```
-python -m http.server 8530 --bind 127.0.0.1 --directory presentation/belt-monitor
+python presentation/belt-monitor/server.py
 ```
 
-Open `http://127.0.0.1:8530/`. Add `?speed=3000` to change the time per sample, in ms.
+Open `http://127.0.0.1:8531/`. Plain `python -m http.server` also works, but the assistant then uses only the offline parser.
 
-## Rebuilding the data
+URL options: `?theme=mineral-night|field-paper`, `?view=bushveld|plant|lab|evidence|where`, `?auto=1` (run the belt), `?scan=4500` (ms per scan), `?dwell=3500`.
+
+## Where the AIML API and Featherless API keys go
+
+**Only in the environment of `server.py`, on the machine running it.** They are never written to a file by the app, never sent to the browser and never logged.
+
+PowerShell:
 
 ```
-python presentation/belt-monitor/build_data.py --v3 training/hidsag-hyperspectral-20261001/output --v4 training/hidsag-hyperspectral-20261001/output_v4 --v5 training/hidsag-v5-belt-20261001/output
+$env:REEFPRINT_LLM_PROVIDER = "aiml"         # or "featherless"
+$env:AIML_API_KEY = "<your key>"             # or $env:FEATHERLESS_API_KEY
+$env:REEFPRINT_LLM_MODEL = "<model id from the provider's catalogue>"
+python presentation/belt-monitor/server.py
 ```
 
-This reads the Kaggle outputs (`hidsag_results.json`, `spectra_GEOMET.jsonl`, `wavelengths.json`) and writes `data.json`. It also copies the RGB previews into `rgb/`. A target is shown only if its cross-validated model beats the training-mean baseline.
+Both providers are OpenAI-compatible. The server calls `https://api.aimlapi.com/v1/chat/completions` or `https://api.featherless.ai/v1/chat/completions`, and only those two hosts.
 
-## What the numbers are
+**The language model only routes.** It receives the user's question and the tool list, never data, imported files or results. It returns one allowlisted tool with validated arguments, and the browser renders every answer from code. With no key, an offline parser routes instead.
 
-- **Data:** HIDSAG GEOMET (Ehrenfeld et al., *Scientific Data* 2023, CC0). It has 146 porphyry Cu-Mo drill-core samples from Chile.
-- **Model (v5):** PLS, ridge or extra-trees, chosen per target by inner CV, on brightness-normalised spectra, absorption depths and pixel-cluster fractions; 5-fold nested CV over samples.
-- **Split limitation:** the published metadata has no drill-hole IDs, so a by-hole split could not be enforced, and the scores may be optimistic.
-- **Every value on screen** comes from a model that never saw that sample.
-- **Decision-card thresholds** are dataset quartiles. They are illustrative, not site rules.
+The KHANYA workbench has its own assistant setting: `REEFPRINT_ASSISTANT_PROVIDER / MODEL / API_KEY` on its server (see that app's docs).
 
-Run log: `docs/BUILDLOG.md`, entry for 2026-10-01 (afternoon).
+**Server hardening:**
+- binds 127.0.0.1 only; checks Host and Origin;
+- requires a per-run session token embedded in the page;
+- serves a static allowlist (traversal and source files return 404);
+- caps request size, timeouts, tokens, rate (20 per minute) and requests per day (300).
+
+## Rebuild the data
+
+1. Kaggle `reefprint-hidsag-v6-live` writes `training/hidsag-v6-live-20261001/output/`.
+2. Run the analysis scripts:
+   - `python training/hidsag-v6-live-20261001/analyse_v6.py`
+   - `python training/hidsag-v6-live-20261001/mineral1_q2.py`
+   - `python training/plant-softsensor-20261001/softsensor.py`
+   - `python training/bushveld-xrf-pge-20261001/bushveld.py`
+3. Build the live data: `python presentation/belt-monitor/build_live.py` writes `live/`, about 25 MB, with every source file sha256-hashed into `live/summary.json`.
+
+## What is not claimed
+
+- **Not live, not one ore.** Nothing here is a live belt, a live plant connection or PGM-ore hyperspectral data. The three tracks are not paired observations of one ore.
+- **Few belt targets drive decisions.** Only targets that beat their strongest baseline under every gate are used: Bond work index (belt), and Pt / Rh / 4E (Bushveld).
+- **Plant-feed mineralogy is withdrawn.** Its predictions are explained by size fraction and process line, so the earlier "camera reads mineralogy" claim is withdrawn.
+- **Phone photos get no prediction.** They pass quality gates only.
+- **Thresholds are illustrative.** They come from training folds, not site rules.
+
+Archived versions: `belt-v2.html` (restyled belt monitor, v5 data) and `index-v1-dark.html`.

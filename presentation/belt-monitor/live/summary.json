@@ -1,0 +1,1221 @@
+{
+ "built": "2026-10-01",
+ "hashes_sha256": {
+  "v6_results": "e9ee56dfab832dff6e0a62275bc3326849ed3e2b5c5b05edf385381881754f79",
+  "v6_analysis": "342e37b9b32c2bb0b35dc86f73ada738dc151652855902de5d6ceacf6f8d3938",
+  "mineral1_q2": "e0f50165f9675cfc417f0c47013e7eac5f0de5c54490d054ba3e7afd6a3c3f75",
+  "plant_results": "a2692f2c56180fd89686d46448c9c7db2eebdce10b134b5ebccb05f15a80a33f",
+  "plant_h1": "033a574e23b7a4095e4f868129439d8c3bcde9de8427d23077f90e0255f3f974",
+  "plant_h3": "85e112b2e2151eac474acc14f74a2af438da7b64ad24b07deb538a37540cda39",
+  "bushveld_results": "b51cb2f5890f3e3bacc1a9c38d2fa38a4237b2b2af3ea2dfbfa23b1795cd3587",
+  "bushveld_app": "879505b3bdd9cd607f2247a66e6ce9dc7e91f24d1e4a5099ae7dea155bea8226",
+  "plan_review_log": "696c774f1e3021a8539d8898df6d708225c37edcec76ee42a87642683ddb845c"
+ },
+ "showcase": {
+  "GEOMET": [
+   "GMET-0004",
+   "GMET-0007",
+   "GMET-0011",
+   "GMET-0015",
+   "GMET-0022",
+   "GMET-0035",
+   "GMET-0039",
+   "GMET-0043",
+   "GMET-0048",
+   "GMET-0054",
+   "GMET-0063",
+   "GMET-0064",
+   "GMET-0068",
+   "GMET-0071",
+   "GMET-0080",
+   "GMET-0083",
+   "GMET-0091",
+   "GMET-0098",
+   "GMET-0105",
+   "GMET-0112",
+   "GMET-0113",
+   "GMET-0114",
+   "GMET-0116",
+   "GMET-0126"
+  ],
+  "MINERAL1": [
+   "M1-0013",
+   "M1-0021",
+   "M1-0030",
+   "M1-0041",
+   "M1-0043",
+   "M1-0053",
+   "M1-0066",
+   "M1-0070",
+   "M1-0078",
+   "M1-0079",
+   "M1-0084",
+   "M1-0095"
+  ]
+ },
+ "evidence": {
+  "GEOMET": {
+   "Cu rec": {
+    "r2_deployable": 0.3113727043758254,
+    "r2_full_refit": 0.3899530366296414,
+    "r2_v5": 0.4221266140447425,
+    "r2_rgb": 0.24331949659682095,
+    "strongest_baseline": "median",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.815068493150685,
+    "coverage_ci95": [
+     0.7424595175312287,
+     0.8744497630820487
+    ],
+    "median_width": 7.142444444444465,
+    "used_in_decision": false
+   },
+   "Lime cons": {
+    "r2_deployable": 0.2375893357974792,
+    "r2_full_refit": 0.2398396012822981,
+    "r2_v5": 0.3172001810129319,
+    "r2_rgb": 0.055555961829531486,
+    "strongest_baseline": "median",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.815068493150685,
+    "coverage_ci95": [
+     0.7424595175312287,
+     0.8744497630820487
+    ],
+    "median_width": 0.1888935430218205,
+    "used_in_decision": false
+   },
+   "Mo rec": {
+    "r2_deployable": 0.34017119408296603,
+    "r2_full_refit": 0.36038922732263534,
+    "r2_v5": 0.45066917496187475,
+    "r2_rgb": 0.18878903282433135,
+    "strongest_baseline": "median",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7808219178082192,
+    "coverage_ci95": [
+     0.7049065741969079,
+     0.8449923445064356
+    ],
+    "median_width": 44.652333333333345,
+    "used_in_decision": false
+   },
+   "PH": {
+    "r2_deployable": 0.21930701973003097,
+    "r2_full_refit": 0.2919637306271421,
+    "r2_v5": 0.3282244435287621,
+    "r2_rgb": 0.07101574038349667,
+    "strongest_baseline": "mean",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.821917808219178,
+    "coverage_ci95": [
+     0.750058686165666,
+     0.8802493126646438
+    ],
+    "median_width": 2.2766666666666655,
+    "used_in_decision": false
+   },
+   "WI": {
+    "r2_deployable": 0.479117652253626,
+    "r2_full_refit": 0.46964547778657273,
+    "r2_v5": 0.4791472646257434,
+    "r2_rgb": 0.20981705191047295,
+    "strongest_baseline": "mean",
+    "vs_baseline": "better",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.7945205479452054,
+    "coverage_ci95": [
+     0.7198435969339124,
+     0.8568624493329343
+    ],
+    "median_width": 3.2262222222222228,
+    "used_in_decision": true
+   }
+  },
+  "MINERAL1": {
+   "Actinolite": {
+    "r2_deployable": 0.004905285598192366,
+    "r2_full_refit": 0.032627810872140395,
+    "r2_v5": 0.043432713903319264,
+    "r2_rgb": 0.15826417321045483,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.75,
+    "coverage_ci95": [
+     0.577970415421856,
+     0.8787967058761648
+    ],
+    "median_width": 0.1967571244592073,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.03085497505198964
+   },
+   "Albite": {
+    "r2_deployable": 0.3487998398998965,
+    "r2_full_refit": 0.3963456477112559,
+    "r2_v5": 0.3542204509221035,
+    "r2_rgb": -0.16885941261486215,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 4.349124029813755,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.06857691307957492
+   },
+   "Andesina_An40": {
+    "r2_deployable": 0.16298300055550907,
+    "r2_full_refit": 0.1528881677060303,
+    "r2_v5": 0.19679857411011126,
+    "r2_rgb": -0.03371614920256394,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 1.8958702071456468,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.17748066449479016
+   },
+   "Anhydrite/Gypsum": {
+    "r2_deployable": 0.9107768442258594,
+    "r2_full_refit": 0.9275575625918849,
+    "r2_v5": 0.9240168334644445,
+    "r2_rgb": 0.6848460312906034,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.9166666666666666,
+    "coverage_ci95": [
+     0.7753102394430269,
+     0.9824735040760655
+    ],
+    "median_width": 3.7623138120779736,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.9493846970719184
+   },
+   "Anorthite": {
+    "r2_deployable": 0.7652518716908253,
+    "r2_full_refit": 0.7747445703491829,
+    "r2_v5": 0.7766486300045279,
+    "r2_rgb": 0.615893708816065,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8611111111111112,
+    "coverage_ci95": [
+     0.7050250518892913,
+     0.9533223393969105
+    ],
+    "median_width": 3.112426396592179,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7334113491317393
+   },
+   "Apatite": {
+    "r2_deployable": 0.2593195774576925,
+    "r2_full_refit": 0.23593491787018317,
+    "r2_v5": 0.246432457854194,
+    "r2_rgb": 0.15721898765051112,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 0.2874281141248233,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "worse",
+    "r2_size_fraction_lookup": 0.2532007452736659
+   },
+   "Biotite": {
+    "r2_deployable": 0.9446827139378452,
+    "r2_full_refit": 0.9413912205542385,
+    "r2_v5": 0.9323517903469405,
+    "r2_rgb": 0.7313343669247139,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 3.59505949672268,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.9384481142840586
+   },
+   "Bornite": {
+    "r2_deployable": 0.7561261231117005,
+    "r2_full_refit": 0.7704076574272498,
+    "r2_v5": 0.7197485765560598,
+    "r2_rgb": 0.6439435758014982,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 0.38201111111111113,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7643659306852523
+   },
+   "Bytownite_An80": {
+    "r2_deployable": 0.681165480348074,
+    "r2_full_refit": 0.7183699367052132,
+    "r2_v5": 0.7741693826990592,
+    "r2_rgb": 0.5869683630652063,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.75,
+    "coverage_ci95": [
+     0.577970415421856,
+     0.8787967058761648
+    ],
+    "median_width": 1.0578779029081016,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.6766768042912614
+   },
+   "Calcite": {
+    "r2_deployable": 0.7707246367715823,
+    "r2_full_refit": 0.7672304447761116,
+    "r2_v5": 0.7498556575344217,
+    "r2_rgb": 0.5059559406755143,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8888888888888888,
+    "coverage_ci95": [
+     0.7393890794889078,
+     0.9688838600549851
+    ],
+    "median_width": 0.2912554828156967,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7602829314635763
+   },
+   "Chalcopyrite": {
+    "r2_deployable": 0.8865244452148752,
+    "r2_full_refit": 0.9009055037938406,
+    "r2_v5": 0.900019778869722,
+    "r2_rgb": 0.6806222680546771,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.8611111111111112,
+    "coverage_ci95": [
+     0.7050250518892913,
+     0.9533223393969105
+    ],
+    "median_width": 1.1032888888888897,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.9233792874874248
+   },
+   "Chalcosite/Digenite": {
+    "r2_deployable": 0.7403633099958163,
+    "r2_full_refit": 0.7316866767431784,
+    "r2_v5": 0.7146678631747339,
+    "r2_rgb": 0.5713737736651563,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8611111111111112,
+    "coverage_ci95": [
+     0.7050250518892913,
+     0.9533223393969105
+    ],
+    "median_width": 0.1583444444444443,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.6654204343875743
+   },
+   "Chlorite": {
+    "r2_deployable": 0.7417828194582734,
+    "r2_full_refit": 0.7837961644774645,
+    "r2_v5": 0.7980359888466766,
+    "r2_rgb": 0.5878083228188806,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 3.1211329968979147,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7101493659627361
+   },
+   "Covelite": {
+    "r2_deployable": 0.6016137877775805,
+    "r2_full_refit": 0.5815424815504413,
+    "r2_v5": 0.6279857277976901,
+    "r2_rgb": 0.6174601914131012,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 0.034477777777777774,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "worse",
+    "r2_size_fraction_lookup": 0.5792284219703574
+   },
+   "Epidote": {
+    "r2_deployable": 0.09738442081951126,
+    "r2_full_refit": 0.16182826229998415,
+    "r2_v5": 0.1484258904659811,
+    "r2_rgb": 0.22260894704647005,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "worse",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 0.21870000000000006,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.24243450103032083
+   },
+   "Fe Oxides": {
+    "r2_deployable": 0.3530977133042629,
+    "r2_full_refit": 0.3427597405971947,
+    "r2_v5": 0.45863422087428907,
+    "r2_rgb": 0.39574924643501774,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 0.535918891276385,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.44165386786384697
+   },
+   "Fe-Clays": {
+    "r2_deployable": 0.6470302507800887,
+    "r2_full_refit": 0.730358974730013,
+    "r2_v5": 0.7456356192708872,
+    "r2_rgb": 0.6164728862167008,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 0.37161838945509396,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.5972871467935523
+   },
+   "K-Feldspar": {
+    "r2_deployable": 0.7687127181932699,
+    "r2_full_refit": 0.8020222825650863,
+    "r2_v5": 0.8243334633116435,
+    "r2_rgb": 0.6583163332337052,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.75,
+    "coverage_ci95": [
+     0.577970415421856,
+     0.8787967058761648
+    ],
+    "median_width": 2.453339417258686,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "worse",
+    "r2_size_fraction_lookup": 0.8321234030341206
+   },
+   "Kaolinite": {
+    "r2_deployable": 0.6020205673403622,
+    "r2_full_refit": 0.6555084525342102,
+    "r2_v5": 0.652056056702388,
+    "r2_rgb": 0.357934166817358,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8888888888888888,
+    "coverage_ci95": [
+     0.7393890794889078,
+     0.9688838600549851
+    ],
+    "median_width": 0.9236239301653435,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.6693134109624927
+   },
+   "Labradorite_An60": {
+    "r2_deployable": 0.5119060498179981,
+    "r2_full_refit": 0.48645177609813084,
+    "r2_v5": 0.45485271883561174,
+    "r2_rgb": 0.4133136393553912,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 2.9445444444444453,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.5053060541305734
+   },
+   "Molybdenite": {
+    "r2_deployable": 0.1703705918028806,
+    "r2_full_refit": 0.25063839936561894,
+    "r2_v5": 0.2709768443661482,
+    "r2_rgb": 0.046862723896172964,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7777777777777778,
+    "coverage_ci95": [
+     0.6084823508426492,
+     0.8988494696550872
+    ],
+    "median_width": 0.06773333333333333,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.21382432469341484
+   },
+   "Muscovite/Sericite": {
+    "r2_deployable": 0.9043628193543234,
+    "r2_full_refit": 0.9024949134644202,
+    "r2_v5": 0.9262916575867248,
+    "r2_rgb": 0.6272029634444224,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.7777777777777778,
+    "coverage_ci95": [
+     0.6084823508426492,
+     0.8988494696550872
+    ],
+    "median_width": 6.670635855869868,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.9057881171016129
+   },
+   "Oligoclasa_An20": {
+    "r2_deployable": 0.2521968287418268,
+    "r2_full_refit": 0.31685715597416586,
+    "r2_v5": 0.3815343313928985,
+    "r2_rgb": 0.24598728485275168,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8611111111111112,
+    "coverage_ci95": [
+     0.7050250518892913,
+     0.9533223393969105
+    ],
+    "median_width": 4.078822222222225,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.2392044359453841
+   },
+   "Other Amphibole": {
+    "r2_deployable": 0.2837410671280647,
+    "r2_full_refit": 0.30680644642681654,
+    "r2_v5": 0.3214428588944038,
+    "r2_rgb": 0.35661770155621475,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 0.1264488881405697,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.3979754252615111
+   },
+   "Others": {
+    "r2_deployable": 0.3748590935181455,
+    "r2_full_refit": 0.405559537055766,
+    "r2_v5": 0.4397260850705923,
+    "r2_rgb": 0.33487063523852023,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 0.21470000000000025,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "worse",
+    "r2_size_fraction_lookup": 0.5996039310000758
+   },
+   "Others Carbonates": {
+    "r2_deployable": 0.22409776859856878,
+    "r2_full_refit": 0.22331266237180858,
+    "r2_v5": 0.2479456091919886,
+    "r2_rgb": 0.0435247022058638,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.6666666666666666,
+    "coverage_ci95": [
+     0.49029745334810876,
+     0.8144381901741213
+    ],
+    "median_width": 0.16570000000000012,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.2909234110496859
+   },
+   "Others Ti Minerals": {
+    "r2_deployable": -0.11395680711211975,
+    "r2_full_refit": 0.019742506010171912,
+    "r2_v5": 0.021987640059335956,
+    "r2_rgb": -0.07782600354081604,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7222222222222222,
+    "coverage_ci95": [
+     0.548138854932161,
+     0.8579975527365981
+    ],
+    "median_width": 0.8283888888888895,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": -0.06651316493335413
+   },
+   "Pyrite": {
+    "r2_deployable": 0.7617907885242681,
+    "r2_full_refit": 0.8092732025187009,
+    "r2_v5": 0.8727897189937127,
+    "r2_rgb": 0.7626144581840189,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.75,
+    "coverage_ci95": [
+     0.577970415421856,
+     0.8787967058761648
+    ],
+    "median_width": 3.148025892120966,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.9086335705219291
+   },
+   "Pyroxene": {
+    "r2_deployable": 0.8081542837987408,
+    "r2_full_refit": 0.807852072696776,
+    "r2_v5": 0.7980169207014638,
+    "r2_rgb": 0.4894710394996207,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.8611111111111112,
+    "coverage_ci95": [
+     0.7050250518892913,
+     0.9533223393969105
+    ],
+    "median_width": 0.12964444444444448,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7213857073898544
+   },
+   "Quartz": {
+    "r2_deployable": 0.7405151192872965,
+    "r2_full_refit": 0.7764171975077714,
+    "r2_v5": 0.7739624441515286,
+    "r2_rgb": 0.5812417962940066,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7222222222222222,
+    "coverage_ci95": [
+     0.548138854932161,
+     0.8579975527365981
+    ],
+    "median_width": 4.4474777777777845,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7216272151678262
+   },
+   "Rutile": {
+    "r2_deployable": 0.27795059606962214,
+    "r2_full_refit": 0.36554827102881104,
+    "r2_v5": 0.4853309849837343,
+    "r2_rgb": 0.2939157878762594,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7222222222222222,
+    "coverage_ci95": [
+     0.548138854932161,
+     0.8579975527365981
+    ],
+    "median_width": 0.3134803892072797,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.4822590938098278
+   },
+   "Siderite": {
+    "r2_deployable": 0.5016062726865413,
+    "r2_full_refit": 0.636464082387231,
+    "r2_v5": 0.6147014148273306,
+    "r2_rgb": 0.434648347458345,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7222222222222222,
+    "coverage_ci95": [
+     0.548138854932161,
+     0.8579975527365981
+    ],
+    "median_width": 0.2069444444444446,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "worse",
+    "r2_size_fraction_lookup": 0.5580940968412427
+   },
+   "Tourmaline": {
+    "r2_deployable": 0.33127553276298705,
+    "r2_full_refit": 0.39979460764135766,
+    "r2_v5": 0.3057186506814815,
+    "r2_rgb": 0.30628537152894064,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 1.2354111111111103,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.22013073367635794
+   }
+  }
+ },
+ "v6_records": {
+  "GEOMET": {
+   "n": 146,
+   "n_units": 146,
+   "ood": {
+    "refused": 0.0273972602739726,
+    "borderline": 0.03424657534246575,
+    "shift_accept_le_p99_per_fold": [
+     0.797979797979798,
+     0.1111111111111111,
+     0.010101010101010102,
+     0.21212121212121213,
+     0.0
+    ]
+   },
+   "calibration": [
+    {
+     "n_cal_units": 35,
+     "k": 29,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 35,
+     "k": 29,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 35,
+     "k": 29,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 35,
+     "k": 29,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 35,
+     "k": 29,
+     "unbounded": false
+    }
+   ],
+   "blends": null
+  },
+  "MINERAL1": {
+   "n": 99,
+   "n_units": 36,
+   "ood": {
+    "refused": 0.030303030303030304,
+    "borderline": 0.050505050505050504,
+    "shift_accept_le_p99_per_fold": [
+     0.00684931506849315,
+     0.0,
+     0.02054794520547945,
+     0.0273972602739726,
+     0.0
+    ]
+   },
+   "calibration": [
+    {
+     "n_cal_units": 9,
+     "k": 8,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 9,
+     "k": 8,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 8,
+     "k": 8,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 9,
+     "k": 8,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 9,
+     "k": 8,
+     "unbounded": false
+    }
+   ],
+   "blends": {
+    "n_blends": 96,
+    "n_parent_pairs": 48,
+    "median_r2": -0.2223692814241638,
+    "beats_mean_ci": 10
+   }
+  }
+ },
+ "plant": {
+  "runs": {
+   "delay1_h1": {
+    "model": "ridge10",
+    "mae_model": 0.7166662701199703,
+    "mae_persistence": 0.6253224580561577,
+    "mae_mean": 0.9213376712143583,
+    "verdict": "no significant difference",
+    "coverage": 0.7684729064039408,
+    "coverage_ci95_block": [
+     0.645320197044335,
+     0.8620689655172413
+    ],
+    "width": 1.8486460154206248,
+    "strongest_baseline": "persistence",
+    "n_test": 203
+   },
+   "delay1_h3": {
+    "model": "ridge100",
+    "mae_model": 0.9744799741254555,
+    "mae_persistence": 0.82636959899801,
+    "mae_mean": 0.926279742286198,
+    "verdict": "no significant difference",
+    "coverage": 0.7412935323383084,
+    "coverage_ci95_block": [
+     0.5771144278606966,
+     0.8706467661691543
+    ],
+    "width": 2.342777282792741,
+    "strongest_baseline": "persistence",
+    "n_test": 201
+   },
+   "delay2_h1": {
+    "model": "ridge100",
+    "mae_model": 0.7800897977998666,
+    "mae_persistence": 0.7376780846285714,
+    "mae_mean": 0.9213292578087444,
+    "verdict": "no significant difference",
+    "coverage": 0.7783251231527094,
+    "coverage_ci95_block": [
+     0.645320197044335,
+     0.8817733990147784
+    ],
+    "width": 2.1335092325457232,
+    "strongest_baseline": "persistence",
+    "n_test": 203
+   },
+   "delay2_h3": {
+    "model": "ridge100",
+    "mae_model": 1.0426939650644584,
+    "mae_persistence": 0.8872715795303484,
+    "mae_mean": 0.9262717954245536,
+    "verdict": "no significant difference",
+    "coverage": 0.7263681592039801,
+    "coverage_ci95_block": [
+     0.5373134328358209,
+     0.8706467661691543
+    ],
+    "width": 2.601631395755402,
+    "strongest_baseline": "persistence",
+    "n_test": 201
+   },
+   "delay4_h1": {
+    "model": "ridge100",
+    "mae_model": 0.9497664733948179,
+    "mae_persistence": 0.8934068349044335,
+    "mae_mean": 0.9213136932967589,
+    "verdict": "no significant difference",
+    "coverage": 0.7487684729064039,
+    "coverage_ci95_block": [
+     0.5811576354679803,
+     0.8866995073891626
+    ],
+    "width": 2.584293792369791,
+    "strongest_baseline": "persistence",
+    "n_test": 203
+   },
+   "delay4_h3": {
+    "model": "ridge100",
+    "mae_model": 1.1445629139218072,
+    "mae_persistence": 0.9754139780089551,
+    "mae_mean": 0.9262658332141891,
+    "verdict": "no significant difference",
+    "coverage": 0.7114427860696517,
+    "coverage_ci95_block": [
+     0.5024875621890548,
+     0.8706467661691543
+    ],
+    "width": 2.7858149397747844,
+    "strongest_baseline": "training mean",
+    "n_test": 201
+   }
+  },
+  "assumptions": {
+   "lab_delay_h": "ASSUMED 2 h after the bin closes; sensitivity at 1 h and 4 h",
+   "feed_grades": "treated as lab-type values with the same delay (conservative)",
+   "threshold": "upper band = training p75 of silica, illustrative, not a site specification"
+  },
+  "data": "Kaggle edumagalhaes/quality-prediction-in-a-mining-process, CC0-1.0, iron-ore flotation plant (Brazil), Mar-Sep 2017"
+ },
+ "bushveld": {
+  "data": "Bachmann et al. 2019, Mendeley 10.17632/dc8jcnbcvk.1, CC BY 4.0",
+  "n_intervals": 1112,
+  "n_projects": 123,
+  "n_boreholes": 305,
+  "seam": {
+   "balanced_accuracy": 0.4179223474236421,
+   "majority_class": "MG4",
+   "balanced_accuracy_majority": 0.125,
+   "accuracy": 0.5197841726618705,
+   "recall_per_seam": {
+    "LG6": 0.9513274336283186,
+    "LG6A": 0.17142857142857143,
+    "MG1": 0.5535714285714286,
+    "MG2": 0.323943661971831,
+    "MG3": 0.4187192118226601,
+    "MG4": 0.5813148788927336,
+    "MG4A": 0.08333333333333333,
+    "MG4Zero": 0.2597402597402597
+   }
+  },
+  "targets": {
+   "Pt_ICP_ppm": {
+    "r2_chem": 0.40099938075091845,
+    "r2_chem_seam": 0.5464274951333052,
+    "r2_seam_only": 0.4812139478020696,
+    "Q1_chem_vs_mean": {
+     "mae_new": 0.1773551124078196,
+     "mae_base": 0.2854201935799671,
+     "mae_diff_ci95_project_boot": [
+      -0.14106263148122639,
+      -0.0803246844787269
+     ],
+     "wilcoxon_p_less_projects": 4.554655541869871e-12,
+     "matched_rank_biserial": 0.5609756097560976,
+     "mannwhitney_p_less": 3.4111274810659235e-66,
+     "cliffs_delta": -0.4198977149215879,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "Q2_chem_plus_seam_vs_seam_only": {
+     "mae_new": 0.14439536184978433,
+     "mae_base": 0.15524119396873373,
+     "mae_diff_ci95_project_boot": [
+      -0.016890662676770196,
+      -0.005013307480633443
+     ],
+     "wilcoxon_p_less_projects": 0.009390040352298493,
+     "matched_rank_biserial": 0.15447154471544716,
+     "mannwhitney_p_less": 0.23720082163569461,
+     "cliffs_delta": -0.017519797111950727,
+     "n_projects": 123,
+     "verdict": "no significant difference"
+    },
+    "seam_only_vs_mean": {
+     "mae_new": 0.15524119396873373,
+     "mae_base": 0.2854201935799671,
+     "mae_diff_ci95_project_boot": [
+      -0.16869158139138243,
+      -0.1001931901534769
+     ],
+     "wilcoxon_p_less_projects": 1.9208434761287673e-15,
+     "matched_rank_biserial": 0.7398373983739838,
+     "mannwhitney_p_less": 1.6096619139264218e-90,
+     "cliffs_delta": -0.49326833497230993,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "coverage_per_interval": 0.841726618705036,
+    "coverage_one_per_project": 0.8048780487804879,
+    "coverage_one_per_project_ci95": [
+     0.723729351561557,
+     0.870798756547624
+    ]
+   },
+   "Pd_ICP_ppm": {
+    "r2_chem": 0.20955159052428407,
+    "r2_chem_seam": 0.4746527251965178,
+    "r2_seam_only": 0.4303135585897855,
+    "Q1_chem_vs_median": {
+     "mae_new": 0.09782648771876595,
+     "mae_base": 0.11671035275103538,
+     "mae_diff_ci95_project_boot": [
+      -0.0284430634313767,
+      -0.008825928680782196
+     ],
+     "wilcoxon_p_less_projects": 0.06244013080711028,
+     "matched_rank_biserial": 0.056910569105691054,
+     "mannwhitney_p_less": 0.00010631270272884661,
+     "cliffs_delta": -0.09070118006314373,
+     "n_projects": 123,
+     "verdict": "no significant difference"
+    },
+    "Q2_chem_plus_seam_vs_seam_only": {
+     "mae_new": 0.07373946198701434,
+     "mae_base": 0.07452424306814541,
+     "mae_diff_ci95_project_boot": [
+      -0.0035715250448219954,
+      0.0016131085613002784
+     ],
+     "wilcoxon_p_less_projects": 0.054494242884241276,
+     "matched_rank_biserial": 0.17073170731707318,
+     "mannwhitney_p_less": 0.8814401065552915,
+     "cliffs_delta": 0.028951658816831427,
+     "n_projects": 123,
+     "verdict": "no significant difference"
+    },
+    "seam_only_vs_median": {
+     "mae_new": 0.07452424306814541,
+     "mae_base": 0.11671035275103538,
+     "mae_diff_ci95_project_boot": [
+      -0.05304834607142104,
+      -0.031179246312982085
+     ],
+     "wilcoxon_p_less_projects": 2.335132359196084e-07,
+     "matched_rank_biserial": 0.42276422764227645,
+     "mannwhitney_p_less": 4.272894622072534e-32,
+     "cliffs_delta": -0.28734602246260543,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "coverage_per_interval": 0.814748201438849,
+    "coverage_one_per_project": 0.8373983739837398,
+    "coverage_one_per_project_ci95": [
+     0.7601058957547159,
+     0.8977576678009215
+    ]
+   },
+   "Rh_ICP_ppm": {
+    "r2_chem": 0.26000389016220493,
+    "r2_chem_seam": 0.4582824024645684,
+    "r2_seam_only": 0.3888134427493698,
+    "Q1_chem_vs_median": {
+     "mae_new": 0.05873529581104552,
+     "mae_base": 0.07484134635708337,
+     "mae_diff_ci95_project_boot": [
+      -0.022315408907745967,
+      -0.010326897289673793
+     ],
+     "wilcoxon_p_less_projects": 3.047687278802456e-06,
+     "matched_rank_biserial": 0.34959349593495936,
+     "mannwhitney_p_less": 1.6536115991816875e-14,
+     "cliffs_delta": -0.1857758397598468,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "Q2_chem_plus_seam_vs_seam_only": {
+     "mae_new": 0.047365702123762586,
+     "mae_base": 0.050026384607313686,
+     "mae_diff_ci95_project_boot": [
+      -0.0039518855524741095,
+      -0.0014063139155946116
+     ],
+     "wilcoxon_p_less_projects": 0.0007421180550757533,
+     "matched_rank_biserial": 0.23577235772357724,
+     "mannwhitney_p_less": 0.19618798521834124,
+     "cliffs_delta": -0.020947091247865018,
+     "n_projects": 123,
+     "verdict": "no significant difference"
+    },
+    "seam_only_vs_median": {
+     "mae_new": 0.050026384607313686,
+     "mae_base": 0.07484134635708337,
+     "mae_diff_ci95_project_boot": [
+      -0.031125535696874825,
+      -0.019261270504740857
+     ],
+     "wilcoxon_p_less_projects": 1.280466520917836e-09,
+     "matched_rank_biserial": 0.5691056910569106,
+     "mannwhitney_p_less": 5.730009801614865e-34,
+     "cliffs_delta": -0.2961301821851871,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "coverage_per_interval": 0.8758992805755396,
+    "coverage_one_per_project": 0.8699186991869918,
+    "coverage_one_per_project_ci95": [
+     0.7973656485633626,
+     0.9237830589471386
+    ]
+   },
+   "4E_ppm": {
+    "r2_chem": 0.415634730430117,
+    "r2_chem_seam": 0.5900179230077245,
+    "r2_seam_only": 0.528981962546935,
+    "Q1_chem_vs_mean": {
+     "mae_new": 0.19649939877288158,
+     "mae_base": 0.31524552758957586,
+     "mae_diff_ci95_project_boot": [
+      -0.15629598186065563,
+      -0.08648373749112102
+     ],
+     "wilcoxon_p_less_projects": 1.7593926720105487e-11,
+     "matched_rank_biserial": 0.5772357723577236,
+     "mannwhitney_p_less": 2.5779392697754655e-62,
+     "cliffs_delta": -0.406987539464831,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "Q2_chem_plus_seam_vs_seam_only": {
+     "mae_new": 0.15562436919112907,
+     "mae_base": 0.16785740725840448,
+     "mae_diff_ci95_project_boot": [
+      -0.018492334726567236,
+      -0.006376941458222623
+     ],
+     "wilcoxon_p_less_projects": 0.0005599808728354291,
+     "matched_rank_biserial": 0.23577235772357724,
+     "mannwhitney_p_less": 0.15509193760414297,
+     "cliffs_delta": -0.024854756482583718,
+     "n_projects": 123,
+     "verdict": "no significant difference"
+    },
+    "seam_only_vs_mean": {
+     "mae_new": 0.16785740725840448,
+     "mae_base": 0.31524552758957586,
+     "mae_diff_ci95_project_boot": [
+      -0.1920924562795546,
+      -0.1115145087890958
+     ],
+     "wilcoxon_p_less_projects": 1.3676114798083828e-15,
+     "matched_rank_biserial": 0.7073170731707317,
+     "mannwhitney_p_less": 1.2785382317025054e-90,
+     "cliffs_delta": -0.4935481470938357,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "coverage_per_interval": 0.8516187050359713,
+    "coverage_one_per_project": 0.8373983739837398,
+    "coverage_one_per_project_ci95": [
+     0.7601058957547159,
+     0.8977576678009215
+    ]
+   }
+  }
+ },
+ "policy": {
+  "version": "belt-policy-1",
+  "alpha": 0.2,
+  "adverse": {
+   "Cu rec": "low",
+   "Mo rec": "low",
+   "Lime cons": "high",
+   "WI": "high",
+   "PH": "none"
+  },
+  "actions": {
+   "Cu rec": "Send the sample to the microscope; review collector dose",
+   "Mo rec": "Notify the moly circuit",
+   "Lime cons": "Review lime pre-dosing",
+   "WI": "Review feed rate with the control room"
+  },
+  "ood": "pass <= calibration p95 < borderline <= p99 < refused"
+ }
+}

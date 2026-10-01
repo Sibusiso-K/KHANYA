@@ -226,3 +226,33 @@ Two cautions apply:
 - UG2 chromite, Cr₂O₃ penalty, talc / CMC — https://www.sgs.com/en/-/media/sgscorp/documents/corporate/brochures/sgs-min-tp2004-02-pgm-ore-processing-at-ug-2-concentrator-in-south-africa.cdn.en.pdf ; https://www.sciencedirect.com/science/article/pii/S0892687524000335
 - Kaggle flotation dataset — https://www.kaggle.com/datasets/edumagalhaes/quality-prediction-in-a-mining-process
 - NVCL — https://www.auscope.org.au/nvcl ; USGS splib07 — https://www.sciencebase.gov/catalog/item/5807a2a2e4b0841e59e3a18d
+
+
+---
+
+## 9. v6 update (2026-10-01 night): supersedes parts of §7
+
+### Corrections
+
+- **MINERAL1 (§7, "Other records") is superseded.** The spectral model's skill on plant-feed QEMSCAN mineralogy is explained by **size fraction and process line**. A metadata lookup matches it, and the spectrum adds nothing on top (0 of 33 minerals better, 5 worse; `mineral1_q2.json`). Do not present "the camera reads feed mineralogy".
+- **GEOMET (§7) after strict nesting.** Only the Bond work index beats its strongest baseline under all gates. v6 matches v5 on accuracy (v5 was slightly flattered by a k-means leak), with calibrated 80% intervals.
+
+### New, real, South African
+
+**Bushveld chromitite chemistry → PGE.** Bachmann et al. 2019, held out by project. Belt-type chemistry predicts Pt, Rh and 4E better than the average guess, and the seam better than the majority class. This is the honest XRF-to-PGM link to show Mintek.
+
+### New, real plant
+
+**Real plant soft sensor (iron ore, CC0).** It does not beat the last assay once leakage is closed. That is the argument for ore-first sensing.
+
+### What to show in the Top-5 round
+
+REEFPRINT Live:
+
+- live scan of real cubes with absorption maps and the work-index decision;
+- Bushveld PGE view;
+- plant view (honest);
+- lab round trip and exports;
+- Evidence, including the correction.
+
+Say the MINERAL1 correction **before** a judge finds it.

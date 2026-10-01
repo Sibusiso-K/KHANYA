@@ -22,6 +22,69 @@ it is a press release.
 
 ---
 
+## 2026-10-01 (night) — ClauDex v6 plan, REEFPRINT Live, real-plant and Bushveld tracks, and a correction
+
+**Plan.** `PLAN-live-v6.md`, adversarially reviewed by Codex gpt-6-astra (read-only) over 3 rounds: 26 + 12 findings, then APPROVED. 37 were accepted; phone and LLM features were kept as R-3 under constraints. Log: `PLAN-live-v6-REVIEW-LOG.md`.
+
+### T1 belt v6 (`training/hidsag-v6-live-20261001`, Kaggle 575 s)
+
+- **Method.**
+  - Calibration is split off before any selection.
+  - Strict nesting covers k-means, scaling and blends.
+  - Families: nonlinear, linear-in-reflectance, and blend-augmented linear.
+  - Intervals are 80% split-conformal with one score per unit.
+  - Explanations use occlusion with the pipeline recomputed.
+  - OOD uses Ledoit–Wolf on PCA scores; RGB is a matched simulation.
+  - Gates are run locally (`analyse_v6.py`).
+- **Results.**
+  - **v6 is not more accurate than v5** (no significant difference on any target). v5 was slightly flattered by a k-means leak.
+  - **Only Bond work index beats its strongest baseline under all gates.** It is the only belt decision target.
+  - 80% coverage is calibrated: median 0.82 for GEOMET (unit level) and 0.81 for MINERAL1 (simultaneous within composite).
+  - The OOD gate refuses 3% of in-domain samples. Shifted-domain acceptance is 0–21% in four folds but 80% in one.
+  - Hyperspectral beats simulated RGB on 2/5 GEOMET and 6/33 MINERAL1 targets, and is never worse.
+  - Blends remain open (median R² −0.22).
+
+### CORRECTION (rule 3, rule 9) — `mineral1_q2.py`
+
+The MINERAL1 "camera reads QEMSCAN mineralogy" result is **explained by size fraction and process line**:
+- a median lookup on those labels matches the spectral model;
+- adding the spectrum to a metadata model helps on **0 of 33** minerals and hurts on 5;
+- a size-fraction lookup alone gives chalcopyrite R² 0.92.
+
+Deck v7 slide 13 ("31 of 33 minerals beat the average guess") is literally true but misleading, and is **withdrawn**. The doc-15 MINERAL1 lines are superseded. v4's claim was against the mean only; the metadata-only baseline required by rule 3 had not been run.
+
+### T3 real plant (`training/plant-softsensor-20261001`, CC0 Kaggle flotation plant)
+
+- **Method.**
+  - Hourly completed bins and an ASSUMED lab delay (1/2/4 h).
+  - Clock horizons of 1 and 3 h.
+  - Periods: train Mar–Jun, tune Jul, calibrate Aug, test Sep, with purge gaps.
+- **Result: the model never beats persistence** (last available assay). At delay 2 h, horizon 1 h: MAE 0.780 vs 0.738. Coverage was 71–78% at nominal 80%.
+- **Reading:** plant tags react after the ore changes, which is the argument for measuring the ore first.
+
+### T4 Bushveld (`training/bushveld-xrf-pge-20261001`, Bachmann et al. 2019, CC BY 4.0)
+
+- **Data.** 1,112 intervals, 123 projects held out, LG6–MG4 seams.
+- **Q1 (chemistry vs average).** Belt-type chemistry beats the average for Pt (R² 0.40), Rh (0.26) and 4E (0.42). It does not for Pd (0.21).
+- **Q2 (chemistry on top of a known seam).** The extra gain over a seam already known from the mine plan passes the paired project tests (Wilcoxon p ≤ 0.01) but fails the doctrine's unpaired Mann–Whitney gate, so it is "no significant difference".
+- **Seam from chemistry.** Balanced accuracy 0.42 vs 0.125.
+- **Coverage.** 80–87% per project.
+
+### REEFPRINT Live (`presentation/belt-monitor/`)
+
+- **Views:** Live scan, Bushveld PGE, Plant, Lab & exports, Evidence, Where it sits. All six use the workbench design and three themes.
+- **Live scan:** real cubes decoded in the browser, absorption and cluster maps, pixel spectra, a CSS 3D data cube, the total decision table, and an audit log with hashes.
+- **Lab & exports:**
+  - a typed registry with lab import (rejections listed with reasons) and reconciliation;
+  - LIMS CSV with formula neutralisation; provenance JSON;
+  - an OPC UA tag map, not a live server;
+  - GeoJSON with null geometry;
+  - a code-only shift report.
+- **Assistant.** It routes only; templates render the answers. `server.py` holds the AIML / Featherless keys server-side.
+- **Server security checks passed:** traversal and source files 404, bad host or origin 403, no token 401, oversize 413.
+- **Camera.** Quality gates only, ending in a refusal.
+- **Bug found by the browser test, not by the syntax check:** the `S.plant` store was not initialised, so boot failed. It is fixed.
+
 ## 2026-10-01 (evening) — Refinement for the Top-5 round: v5 hyperspectral, moving-belt simulation, cheap cameras, Belt Monitor restyle
 
 **Why.** After the v6 pitch the judges asked us to refine. The team asked whether to keep the belt; what else is on the

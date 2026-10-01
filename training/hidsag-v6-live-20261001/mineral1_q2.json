@@ -1,0 +1,634 @@
+{
+ "note": "MINERAL1 Q2: does the spectrum add anything once process line and size fraction are known?\n\nv6 analysis found the metadata-only baseline (median wt% for the same process line + size fraction) matches the\nhyperspectral model (rule 3). This tests the nested question directly, the same shape as the falsification test:\n    M0  metadata lookup (training median of the same line + fraction)\n    M1  ridge on one-hot(line, fraction)                         -> metadata model\n    M2  ridge on one-hot(line, fraction) + mean VNIR+SWIR spectrum -> metadata + spectrum\nOuter GroupKFold(5) by composite; alpha chosen by grouped inner CV on the training composites only.\nGates (paired, composite level): cluster-bootstrap CI of the MAE difference, Wilcoxon (Holm across minerals),\nMann-Whitney + Cliff's delta (doctrine). Spectra: v5 per-sample mean spectra on the common grid (spectra_v5_MINERAL1).\n",
+ "n": 99,
+ "composites": 36,
+ "targets": {
+  "Actinolite": {
+   "r2_lookup": 0.03085497505198964,
+   "r2_meta_ridge": 0.13429234596786765,
+   "r2_meta_plus_spectrum": 0.12570436503554328,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.035982949846634214,
+    "mae_base": 0.03605680717561621,
+    "ci95": [
+     -0.002172918952945795,
+     0.001924101786474695
+    ],
+    "wilcoxon_less": 0.6307130443456117,
+    "mannwhitney_less": 0.5571967775403522,
+    "cliffs_delta": 0.011733496581981431,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Albite": {
+   "r2_lookup": 0.06857691307957492,
+   "r2_meta_ridge": 0.11994177922207594,
+   "r2_meta_plus_spectrum": 0.276898666209921,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.9856858687620927,
+    "mae_base": 1.0893290366725767,
+    "ci95": [
+     -0.2388029542275621,
+     0.026935949435823746
+    ],
+    "wilcoxon_less": 0.1537102531437995,
+    "mannwhitney_less": 0.18002161791793642,
+    "cliffs_delta": -0.07540046933986327,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Andesina_An40": {
+   "r2_lookup": 0.17748066449479016,
+   "r2_meta_ridge": 0.1854721344544189,
+   "r2_meta_plus_spectrum": 0.1830608899002657,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.4476464303762547,
+    "mae_base": 0.4444104728900375,
+    "ci95": [
+     -0.018272556976680142,
+     0.024165398447985962
+    ],
+    "wilcoxon_less": 0.670956514441059,
+    "mannwhitney_less": 0.49307347601040763,
+    "cliffs_delta": -0.0015304560759106215,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Anhydrite/Gypsum": {
+   "r2_lookup": 0.9493846970719184,
+   "r2_meta_ridge": 0.9510944846354555,
+   "r2_meta_plus_spectrum": 0.9481213113170445,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.5636993388279664,
+    "mae_base": 0.5410207825594892,
+    "ci95": [
+     -0.02668248781232546,
+     0.0737939844185042
+    ],
+    "wilcoxon_less": 0.8462897468562005,
+    "mannwhitney_less": 0.6017834097485234,
+    "cliffs_delta": 0.021120293847566574,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Anorthite": {
+   "r2_lookup": 0.7334113491317393,
+   "r2_meta_ridge": 0.787774021149906,
+   "r2_meta_plus_spectrum": 0.8050045905297147,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.4725112388515845,
+    "mae_base": 0.5206136219782634,
+    "ci95": [
+     -0.1200159156149398,
+     0.020771730572235966
+    ],
+    "wilcoxon_less": 0.13240931699692737,
+    "mannwhitney_less": 0.08508085838469837,
+    "cliffs_delta": -0.11294765840220386,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Apatite": {
+   "r2_lookup": 0.2532007452736659,
+   "r2_meta_ridge": 0.3476221990820776,
+   "r2_meta_plus_spectrum": 0.274562742088982,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.06952065952251242,
+    "mae_base": 0.06306880669721433,
+    "ci95": [
+     0.0020348651339042274,
+     0.010597696290927853
+    ],
+    "wilcoxon_less": 0.9981539196160156,
+    "mannwhitney_less": 0.853533084222005,
+    "cliffs_delta": 0.08641975308641975,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "worse"
+   }
+  },
+  "Biotite": {
+   "r2_lookup": 0.9384481142840586,
+   "r2_meta_ridge": 0.9393689212759043,
+   "r2_meta_plus_spectrum": 0.941628116449587,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.6439805834780116,
+    "mae_base": 0.6498018925797298,
+    "ci95": [
+     -0.11437487468479016,
+     0.10180753448045925
+    ],
+    "wilcoxon_less": 0.484528984001372,
+    "mannwhitney_less": 0.49802090259043896,
+    "cliffs_delta": -0.0005101520253035404,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Bornite": {
+   "r2_lookup": 0.7643659306852523,
+   "r2_meta_ridge": 0.7860109970181701,
+   "r2_meta_plus_spectrum": 0.7750035007102397,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.0596619826468196,
+    "mae_base": 0.05449494949494949,
+    "ci95": [
+     -3.963479432364671e-05,
+     0.010096660379904674
+    ],
+    "wilcoxon_less": 0.964123003082932,
+    "mannwhitney_less": 0.9641437239049904,
+    "cliffs_delta": 0.14804611774308743,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Bytownite_An80": {
+   "r2_lookup": 0.6766768042912614,
+   "r2_meta_ridge": 0.6908436897198589,
+   "r2_meta_plus_spectrum": 0.7378787355365065,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.249103031806122,
+    "mae_base": 0.2820369426510514,
+    "ci95": [
+     -0.06792140137951956,
+     -0.0008699324705415462
+    ],
+    "wilcoxon_less": 0.06738743015739601,
+    "mannwhitney_less": 0.12134528032335218,
+    "cliffs_delta": -0.09621467197224773,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Calcite": {
+   "r2_lookup": 0.7602829314635763,
+   "r2_meta_ridge": 0.778049418956787,
+   "r2_meta_plus_spectrum": 0.7768109226092708,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.04613858874139297,
+    "mae_base": 0.044494949494949504,
+    "ci95": [
+     -0.0018175578650797574,
+     0.004947748618275546
+    ],
+    "wilcoxon_less": 0.8837517295323778,
+    "mannwhitney_less": 0.8265398858773654,
+    "cliffs_delta": 0.07723701663095603,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Chalcopyrite": {
+   "r2_lookup": 0.9233792874874248,
+   "r2_meta_ridge": 0.9207412342511432,
+   "r2_meta_plus_spectrum": 0.9136980821177247,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.18731976069451564,
+    "mae_base": 0.17454545454545456,
+    "ci95": [
+     -0.010546401930519481,
+     0.03747130271552037
+    ],
+    "wilcoxon_less": 0.6539134127378929,
+    "mannwhitney_less": 0.6330068312002202,
+    "cliffs_delta": 0.02785430058157331,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Chalcosite/Digenite": {
+   "r2_lookup": 0.6654204343875743,
+   "r2_meta_ridge": 0.6929217061259898,
+   "r2_meta_plus_spectrum": 0.7042140405375612,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.02579107352350491,
+    "mae_base": 0.02479797979797979,
+    "ci95": [
+     -0.002201272326466488,
+     0.0041914167034598
+    ],
+    "wilcoxon_less": 0.698592659420683,
+    "mannwhitney_less": 0.8742121642760208,
+    "cliffs_delta": 0.09417406387103357,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Chlorite": {
+   "r2_lookup": 0.7101493659627361,
+   "r2_meta_ridge": 0.7136703396749051,
+   "r2_meta_plus_spectrum": 0.7639141868221883,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.6835285382494867,
+    "mae_base": 0.6842760838358373,
+    "ci95": [
+     -0.13642711765866197,
+     0.109229307201866
+    ],
+    "wilcoxon_less": 0.9587264974106802,
+    "mannwhitney_less": 0.858039008169459,
+    "cliffs_delta": 0.08805223956739108,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Covelite": {
+   "r2_lookup": 0.5792284219703574,
+   "r2_meta_ridge": 0.6908018483307353,
+   "r2_meta_plus_spectrum": 0.6495282069681354,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.0061712408212132065,
+    "mae_base": 0.005574437983230606,
+    "ci95": [
+     0.00010355756344208659,
+     0.0010834990014021416
+    ],
+    "wilcoxon_less": 0.9936627682473045,
+    "mannwhitney_less": 0.9635453154792551,
+    "cliffs_delta": 0.1474339353127232,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "worse"
+   }
+  },
+  "Epidote": {
+   "r2_lookup": 0.24243450103032083,
+   "r2_meta_ridge": 0.2941419873417799,
+   "r2_meta_plus_spectrum": 0.29443106998724167,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.0337779775773122,
+    "mae_base": 0.034072120289156224,
+    "ci95": [
+     -0.002275436857406016,
+     0.0017328396827919108
+    ],
+    "wilcoxon_less": 0.3929613395303022,
+    "mannwhitney_less": 0.42232249215564577,
+    "cliffs_delta": -0.016222834404652588,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Fe Oxides": {
+   "r2_lookup": 0.44165386786384697,
+   "r2_meta_ridge": 0.40327775712231095,
+   "r2_meta_plus_spectrum": 0.4141776165058739,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.12491192360769748,
+    "mae_base": 0.12080808080808082,
+    "ci95": [
+     -0.0070546385571386965,
+     0.015124876145619621
+    ],
+    "wilcoxon_less": 0.8104167358542327,
+    "mannwhitney_less": 0.5931480036573616,
+    "cliffs_delta": 0.01928374655647383,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Fe-Clays": {
+   "r2_lookup": 0.5972871467935523,
+   "r2_meta_ridge": 0.5940813221855824,
+   "r2_meta_plus_spectrum": 0.652373641695529,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.0996458655762742,
+    "mae_base": 0.10671717171717171,
+    "ci95": [
+     -0.019010263096914764,
+     0.0042323403388349655
+    ],
+    "wilcoxon_less": 0.10723470051016193,
+    "mannwhitney_less": 0.3294132823926347,
+    "cliffs_delta": -0.03642485460667279,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "K-Feldspar": {
+   "r2_lookup": 0.8321234030341206,
+   "r2_meta_ridge": 0.8480007421735782,
+   "r2_meta_plus_spectrum": 0.8306964377959124,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.47491491876189,
+    "mae_base": 0.44570965725451517,
+    "ci95": [
+     0.002221320886815784,
+     0.05490485395591849
+    ],
+    "wilcoxon_less": 0.9869845375505975,
+    "mannwhitney_less": 0.6883318620914289,
+    "cliffs_delta": 0.0403020099989797,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "worse"
+   }
+  },
+  "Kaolinite": {
+   "r2_lookup": 0.6693134109624927,
+   "r2_meta_ridge": 0.7072176016315446,
+   "r2_meta_plus_spectrum": 0.7112844620277139,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.15181319733233112,
+    "mae_base": 0.1530155113930708,
+    "ci95": [
+     -0.011046851968853239,
+     0.008992677435680541
+    ],
+    "wilcoxon_less": 0.32343652470444795,
+    "mannwhitney_less": 0.5009895517489213,
+    "cliffs_delta": 0.00010203040506070809,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Labradorite_An60": {
+   "r2_lookup": 0.5053060541305734,
+   "r2_meta_ridge": 0.5291566534596994,
+   "r2_meta_plus_spectrum": 0.534752073197313,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.4886529532520672,
+    "mae_base": 0.4948091235363602,
+    "ci95": [
+     -0.051124029229135594,
+     0.03981848594661534
+    ],
+    "wilcoxon_less": 0.280063262936892,
+    "mannwhitney_less": 0.4145724627883739,
+    "cliffs_delta": -0.017855320885623915,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Molybdenite": {
+   "r2_lookup": 0.21382432469341484,
+   "r2_meta_ridge": 0.2692696756292846,
+   "r2_meta_plus_spectrum": 0.244067161495793,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.016124522150013434,
+    "mae_base": 0.015967366241351144,
+    "ci95": [
+     -0.000500669547870178,
+     0.0008269696438565223
+    ],
+    "wilcoxon_less": 0.6481620243284851,
+    "mannwhitney_less": 0.5029686458090354,
+    "cliffs_delta": 0.0005101520253035404,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Muscovite/Sericite": {
+   "r2_lookup": 0.9057881171016129,
+   "r2_meta_ridge": 0.917252459417523,
+   "r2_meta_plus_spectrum": 0.9113552479623739,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 1.143720543758373,
+    "mae_base": 1.1518853298167073,
+    "ci95": [
+     -0.19059627544628466,
+     0.17298123434259283
+    ],
+    "wilcoxon_less": 0.4230966601608088,
+    "mannwhitney_less": 0.41263994985432273,
+    "cliffs_delta": -0.01826344250586675,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Oligoclasa_An20": {
+   "r2_lookup": 0.2392044359453841,
+   "r2_meta_ridge": 0.35061637461375383,
+   "r2_meta_plus_spectrum": 0.36494483325360616,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 1.0290933507710838,
+    "mae_base": 1.0503535353535354,
+    "ci95": [
+     -0.1655569729396612,
+     0.12493550057502315
+    ],
+    "wilcoxon_less": 0.5829715463187313,
+    "mannwhitney_less": 0.7250093387248281,
+    "cliffs_delta": 0.04907662483420059,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Other Amphibole": {
+   "r2_lookup": 0.3979754252615111,
+   "r2_meta_ridge": 0.4493752393684869,
+   "r2_meta_plus_spectrum": 0.43720082500371316,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.019334282853553885,
+    "mae_base": 0.01924242424242425,
+    "ci95": [
+     -0.002195130129967445,
+     0.0022479881681920165
+    ],
+    "wilcoxon_less": 0.46599570379476063,
+    "mannwhitney_less": 0.6815057130311185,
+    "cliffs_delta": 0.03866952351800837,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Others": {
+   "r2_lookup": 0.5996039310000758,
+   "r2_meta_ridge": 0.5945207275323603,
+   "r2_meta_plus_spectrum": 0.46824767461816597,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.04515682583624588,
+    "mae_base": 0.039242424242424245,
+    "ci95": [
+     0.0005166677050086403,
+     0.012884302072608489
+    ],
+    "wilcoxon_less": 0.932612569842604,
+    "mannwhitney_less": 0.837715576358635,
+    "cliffs_delta": 0.08091011121314151,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "worse"
+   }
+  },
+  "Others Carbonates": {
+   "r2_lookup": 0.2909234110496859,
+   "r2_meta_ridge": 0.3188451316970289,
+   "r2_meta_plus_spectrum": 0.2817057525145925,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.04933203107256694,
+    "mae_base": 0.046919191919191916,
+    "ci95": [
+     -0.0038170240853901195,
+     0.009160898834262353
+    ],
+    "wilcoxon_less": 0.5216543385613477,
+    "mannwhitney_less": 0.5941241702111333,
+    "cliffs_delta": 0.019487807366595247,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Others Ti Minerals": {
+   "r2_lookup": -0.06651316493335413,
+   "r2_meta_ridge": 0.0363513960738826,
+   "r2_meta_plus_spectrum": 0.07021644445349784,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.17029595013414633,
+    "mae_base": 0.17489898989898991,
+    "ci95": [
+     -0.02115974718464211,
+     0.010573346283687543
+    ],
+    "wilcoxon_less": 0.3634393534739502,
+    "mannwhitney_less": 0.5532787483282897,
+    "cliffs_delta": 0.010917253341495766,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Pyrite": {
+   "r2_lookup": 0.9086335705219291,
+   "r2_meta_ridge": 0.9143292192276831,
+   "r2_meta_plus_spectrum": 0.9107067450525302,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.4022433386473283,
+    "mae_base": 0.38565322883431724,
+    "ci95": [
+     -0.024483034117383787,
+     0.07093135040631454
+    ],
+    "wilcoxon_less": 0.3810698680463247,
+    "mannwhitney_less": 0.6979146323428009,
+    "cliffs_delta": 0.04254667891031527,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Pyroxene": {
+   "r2_lookup": 0.7213857073898544,
+   "r2_meta_ridge": 0.7330524502101748,
+   "r2_meta_plus_spectrum": 0.799162718176941,
+   "strongest_metadata_model": "ridge_meta",
+   "gate": {
+    "mae_new": 0.026101076582516126,
+    "mae_base": 0.028992239414523596,
+    "ci95": [
+     -0.007996967110696166,
+     0.0018216740333951605
+    ],
+    "wilcoxon_less": 0.2696663427632302,
+    "mannwhitney_less": 0.48516005798172446,
+    "cliffs_delta": -0.003162942556881951,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Quartz": {
+   "r2_lookup": 0.7216272151678262,
+   "r2_meta_ridge": 0.722939099207061,
+   "r2_meta_plus_spectrum": 0.7862778365293445,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 1.1829056853261768,
+    "mae_base": 1.3308080808080809,
+    "ci95": [
+     -0.4370160988300267,
+     0.1216594156651228
+    ],
+    "wilcoxon_less": 0.5769033398391912,
+    "mannwhitney_less": 0.414572202727735,
+    "cliffs_delta": -0.017855320885623915,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Rutile": {
+   "r2_lookup": 0.4822590938098278,
+   "r2_meta_ridge": 0.4781586462422013,
+   "r2_meta_plus_spectrum": 0.469864288159648,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.07206397205951488,
+    "mae_base": 0.07101010101010101,
+    "ci95": [
+     -0.004219285818984883,
+     0.006045676768176835
+    ],
+    "wilcoxon_less": 0.7354604207212105,
+    "mannwhitney_less": 0.5513220559369043,
+    "cliffs_delta": 0.010509131721252934,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  },
+  "Siderite": {
+   "r2_lookup": 0.5580940968412427,
+   "r2_meta_ridge": 0.5238962127751711,
+   "r2_meta_plus_spectrum": 0.44451357278953707,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.05516261121520504,
+    "mae_base": 0.042525252525252515,
+    "ci95": [
+     0.0033337803313096726,
+     0.023388523300392466
+    ],
+    "wilcoxon_less": 0.9968394641909981,
+    "mannwhitney_less": 0.9974313515679483,
+    "cliffs_delta": 0.22987450260177533,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "worse"
+   }
+  },
+  "Tourmaline": {
+   "r2_lookup": 0.22013073367635794,
+   "r2_meta_ridge": 0.26197012160981614,
+   "r2_meta_plus_spectrum": 0.3145057826441495,
+   "strongest_metadata_model": "lookup",
+   "gate": {
+    "mae_new": 0.27726738179300586,
+    "mae_base": 0.2697474747474747,
+    "ci95": [
+     -0.0308594922807203,
+     0.045159869887935015
+    ],
+    "wilcoxon_less": 0.6070386604696978,
+    "mannwhitney_less": 0.818675263188946,
+    "cliffs_delta": 0.07478828690949903,
+    "wilcoxon_less_holm": 1.0,
+    "verdict": "no significant difference"
+   }
+  }
+ }
+}

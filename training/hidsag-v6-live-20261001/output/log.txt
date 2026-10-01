@@ -1,0 +1,21 @@
+downloading GEOMET
+downloaded GEOMET 3.26 GB in 87 s
+GEOMET pre-registered showcase ['GMET-0048', 'GMET-0112', 'GMET-0015', 'GMET-0035', 'GMET-0063', 'GMET-0071', 'GMET-0098', 'GMET-0114', 'GMET-0043', 'GMET-0113', 'GMET-0083', 'GMET-0116', 'GMET-0004', 'GMET-0105', 'GMET-0126', 'GMET-0007', 'GMET-0022', 'GMET-0011', 'GMET-0039', 'GMET-0091', 'GMET-0080', 'GMET-0064', 'GMET-0054', 'GMET-0068']
+GEOMET samples 146 skipped 0 showcase cubes 24
+downloading MINERAL1
+downloaded MINERAL1 4.68 GB in 128 s
+MINERAL1 pre-registered showcase ['M1-0078', 'M1-0021', 'M1-0013', 'M1-0079', 'M1-0095', 'M1-0066', 'M1-0070', 'M1-0030', 'M1-0043', 'M1-0084', 'M1-0053', 'M1-0041']
+MINERAL1 samples 99 skipped 0 showcase cubes 12
+GEOMET n 146 targets 5 units 146 additive False
+GEOMET fold 1/5: proper 81 cal_units 35 k 29 unbounded False ood_shift_accept 0.8 29s
+GEOMET fold 2/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept 0.11 29s
+GEOMET fold 3/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept 0.01 29s
+GEOMET fold 4/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept 0.21 28s
+GEOMET fold 5/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept 0.0 28s
+MINERAL1 n 99 targets 33 units 36 additive True
+MINERAL1 fold 1/5: proper 52 cal_units 9 k 8 unbounded False ood_shift_accept 0.01 28s
+MINERAL1 fold 2/5: proper 55 cal_units 9 k 8 unbounded False ood_shift_accept 0.0 28s
+MINERAL1 fold 3/5: proper 56 cal_units 8 k 8 unbounded False ood_shift_accept 0.02 29s
+MINERAL1 fold 4/5: proper 55 cal_units 9 k 8 unbounded False ood_shift_accept 0.03 26s
+MINERAL1 fold 5/5: proper 54 cal_units 9 k 8 unbounded False ood_shift_accept 0.0 27s
+done in 575 s
