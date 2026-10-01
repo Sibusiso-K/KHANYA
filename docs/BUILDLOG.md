@@ -22,6 +22,69 @@ it is a press release.
 
 ---
 
+## 2026-10-01 — promo video for the final, built from the live workbench
+
+### Attempted
+
+Lethabo asked for an advert-style video to sit inside the presentation. The brief: open on a mine site; show
+how the images are obtained (geologist in PPE, XRF, the lab); show where REEFPRINT gets opened (bakkie, phone,
+office); then run through the whole app with narration, deliverables first. Before building it, the session
+also pulled every branch from `Sibusiso-K/KHANYA` and launched the app.
+
+### Worked
+
+- **Repo state.** `git fetch --all --prune` found every local branch already equal to its remote, and
+  upstream had deleted `khanya/evidence-sufficiency`. The newest work is `codex/launch-live-demo` @ `2b763b2`
+  (PR 15, 00:50 today), which is the live workbench. Its Codex worktree has staged but uncommitted
+  candidate-report work; this session did not touch it.
+- **App launched and verified.** The local server on :8510 (no auth) returned 200. The public server on
+  :8766 returned 401 to unauthenticated `/api/samples`, as designed.
+- **Real footage only, for the product.** Headless Playwright at 1920×1080 captured every section,
+  including a **fresh live inference** on `test_11`: 278 frames over 220 s, app runtime 98.2 s, source
+  `fresh`. It also captured the assistant answer with its predicted, measured and simulated labels; the
+  simulator's "Checkpoint is not approved for demo control. Setting held."; the candidate report
+  (`42646cfa`, 0.632, "Candidate not deployed"); the opt-in synthetic spatial scene; and mobile at
+  390×844@3x.
+- **Field footage.** 13 Mixkit clips, each checked as "Mixkit Stock Video Free License" on its own clip
+  page. The green-screen laptop and phone clips were keyed with real UI screenshots. Every stock shot
+  carries an on-screen "ILLUSTRATIVE STOCK FOOTAGE · MIXKIT" label.
+- **XRF beat, honest version.** The element tiles carry no values. The pentlandite highlight is the
+  active model's own prediction on `test_11`, labelled "model prediction" on screen.
+- **Sound.** Narration is 24 lines of edge-tts `en-ZA-LukeNeural`; its word timings drive the captions
+  and on-screen text. Music and effects were synthesised in NumPy, with no samples.
+- **Outputs** in `presentation/video/`: the full cut (3:44), a 90 s cut for the deck's demo slot,
+  `.srt` captions, `CREDITS-AND-SOURCES.md` (every clip and every limit) and `NARRATION-AND-TIMELINE.md`.
+  The MP4s are not committed because of their size. The generator source is committed in
+  `presentation/video/src/`.
+
+### Did not work
+
+- **AI-generated people.** Gamma's `generate_image` returned 403 "Insufficient credits remaining"
+  (free plan, 0 credits). Figma Weave video models returned "You haven't linked your Figma account to
+  Weave yet."
+- **Pexels and Pixabay** return 403 to scripted fetches. Mixkit worked.
+- **First full render.** One process ran at 0.5 s per frame. Four parallel segments then failed with
+  `numpy.core._exceptions._ArrayMemoryError` on a 7.7 GB machine with 0.4 GB free. The cause was the
+  sprite cache: animated letter-spacing and growing highlight boxes cached a new sprite every frame. A
+  byte-bounded LRU fixed it. The partial segments were still valid (ffmpeg finalises on stdin EOF), so
+  only the missing frame ranges were re-rendered.
+- **Invisible overlays in the first previews.** The fade-out term `prog(t, b, b - fo)` reversed the
+  interval, and `prog` returns a step for b < a, so every box, callout, pop-out and caption had zero
+  opacity. Fixed before the full render.
+- **Wrong dashboard capture.** The `d01_dashboard` capture was actually the Workspace, because the app
+  reopens the last section. The earlier real Dashboard capture replaced it.
+
+### Learned
+
+- Render a dozen preview frames before any long render. That caught three defects, each of which would
+  have cost a full re-render.
+
+### Left open
+
+- The full cut is 3:44 and the deck's demo slot is 90 s, so use the 90 s cut there.
+- The stock scenes are not South African sites. Location-specific footage needs Weave linked to Figma,
+  plus approval to spend credits.
+
 ## 2026-09-30 — REEFPRINT design-skill setup — `3d382a3`
 
 ### Attempted
@@ -3938,3 +4001,47 @@ have already been killed here for a stated reason.
 ### Left open
 
 Everything past `polarim`, `acquire` and `viz`. Deliberately — the red test list is the backlog.
+
+## 2026-09-30 — Application work preserved separately
+Responsive React/FastAPI application implemented in attached KHANYA worktree, pushed as 63041cb to codex/launch-live-demo / PR15. Physics history is unchanged. Restart instructions: handover/START-HERE-WORKBENCH-2026-09-30.md. Recovery source snapshot: handover/workbench-source-2026-09-30/. Actual model runs and remaining limits are documented there.
+
+
+## 2026-10-01 — actual tile predictions, spatial tools, voice and evidence assistant
+
+Real inference telemetry replaces the decorative scanning animation. Completed predictor callbacks publish a source-aligned transparent PNG, native analysed-pixel counts, phase fractions, actual completed boxes and coverage. Unknown pixels never enter the progress denominator. The last completed field is outlined; the neural network computes a field/tile together, not a visible pixel-by-pixel reasoning sequence. Full-mode overlapping previews remain preliminary until final logit blending.
+
+The white workbench now has refined typography, phone navigation, a prediction/original comparison slider and a research companion. The local helper explains server-resolved selected evidence, labels predicted/measured/simulated facts and proposes four bounded click-approved tasks. It does not pretend to be an LLM. Optional AIMLAPI/Featherless/Hugging Face/Ollama integrations require server-side configuration and explicit context sharing. No real provider key or live LLM call has been verified. Voice notes offer permission-based browser dictation, editable text drafts and a local recording/download fallback; real microphone transcription remains to be checked in a supported browser.
+
+Spatial now includes an offline metric plan map, scale bar, coordinate query, pan/zoom/fit, corridor-filtered sections, 3D transparency and layer controls. Imported survey points can link to sample images; synthetic geometry is opt-in and labelled. These tools do not reconstruct an orebody from a micrograph. Survey imports remain account-scoped browser-local; notes/results use the existing authenticated backend and private Supabase storage.
+
+## Evidence and tests
+- 71 focused backend checks passed, including progress, source/result identity and tenant isolation.
+- All seven serial browser tests passed: real-count UI, assistant approval, voice draft flow, provider consent, grain selection, phone/offline layout and spatial tools.
+- TypeScript and production build passed. Five new spatial geometry checks passed in the delegated run.
+- Actual trained-model inference on publisher test_11 completed in 78.475 seconds on local CPU: six 512px fields, 18.184% source coverage, 55.352% uncalibrated confidence. Result bb0ce7f8188c4da5b07dc0297f7f657d. Live overlays and the assistant were captured from real inference, not mocked predictions. Controlled browser speech/provider fixtures are not real service proofs.
+- Actual screenshots and exported result are in Desktop REEFPRINT/handover: real-live-analysis-desktop.png, real-live-analysis-mobile.png, real-result-refined.png, real-assistant-evidence.png, real-progress-result.json.
+
+## Model and deliverables
+Active checkpoint remains fb78727d… DeepLabV3/ResNet-50, with recorded 12-section mIoU0.4543 / pixel accuracy0.7716 and magnetiteIoU0. The stronger approved de7135a9… weights have not been recovered on this host. No new test accuracy or recovery improvement is claimed. The guarded Process simulator continues to HOLD the unapproved live model. A separate OPC UA engineering fixture demonstrated0→1; it must not be represented as this live model's successful plant actuation. The three-phase demo and checkpoint-bound report remain available, with limits visible.
+
+Both extended-dice and small-grain-dice Kaggle runs changed from RUNNING to COMPLETE during this release. Their validation audit is a separate report; do not deploy weights or infer held-out test improvement from validation alone.
+
+
+Continuation: LIVE-UI-RELEASE-2026-10-01.md. Public restart and GitHub publication are verified separately below.
+
+
+### Publication and live verification — 1 October 2026
+Implementation commit0e2255c and merged release93729da pushed to KHANYA PR15. Collaborator commits3e68f12..a719efe retained, including model warmup and measured per-stage timing. Actual preview/count logic remains the common source for provisional phase aliases; unknown pixels stay excluded. Production bundle regenerated after resolving source/generated conflicts.
+
+Post-merge:72 backend checks passed, two relevant desktop/mobile browser rechecks passed; earlier complete seven-browser suite passed. Public/health returned200, cloud_sync/auth_required true and warmed model_ready true; signed-out samples/assistant returned401. Existing user signed-in browser visibly loaded new UI and completed fresh public six-field inference in92.2s, then opened the evidence companion. Local8510 and public8766 restarted. Current process IDs:24020(local),5340(public); exec sessions43430 and18268. QA8770 is separate and can be stopped after use. Temporary tunnel remains the approved existing address.
+
+GitHub workbench API, offline frontend and security checks passed. Base tests initially failed collection because one new API fixture imported optional FastAPI unconditionally; importorskip added to match other API fixtures, while dedicated API CI continues exercising it. CI after that correction must be checked; do not imply all checks are green until observed.
+
+Both extended training runs audited COMPLETE. Native validation foregroundIoU0.6467023, allfiveIoU0.7036325, magnetiteIoU0.4094622/recall0.6948409. Smallgrain is weaker and regresses pentlandite. These are validation scores from selected checkpoints, not test accuracy or production gains. Native epoch12 chosen before a one-off test evaluation; the evaluation-only notebook is being reviewed/launched separately. Active hosted weights/report/gates are unchanged. See reports/EXTENDED-TRAINING-AUDIT-2026-09-30.md.
+
+Sibusiso's eight open PR heads remain unchanged; author acknowledges retired Streamlit UI on19–22. Existing correctness and stacked-base review blockers remain; no duplicate comments or unsafe merge performed. See reports/PR-AUDIT-2026-10-01.md. Optional provider model options are documented; no key or real microphone/LLM call has been verified. An additional provider metadata check hit the approval service usage limit and was not bypassed.
+
+
+## 1 October2026 — candidate test evaluation completed; assistant reading fix
+Single private native-selected-test-20261001-v1 evaluation completed; two independent audits matched all12section matrices,103,795,344pixels, every score and source/checkpoint/protocol identity. Candidate42646cfa testmIoU0.632038, foreground0.577958, accuracy0.855093. MagnetiteIoU0.247730/recall0.893240/precision0.255289 exposes2,140,808FP; historical common-phase regression remains. Candidate not deployed or control-approved. Reports/reproduction artifacts copied, no images/weights/secrets. Completed training monitor deleted. Read CONTINUE-REEFPRINT-2026-10-01.md for facts and limits.
+AllfourCIchecks passed9674b29 and2b763b2. The assistant now retains readable answer beginnings via internal conversation scrolling; three focused browser checks andproductionbuild passed. Fresh signed-in public UI returned the active model's correct report; actual screenshot saved privately onDesktop. Existingtemporarytunnel/auth scope preserved. Candidate report runtime/UI verification will be recorded after completion.
