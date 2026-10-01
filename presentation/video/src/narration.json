@@ -113,19 +113,31 @@
  ],
  [
   "h02",
-  "It scans every sample in visible and short-wave infrared light. Clays, micas and other gangue minerals leave absorption features that an ordinary camera cannot see."
+  "It scans every parcel in visible and short-wave infrared light. Clays, micas and other gangue minerals leave absorption features that an ordinary camera cannot see."
  ],
  [
   "h03",
-  "From that spectrum alone, the model predicts the lab results: copper and molybdenum recovery, lime use, pH, and how hard the ore will be to grind."
+  "From that spectrum alone, the model predicts the lab results: copper and molybdenum recovery, lime use, and how hard the ore will be to grind."
  ],
  [
   "h04",
-  "Every prediction here comes from a model that never saw that sample. The white marker is the real lab test, and the typical error is printed beside it."
+  "Every prediction comes from a model that never saw that sample. The dark marker is the real lab test, and the typical error is printed beside it."
  ],
  [
   "h05",
-  "When a prediction drifts outside the usual range, the shift is warned: harder ore, lower recovery, more lime. And that sample goes to the REEFPRINT microscope for a liberation check."
+  "When a prediction drifts outside the usual range, the shift is told to verify, or to switch to a conservative default, and the sample goes to the REEFPRINT microscope."
+ ],
+ [
+  "h07",
+  "Taught by QEMSCAN, the same camera estimated plant-feed mineralogy for composites it had never seen, including chalcopyrite, the copper mineral."
+ ],
+ [
+  "h08",
+  "On a simulated moving belt, lighting drift costs almost nothing. Short dwell and blended ore are the work still to do."
+ ],
+ [
+  "h09",
+  "It sits in one system: the belt warns in seconds, the microscope explains within the shift, and QEMSCAN teaches both."
  ],
  [
   "h06",
