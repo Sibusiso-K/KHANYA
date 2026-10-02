@@ -21,7 +21,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .reef-brand-upper{animation:drop 640ms cubic-bezier(.2,.9,.25,1) both}.reef-brand-lower{animation:rise 640ms 130ms cubic-bezier(.2,.9,.25,1) both}
 @keyframes drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}@keyframes rise{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}@keyframes enter{from{transform:translateY(4px);opacity:0}to{transform:none;opacity:1}}
 nav.tabs{display:flex;gap:2px;align-self:stretch}nav.tabs button{border:0;border-bottom:3px solid transparent;background:none;color:var(--muted);padding:3px 10px 0;font-size:13px;white-space:nowrap}nav.tabs button.active{border-bottom-color:var(--copper);color:var(--accent);font-weight:650}
-.hdr-right{display:flex;align-items:center;gap:10px;font-size:12px}
+.hdr-right{display:flex;align-items:center;gap:8px;font-size:12px;flex-wrap:wrap;justify-content:flex-end;min-width:0}
 .pill{display:inline-flex;align-items:center;padding:4px 9px;border:1px solid var(--warning-line);border-radius:999px;font-size:11px;background:var(--warning-bg);color:var(--warning-text);white-space:nowrap}
 .btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;min-height:34px;padding:6px 12px;font-size:12px;font-weight:550;display:inline-flex;align-items:center;gap:7px}
 .btn:hover{background:var(--subtle)}.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary-hover)}.btn.small{min-height:28px;padding:4px 9px;font-size:11.5px}
@@ -87,6 +87,7 @@ footer{max-width:1820px;margin:0 auto;padding:0 24px 22px;font-size:11px;color:v
   <div class="brand"><svg width="32" height="34" viewBox="0 0 40 42" aria-hidden="true"><path class="reef-brand-upper" d="m3 13 17-10 17 10-17 9z" fill="currentColor"/><path class="reef-brand-lower" d="M3 22l17 9 17-9v8L20 40 3 30z" fill="currentColor"/></svg><div><strong>REEFPRINT</strong><small>KHANYA · Live · belt to decision</small></div></div>
   <nav class="tabs" aria-label="Views">
     <button class="active" data-view="live">Live scan</button>
+    <button data-view="decisions">Decisions</button>
     <button data-view="bushveld">Bushveld PGE</button>
     <button data-view="plant">Plant</button>
     <button data-view="lab">Lab &amp; exports</button>
@@ -94,7 +95,7 @@ footer{max-width:1820px;margin:0 auto;padding:0 24px 22px;font-size:11px;color:v
     <button data-view="evidence">Evidence</button>
     <button data-view="where">Where it sits</button>
   </nav>
-  <div class="hdr-right"><span class="pill" id="modepill">Replay of public data · not approved for control</span><button class="btn small" id="camBtn" title="Phone or camera check">Camera</button></div>
+  <div class="hdr-right"><span class="pill" id="modepill" title="Replay of public data. Not approved for plant control.">Public-data replay · not for control</span><span class="pill" id="whoPill" style="display:none"></span><button class="btn small" id="signBtn" style="display:none">Sign in</button><button class="btn small" id="camBtn" title="Phone or camera check">Camera</button></div>
 </header>
 <main>
   <div class="banner" id="banner"><b>Replays of real public data, in three labelled evidence tracks.</b> Belt: HIDSAG hyperspectral (Chile, Cu-Mo). Bushveld: chromitite assays (Bachmann et al. 2019). Plant: a Brazilian iron-ore flotation plant. These are not paired observations of one ore and not a live belt. Decisions use only targets that beat the strongest baseline; thresholds come from training folds and are illustrative.</div>
@@ -143,6 +144,7 @@ footer{max-width:1820px;margin:0 auto;padding:0 24px 22px;font-size:11px;color:v
   </section>
 
   <!-- BUSHVELD -->
+  <section class="view" id="v-decisions"><div class="stack" id="decisions"></div></section>
   <section class="view" id="v-bushveld">
     <div class="g3">
       <div class="panel">
@@ -183,7 +185,7 @@ footer{max-width:1820px;margin:0 auto;padding:0 24px 22px;font-size:11px;color:v
       <div class="stack">
         <div class="panel"><div class="sh"><div><h2>Import lab results (QEMSCAN · XRF · XRD · assays)</h2><p>Typed against the versioned target registry; incompatible rows are rejected with a reason</p></div></div>
           <div class="toolbar"><input type="file" id="csvFile" accept=".csv,text/csv"><button class="btn small" data-sample="lab_GEOMET_showcase.csv">Load lab tests (GEOMET)</button><button class="btn small" data-sample="assay_BUSHVELD_icp.csv">Load PGE assays (Bushveld)</button><button class="btn small" data-sample="BAD_mixed_import.csv">Load a bad file</button></div>
-          <div id="importResult" class="copy muted">No file loaded.</div></div>
+          <div id="importResult" class="copy muted">No file loaded.</div><div id="srvImport" class="copy muted"></div></div>
         <div class="panel"><div class="sh"><div><h2>Reconciliation: prediction vs lab</h2><p>Retrospective: the lab values are the public labels the models were scored against</p></div></div><div id="recon" class="copy muted">Import a file to reconcile.</div></div>
       </div>
       <div class="stack">
@@ -212,8 +214,13 @@ footer{max-width:1820px;margin:0 auto;padding:0 24px 22px;font-size:11px;color:v
 <button class="btn primary fab" id="askBtn">Ask REEFPRINT</button>
 <div class="drawer" id="drawer"><div class="panel"><div class="sh"><div><h2>Ask REEFPRINT</h2><p id="askMode">Offline parser · numbers come from code, never from a language model</p></div><button class="btn small" id="askClose">Close</button></div><div class="chatlog" id="chatlog"></div><div class="chatin"><input id="askIn" placeholder="e.g. why was GMET-0004 flagged? · show hard ore · explain the plant result"><button class="btn primary small" id="askGo">Ask</button></div></div></div>
 
+<div class="modal" id="authModal"><div class="panel" style="width:min(440px,94vw)"><div class="sh"><div><h2>Sign in to REEFPRINT</h2><p>Plant staff sign in with an account an administrator created. Visitors can explore in a sandbox that never touches the real decision record.</p></div><button class="btn small" id="authClose">Close</button></div>
+  <div class="calc" style="flex-direction:column;align-items:stretch"><label>Username<input id="authUser" autocomplete="username" maxlength="40"></label><label>Password<input id="authPass" type="password" autocomplete="current-password" maxlength="200"></label></div>
+  <div class="toolbar" style="padding:0 16px 10px"><button class="btn primary small" id="authGo">Sign in</button><button class="btn small" id="authGuest">Continue as guest (demo sandbox)</button></div>
+  <div class="copy muted" id="authMsg">Sessions are server-side, cookies are HttpOnly and SameSite=Strict, and every action carries a CSRF token. Five wrong passwords lock the account for 15 minutes.</div></div></div>
+
 <div class="modal" id="camModal"><div class="panel"><div class="sh"><div><h2>Phone or camera check</h2><p>Quality gates only. Photos are outside the validated domain, so no ore prediction is ever made from them.</p></div><button class="btn small" id="camClose">Close</button></div>
-  <div class="toolbar"><input type="file" id="camFile" accept="image/*" capture="environment"><button class="btn small" id="camLive">Use webcam</button><button class="btn small" id="camSnap" disabled>Capture</button></div>
+  <div class="toolbar"><input type="file" id="camFile" accept="image/*" capture="environment"><button class="btn small" id="camLive">Use webcam</button><button class="btn small" id="camSnap" disabled>Capture</button><button class="btn small primary" id="camUpload" disabled title="Re-encoded on the server, metadata stripped, encrypted at rest">Upload securely</button></div>
   <div class="copy"><p class="muted">Click a white or grey reference card in the image after loading it.</p><div style="display:flex;gap:14px;flex-wrap:wrap"><video id="camVideo" autoplay playsinline style="max-width:420px;display:none;border-radius:6px"></video><canvas id="camCanvas" style="max-width:420px;border-radius:6px;cursor:crosshair"></canvas><div id="camResult" style="min-width:260px"></div></div></div>
 </div></div>
 

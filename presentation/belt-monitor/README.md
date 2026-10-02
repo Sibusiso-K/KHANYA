@@ -24,6 +24,16 @@ Open `http://127.0.0.1:8531/`. Plain `python -m http.server` also works, but the
 
 URL options: `?theme=mineral-night|field-paper`, `?view=bushveld|plant|lab|value|evidence|where`, `?mode=belt|2d|3d`, `?sensor=swir_low`, `?layer=map_swir_aloh`, `?destripe=0`, `?smooth=1`, `?auto=1` (run the belt), `?scan=4500` (ms per scan), `?dwell=3500`.
 
+## Secure mode (sign-in, roles, signed decision record) — `app_server.py`
+
+For anything beyond a local demo, run the secure server instead of `server.py`. Full steps: [deploy/RUNBOOK.md](deploy/RUNBOOK.md). Design: [docs/19](../../docs/19-security-by-design.md).
+
+- **Sign-in and roles:** operator, metallurgist, mineralogist and manager accounts are created by the CLI only (`manage.py add-user`); there is no web admin. Visitors **continue as guest** into a sandbox, and `?guest=1` is the QR-code entry.
+- **Decisions tab:** the belt's hardness bound becomes a feed proposal inside a typed envelope (`live/envelope.json`, STIPULATED), with an arrival countdown and an immediate conservative fallback.
+- **The decision record:** acknowledge, approve, modify, reject, escalate and note events, hash-chained, with **Ed25519 + ML-DSA-65 signed checkpoints** (post-quantum, FIPS 204).
+- **Uploads:** lab CSVs and phone photos are validated, re-encoded with metadata stripped, AES-256-GCM encrypted, and deleted after 24 h for guests.
+- **Gates:** `python -m unittest test_secure_server -v` (17 tests). Bandit (0 issues) and pip-audit (clean) were run on 2026-10-02.
+
 ## Where the AIML API and Featherless API keys go
 
 **Only in the environment of `server.py`, on the machine running it.** They are never written to a file by the app, never sent to the browser and never logged.

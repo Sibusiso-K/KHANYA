@@ -1,0 +1,22 @@
+{
+ "version": "demo-envelope-1",
+ "status": "STIPULATED for the demo; a site replaces every number here",
+ "variable": "primary mill feed rate",
+ "unit": "% of design feed (design = feed set for the training-fold 90th-percentile hardness)",
+ "min": 85,
+ "max": 110,
+ "conservative": 100,
+ "ramp_per_parcel_pct": {
+  "down": 10,
+  "up": 3
+ },
+ "authority": {
+  "approve_within_envelope": "metallurgist",
+  "acknowledge": "operator"
+ },
+ "arrival_deadline_s": 90,
+ "arrival_note": "belt-to-mill transit, ASSUMED 90 s for the demo (a site measures it)",
+ "fallback_rule": "if no approval before the parcel reaches the mill, or the parcel is OOD-refused, or the data is stale: apply the conservative setting immediately and escalate separately",
+ "expiry": "2026-12-31",
+ "source": "PLAN-v8 step 6; docs/18 section 5"
+}

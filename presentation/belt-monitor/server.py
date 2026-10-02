@@ -29,12 +29,12 @@ PROVIDER = os.environ.get("REEFPRINT_LLM_PROVIDER", "").strip().lower()
 MODEL = os.environ.get("REEFPRINT_LLM_MODEL", "").strip()
 KEY = os.environ.get(PROVIDERS[PROVIDER][1], "") if PROVIDER in PROVIDERS else ""
 TOOLS = {"explain_prediction": {"sample_id": r"^(GMET|M1)-\d{4}$"}, "query_samples": {"target": r"^WI$", "state": r"^adverse_or_crossing$", "decision": r"^(verify|default)$"},
-         "plant_status": {}, "bushveld_status": {}, "compare_with_lab": {}, "switch_view": {"view": r"^(live|bushveld|plant|lab|value|evidence|where)$"},
+         "plant_status": {}, "bushveld_status": {}, "compare_with_lab": {}, "switch_view": {"view": r"^(live|decisions|bushveld|plant|lab|value|evidence|where)$"},
          "export": {"kind": r"^(lims|opcua|geojson|prov)$"}, "generate_report": {}, "help": {}}
 SYSTEM = ("You are a router for the REEFPRINT Live mining app. Reply with ONLY a JSON object {\"tool\": <name>, \"args\": {...}} "
           "choosing one tool for the user's question. Tools: explain_prediction(sample_id like GMET-0004 or M1-0012); "
           "query_samples(target='WI', state='adverse_or_crossing') or query_samples(decision='verify'|'default'); plant_status(); "
-          "bushveld_status(); compare_with_lab(); switch_view(view in live|bushveld|plant|lab|value|evidence|where); "
+          "bushveld_status(); compare_with_lab(); switch_view(view in live|decisions|bushveld|plant|lab|value|evidence|where); "
           "export(kind in lims|opcua|geojson|prov); generate_report(); help(). Never answer the question yourself.")
 STATIC_EXT = {".html", ".js", ".json", ".csv", ".gz", ".woff2", ".png", ".txt"}
 ALLOWED_DIRS = {"", "live", "live/showcase", "live/showcase/GEOMET", "live/showcase/MINERAL1", "live/samples", "fonts", "rgb"}

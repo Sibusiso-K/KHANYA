@@ -70,6 +70,35 @@ for rec in show:
         n_hr += 1
 print("full-resolution display cubes merged:", n_hr)
 
+# ---------------- decision path: exact one-sided bound per parcel + training-fold P90 (PLAN-v8 step 6)
+import numpy as _np
+V8M = os.path.join(T, "hidsag-v8-model-20261002", "output", "hidsag_v8_model_results.json")
+SRC["v8_model_results"] = V8M
+hashes["v8_model_results"] = sha(V8M)
+_r8 = json.load(open(V8M))["records"]["GEOMET"]
+_ti = _r8["targets"].index("WI")
+_Y = _np.array(_r8["Y"], float)[:, _ti]
+_S8 = sorted(_r8["samples"], key=lambda r: r["sample"])
+_fold = _np.array([r["fold"] for r in _S8])
+_p90 = {f: float(_np.percentile(_Y[_fold != f], 90)) for f in sorted(set(_fold.tolist()))}
+_byname = {r["sample"]: r for r in _S8}
+for s_ in show.get("GEOMET", []):
+    hp = os.path.join(dst, "GEOMET", s_ + ".json")
+    h_ = json.load(open(hp))
+    r_ = _byname[s_]
+    h_["targets"]["WI"]["hi_up"] = r_["hi_up"][_ti]
+    h_["targets"]["WI"]["p90_train"] = _p90[r_["fold"]]
+    h_["targets"]["WI"]["bound_method"] = "exact one-sided 90% split-conformal (Kaggle reefprint-hidsag-v8-model)"
+    json.dump(h_, open(hp, "w"))
+ENVELOPE = {"version": "demo-envelope-1", "status": "STIPULATED for the demo; a site replaces every number here",
+            "variable": "primary mill feed rate", "unit": "% of design feed (design = feed set for the training-fold 90th-percentile hardness)",
+            "min": 85, "max": 110, "conservative": 100, "ramp_per_parcel_pct": {"down": 10, "up": 3},
+            "authority": {"approve_within_envelope": "metallurgist", "acknowledge": "operator"},
+            "arrival_deadline_s": 90, "arrival_note": "belt-to-mill transit, ASSUMED 90 s for the demo (a site measures it)",
+            "fallback_rule": "if no approval before the parcel reaches the mill, or the parcel is OOD-refused, or the data is stale: apply the conservative setting immediately and escalate separately",
+            "expiry": "2026-12-31", "source": "PLAN-v8 step 6; docs/18 section 5"}
+json.dump(ENVELOPE, open(os.path.join(LIVE, "envelope.json"), "w"), indent=1)
+
 # evidence bar per target: used in decisions only if the deployable model beat the strongest baseline (all gates)
 evidence = {}
 for rec, Rr in A["records"].items():

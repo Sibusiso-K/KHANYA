@@ -15,7 +15,7 @@ const nice = k => NICE[k] || k.replace(/_/g, " ");
 const unit = (rec, k) => rec === "GEOMET" ? (UNIT[k] ?? "") : rec === "MINERAL1" ? "wt%" : "g/t";
 function fmt(v, d) { if (v == null || !isFinite(v)) return "∞"; const a = Math.abs(v); d = d ?? (a >= 100 ? 0 : a >= 10 ? 1 : a >= 1 ? 2 : 3); return v.toFixed(d); }
 const S = { rec: "GEOMET", headers: { GEOMET: {}, MINERAL1: {} }, cur: null, cube: null, sensor: P.get("sensor") === "swir_low" ? "swir_low" : "vnir_low", layer: P.get("layer") || "", mode: ["2d", "3d", "belt"].includes(P.get("mode")) ? P.get("mode") : "belt", running: false,
-  destripe: P.get("destripe") !== "0", smooth: P.get("smooth") === "1", scanEnd: 0,
+  destripe: P.get("destripe") !== "0", smooth: P.get("smooth") === "1", scanEnd: 0, secure: false, auth: null, env: null, adv: {},
   scanRow: 0, scanning: false, decided: {}, audit: [], imported: null, ranges: {}, bvIdx: 0, bvTimer: null, plIdx: 0, plTimer: null, plH: "1", plant: {} };
 
 /* ---------------- theme + views ---------------- */
@@ -26,6 +26,7 @@ const VIEWS = {
   bushveld: ["Track 4 · Bushveld chromitite (South Africa)", "Belt chemistry to PGE grade", "What a cross-belt XRF / PGNAA-type reading of Cr₂O₃, FeO, SiO₂, MgO, Al₂O₃, CaO can say about Pt, Rh and 4E, held out by project."],
   plant: ["Track 3 · Plant", "Real plant parameters, real forecast, honest result", "A real flotation plant's tags and lab assays, replayed hour by hour with the leakage traps closed."],
   lab: ["Integration", "Lab round trip and exports", "Import QEMSCAN, XRF, XRD or assay results against a typed registry, reconcile, and export to LIMS, historian and GIS."],
+  decisions: ["Decision path", "One validated decision, done properly", "The belt's hardness bound becomes a feed-rate proposal inside a site-approved envelope. A person approves before the ore reaches the mill, or the envelope's safe setting applies automatically. Every step is recorded in a hash-chained, post-quantum-signed decision record."],
   value: ["Value", "From a prediction to a plant action, and what it is worth", "Who acts on each prediction, the next step it changes, the effect measured on real held-out data, and where the money comes from. Assumptions are labelled; nothing here is a site measurement."],
   evidence: ["Evidence", "The scoreboard, including what failed", "Every model against its strongest baseline, the previous version and a cheaper camera, with intervals and corrections."],
   where: ["Design", "Where it sits, who uses it, how the models are orchestrated", "Three instruments, three speeds, one decision screen; one router, one referee, one policy."] };
@@ -33,7 +34,7 @@ function showView(v) {
   document.querySelectorAll("nav.tabs button").forEach(b => b.classList.toggle("active", b.dataset.view === v));
   document.querySelectorAll(".view").forEach(s => s.classList.toggle("on", s.id === "v-" + v));
   const t = VIEWS[v]; $("crumb").textContent = t[0]; $("title").textContent = t[1]; $("subtitle").textContent = t[2];
-  if (v === "bushveld") drawBushveld(); if (v === "plant") drawPlant(); if (v === "value") renderValue();
+  if (v === "bushveld") drawBushveld(); if (v === "plant") drawPlant(); if (v === "value") renderValue(); if (v === "decisions") renderDecisions();
 }
 document.querySelectorAll("nav.tabs button").forEach(b => b.onclick = () => showView(b.dataset.view));
 
@@ -494,7 +495,12 @@ function reconcile() {
     const e = m.map(x => x.p.pred - x.r.value), inside = m.filter(x => x.r.value >= x.p.lo && x.r.value <= x.p.hi).length;
     return `<tr><td>${esc(t)}</td><td class="num">${m.length}</td><td class="num">${fmt(e.reduce((a, b) => a + Math.abs(b), 0) / m.length)}</td><td class="num">${fmt(e.reduce((a, b) => a + b, 0) / m.length)}</td><td class="num">${Math.round(inside / m.length * 100)}%</td></tr>`; }).join("")}</tbody></table><p class="muted">Retrospective reconciliation: these lab values are the public labels the out-of-fold predictions were scored against. A live site would reconcile new assays as they arrive and watch for bias drift.</p>`;
 }
-$("csvFile").onchange = e => { const f = e.target.files[0]; if (!f) return; if (f.size > 5e6) { showImport(f.name, [], [{ line: 0, reason: "File over 5 MB." }]); return; } f.text().then(t => importCSV(f.name, t)); };
+$("csvFile").onchange = e => { const f = e.target.files[0]; if (!f) return; if (f.size > 5e6) { showImport(f.name, [], [{ line: 0, reason: "File over 5 MB." }]); return; } f.text().then(t => importCSV(f.name, t)); if (S.secure && S.auth) serverCSV(f); };
+async function serverCSV(f) {
+  $("srvImport").textContent = "Sending to the secure server…";
+  const j = await api("POST", "/api/upload/csv", f, true);
+  $("srvImport").innerHTML = j.ok ? `<p><b>Server:</b> ${j.data.accepted.length} rows accepted, ${j.data.rejected.length} rejected; ${esc(j.data.stored)}. ${j.data.rejected.slice(0, 5).map(r => `Line ${r.line}: ${esc(r.reason)}`).join(" · ")}</p>` : `<p class="bad">Server refused the file: ${esc(j.error)}</p>`;
+}
 document.querySelectorAll("[data-sample]").forEach(b => b.onclick = () => fetch("live/samples/" + b.dataset.sample).then(r => r.text()).then(t => importCSV(b.dataset.sample, t)));
 const neut = s => { s = String(s); return /^[=+\-@]/.test(s) && !/^-?\d+(\.\d+)?$/.test(s) ? "'" + s : s; };
 const csvq = s => { s = neut(s); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
@@ -593,6 +599,109 @@ function renderValue() {
     $("vcOut").innerHTML = `<p>+${d} pp recovery on ${f(t)} t at ${gr} g/t = <b>${f(oz)} oz 4E</b> contained, worth <b>R${f(val)}</b> a year net at payability ${py} and R${f(pr)}/oz. Every input is an assumption until replaced by the site's figures.</p>`; };
   ["vcT", "vcG", "vcP", "vcR", "vcPP"].forEach(id => $(id).addEventListener("input", calc)); calc();
 }
+/* ---------------- secure-server session (app_server.py); offline demo mode otherwise ---------------- */
+async function api(method, path, body, raw) {
+  const h = {}; if (S.auth && method !== "GET") h["X-CSRF"] = S.auth.csrf;
+  if (body !== undefined && !raw) h["Content-Type"] = "application/json";
+  try {
+    const res = await fetch(path, { method, headers: h, credentials: "same-origin", body: body === undefined ? undefined : raw ? body : JSON.stringify(body) });
+    const j = await res.json().catch(() => ({}));
+    if (res.status === 401 && S.secure) { S.auth = null; whoUpdate(); }
+    return res.ok ? { ok: true, data: j, status: res.status } : { ok: false, error: j.error || ("HTTP " + res.status), status: res.status };
+  } catch (e) { return { ok: false, error: "network error", status: 0 }; }
+}
+async function initAuth() {
+  let res; try { res = await fetch("/api/me", { credentials: "same-origin" }); } catch (e) { res = null; }
+  if (!res || (res.status !== 401 && res.status !== 200)) { S.secure = false; whoUpdate(); return; }
+  S.secure = true;
+  if (res.status === 200) { const j = await res.json(); S.auth = j; } else if (P.get("guest") === "1") { await signGuest(); } else $("authModal").classList.add("on");
+  whoUpdate();
+}
+function whoUpdate() {
+  const pill = $("whoPill"), btn = $("signBtn");
+  if (!S.secure) { pill.style.display = "none"; btn.style.display = "none"; return; }
+  btn.style.display = ""; btn.textContent = S.auth ? "Sign out" : "Sign in";
+  pill.style.display = S.auth ? "" : "none";
+  if (S.auth) pill.textContent = `${S.auth.role}${S.auth.sandbox || S.auth.role === "guest" ? " · demo sandbox" : ""}`;
+  $("camUpload").disabled = !(S.auth && camBlob);
+  if ($("v-decisions").classList.contains("on")) renderDecisions();
+}
+async function signGuest() { const j = await api("POST", "/api/guest", {}); if (j.ok) { const me = await api("GET", "/api/me"); S.auth = me.ok ? me.data : { role: "guest", csrf: j.data.csrf }; $("authModal").classList.remove("on"); whoUpdate(); audit("sign_in", { detail: "guest sandbox" }); } else $("authMsg").textContent = j.error; }
+$("authGuest").onclick = signGuest;
+$("authGo").onclick = async () => {
+  const j = await api("POST", "/api/login", { username: $("authUser").value, password: $("authPass").value }); $("authPass").value = "";
+  if (!j.ok) { $("authMsg").textContent = j.status === 429 ? "Too many attempts. Wait a minute." : "Sign-in failed."; return; }
+  const me = await api("GET", "/api/me"); S.auth = me.ok ? me.data : { role: j.data.role, csrf: j.data.csrf }; $("authModal").classList.remove("on"); whoUpdate(); audit("sign_in", { detail: S.auth.role });
+};
+$("authPass").addEventListener("keydown", e => { if (e.key === "Enter") $("authGo").click(); });
+$("authClose").onclick = () => $("authModal").classList.remove("on");
+$("signBtn").onclick = async () => { if (S.auth) { await api("POST", "/api/logout", {}); S.auth = null; whoUpdate(); } else $("authModal").classList.add("on"); };
+
+/* ---------------- Decisions: envelope, arrival deadline, immediate fallback, signed decision record ---------------- */
+const ACT = { acknowledge: ["operator", "metallurgist"], approve: ["metallurgist"], modify: ["metallurgist"], reject: ["metallurgist"], escalate: ["operator", "metallurgist", "mineralogist"], note: ["operator", "metallurgist", "mineralogist", "manager"] };
+const can = a => S.auth && (S.auth.role === "guest" || (ACT[a] || []).includes(S.auth.role));
+function proposal(rec, h) {
+  const E = S.env, t = (h.targets || {}).WI, d = decide(rec, h);
+  if (!E) return { value: null, why: "No envelope loaded." };
+  if (rec !== "GEOMET" || !t || t.hi_up == null) return { value: E.conservative, fallback: true, why: "No validated decision target for this parcel type, so the envelope's conservative setting applies." };
+  if (h.ood === "refused") return { value: E.conservative, fallback: true, why: "Spectrum outside the training domain (OOD refused): conservative setting." };
+  const bound = h.ood === "borderline" ? Math.max(t.hi_up, t.p90_train) : t.hi_up;
+  const raw = 100 * t.p90_train / bound, v = Math.max(E.min, Math.min(E.max, raw));
+  return { value: Math.round(v * 10) / 10, raw, bound, d, why: `Feed for the upper 90% bound of the work index (${fmt(bound)} kWh/t) against the design hardness (training P90 ${fmt(t.p90_train)} kWh/t)${h.ood === "borderline" ? "; borderline OOD, so the stricter of the two" : ""}${raw !== v ? `; clipped to the envelope (${E.min}–${E.max}%)` : ""}.` };
+}
+let decTimer = 0;
+async function recordAdvice(key, rec, s, h, pr) {
+  if (!(S.secure && S.auth) || S.adv[key]) return;
+  const body = { sample: s, record: rec, proposal_pct: pr.value, fallback: !!pr.fallback, ood: h.ood, envelope_version: S.env ? S.env.version : "none", deadline_s: S.env ? S.env.arrival_deadline_s : 0 };
+  const j = await api("POST", "/api/ledger/event", { type: "advice_shown", body });
+  S.adv[key] = { seq: j.ok ? j.data.seq : null, t0: Date.now(), state: pr.fallback ? "fallback" : "open", err: j.ok ? null : j.error };
+}
+async function act(kind) {
+  const key = S.rec + "|" + S.cur, a = S.adv[key]; if (!a) return;
+  let body = { note: ($("decNote").value || "").slice(0, 500) };
+  if (kind === "modify") { const v = parseFloat(prompt(`New feed setting, % of design (${S.env.min}–${S.env.max}):`, "")); if (!isFinite(v) || v < S.env.min || v > S.env.max) { alert("Outside the approved envelope: refused."); return; } body.value_pct = v; }
+  if (kind === "reject") body.value_pct = S.env.conservative;
+  if (kind === "escalate") body.level = $("decEsc").value;
+  const j = await api("POST", "/api/ledger/event", { type: kind, ref: a.seq, body });
+  if (j.ok && ["approve", "modify", "reject"].includes(kind)) a.state = kind;
+  if (j.ok && kind === "acknowledge" && a.state === "open") a.state = "acknowledged";
+  $("decNote").value = ""; renderDecisions(); if (!j.ok) $("decMsg").textContent = j.error;
+}
+async function renderDecisions() {
+  const el = $("decisions"); if (!S.summary || !S.cur || !S.headers[S.rec][S.cur]) { el.innerHTML = `<div class="panel"><div class="copy">Waiting for the first parcel on the belt…</div></div>`; return; }
+  const rec = S.rec, s = S.cur, h = S.headers[rec][s], E = S.env, pr = proposal(rec, h), key = rec + "|" + s;
+  await recordAdvice(key, rec, s, h, pr);
+  const a = S.adv[key], left = a && E ? Math.max(0, E.arrival_deadline_s - Math.floor((Date.now() - a.t0) / 1000)) : null;
+  if (a && a.state === "open" && left === 0 && S.secure && S.auth) {
+    a.state = "fallback";
+    if (can("acknowledge") || S.auth.role === "guest") await api("POST", "/api/ledger/event", { type: "fallback_applied", ref: a.seq, body: { value_pct: E.conservative, reason: "parcel reached the mill without an approval", envelope_version: E.version } });
+  }
+  const stTxt = !a ? (S.secure ? "not recorded (sign in)" : "offline demo: run app_server.py for the decision record") : a.state === "open" ? `awaiting approval · ore reaches the mill in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}` : a.state === "fallback" ? `conservative setting applied (${E.conservative}%)` : a.state;
+  const btn = (k, label) => `<button class="btn small" data-act="${k}" ${can(k) && a && a.seq ? "" : "disabled"}>${label}</button>`;
+  el.innerHTML = `
+  <div class="g2"><div class="panel"><div class="sh"><div><h2>Parcel ${esc(s)} · feed-rate proposal</h2><p>${rec === "GEOMET" ? "HIDSAG GEOMET drill core (Chile), replayed as a belt parcel" : "Plant-feed fraction: no validated decision target"}</p></div><span class="badge ${pr.fallback ? "warn" : "ok"}">${pr.fallback ? "fallback" : "proposal"}</span></div>
+    <div class="bignums" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><b>${pr.value == null ? "—" : pr.value + "%"}</b><small>of design feed</small></div><div><b>${esc(stTxt.split(" · ")[0])}</b><small>${esc(stTxt.split(" · ")[1] || "")}</small></div><div><b>${h.ood}</b><small>domain check</small></div></div>
+    <div class="copy"><p>${esc(pr.why)}</p><p class="muted">Ramp limits (−${E ? E.ramp_per_parcel_pct.down : "?"}% / +${E ? E.ramp_per_parcel_pct.up : "?"}% per parcel) apply in the controller; feed is cut fast and raised slowly.</p></div>
+    <div class="toolbar" style="padding:0 16px 8px;flex-wrap:wrap">${btn("acknowledge", "Acknowledge")}${btn("approve", "Approve proposal")}${btn("modify", "Modify within envelope")}${btn("reject", "Reject → conservative")}<select id="decEsc" class="btn small"><option value="L2">Escalate to metallurgist (L2)</option><option value="L3">Lab rush sample (L3)</option></select>${btn("escalate", "Escalate")}${btn("note", "Add note")}</div>
+    <div class="calc" style="padding-top:0"><label style="flex:1">Reason or note (no names or personal information; 500 characters)<input id="decNote" maxlength="500" style="width:100%"></label></div>
+    <div class="copy muted" id="decMsg">${a && a.err ? esc(a.err) : ""}</div></div>
+  <div class="panel"><div class="sh"><div><h2>Operating envelope</h2><p>${E ? esc(E.status) : "not loaded"}</p></div><span class="badge warn">STIPULATED</span></div>
+    ${E ? `<dl class="kv"><dt>Variable</dt><dd>${esc(E.variable)}</dd><dt>Unit</dt><dd>${esc(E.unit)}</dd><dt>Range</dt><dd>${E.min}–${E.max}%</dd><dt>Conservative setting</dt><dd>${E.conservative}%</dd><dt>Approve within envelope</dt><dd>${esc(E.authority.approve_within_envelope)}</dd><dt>Arrival deadline</dt><dd>${E.arrival_deadline_s} s (${esc(E.arrival_note)})</dd><dt>Fallback rule</dt><dd>${esc(E.fallback_rule)}</dd><dt>Version / expiry</dt><dd>${esc(E.version)} / ${esc(E.expiry)}</dd></dl>` : ""}</div></div>
+  <div class="panel"><div class="sh"><div><h2>Decision record ${S.auth && (S.auth.role === "guest") ? "(demo sandbox, reset daily)" : ""}</h2><p>Append-only, hash-chained. Checkpoints are signed with Ed25519 and ML-DSA-65 (NIST FIPS 204, post-quantum); keep them off the server to prove later edits or truncation.</p></div>
+    <div class="toolbar"><button class="btn small" id="ledVerify" ${S.auth ? "" : "disabled"}>Verify chain</button><button class="btn small primary" id="ledCheck" ${S.auth && ["guest", "metallurgist", "manager"].includes(S.auth.role) ? "" : "disabled"}>Signed checkpoint</button></div></div>
+    <div class="copy" id="ledState">${S.secure ? (S.auth ? "" : "Sign in or continue as guest to see the record.") : "Offline demo mode: start <code>app_server.py</code> for sign-in, roles and the signed decision record."}</div>
+    <div id="ledList" style="max-height:320px;overflow:auto"></div></div>`;
+  el.querySelectorAll("[data-act]").forEach(b => b.onclick = () => act(b.dataset.act));
+  if (S.auth) {
+    $("ledVerify").onclick = async () => { const j = await api("GET", "/api/ledger/verify"); $("ledState").innerHTML = j.ok ? `Chain ${j.data.chain.ok ? "<b>intact</b>" : "<b class='bad'>BROKEN at seq " + j.data.chain.first_bad_seq + "</b>"}: ${j.data.chain.n} events${j.data.last_checkpoint ? `; last signed checkpoint at seq ${j.data.last_checkpoint.seq}` : ""}.` : esc(j.error); };
+    $("ledCheck").onclick = async () => { const j = await api("POST", "/api/ledger/checkpoint", {}); if (j.ok) { download(`reefprint_checkpoint_seq${j.data.checkpoint.seq}.json`, JSON.stringify(j.data.checkpoint, null, 1), "application/json"); $("ledState").textContent = `Signed checkpoint at seq ${j.data.checkpoint.seq} downloaded (Ed25519 + ML-DSA-65). ${j.data.keep_this}`; } else $("ledState").textContent = j.error; };
+    const L = await api("GET", "/api/ledger");
+    if (L.ok) $("ledList").innerHTML = `<table><thead><tr><th class="num">Seq</th><th>Time</th><th>Event</th><th>Ref</th><th>Role</th><th>Detail</th><th>Hash</th></tr></thead><tbody>${L.data.events.slice().reverse().slice(0, 60).map(e => `<tr><td class="num">${e.seq}</td><td>${new Date(e.ts * 1000).toLocaleTimeString()}</td><td>${esc(e.type)}</td><td>${e.ref ?? ""}</td><td>${esc(e.actor_role)}</td><td>${esc(Object.entries(e.body).map(([k, v]) => k + "=" + v).join(", ").slice(0, 140))}</td><td><code>${esc(e.hash.slice(0, 10))}</code></td></tr>`).join("")}</tbody></table>`;
+  }
+  clearTimeout(decTimer);
+  if (a && a.state === "open" && $("v-decisions").classList.contains("on")) decTimer = setTimeout(renderDecisions, 1000);
+}
+
 function renderWhere() {
   $("where").innerHTML = `
   <div class="panel"><div class="sh"><div><h2>Model orchestration: one router, one referee, one policy</h2><p>Every input type has its own validated path; nothing is promoted without its evidence bar</p></div></div>
@@ -624,7 +733,7 @@ function offlineRoute(q) {
   if (/reconcil|compare|lab result/.test(s)) return { tool: "compare_with_lab", args: {} };
   if (/report/.test(s)) return { tool: "generate_report", args: {} };
   const ex = s.match(/lims|opc|geojson|qgis|provenance/); if (ex && /export|download|send/.test(s)) return { tool: "export", args: { kind: { lims: "lims", opc: "opcua", geojson: "geojson", qgis: "geojson", provenance: "prov" }[ex[0]] } };
-  const v = s.match(/\b(live|scan|bushveld|plant|lab|value|evidence|where)\b/); if (v && /open|go|show|switch/.test(s)) return { tool: "switch_view", args: { view: v[1] === "scan" ? "live" : v[1] } };
+  const v = s.match(/\b(live|scan|decisions|bushveld|plant|lab|value|evidence|where)\b/); if (v && /open|go|show|switch/.test(s)) return { tool: "switch_view", args: { view: v[1] === "scan" ? "live" : v[1] } };
   return { tool: "help", args: {} };
 }
 function validArgs(r) {
@@ -656,7 +765,8 @@ async function ask(q) {
   $("chatlog").insertAdjacentHTML("beforeend", `<div class="msg q"><span>${esc(q)}</span></div>`);
   let r = null, mode = "offline";
   const tok = document.querySelector('meta[name="reef-token"]').content;
-  if (tok) { try { const res = await fetch("/api/route", { method: "POST", headers: { "Content-Type": "application/json", "X-Reef-Token": tok }, body: JSON.stringify({ q }) }); const j = await res.json(); if (j.tool) { r = j; mode = j.provider; } } catch (e) {} }
+  if (S.secure && S.auth) { try { const j = await api("POST", "/api/route", { q }); if (j.ok && j.data.tool) { r = j.data; mode = j.data.provider; } } catch (e) {} }
+  else if (tok) { try { const res = await fetch("/api/route", { method: "POST", headers: { "Content-Type": "application/json", "X-Reef-Token": tok }, body: JSON.stringify({ q }) }); const j = await res.json(); if (j.tool) { r = j; mode = j.provider; } } catch (e) {} }
   if (!r) r = offlineRoute(q);
   r = validArgs(r);
   const ans = runTool(r);
@@ -673,9 +783,17 @@ let camStream = null, camImg = null;
 $("camBtn").onclick = () => $("camModal").classList.add("on");
 $("camClose").onclick = () => { $("camModal").classList.remove("on"); if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; } };
 function camLoad(src) { const cv = $("camCanvas"), sc = Math.min(1, 900 / Math.max(src.width || src.videoWidth, src.height || src.videoHeight)), w = Math.round((src.width || src.videoWidth) * sc), h = Math.round((src.height || src.videoHeight) * sc); cv.width = w; cv.height = h; cv.getContext("2d").drawImage(src, 0, 0, w, h); camImg = cv.getContext("2d").getImageData(0, 0, w, h); camCheck(null); }
-$("camFile").onchange = e => { const f = e.target.files[0]; if (!f) return; const img = new Image(); img.onload = () => camLoad(img); img.src = URL.createObjectURL(f); };
+let camBlob = null;
+$("camFile").onchange = e => { const f = e.target.files[0]; if (!f) return; camBlob = f; $("camUpload").disabled = !(S.secure && S.auth); const img = new Image(); img.onload = () => camLoad(img); img.src = URL.createObjectURL(f); };
+$("camUpload").onclick = async () => {
+  if (!camBlob) { const cv = $("camCanvas"); camBlob = await new Promise(res => cv.toBlob(res, "image/jpeg", 0.92)); }
+  if (!camBlob) return;
+  const out = $("camResult"); out.insertAdjacentHTML("beforeend", `<div class="note" id="camSrv">Uploading…</div>`);
+  const j = await api("POST", "/api/upload/image", camBlob, true);
+  $("camSrv").outerHTML = j.ok ? `<div class="note"><b>Server:</b> ${esc(j.data.stored)}. Focus ${j.data.checks.focus_ok ? "ok" : "low"} (${j.data.checks.focus_laplacian_var}), exposure ${j.data.checks.exposure_ok ? "ok" : "clipped"} (${(j.data.checks.clipped_fraction * 100).toFixed(1)}%). ${esc(j.data.checks.decision)}</div>` : `<div class="note bad">Server refused the image: ${esc(j.error)}</div>`;
+  audit("photo_upload", { detail: j.ok ? "accepted, metadata stripped" : "refused" }); };
 $("camLive").onclick = async () => { try { camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }); const v = $("camVideo"); v.srcObject = camStream; v.style.display = "block"; $("camSnap").disabled = false; } catch (e) { $("camResult").innerHTML = `<p class="bad">Camera unavailable: ${esc(e.message || e)}</p>`; } };
-$("camSnap").onclick = () => camLoad($("camVideo"));
+$("camSnap").onclick = () => { camBlob = null; camLoad($("camVideo")); $("camUpload").disabled = !(S.secure && S.auth); };
 $("camCanvas").addEventListener("click", e => { if (!camImg) return; const cv = $("camCanvas"), r = cv.getBoundingClientRect(); camCheck([Math.floor((e.clientX - r.left) / r.width * cv.width), Math.floor((e.clientY - r.top) / r.height * cv.height)]); });
 function camCheck(pt) {
   const { data, width: w, height: h } = camImg, g = new Float32Array(w * h); let clip = 0;
@@ -702,10 +820,13 @@ async function boot() {
   if (document.querySelector('meta[name="reef-token"]').content) $("askMode").textContent = "Local server connected: a language model routes only if a key is set on the server, otherwise the offline parser · answers always from code";
   if (!LAYERS[S.sensor].some(l => l[0] === S.layer)) S.layer = LAYERS[S.sensor][1][0];
   $("sensorSel").querySelectorAll("button").forEach(x => x.classList.toggle("sel", x.dataset.s === S.sensor));
+  try { S.env = await get("live/envelope.json"); } catch (e) { S.env = null; }
+  await initAuth();
   renderRegistry(); renderEvidence(); renderWhere(); layerButtons(); viewOpts(); setMode(S.mode);
   audit("boot", { detail: `loaded ${Object.keys(S.headers.GEOMET).length + Object.keys(S.headers.MINERAL1).length} showcase headers` });
   if (P.get("view") && VIEWS[P.get("view")]) showView(P.get("view"));
   await startScan(S.summary.showcase.GEOMET[0]);
+  if ($("v-decisions").classList.contains("on")) renderDecisions();
   if (P.get("auto")) $("runBtn").click();
 }
 boot().catch(e => { document.querySelector("main").insertAdjacentHTML("afterbegin", `<div class="banner" style="background:var(--error-bg);color:var(--error-text)">Could not load the replay data: ${esc(e.message || e)}. Serve this folder with server.py or python -m http.server.</div>`); });
