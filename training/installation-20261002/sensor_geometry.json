@@ -1,0 +1,125 @@
+{
+ "camera": "Specim SX25 technical datasheet 01 [P]",
+ "rows": [
+  {
+   "belt_width_m": 0.9,
+   "belt_speed_m_s": 1.5,
+   "line_pitch_mm_at_162fps": 9.3,
+   "cross_track_pixel_mm": 1.41,
+   "motion_blur_mm_at_full_exposure": 9.3,
+   "working_distance_m": {
+    "OLES17_38deg": 1.31,
+    "OLES9_66deg": 0.69
+   },
+   "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+   "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+  },
+  {
+   "belt_width_m": 0.9,
+   "belt_speed_m_s": 2.0,
+   "line_pitch_mm_at_162fps": 12.3,
+   "cross_track_pixel_mm": 1.41,
+   "motion_blur_mm_at_full_exposure": 12.3,
+   "working_distance_m": {
+    "OLES17_38deg": 1.31,
+    "OLES9_66deg": 0.69
+   },
+   "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+   "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+  },
+  {
+   "belt_width_m": 0.9,
+   "belt_speed_m_s": 3.0,
+   "line_pitch_mm_at_162fps": 18.5,
+   "cross_track_pixel_mm": 1.41,
+   "motion_blur_mm_at_full_exposure": 18.5,
+   "working_distance_m": {
+    "OLES17_38deg": 1.31,
+    "OLES9_66deg": 0.69
+   },
+   "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+   "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+  },
+  {
+   "belt_width_m": 1.2,
+   "belt_speed_m_s": 1.5,
+   "line_pitch_mm_at_162fps": 9.3,
+   "cross_track_pixel_mm": 1.88,
+   "motion_blur_mm_at_full_exposure": 9.3,
+   "working_distance_m": {
+    "OLES17_38deg": 1.74,
+    "OLES9_66deg": 0.92
+   },
+   "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+   "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+  },
+  {
+   "belt_width_m": 1.2,
+   "belt_speed_m_s": 2.0,
+   "line_pitch_mm_at_162fps": 12.3,
+   "cross_track_pixel_mm": 1.88,
+   "motion_blur_mm_at_full_exposure": 12.3,
+   "working_distance_m": {
+    "OLES17_38deg": 1.74,
+    "OLES9_66deg": 0.92
+   },
+   "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+   "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+  },
+  {
+   "belt_width_m": 1.2,
+   "belt_speed_m_s": 3.0,
+   "line_pitch_mm_at_162fps": 18.5,
+   "cross_track_pixel_mm": 1.88,
+   "motion_blur_mm_at_full_exposure": 18.5,
+   "working_distance_m": {
+    "OLES17_38deg": 1.74,
+    "OLES9_66deg": 0.92
+   },
+   "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+   "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+  },
+  {
+   "belt_width_m": 1.5,
+   "belt_speed_m_s": 1.5,
+   "line_pitch_mm_at_162fps": 9.3,
+   "cross_track_pixel_mm": 2.34,
+   "motion_blur_mm_at_full_exposure": 9.3,
+   "working_distance_m": {
+    "OLES17_38deg": 2.18,
+    "OLES9_66deg": 1.15
+   },
+   "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+   "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+  },
+  {
+   "belt_width_m": 1.5,
+   "belt_speed_m_s": 2.0,
+   "line_pitch_mm_at_162fps": 12.3,
+   "cross_track_pixel_mm": 2.34,
+   "motion_blur_mm_at_full_exposure": 12.3,
+   "working_distance_m": {
+    "OLES17_38deg": 2.18,
+    "OLES9_66deg": 1.15
+   },
+   "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+   "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+  },
+  {
+   "belt_width_m": 1.5,
+   "belt_speed_m_s": 3.0,
+   "line_pitch_mm_at_162fps": 18.5,
+   "cross_track_pixel_mm": 2.34,
+   "motion_blur_mm_at_full_exposure": 18.5,
+   "working_distance_m": {
+    "OLES17_38deg": 2.18,
+    "OLES9_66deg": 1.15
+   },
+   "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+   "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+  }
+ ],
+ "data_rate_MB_s_full_frame": 81.3,
+ "data_rate_MB_s_75_band_roi": 15.6,
+ "conclusion": "At plant belt speeds the SWIR line scanner samples the surface in lines about 9-19 mm apart with ~1.4-2.3 mm cross-track pixels: adequate for parcel-level averages (our models use pooled pixels), not for particle-by-particle mapping or sorting."
+}
