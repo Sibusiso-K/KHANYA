@@ -1,5 +1,5 @@
 {
- "built": "2026-10-01",
+ "built": "2026-10-02",
  "hashes_sha256": {
   "v6_results": "e9ee56dfab832dff6e0a62275bc3326849ed3e2b5c5b05edf385381881754f79",
   "v6_analysis": "342e37b9b32c2bb0b35dc86f73ada738dc151652855902de5d6ceacf6f8d3938",
@@ -9,7 +9,8 @@
   "plant_h3": "85e112b2e2151eac474acc14f74a2af438da7b64ad24b07deb538a37540cda39",
   "bushveld_results": "b51cb2f5890f3e3bacc1a9c38d2fa38a4237b2b2af3ea2dfbfa23b1795cd3587",
   "bushveld_app": "879505b3bdd9cd607f2247a66e6ce9dc7e91f24d1e4a5099ae7dea155bea8226",
-  "plan_review_log": "696c774f1e3021a8539d8898df6d708225c37edcec76ee42a87642683ddb845c"
+  "plan_review_log": "696c774f1e3021a8539d8898df6d708225c37edcec76ee42a87642683ddb845c",
+  "value_chain": "68af80430d91bd2840d49d922f1a163ac05561c887972d0b7db49723f0782794"
  },
  "showcase": {
   "GEOMET": [
@@ -769,6 +770,193 @@
     "spectrum_adds_over_metadata": "no significant difference",
     "r2_size_fraction_lookup": 0.22013073367635794
    }
+  }
+ },
+ "value": {
+  "note": "From prediction to the next plant step: what each REEFPRINT prediction changes, measured on real held-out data.",
+  "grinding": {
+   "n_parcels": 146,
+   "units": "samples (GEOMET has no drill-hole ids: may be optimistic)",
+   "wi_true": {
+    "mean": 14.618493150684932,
+    "sd": 1.8703161927631358,
+    "min": 11.2,
+    "max": 21.8
+   },
+   "policies": {
+    "blind_p90": {
+     "sim_throughput_vs_blind_p90": 0.0,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.0,
+      0.0
+     ],
+     "sim_overload_share": 0.08904109589041095,
+     "sim_overload_share_ci95": [
+      0.04794520547945205,
+      0.136986301369863
+     ],
+     "sim_energy_shortfall_when_overloaded": 0.1187334596015556
+    },
+    "blind_mean": {
+     "sim_throughput_vs_blind_p90": 0.14024558271570298,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.1391696249564657,
+      0.14134006055594353
+     ],
+     "sim_overload_share": 0.4383561643835616,
+     "sim_overload_share_ci95": [
+      0.3561643835616438,
+      0.5205479452054794
+     ],
+     "sim_energy_shortfall_when_overloaded": 0.11294658294626737
+    },
+    "belt_hi": {
+     "sim_throughput_vs_blind_p90": 0.02014792073583771,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.009553266678778517,
+      0.03014445047787696
+     ],
+     "sim_overload_share": 0.0821917808219178,
+     "sim_overload_share_ci95": [
+      0.0410958904109589,
+      0.13013698630136986
+     ],
+     "sim_energy_shortfall_when_overloaded": 0.049886286681433856
+    },
+    "belt_point": {
+     "sim_throughput_vs_blind_p90": 0.13589984063221205,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.12311488867413914,
+      0.14837972928862167
+     ],
+     "sim_overload_share": 0.4520547945205479,
+     "sim_overload_share_ci95": [
+      0.3698630136986301,
+      0.5342465753424658
+     ],
+     "sim_energy_shortfall_when_overloaded": 0.07304467707554836
+    },
+    "oracle": {
+     "sim_throughput_vs_blind_p90": 0.14016773649440095,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.11690000096666994,
+      0.16366075549624462
+     ],
+     "sim_overload_share": 0.0,
+     "sim_overload_share_ci95": [
+      0.0,
+      0.0
+     ],
+     "sim_energy_shortfall_when_overloaded": 0.0
+    }
+   },
+   "belt_hi_vs_blind_p90": {
+    "median_paired_diff_wi_used": -0.43813888888888997,
+    "wilcoxon_p_less": 1.2447237769506989e-07,
+    "mannwhitney_p_less": 4.1502058885487e-13,
+    "cliffs_delta": -0.4817977106398949,
+    "throughput_ci95": [
+     0.009553266678778517,
+     0.03014445047787696
+    ],
+    "overload_diff": -0.00684931506849315,
+    "overload_diff_ci95": [
+     -0.04794520547945205,
+     0.0410958904109589
+    ],
+    "verdict": "better",
+    "risk_matched": true
+   },
+   "share_of_perfect_information_captured": 0.14374150028913768,
+   "assumptions": [
+    "ASSUMED: the mill is power-limited and its feed rate can follow each parcel (no lag, no surge bin)",
+    "ASSUMED: Bond's law applies (ball-mill energy); a SAG circuit also needs the A\u00d7b parameter, which HIDSAG lacks",
+    "ASSUMED: HIDSAG's WI is the Bond ball-mill work index in kWh/t, as earlier runs and the registry treat it",
+    "Mill power, F80 and P80 cancel in every ratio: no plant parameter is needed for the relative results"
+   ]
+  },
+  "routing": {
+   "n_intervals": 1112,
+   "n_projects": 123,
+   "cut_off": "training-fold median 4E (ppm = g/t)",
+   "cut_off_values_g_per_t": [
+    1.37,
+    1.425,
+    1.44,
+    1.475,
+    1.64
+   ],
+   "policies": {
+    "belt_chemistry": {
+     "balanced_accuracy": 0.7929933524188462,
+     "metal_to_mill": 0.7474211896269161,
+     "low_grade_mass_to_mill": 0.3027027027027027,
+     "mass_to_mill": 0.5962230215827338,
+     "balanced_accuracy_ci95": [
+      0.7439289995444343,
+      0.8350452327655744
+     ],
+     "metal_to_mill_ci95": [
+      0.6933581873186224,
+      0.7935008946743686
+     ],
+     "low_grade_mass_to_mill_ci95": [
+      0.2220803060281215,
+      0.39549039257548696
+     ]
+    },
+    "mine_plan_seam": {
+     "balanced_accuracy": 0.8216927879405438,
+     "metal_to_mill": 0.8280944306769271,
+     "low_grade_mass_to_mill": 0.3171171171171171,
+     "mass_to_mill": 0.6393884892086331,
+     "balanced_accuracy_ci95": [
+      0.7766262194560594,
+      0.8620785921538685
+     ],
+     "metal_to_mill_ci95": [
+      0.7748913485411272,
+      0.8682254992490089
+     ],
+     "low_grade_mass_to_mill_ci95": [
+      0.23899350076832002,
+      0.40692937199786516
+     ]
+    },
+    "no_information_all_to_mill": {
+     "balanced_accuracy": 0.5,
+     "metal_to_mill": 1.0,
+     "low_grade_mass_to_mill": 1.0,
+     "mass_to_mill": 1.0,
+     "balanced_accuracy_ci95": [
+      0.5,
+      0.5
+     ],
+     "metal_to_mill_ci95": [
+      1.0,
+      1.0
+     ],
+     "low_grade_mass_to_mill_ci95": [
+      1.0,
+      1.0
+     ]
+    }
+   },
+   "chemistry_minus_seam_balanced_accuracy_ci95": [
+    -0.056224853519465455,
+    -0.004259482899908434
+   ],
+   "chemistry_vs_seam": "seam better",
+   "assumptions": [
+    "ASSUMED: parcels of equal mass; the cut-off is data-derived, not an economic cut-off",
+    "Seam baseline = what the mine plan already knows; belt chemistry must beat it to add value",
+    "Units for every interval are projects (rule 2); 4E = Pt+Pd+Rh+Au as reported"
+   ]
+  },
+  "sources": {
+   "grinding": "training/hidsag-v6-live-20261001/output/hidsag_v6_results.json (Kaggle reefprint-hidsag-v6-live)",
+   "routing": "training/bushveld-xrf-pge-20261001/app_bushveld.json (bushveld.py, GroupKFold by ProjectCode)",
+   "bond": "Bond, F.C. (1961) Crushing and grinding calculations, Br. Chem. Eng. 6:378-385, 543-548 (textbook form; primary not re-read this session)"
   }
  },
  "v6_records": {

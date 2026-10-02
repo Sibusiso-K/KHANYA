@@ -1,0 +1,19 @@
+[{"stream_name":"stdout","time":5.831000479,"data":"downloading GEOMET\n"}
+,{"stream_name":"stdout","time":203.970314877,"data":"downloaded GEOMET 3.26 GB in 198 s\n"}
+,{"stream_name":"stdout","time":203.980959548,"data":"GEOMET pre-registered showcase ['GMET-0048', 'GMET-0112', 'GMET-0015', 'GMET-0035', 'GMET-0063', 'GMET-0071', 'GMET-0098', 'GMET-0114', 'GMET-0043', 'GMET-0113', 'GMET-0083', 'GMET-0116', 'GMET-0004', 'GMET-0105', 'GMET-0126', 'GMET-0007', 'GMET-0022', 'GMET-0011', 'GMET-0039', 'GMET-0091', 'GMET-0080', 'GMET-0064', 'GMET-0054', 'GMET-0068']\n"}
+,{"stream_name":"stdout","time":246.957395937,"data":"GEOMET samples 146 skipped 0 showcase cubes 24\n"}
+,{"stream_name":"stdout","time":246.961660408,"data":"GEOMET lab variable coverage {'Cu rec': 146, 'Lime cons': 146, 'Mo rec': 146, 'PH': 146, 'WI': 146}\n"}
+,{"stream_name":"stdout","time":246.96532724,"data":"GEOMET n 146 targets 5 units 146 additive False\n"}
+,{"stream_name":"stdout","time":339.503548399,"data":"GEOMET fold 1/5: proper 81 cal_units 35 k 29 unbounded False ood_shift_accept None 92s\n"}
+,{"stream_name":"stdout","time":430.24595585,"data":"GEOMET fold 2/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 91s\n"}
+,{"stream_name":"stdout","time":522.462636026,"data":"GEOMET fold 3/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 92s\n"}
+,{"stream_name":"stdout","time":615.040360692,"data":"GEOMET fold 4/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 93s\n"}
+,{"stream_name":"stdout","time":708.732878048,"data":"GEOMET fold 5/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 94s\n"}
+,{"stream_name":"stdout","time":708.813901342,"data":"done in 703 s\n"}
+,{"stream_name":"stderr","time":712.002673086,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":712.002710941,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":712.365952962,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":712.365983579,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":713.998108035,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":715.895286286,"data":"[NbConvertApp] Writing 494104 bytes to __results__.html\n"}
+]

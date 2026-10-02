@@ -14,7 +14,8 @@ const UNIT = { "Cu rec": "%", "Mo rec": "%", "Lime cons": "kg/t", "PH": "", "WI"
 const nice = k => NICE[k] || k.replace(/_/g, " ");
 const unit = (rec, k) => rec === "GEOMET" ? (UNIT[k] ?? "") : rec === "MINERAL1" ? "wt%" : "g/t";
 function fmt(v, d) { if (v == null || !isFinite(v)) return "∞"; const a = Math.abs(v); d = d ?? (a >= 100 ? 0 : a >= 10 ? 1 : a >= 1 ? 2 : 3); return v.toFixed(d); }
-const S = { rec: "GEOMET", headers: { GEOMET: {}, MINERAL1: {} }, cur: null, cube: null, sensor: "vnir_low", layer: "rgb", mode: "2d", running: false,
+const S = { rec: "GEOMET", headers: { GEOMET: {}, MINERAL1: {} }, cur: null, cube: null, sensor: P.get("sensor") === "swir_low" ? "swir_low" : "vnir_low", layer: P.get("layer") || "", mode: ["2d", "3d", "belt"].includes(P.get("mode")) ? P.get("mode") : "belt", running: false,
+  destripe: P.get("destripe") !== "0", smooth: P.get("smooth") === "1", scanEnd: 0,
   scanRow: 0, scanning: false, decided: {}, audit: [], imported: null, ranges: {}, bvIdx: 0, bvTimer: null, plIdx: 0, plTimer: null, plH: "1", plant: {} };
 
 /* ---------------- theme + views ---------------- */
@@ -25,13 +26,14 @@ const VIEWS = {
   bushveld: ["Track 4 · Bushveld chromitite (South Africa)", "Belt chemistry to PGE grade", "What a cross-belt XRF / PGNAA-type reading of Cr₂O₃, FeO, SiO₂, MgO, Al₂O₃, CaO can say about Pt, Rh and 4E, held out by project."],
   plant: ["Track 3 · Plant", "Real plant parameters, real forecast, honest result", "A real flotation plant's tags and lab assays, replayed hour by hour with the leakage traps closed."],
   lab: ["Integration", "Lab round trip and exports", "Import QEMSCAN, XRF, XRD or assay results against a typed registry, reconcile, and export to LIMS, historian and GIS."],
+  value: ["Value", "From a prediction to a plant action, and what it is worth", "Who acts on each prediction, the next step it changes, the effect measured on real held-out data, and where the money comes from. Assumptions are labelled; nothing here is a site measurement."],
   evidence: ["Evidence", "The scoreboard, including what failed", "Every model against its strongest baseline, the previous version and a cheaper camera, with intervals and corrections."],
   where: ["Design", "Where it sits, who uses it, how the models are orchestrated", "Three instruments, three speeds, one decision screen; one router, one referee, one policy."] };
 function showView(v) {
   document.querySelectorAll("nav.tabs button").forEach(b => b.classList.toggle("active", b.dataset.view === v));
   document.querySelectorAll(".view").forEach(s => s.classList.toggle("on", s.id === "v-" + v));
   const t = VIEWS[v]; $("crumb").textContent = t[0]; $("title").textContent = t[1]; $("subtitle").textContent = t[2];
-  if (v === "bushveld") drawBushveld(); if (v === "plant") drawPlant();
+  if (v === "bushveld") drawBushveld(); if (v === "plant") drawPlant(); if (v === "value") renderValue();
 }
 document.querySelectorAll("nav.tabs button").forEach(b => b.onclick = () => showView(b.dataset.view));
 
@@ -56,10 +58,22 @@ async function loadCube(rec, s) {
   const out = {};
   for (const [name, m] of Object.entries(h.arrays)) {
     const C = m.dtype === "uint16" ? Uint16Array : Uint8Array, n = m.shape.reduce((a, b) => a * b, 1);
-    out[name] = { data: new C(raw.slice(m.offset, m.offset + n * C.BYTES_PER_ELEMENT)), shape: m.shape, scale: m.scale };
+    out[name] = { data: new C(raw.slice(m.offset, m.offset + n * C.BYTES_PER_ELEMENT)), shape: m.shape, scale: m.scale, bmin: m.band_min, bmax: m.band_max };
   }
   return out;
 }
+/* value of band b at pixel i, in the sensor units HIDSAG publishes (uint8 per band with its own min/max, or a uint16 scale) */
+function bandVal(cube, i, b) { const B = cube.shape[2], q = cube.data[i * B + b]; return cube.bmin ? cube.bmin[b] + q * (cube.bmax[b] - cube.bmin[b]) / 255 : q * cube.scale; }
+const CUBES = new Map();
+async function getCube(rec, s) {
+  const id = rec + "|" + s;
+  if (!CUBES.has(id)) { CUBES.set(id, loadCube(rec, s)); if (CUBES.size > 16) CUBES.delete(CUBES.keys().next().value); }
+  try { return await CUBES.get(id); } catch (e) { CUBES.delete(id); throw e; }
+}
+const READY = new Map();   // rec|s -> cube once loaded (synchronous access for drawing)
+async function cubeReady(rec, s) { const c = await getCube(rec, s); READY.set(rec + "|" + s, c); if (READY.size > 16) READY.delete(READY.keys().next().value); return c; }
+const PENDING = new Set();
+function want(rec, s) { const id = rec + "|" + s; if (READY.has(id) || PENDING.has(id)) return; PENDING.add(id); cubeReady(rec, s).then(() => { PENDING.delete(id); if (S.mode === "belt" && !S.scanning) drawBelt(); }).catch(() => PENDING.delete(id)); }
 
 /* ---------------- colour ---------------- */
 const VIR = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]];
@@ -67,27 +81,54 @@ function cmap(t, stops = VIR) { t = Math.max(0, Math.min(1, t)); const x = t * (
 const CLU = [[230, 159, 0], [86, 180, 233], [0, 158, 115], [240, 228, 66], [0, 114, 178], [213, 94, 0], [204, 121, 167], [153, 153, 153], [166, 86, 40], [102, 194, 165], [141, 160, 203], [231, 138, 195]];
 const LAYERS = { vnir_low: [["rgb", "False colour"], ["map_vnir_fe3", "Fe³⁺ ~0.9 µm"], ["clusters", "Clusters"]],
   swir_low: [["rgb", "False colour"], ["map_swir_aloh", "Al-OH ~2.2 µm"], ["map_swir_mgoh", "Mg-OH/CO₃ ~2.33 µm"], ["map_swir_h2o", "H₂O ~1.9 µm"], ["clusters", "Clusters"]] };
-const LAYER_NOTE = { map_vnir_fe3: "band depth at ~900 nm (ferric iron)", map_swir_aloh: "band depth at ~2205 nm (sericite, kaolinite)", map_swir_mgoh: "band depth at ~2330 nm (chlorite, biotite, talc, carbonate)", map_swir_h2o: "band depth at ~1910 nm (water)", clusters: "k-means clusters of spectral shape (training-fold fit)" };
+const LAYER_NOTE = { map_vnir_fe3: "band depth at ~900 nm (ferric iron)", map_swir_aloh: "band depth at ~2205 nm (sericite, kaolinite)", map_swir_mgoh: "band depth at ~2330 nm (chlorite, biotite, talc, carbonate)", map_swir_h2o: "band depth at ~1910 nm (water)", clusters: "k-means clusters of spectral shape on this scan (display only; decisions use the training-fold model)" };
 function layerButtons() {
   $("layerSel").innerHTML = LAYERS[S.sensor].map(([k, n]) => `<button data-l="${k}" class="${k === S.layer ? "sel" : ""}">${n}</button>`).join("");
   $("layerSel").querySelectorAll("button").forEach(b => b.onclick = () => { S.layer = b.dataset.l; layerButtons(); paint(); });
 }
-function imageFor(sensor, layer) {
-  const c = S.cube; if (!c) return null;
+/* Display destriping. A pushbroom detector gives every across-track column its own offset, which shows as stripes running
+   along the belt. Measured on these scans: in the SWIR absorption maps the column medians carry most of the variance and are
+   uncorrelated from one column to the next (detector pattern, not geology). We subtract only the high-pass part of the column
+   medians (column median minus its 9-column running median), so broad spatial variation is kept. Display only: no prediction,
+   interval or decision uses it. Toggle with the Destripe button or ?destripe=0. */
+function median(a) { if (!a.length) return 0; const t = Float64Array.from(a).sort(); return t[t.length >> 1]; }
+function destripe(get, h, w, dark) {
+  const col = new Float64Array(w);
+  for (let c = 0; c < w; c++) { const v = []; for (let r = 0; r < h; r++) { const i = r * w + c; if (!dark || !dark[i]) v.push(get(i)); } col[c] = median(v); }
+  const out = new Float32Array(h * w);
+  for (let c = 0; c < w; c++) { const win = []; for (let j = Math.max(0, c - 4); j <= Math.min(w - 1, c + 4); j++) win.push(col[j]); const off = col[c] - median(win); for (let r = 0; r < h; r++) out[r * w + c] = get(r * w + c) - off; }
+  return out;
+}
+function pct(v, dark, qs) { const a = []; for (let i = 0; i < v.length; i++) if (!dark || !dark[i]) a.push(v[i]); a.sort((x, y) => x - y); return qs.map(q => a.length ? a[Math.min(a.length - 1, Math.floor(a.length * q))] : 0); }
+const IMG = new Map();
+function imageFor(sensor, layer, c = S.cube, hd = S.headers[S.rec][S.cur], id = S.rec + "|" + S.cur) {
+  if (!c || !hd) return null;
   const cube = c[sensor + "_cube"]; if (!cube) return null;
-  const [h, w, B] = cube.shape, d = cube.data, img = new Uint8ClampedArray(h * w * 4), dark = c[sensor + "_dark"].data;
-  const hd = S.headers[S.rec][S.cur], wl = hd[sensor + "_wavelengths"];
+  const key = [id, sensor, layer, S.destripe ? 1 : 0].join("|");
+  if (IMG.has(key)) return IMG.get(key);
+  const [h, w, B] = cube.shape, d = cube.data, img = new Uint8ClampedArray(h * w * 4), dark = c[sensor + "_dark"].data, wl = hd[sensor + "_wavelengths"];
   const near = x => wl.reduce((bi, v, i) => Math.abs(v - x) < Math.abs(wl[bi] - x) ? i : bi, 0);
+  let res = null;
   if (layer === "rgb") {
     const bands = sensor === "vnir_low" ? [near(640), near(550), near(460)] : [near(2200), near(1650), near(1300)];
-    const lim = bands.map(b => { const v = []; for (let i = 0; i < h * w; i += 3) v.push(d[i * B + b]); v.sort((a, b2) => a - b2); return [v[Math.floor(v.length * .02)], v[Math.floor(v.length * .98)] || 1]; });
-    for (let i = 0; i < h * w; i++) for (let k = 0; k < 3; k++) { const [lo, hi] = lim[k]; img[i * 4 + k] = 255 * Math.max(0, Math.min(1, (d[i * B + bands[k]] - lo) / Math.max(1, hi - lo))); img[i * 4 + 3] = 255; }
-    return { img, w, h };
+    const ch = bands.map(b => { const get = i => d[i * B + b]; return S.destripe ? destripe(get, h, w, dark) : Float32Array.from({ length: h * w }, (_, i) => get(i)); });
+    const lim = ch.map(v => pct(v, dark, [.02, .98]));
+    for (let i = 0; i < h * w; i++) { for (let k = 0; k < 3; k++) { const [lo, hi] = lim[k]; img[i * 4 + k] = 255 * Math.max(0, Math.min(1, (ch[k][i] - lo) / Math.max(1e-6, hi - lo))); } img[i * 4 + 3] = 255; }
+    res = { img, w, h };
+  } else if (layer === "clusters") {
+    const L = c[sensor + "_clusters"].data; for (let i = 0; i < h * w; i++) { const col = dark[i] ? [40, 40, 40] : CLU[L[i] % CLU.length]; img.set([...col, 255], i * 4); }
+    res = { img, w, h };
+  } else {
+    const m = c[layer]; if (!m) return null;
+    const v = S.destripe ? destripe(i => m.data[i], h, w, dark) : Float32Array.from(m.data);
+    const [lo, hi] = S.destripe ? pct(v, dark, [.01, .99]) : [0, 255];
+    for (let i = 0; i < h * w; i++) { const col = dark[i] ? [35, 35, 35] : cmap((v[i] - lo) / Math.max(1e-6, hi - lo)); img.set([...col, 255], i * 4); }
+    const sc = m.scale, conv = x => sc[0] + x / 255 * (sc[1] - sc[0]);
+    res = { img, w, h, scale: Array.isArray(sc) ? [conv(lo), conv(hi)] : sc, raw_scale: sc };
   }
-  if (layer === "clusters") { const L = c[sensor + "_clusters"].data; for (let i = 0; i < h * w; i++) { const col = dark[i] ? [40, 40, 40] : CLU[L[i] % CLU.length]; img.set([...col, 255], i * 4); } return { img, w, h }; }
-  const m = c[layer]; if (!m) return null;
-  for (let i = 0; i < h * w; i++) { const col = dark[i] ? [35, 35, 35] : cmap(m.data[i] / 255); img.set([...col, 255], i * 4); }
-  return { img, w, h, scale: m.scale };
+  if (IMG.size > 240) IMG.clear();
+  IMG.set(key, res);
+  return res;
 }
 
 /* ---------------- painting the scan ---------------- */
@@ -95,30 +136,90 @@ let raf = 0;
 function paint() {
   const r = imageFor(S.sensor, S.layer), cv = $("scan");
   if (!r) return;
-  cv.width = r.w; cv.height = r.h;
-  const wrap = $("scanwrap").getBoundingClientRect(), k = Math.min((wrap.width - 20) / r.w, (wrap.height - 20) / r.h);
-  cv.style.width = Math.round(r.w * k) + "px"; cv.style.height = Math.round(r.h * k) + "px";
-  const ctx = cv.getContext("2d"), id = ctx.createImageData(r.w, r.h), rows = Math.min(r.h, Math.ceil(S.scanRow * r.h));
-  for (let i = 0; i < rows * r.w * 4; i++) id.data[i] = r.img[i];
-  for (let i = rows * r.w * 4; i < r.h * r.w * 4; i += 4) { id.data[i] = 13; id.data[i + 1] = 23; id.data[i + 2] = 32; id.data[i + 3] = 255; }
-  ctx.putImageData(id, 0, 0);
-  const sl = $("scanline"), cr = cv.getBoundingClientRect(), wr = $("scanwrap").getBoundingClientRect();
-  if (S.scanning) { sl.style.display = "block"; sl.style.top = (cr.top - wr.top + rows / r.h * cr.height) + "px"; } else sl.style.display = "none";
+  const rows = Math.min(r.h, Math.ceil(S.scanRow * r.h));
+  if (S.mode === "belt") drawBelt();
+  else {
+    cv.width = r.w; cv.height = r.h;
+    const wrap = $("scanwrap").getBoundingClientRect(), kf = Math.min((wrap.width - 20) / r.w, (wrap.height - 20) / r.h), k = !S.smooth && kf >= 1 ? Math.floor(kf + 0.05) : kf;
+    cv.style.width = Math.round(r.w * k) + "px"; cv.style.height = Math.round(r.h * k) + "px"; cv.style.imageRendering = S.smooth ? "auto" : "pixelated";
+    const ctx = cv.getContext("2d"), id = ctx.createImageData(r.w, r.h);
+    for (let i = 0; i < rows * r.w * 4; i++) id.data[i] = r.img[i];
+    for (let i = rows * r.w * 4; i < r.h * r.w * 4; i += 4) { id.data[i] = 13; id.data[i + 1] = 23; id.data[i + 2] = 32; id.data[i + 3] = 255; }
+    ctx.putImageData(id, 0, 0);
+    const sl = $("scanline"), cr = cv.getBoundingClientRect(), wr = $("scanwrap").getBoundingClientRect();
+    if (S.scanning) { sl.style.display = "block"; sl.style.top = (cr.top - wr.top + rows / r.h * cr.height) + "px"; } else sl.style.display = "none";
+  }
   const lb = $("legendbar");
-  if (r.scale && Array.isArray(r.scale)) { lb.style.display = "block"; $("lgTitle").textContent = (LAYER_NOTE[S.layer] || "") + (r.scale[1] <= 0 ? " · all values ≤ 0: no detectable absorption here; along-track stripes are likely detector pattern, not mineralogy" : ""); $("lgMin").textContent = r.scale[0].toFixed(3); $("lgMax").textContent = r.scale[1].toFixed(3);
+  if (r.scale && Array.isArray(r.scale)) { lb.style.display = "block"; $("lgTitle").textContent = (LAYER_NOTE[S.layer] || "") + (S.destripe ? " · destriped for display" : "") + (r.raw_scale && r.raw_scale[1] <= 0 ? " · all values ≤ 0: no detectable absorption here" : ""); $("lgMin").textContent = r.scale[0].toFixed(3); $("lgMax").textContent = r.scale[1].toFixed(3);
     const g = $("lgBar").getContext("2d"); for (let x = 0; x < 180; x++) { g.fillStyle = `rgb(${cmap(x / 179).join(",")})`; g.fillRect(x, 0, 1, 9); } }
   else if (S.layer === "clusters") { lb.style.display = "block"; $("lgTitle").textContent = LAYER_NOTE.clusters; $("lgMin").textContent = ""; $("lgMax").textContent = ""; const g = $("lgBar").getContext("2d"); for (let x = 0; x < 12; x++) { g.fillStyle = `rgb(${CLU[x].join(",")})`; g.fillRect(x * 15, 0, 15, 9); } }
   else lb.style.display = "none";
-  const hd = S.headers[S.rec][S.cur];
-  $("hud").innerHTML = `${esc(S.cur)} · ${S.sensor === "vnir_low" ? "VNIR" : "SWIR"} · ${r.w}×${r.h} px · ${S.cube[S.sensor + "_cube"].shape[2]} bands<br>${S.scanning ? "scanning line " + rows + " / " + r.h : "scan complete"}`;
+  $("hud").innerHTML = `${esc(S.cur)} · ${S.sensor === "vnir_low" ? "VNIR" : "SWIR"} · ${r.w}×${r.h} px (full resolution) · ${S.cube[S.sensor + "_cube"].shape[2]} bands${S.destripe && S.layer !== "clusters" ? " · destriped" : ""}<br>${S.scanning ? "scanning line " + rows + " / " + r.h : "scan complete"}`;
   $("hud2").textContent = S.layer === "rgb" ? (S.sensor === "vnir_low" ? "R 640 · G 550 · B 460 nm" : "R 2200 · G 1650 · B 1300 nm") : (LAYERS[S.sensor].find(l => l[0] === S.layer) || ["", ""])[1];
+  $("hud2").style.display = S.mode === "belt" ? "none" : "";
   if (S.mode === "3d") build3d();
 }
-function pixelSpectrum(sensor, r, c) { const cube = S.cube[sensor + "_cube"], [h, w, B] = cube.shape, sc = cube.scale; const out = new Array(B); for (let b = 0; b < B; b++) out[b] = cube.data[(r * w + c) * B + b] * sc; return out; }
+
+/* ---------------- belt view: the real scans ride a conveyor past a fixed line scanner ----------------
+   Upstream of the line a parcel shows its natural-colour composite (R 640, G 550, B 460 nm from the same VNIR cube); the
+   part that has passed the line shows the selected analysis layer. Image rows are the along-track lines, so the belt runs
+   along the rows. Parcel spacing and the belt motion are display choices; the pixels and the predictions are real. */
+const BELT = { gapFrac: 0.35 };
+const TILE = new Map();
+function tileFor(rec, s, sensor, layer) {
+  const cube = READY.get(rec + "|" + s); if (!cube) return null;
+  const key = [rec, s, sensor, layer, S.destripe ? 1 : 0].join("|"); if (TILE.has(key)) return TILE.get(key);
+  const r = imageFor(sensor, layer, cube, S.headers[rec][s], rec + "|" + s); if (!r) return null;
+  const c = document.createElement("canvas"); c.width = r.h; c.height = r.w;
+  const g = c.getContext("2d"), id = g.createImageData(r.h, r.w);
+  for (let row = 0; row < r.h; row++) for (let col = 0; col < r.w; col++) { const a = (row * r.w + col) * 4, b = (col * r.h + (r.h - 1 - row)) * 4; id.data[b] = r.img[a]; id.data[b + 1] = r.img[a + 1]; id.data[b + 2] = r.img[a + 2]; id.data[b + 3] = 255; }
+  g.putImageData(id, 0, 0);
+  if (TILE.size > 160) TILE.clear();
+  TILE.set(key, c); return c;
+}
+function drawBelt() {
+  const cv = $("belt"), wr = $("scanwrap").getBoundingClientRect(), dpr = window.devicePixelRatio || 1, W = Math.max(280, wr.width), H = Math.max(220, wr.height);
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + "px"; cv.style.height = H + "px"; }
+  const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.imageSmoothingEnabled = !!S.smooth; g.fillStyle = "#0d1720"; g.fillRect(0, 0, W, H);
+  const q = queueItems(), i0 = Math.max(0, q.indexOf(S.cur)), cur = READY.get(S.rec + "|" + S.cur);
+  if (!cur) return;
+  const k = Math.max(1, Math.floor((H - 120) / 140)), dur = +(P.get("scan") || 4500), lineX = Math.round(W * 0.58), mid = Math.round(H / 2) - 6;
+  const dims = s => { const c = READY.get(S.rec + "|" + s), sh = c ? c.vnir_low_cube.shape : cur.vnir_low_cube.shape; return [sh[0] * k, sh[1] * k]; };
+  const [tw0] = dims(S.cur), gap = Math.round(BELT.gapFrac * tw0), speed = tw0 / dur;
+  const drift = S.scanning ? 0 : Math.min(gap, (performance.now() - S.scanEnd) * speed);
+  const pos = {}; pos[0] = lineX - tw0 + (S.scanning ? S.scanRow : 1) * tw0 + drift;
+  const at = n => q[((i0 - n) % q.length + q.length) % q.length];   // n > 0 downstream (scanned earlier), n < 0 upstream (queued)
+  for (let n = 1; n <= 3; n++) pos[n] = pos[n - 1] + dims(at(n - 1))[0] + gap;
+  for (let n = -1; n >= -2; n--) pos[n] = pos[n + 1] - gap - dims(at(n))[0];
+  const maxH = Math.max(...[-2, -1, 0, 1, 2, 3].map(n => dims(at(n))[1]));
+  const top = mid - maxH / 2 - 14, bot = mid + maxH / 2 + 14;
+  g.fillStyle = "#16222b"; g.fillRect(0, top, W, bot - top);
+  g.fillStyle = "#2c3c48"; g.fillRect(0, top - 5, W, 5); g.fillRect(0, bot, W, 5);
+  g.strokeStyle = "rgba(255,255,255,.06)"; g.lineWidth = 1;
+  for (let x = ((pos[0] % 26) + 26) % 26; x < W; x += 26) { g.beginPath(); g.moveTo(x + .5, top); g.lineTo(x + .5, bot); g.stroke(); }
+  const text = (t, x, y, al, col, size) => { g.font = `${size || 11}px 'Public Sans', system-ui, sans-serif`; g.fillStyle = col || "rgba(255,255,255,.78)"; g.textAlign = al || "left"; g.fillText(t, x, y); };
+  for (let n = -2; n <= 3; n++) {
+    const s = at(n), [tw, th] = dims(s), x = pos[n], y = mid - th / 2;
+    if (x > W || x + tw < 0) continue;
+    if (!READY.has(S.rec + "|" + s)) { g.fillStyle = "#22313c"; g.fillRect(x, y, tw, th); text("loading", x + 6, y + 16); want(S.rec, s); continue; }
+    const nat = tileFor(S.rec, s, "vnir_low", "rgb"), ana = tileFor(S.rec, s, S.sensor, S.layer), cut = Math.max(x, Math.min(x + tw, lineX));
+    if (nat && cut > x) g.drawImage(nat, 0, 0, (cut - x) / k, nat.height, x, y, cut - x, th);
+    if (ana && cut < x + tw) g.drawImage(ana, (cut - x) / k, 0, (x + tw - cut) / k, ana.height, cut, y, x + tw - cut, th);
+    const dcs = S.decided[S.rec + s], tag = n === 0 && S.scanning ? "scanning" : (dcs && n >= 0 ? (dcs === "default" ? "DEFAULT" : dcs.toUpperCase()) : n < 0 ? "queued" : "");
+    text(s + (tag ? " · " + tag : ""), x + 2, bot + 20, "left", n === 0 ? "#fff" : "rgba(255,255,255,.7)");
+  }
+  const cu = css("--copper") || "#c8743a";
+  g.save(); g.fillStyle = cu; g.shadowColor = cu; g.shadowBlur = 16; g.fillRect(lineX - 1, top - 22, 3, bot - top + 44); g.restore();
+  text("line scanner · VNIR + SWIR", lineX, top - 28, "center", "#fff");
+  text("flow →   upstream: natural colour (R 640 · G 550 · B 460 nm)   ·   downstream: " + ((LAYERS[S.sensor].find(l => l[0] === S.layer) || ["", ""])[1]) + (S.destripe && S.layer !== "clusters" ? " (destriped)" : ""), 12, bot + 42, "left", "rgba(255,255,255,.8)");
+  text("Replay of real HIDSAG scans, pre-registered samples. Parcel spacing and belt motion are for display only.", 12, H - 10, "left", "rgba(255,255,255,.5)", 10.5);
+}
+function beltTick() { if (S.mode !== "belt" || S.scanning) return; drawBelt(); if (performance.now() - S.scanEnd < (+(P.get("scan") || 4500)) * BELT.gapFrac + 120) requestAnimationFrame(beltTick); }
+function pixelSpectrum(sensor, r, c) { const cube = S.cube[sensor + "_cube"], [h, w, B] = cube.shape; const out = new Array(B); for (let b = 0; b < B; b++) out[b] = bandVal(cube, r * w + c, b); return out; }
 function meanSpectrum(sensor, rowsFrac) {
   const cube = S.cube[sensor + "_cube"], [h, w, B] = cube.shape, sc = cube.scale, dark = S.cube[sensor + "_dark"].data, rows = Math.max(1, Math.ceil(rowsFrac * h)), out = new Float64Array(B); let n = 0;
   for (let i = 0; i < rows * w; i++) { if (dark[i]) continue; for (let b = 0; b < B; b++) out[b] += cube.data[i * B + b]; n++; }
-  return Array.from(out, v => v / Math.max(1, n) * sc);
+  return Array.from(out, (v, b) => cube.bmin ? cube.bmin[b] + v / Math.max(1, n) * (cube.bmax[b] - cube.bmin[b]) / 255 : v / Math.max(1, n) * sc);
 }
 let hover = null;
 $("scan").addEventListener("mousemove", e => { if (!S.cube) return; const cv = $("scan"), r = cv.getBoundingClientRect(); const c = Math.floor((e.clientX - r.left) / r.width * cv.width), rr = Math.floor((e.clientY - r.top) / r.height * cv.height); hover = [rr, c]; drawSpec(); });
@@ -145,14 +246,15 @@ function faceCanvas(w, h, fill) { const c = document.createElement("canvas"); c.
 function build3d() {
   const cube = S.cube[S.sensor + "_cube"]; if (!cube) return;
   const [h, w, B] = cube.shape, d = cube.data, r = imageFor(S.sensor, S.layer), rig = $("rig"); rig.innerHTML = "";
-  let mx = 1; for (let i = 0; i < d.length; i += 7) mx = Math.max(mx, d[i]);
+  const val = (i, b) => bandVal(cube, i, b);
+  let mx = 1e-9; for (let x = 0; x < w; x++) for (let b = 0; b < B; b++) mx = Math.max(mx, val(x, b)); for (let yy = 0; yy < h; yy++) for (let b = 0; b < B; b++) mx = Math.max(mx, val(yy * w + w - 1, b));
   const k = Math.min(300 / w, 220 / h), kb = 150 / B, W = w * k, H = h * k, D = B * kb;
-  const top = faceCanvas(w, B, a => { for (let b = 0; b < B; b++) for (let x = 0; x < w; x++) { const col = cmap(d[(0 * w + x) * B + b] / mx, [[0, 0, 4], [87, 16, 110], [188, 55, 84], [249, 142, 9], [252, 255, 164]]); a.set([...col, 255], (b * w + x) * 4); } });
-  const side = faceCanvas(B, h, a => { for (let yy = 0; yy < h; yy++) for (let b = 0; b < B; b++) { const col = cmap(d[(yy * w + (w - 1)) * B + b] / mx, [[0, 0, 4], [87, 16, 110], [188, 55, 84], [249, 142, 9], [252, 255, 164]]); a.set([...col, 255], (yy * B + b) * 4); } });
+  const top = faceCanvas(w, B, a => { for (let b = 0; b < B; b++) for (let x = 0; x < w; x++) { const col = cmap(val(x, b) / mx, [[0, 0, 4], [87, 16, 110], [188, 55, 84], [249, 142, 9], [252, 255, 164]]); a.set([...col, 255], (b * w + x) * 4); } });
+  const side = faceCanvas(B, h, a => { for (let yy = 0; yy < h; yy++) for (let b = 0; b < B; b++) { const col = cmap(val(yy * w + (w - 1), b) / mx, [[0, 0, 4], [87, 16, 110], [188, 55, 84], [249, 142, 9], [252, 255, 164]]); a.set([...col, 255], (yy * B + b) * 4); } });
   const front = faceCanvas(w, h, a => a.set(r.img));
   const rows = Math.min(h, Math.ceil(S.scanRow * h));
   if (rows < h) { const g = front.getContext("2d"); g.fillStyle = "#0d1720"; g.fillRect(0, rows, w, h - rows); }
-  [[front, W, H, ""], [top, W, D, "rotateX(-90deg)"], [side, D, H, `translateX(${W}px) rotateY(90deg)`]].forEach(([c, cw, ch, tf]) => { c.style.width = cw + "px"; c.style.height = ch + "px"; c.style.transform = tf; rig.appendChild(c); });
+  [[front, W, H, ""], [top, W, D, "rotateX(-90deg)"], [side, D, H, `translateX(${W}px) rotateY(90deg)`]].forEach(([c, cw, ch, tf]) => { c.style.width = cw + "px"; c.style.height = ch + "px"; c.style.transform = tf; c.style.imageRendering = S.smooth ? "auto" : "pixelated"; rig.appendChild(c); });
   rig.style.width = W + "px"; rig.style.height = H + "px";
   rig.style.transform = `translate3d(${-W / 2 + D / 4}px,${-H / 2 + D / 3}px,0) rotateX(${rot[0]}deg) rotateY(${rot[1]}deg)`;
   rig.parentElement.title = "Drag to rotate. Front: the image; top and side: the real spectra of the edge pixels, band by band.";
@@ -196,7 +298,7 @@ async function startScan(s) {
   $("oodBadge").className = "badge " + (h.ood === "pass" ? "ok" : h.ood === "borderline" ? "warn" : "bad"); $("oodBadge").textContent = "OOD " + h.ood;
   $("preds").innerHTML = `<div class="copy muted">Scanning…</div>`; $("advice").style.display = "none"; $("why").innerHTML = "—";
   audit("scan_start", { record: S.rec, sample: s });
-  try { S.cube = await loadCube(S.rec, s); } catch (e) { audit("error", { sample: s, detail: String(e.message || e) }); $("preds").innerHTML = `<div class="copy bad">${esc(e.message || e)}</div>`; return; }
+  try { S.cube = await cubeReady(S.rec, s); const q = queueItems(), j = q.indexOf(s); cubeReady(S.rec, q[(j + 1) % q.length]).catch(() => {}); } catch (e) { audit("error", { sample: s, detail: String(e.message || e) }); $("preds").innerHTML = `<div class="copy bad">${esc(e.message || e)}</div>`; return; }
   layerButtons();
   const dur = +(P.get("scan") || 4500), t0 = performance.now();
   cancelAnimationFrame(raf);
@@ -204,7 +306,7 @@ async function startScan(s) {
   raf = requestAnimationFrame(step);
 }
 function finishScan() {
-  S.scanning = false; paint(); drawSpec(); setStep(2);
+  S.scanning = false; S.scanEnd = performance.now(); paint(); drawSpec(); setStep(2); beltTick();
   const rec = S.rec, s = S.cur, h = S.headers[rec][s];
   setTimeout(() => { setStep(3); renderPreds(rec, h); }, 450);
   setTimeout(() => {
@@ -248,8 +350,16 @@ function stopRun() { S.running = false; clearTimeout(runTimer); $("runBtn").text
 $("runBtn").onclick = () => { if (S.running) { stopRun(); return; } S.running = true; $("runBtn").textContent = "Pause belt"; nextScan(); };
 $("nextBtn").onclick = () => { stopRun(); nextScan(); };
 $("recSel").querySelectorAll("button").forEach(b => b.onclick = () => { stopRun(); S.rec = b.dataset.rec; $("recSel").querySelectorAll("button").forEach(x => x.classList.toggle("sel", x === b)); S.cur = null; startScan(queueItems()[0]); });
-$("sensorSel").querySelectorAll("button").forEach(b => b.onclick = () => { S.sensor = b.dataset.s; S.layer = "rgb"; $("sensorSel").querySelectorAll("button").forEach(x => x.classList.toggle("sel", x === b)); layerButtons(); paint(); drawSpec(); });
-$("modeSel").querySelectorAll("button").forEach(b => b.onclick = () => { S.mode = b.dataset.m; $("modeSel").querySelectorAll("button").forEach(x => x.classList.toggle("sel", x === b)); $("scanwrap").style.display = S.mode === "2d" ? "flex" : "none"; $("cube3d").style.display = S.mode === "3d" ? "flex" : "none"; paint(); });
+$("sensorSel").querySelectorAll("button").forEach(b => b.onclick = () => { S.sensor = b.dataset.s; S.layer = LAYERS[S.sensor][1][0]; IMG.size > 200 && IMG.clear(); $("sensorSel").querySelectorAll("button").forEach(x => x.classList.toggle("sel", x === b)); layerButtons(); paint(); drawSpec(); });
+function setMode(m) {
+  S.mode = m; $("modeSel").querySelectorAll("button").forEach(x => x.classList.toggle("sel", x.dataset.m === m));
+  $("scanwrap").style.display = m === "3d" ? "none" : "flex"; $("cube3d").style.display = m === "3d" ? "flex" : "none";
+  $("scan").style.display = m === "belt" ? "none" : ""; $("belt").style.display = m === "belt" ? "block" : "none"; if (m === "belt") $("scanline").style.display = "none";
+  if (S.cube) { paint(); beltTick(); }
+}
+$("modeSel").querySelectorAll("button").forEach(b => b.onclick = () => setMode(b.dataset.m));
+function viewOpts() { $("viewOpt").querySelectorAll("button").forEach(b => b.classList.toggle("sel", !!S[b.dataset.o])); }
+$("viewOpt").querySelectorAll("button").forEach(b => b.onclick = () => { S[b.dataset.o] = !S[b.dataset.o]; viewOpts(); TILE.clear(); if (S.cube) { paint(); drawSpec(); } });
 
 /* ---------------- Bushveld ---------------- */
 function bvRows() { if (!S.bvOrder) { S.bvOrder = S.bv.rows.map((r, i) => i).sort((a, b) => { const A = S.bv.rows[a], B = S.bv.rows[b]; return A.bh === B.bh ? A.from - B.from : (A.bh < B.bh ? -1 : 1); }); } return S.bvOrder; }
@@ -432,6 +542,49 @@ function renderEvidence() {
   ${S.summary.pentlandite ? `<div class="panel"><div class="sh"><div><h2>Microscope: the hardest PGM-relevant call (pentlandite vs pyrrhotite)</h2><p>LumenStone S2 (Norilsk), trained on ${S.summary.pentlandite.train_sections} sections, scored on the ${S.summary.pentlandite.val_sections.length} audited validation sections; test sections never opened. Exploratory.</p></div></div><table><thead><tr><th>Given the sulphides are found perfectly…</th><th class="num">Pentlandite IoU</th><th class="num">Precision</th><th class="num">Recall</th></tr></thead><tbody>${Object.entries(S.summary.pentlandite.pooled).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${v.pn_iou.toFixed(2)}</td><td class="num">${v.pn_precision != null && isFinite(v.pn_precision) ? v.pn_precision.toFixed(2) : "—"}</td><td class="num">${v.pn_recall.toFixed(2)}</td></tr>`).join("")}</tbody></table><div class="copy"><p>Pentlandite is the main Pd carrier among Bushveld base-metal sulphides, and it looks like pyrrhotite under ordinary reflected light. Even with an oracle sulphide mask, colour and texture separate the two at an IoU of only about 0.5. This is the gap REEFPRINT's rotating-analyser physics targets: pentlandite is isotropic and pyrrhotite anisotropic, an axis that colour does not contain. Identifying pentlandite does not measure Pd content or discrete PGMs.</p></div></div>` : ""}
   <div class="panel"><div class="sh"><div><h2>How the plan was reviewed</h2><p>ClauDex loop: Claude (Opus 5.5) plans, Codex (gpt-6-astra, read-only) attacks</p></div></div><div class="copy"><p>Three rounds, 38 findings, 37 accepted (log: <code>PLAN-live-v6-REVIEW-LOG.md</code>). They changed:</p><ul><li>split-conformal intervals with calibration held out <i>before</i> model selection, and one score per composite;</li><li>strict nesting of k-means, scaling and blends;</li><li>paired gates with Holm correction;</li><li>a total decision table;</li><li>no per-pixel mineral maps (absorption maps instead);</li><li>an assistant that only routes;</li><li>typed lab imports;</li><li>a hardened local proxy.</li></ul></div></div>`;
 }
+/* ---------------- value: prediction -> next step -> measured effect -> money (training/value-chain-20261002) ---------------- */
+const pc = (x, d = 1) => (x >= 0 ? "+" : "") + (x * 100).toFixed(d) + "%";
+const ci = (c, d = 1) => `[${pc(c[0], d)}, ${pc(c[1], d)}]`;
+function renderValue() {
+  const V = S.summary.value; if (!V) { $("value").innerHTML = `<div class="panel"><div class="copy">Value-chain results not built.</div></div>`; return; }
+  const g = V.grinding, P = g.policies, gt = g.belt_hi_vs_blind_p90, r = V.routing, RP = r.policies, pl = S.summary.plant.runs.delay2_h1;
+  const names = { blind_p90: "No ore information (set for the 90th-percentile hardness)", belt_hi: "Belt: set for the upper end of the 80% interval", belt_point: "Belt: set for the point prediction", oracle: "Perfect information (ceiling)" };
+  const W = 860, rowH = 34, L = 330, x0 = v => L + v / 0.18 * (W - L - 150);
+  const bars = ["blind_p90", "belt_hi", "belt_point", "oracle"].map((k, i) => { const p = P[k], y = 26 + i * rowH, c = p.sim_throughput_vs_blind_p90_ci95;
+    return `<text x="${L - 10}" y="${y + 14}" text-anchor="end" font-size="11.5" fill="var(--ink)">${esc(names[k])}</text><rect x="${x0(0)}" y="${y + 3}" width="${Math.max(1, x0(p.sim_throughput_vs_blind_p90) - x0(0))}" height="16" rx="3" fill="${k === "belt_hi" ? "var(--copper)" : "var(--blue)"}" opacity="${k === "belt_point" || k === "oracle" ? .45 : 1}"></rect>
+      <line x1="${x0(c[0])}" x2="${x0(c[1])}" y1="${y + 11}" y2="${y + 11}" stroke="var(--ink)" stroke-width="1.4"></line><text x="${x0(Math.max(p.sim_throughput_vs_blind_p90, c[1])) + 8}" y="${y + 15}" font-size="11.5" fill="var(--ink)">${pc(p.sim_throughput_vs_blind_p90)} · overload ${(p.sim_overload_share * 100).toFixed(1)}%</text>`; }).join("");
+  const rowsTbl = [
+    ["Bond work index (grinding hardness)", "Belt hyperspectral", "Control-room operator", "Mill feed rate, set before the ore reaches the mill", `${pc(P.belt_hi.sim_throughput_vs_blind_p90)} throughput ${ci(P.belt_hi.sim_throughput_vs_blind_p90_ci95)} at the same overload risk (${(P.belt_hi.sim_overload_share * 100).toFixed(1)}% vs ${(P.blind_p90.sim_overload_share * 100).toFixed(1)}%)`, "More tonnes through the same mill", ["ok", "measured (sim_ policy, real held-out data)"]],
+    ["Cu and Mo recovery, lime, pH", "Belt hyperspectral", "Shift metallurgist", "Collector and lime dosing", "No significant difference against the strongest baseline", "None claimed", ["warn", "not decision-grade"]],
+    ["4E PGE grade", "Belt-type chemistry (XRF), Bushveld", "Grade controller", "Concentrator or low-grade stockpile", `Balanced accuracy ${RP.belt_chemistry.balanced_accuracy.toFixed(2)} vs ${RP.mine_plan_seam.balanced_accuracy.toFixed(2)} for the mine-plan seam: ${esc(r.chemistry_vs_seam)}`, "Only where the seam is unknown (blends, stockpiles): " + RP.belt_chemistry.balanced_accuracy.toFixed(2) + " vs 0.50 with no information", ["bad", "correction"]],
+    ["Concentrate silica, 1 h ahead", "Plant tags (Kaggle flotation plant)", "Control room", "Reagent and air setpoints", `MAE ${fmt(pl.mae_model)} vs ${fmt(pl.mae_persistence)} for the last assay: ${esc(pl.verdict)}`, "None: the plant cannot be steered from its own tags here, which is the case for measuring the ore first", ["warn", "negative result"]],
+    ["Pentlandite vs pyrrhotite", "Microscope (KHANYA), LumenStone S2", "Metallurgist", "Depressant and collector choice; Ni-PGE deportment", `IoU ${S.summary.pentlandite ? S.summary.pentlandite.pooled["colour + texture"].pn_iou.toFixed(2) : "—"} from colour and texture, given perfect sulphide masks`, "Not measured: needs plant recovery data", ["", "exploratory"]],
+    ["Cr₂O₃ in feed", "Belt XRF measures it directly (no model)", "Concentrator and smelter", "Chromite entrainment and blending", "A measurement, not a prediction; no smelter data here", "Smelter penalties avoided: needs site data", ["", "design"]]];
+  $("value").innerHTML = `
+  <div class="panel"><div class="sh"><div><h2>The problem, and which predictions actually change the next step</h2><p>Lab results take days; ore changes by the hour; so the shift decides blind. A prediction only has value if someone can act on it before the ore arrives.</p></div></div>
+  <table><thead><tr><th>Prediction</th><th>Source</th><th>Who acts</th><th>Next step it changes</th><th>Effect measured on held-out data</th><th>Where the value comes from</th><th>Status</th></tr></thead><tbody>${rowsTbl.map(x => `<tr><td><b>${esc(x[0])}</b></td><td>${esc(x[1])}</td><td>${esc(x[2])}</td><td>${esc(x[3])}</td><td>${x[4]}</td><td>${esc(x[5])}</td><td><span class="badge ${x[6][0]}">${esc(x[6][1])}</span></td></tr>`).join("")}</tbody></table>
+  <div class="copy muted"><p>Only one belt prediction clears the bar to drive an action today: hardness. Recovery and reagent predictions from the belt do not beat their baselines on this public data, so the pitch does not claim reagent savings from the belt. Recovery is the microscope's layer.</p></div></div>
+  <div class="panel"><div class="sh"><div><h2>Hardness → mill feed rate: the measured case</h2><p>${g.n_parcels} drill-core composites (HIDSAG GEOMET, Chile), v6 out-of-fold predictions with 80% split-conformal intervals. Simulated feed-rate policies on the real held-out values (sim_).</p></div><span class="badge ok">all gates pass</span></div>
+  <div class="chain"><span>Belt scan</span><i>→</i><span>Work index, 80% interval</span><i>→</i><span>Feed rate for the upper end: P ÷ [10·Wi·(1/√P80 − 1/√F80)] (Bond 1961)</span><i>→</i><span>Operator approves</span><i>→</i><span>Mill</span></div>
+  <div class="bignums"><div><b>${pc(P.belt_hi.sim_throughput_vs_blind_p90)}</b><small>throughput vs no ore information, 95% CI ${ci(P.belt_hi.sim_throughput_vs_blind_p90_ci95)}</small></div><div><b>${(P.belt_hi.sim_overload_share * 100).toFixed(1)}% vs ${(P.blind_p90.sim_overload_share * 100).toFixed(1)}%</b><small>parcels harder than planned (same risk: difference CI ${ci(gt.overload_diff_ci95)})</small></div><div><b>${(P.belt_hi.sim_energy_shortfall_when_overloaded * 100).toFixed(1)}% vs ${(P.blind_p90.sim_energy_shortfall_when_overloaded * 100).toFixed(1)}%</b><small>energy shortfall when a parcel is harder than planned: milder overloads, less coarse grind</small></div><div><b>${Math.round(g.share_of_perfect_information_captured * 100)}%</b><small>of the gain perfect information would give (${pc(P.oracle.sim_throughput_vs_blind_p90)}): the headroom a better model can still take</small></div></div>
+  <div style="padding:0 16px 6px"><svg viewBox="0 0 ${W} ${26 + 4 * rowH + 10}" style="width:100%;max-width:${W}px;height:auto;display:block" role="img" aria-label="Throughput by feed-rate policy">${bars}</svg></div>
+  <div class="copy"><p><b>Why it makes money.</b> A ball mill is usually limited by its motor. Its tonnes per hour are its power divided by the energy each tonne needs, and Bond's law makes that energy proportional to the work index. If you do not know the ore, you must set the feed for hard ore to protect the grind, so on softer ore the mill runs below what it could do. Knowing the hardness before the ore arrives lets the feed rise on soft ore without raising the risk. Mill power, feed size and grind target cancel in these ratios, so no plant parameter was assumed to get the percentages.</p>
+  <p class="muted">Gates for "belt beats no information": cluster-bootstrap 95% CI of the throughput gain excludes 0 ${ci(gt.throughput_ci95)}; Wilcoxon on paired setpoints p ${gt.wilcoxon_p_less < 1e-4 ? "< 0.0001" : gt.wilcoxon_p_less.toFixed(4)}; Mann-Whitney p ${gt.mannwhitney_p_less < 1e-4 ? "< 0.0001" : gt.mannwhitney_p_less.toFixed(4)}; Cliff's δ ${gt.cliffs_delta.toFixed(2)}. Setting the feed from the point prediction looks better (${pc(P.belt_point.sim_throughput_vs_blind_p90)}) but overloads ${(P.belt_point.sim_overload_share * 100).toFixed(0)}% of parcels; that is why the policy uses the interval, not the point.</p></div></div>
+  <div class="panel"><div class="sh"><div><h2>What it could be worth at your plant</h2><p>Every input below is an assumption. Replace it with the site's numbers. The percentage comes from the measured case above; the rest is arithmetic.</p></div><span class="badge warn">ASSUMED inputs</span></div>
+  <div class="calc"><label>Mill capacity, t/h (ASSUMED)<input id="vcCap" type="number" min="1" value="100"></label><label>Operating hours per year (ASSUMED)<input id="vcHrs" type="number" min="1" max="8760" value="8000"></label><label>Contribution margin, R per extra tonne (site value)<input id="vcMar" type="number" min="0" placeholder="enter to see rand"></label></div>
+  <div class="copy" id="vcOut"></div></div>
+  <div class="panel"><div class="sh"><div><h2>Limits, stated before anyone asks</h2></div></div><div class="copy"><ul>
+    <li>The hardness evidence is Chilean porphyry Cu-Mo drill core, not Bushveld PGM ore. It transfers as a method, not as numbers.</li>
+    <li>GEOMET has no drill-hole ids, so the split is by sample and may be optimistic.</li>
+    <li>The policy assumes the mill is power-limited and its feed can follow each parcel. Bond's law is a ball-mill law; a SAG circuit also needs the A×b parameter, which this data does not have.</li>
+    <li>These are simulated policies on real held-out predictions, not a plant trial. A pilot is the test.</li>
+    <li>Bushveld routing: the mine plan already knows the seam, and the seam alone routes better than belt chemistry. Chemistry earns its place only where provenance is lost.</li></ul></div></div>
+  <div class="panel"><div class="sh"><div><h2>Where every number on this page comes from</h2></div></div><div class="kv" style="grid-template-columns:240px 1fr">${[["Value-chain analysis", "training/value-chain-20261002/value_chain.py → results.json"], ["Hardness predictions", "Kaggle reefprint-hidsag-v6-live → training/hidsag-v6-live-20261001/output/hidsag_v6_results.json"], ["Bushveld predictions", "training/bushveld-xrf-pge-20261001/bushveld.py → app_bushveld.json"], ["Plant forecast", "training/plant-softsensor-20261001/softsensor.py → results.json"], ["Microscope diagnostic", "training/pentlandite-diagnostic-20261001/results.json"], ["Hashes of every source", "live/summary.json → hashes_sha256"]].map(([a, b]) => `<dt>${esc(a)}</dt><dd><code>${esc(b)}</code></dd>`).join("")}</div></div>`;
+  const calc = () => { const cap = +$("vcCap").value || 0, hrs = Math.min(8760, +$("vcHrs").value || 0), mar = $("vcMar").value === "" ? null : +$("vcMar").value, f = x => Math.round(x).toLocaleString("en-ZA");
+    const t = [P.belt_hi.sim_throughput_vs_blind_p90, ...P.belt_hi.sim_throughput_vs_blind_p90_ci95].map(x => x * cap * hrs);
+    $("vcOut").innerHTML = `<p>Extra tonnes milled per year: <b>${f(t[0])} t</b> (95% CI ${f(t[1])} to ${f(t[2])} t) = ${pc(P.belt_hi.sim_throughput_vs_blind_p90)} × ${f(cap)} t/h × ${f(hrs)} h.${mar != null ? ` At R${f(mar)} per extra tonne: <b>R${f(t[0] * mar)}</b> per year (R${f(t[1] * mar)} to R${f(t[2] * mar)}).` : " Enter the site's contribution margin per extra tonne to see rand."}</p><p class="muted">Not counted: the value of fewer coarse-grind events, and fixed costs spread over more tonnes. Not netted: the cost of the scanner and its integration.</p>`; };
+  ["vcCap", "vcHrs", "vcMar"].forEach(id => $(id).addEventListener("input", calc)); calc();
+}
 function renderWhere() {
   $("where").innerHTML = `
   <div class="panel"><div class="sh"><div><h2>Model orchestration: one router, one referee, one policy</h2><p>Every input type has its own validated path; nothing is promoted without its evidence bar</p></div></div>
@@ -459,10 +612,11 @@ function offlineRoute(q) {
   if (/verify|flagged|default|refus/.test(s)) return { tool: "query_samples", args: { decision: /default|refus/.test(s) ? "default" : "verify" } };
   if (/plant|silica|amina|starch/.test(s)) return { tool: "plant_status", args: {} };
   if (/bushveld|platinum|pge|\bpt\b|rhodium|chrom|seam/.test(s)) return { tool: "bushveld_status", args: {} };
+  if (/money|worth|value|saving|save|rand|profit|throughput|next step/.test(s)) return { tool: "switch_view", args: { view: "value" } };
   if (/reconcil|compare|lab result/.test(s)) return { tool: "compare_with_lab", args: {} };
   if (/report/.test(s)) return { tool: "generate_report", args: {} };
   const ex = s.match(/lims|opc|geojson|qgis|provenance/); if (ex && /export|download|send/.test(s)) return { tool: "export", args: { kind: { lims: "lims", opc: "opcua", geojson: "geojson", qgis: "geojson", provenance: "prov" }[ex[0]] } };
-  const v = s.match(/\b(live|scan|bushveld|plant|lab|evidence|where)\b/); if (v && /open|go|show|switch/.test(s)) return { tool: "switch_view", args: { view: v[1] === "scan" ? "live" : v[1] } };
+  const v = s.match(/\b(live|scan|bushveld|plant|lab|value|evidence|where)\b/); if (v && /open|go|show|switch/.test(s)) return { tool: "switch_view", args: { view: v[1] === "scan" ? "live" : v[1] } };
   return { tool: "help", args: {} };
 }
 function validArgs(r) {
@@ -531,14 +685,16 @@ function camCheck(pt) {
 
 /* ---------------- boot ---------------- */
 function redrawAll() { if (!S.summary) return; if (S.cube) { paint(); drawSpec(); } if ($("v-bushveld").classList.contains("on")) drawBushveld(); if ($("v-plant").classList.contains("on")) drawPlant(); }
-window.addEventListener("resize", () => { if (S.cube) paint(); });
+window.addEventListener("resize", () => { if (S.cube) { paint(); beltTick(); } });
 async function boot() {
   let t0 = P.get("theme"); if (!t0) { try { t0 = localStorage.getItem("reef-live-theme"); } catch (e) {} } setTheme(["workbench", "mineral-night", "field-paper"].includes(t0) ? t0 : "workbench");
   const get = u => fetch(u).then(r => { if (!r.ok) throw new Error(u + " " + r.status); return r.json(); });
   [S.summary, S.reg, S.bv, S.plant["1"], S.plant["3"]] = await Promise.all(["live/summary.json", "live/targets.json", "live/bushveld.json", "live/plant_h1.json", "live/plant_h3.json"].map(get));
   for (const rec of ["GEOMET", "MINERAL1"]) await Promise.all(S.summary.showcase[rec].map(async s => S.headers[rec][s] = await get(`live/showcase/${rec}/${s}.json`)));
   if (document.querySelector('meta[name="reef-token"]').content) $("askMode").textContent = "Local server connected: a language model routes only if a key is set on the server, otherwise the offline parser · answers always from code";
-  renderRegistry(); renderEvidence(); renderWhere(); layerButtons();
+  if (!LAYERS[S.sensor].some(l => l[0] === S.layer)) S.layer = LAYERS[S.sensor][1][0];
+  $("sensorSel").querySelectorAll("button").forEach(x => x.classList.toggle("sel", x.dataset.s === S.sensor));
+  renderRegistry(); renderEvidence(); renderWhere(); layerButtons(); viewOpts(); setMode(S.mode);
   audit("boot", { detail: `loaded ${Object.keys(S.headers.GEOMET).length + Object.keys(S.headers.MINERAL1).length} showcase headers` });
   if (P.get("view") && VIEWS[P.get("view")]) showView(P.get("view"));
   await startScan(S.summary.showcase.GEOMET[0]);

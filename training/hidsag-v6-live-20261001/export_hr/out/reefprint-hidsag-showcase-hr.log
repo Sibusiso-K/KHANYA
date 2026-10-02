@@ -1,0 +1,48 @@
+[{"stream_name":"stdout","time":99.74724375,"data":"downloaded GEOMET 3.26 GB in 94 s\n"}
+,{"stream_name":"stdout","time":100.137908506,"data":"GEOMET showcase ['GMET-0048', 'GMET-0112', 'GMET-0015', 'GMET-0035', 'GMET-0063', 'GMET-0071', 'GMET-0098', 'GMET-0114', 'GMET-0043', 'GMET-0113', 'GMET-0083', 'GMET-0116', 'GMET-0004', 'GMET-0105', 'GMET-0126', 'GMET-0007', 'GMET-0022', 'GMET-0011', 'GMET-0039', 'GMET-0091', 'GMET-0080', 'GMET-0064', 'GMET-0054', 'GMET-0068']\n"}
+,{"stream_name":"stdout","time":100.820070653,"data":"GEOMET GMET-0048 {'vnir_low_cube': [65, 130, 39], 'swir_low_cube': [65, 130, 75]} 0.92 MB\n"}
+,{"stream_name":"stdout","time":101.476501953,"data":"GEOMET GMET-0112 {'vnir_low_cube': [72, 128, 39], 'swir_low_cube': [72, 128, 75]} 0.97 MB\n"}
+,{"stream_name":"stdout","time":102.055497701,"data":"GEOMET GMET-0015 {'vnir_low_cube': [72, 122, 39], 'swir_low_cube': [72, 122, 75]} 0.94 MB\n"}
+,{"stream_name":"stdout","time":102.627065747,"data":"GEOMET GMET-0035 {'vnir_low_cube': [70, 123, 39], 'swir_low_cube': [70, 123, 75]} 0.91 MB\n"}
+,{"stream_name":"stdout","time":103.217953215,"data":"GEOMET GMET-0063 {'vnir_low_cube': [67, 129, 39], 'swir_low_cube': [67, 129, 75]} 0.91 MB\n"}
+,{"stream_name":"stdout","time":103.873518943,"data":"GEOMET GMET-0071 {'vnir_low_cube': [70, 130, 39], 'swir_low_cube': [70, 130, 75]} 0.96 MB\n"}
+,{"stream_name":"stdout","time":104.469233653,"data":"GEOMET GMET-0098 {'vnir_low_cube': [65, 128, 39], 'swir_low_cube': [65, 128, 75]} 0.87 MB\n"}
+,{"stream_name":"stdout","time":105.218851892,"data":"GEOMET GMET-0114 {'vnir_low_cube': [72, 127, 39], 'swir_low_cube': [72, 127, 75]} 0.97 MB\n"}
+,{"stream_name":"stdout","time":105.879765004,"data":"GEOMET GMET-0043 {'vnir_low_cube': [78, 126, 39], 'swir_low_cube': [78, 126, 75]} 1.05 MB\n"}
+,{"stream_name":"stdout","time":106.50059023,"data":"GEOMET GMET-0113 {'vnir_low_cube': [74, 126, 39], 'swir_low_cube': [74, 126, 75]} 0.99 MB\n"}
+,{"stream_name":"stdout","time":107.119191433,"data":"GEOMET GMET-0083 {'vnir_low_cube': [74, 126, 39], 'swir_low_cube': [74, 126, 75]} 0.98 MB\n"}
+,{"stream_name":"stdout","time":107.707477756,"data":"GEOMET GMET-0116 {'vnir_low_cube': [71, 126, 39], 'swir_low_cube': [71, 126, 75]} 0.93 MB\n"}
+,{"stream_name":"stdout","time":108.336100537,"data":"GEOMET GMET-0004 {'vnir_low_cube': [80, 117, 39], 'swir_low_cube': [80, 117, 75]} 0.98 MB\n"}
+,{"stream_name":"stdout","time":108.928113366,"data":"GEOMET GMET-0105 {'vnir_low_cube': [72, 126, 39], 'swir_low_cube': [72, 126, 75]} 0.94 MB\n"}
+,{"stream_name":"stdout","time":109.546664566,"data":"GEOMET GMET-0126 {'vnir_low_cube': [72, 126, 39], 'swir_low_cube': [72, 126, 75]} 0.92 MB\n"}
+,{"stream_name":"stdout","time":110.123481694,"data":"GEOMET GMET-0007 {'vnir_low_cube': [77, 121, 39], 'swir_low_cube': [77, 121, 75]} 0.97 MB\n"}
+,{"stream_name":"stdout","time":110.727546393,"data":"GEOMET GMET-0022 {'vnir_low_cube': [74, 122, 39], 'swir_low_cube': [74, 122, 75]} 0.94 MB\n"}
+,{"stream_name":"stdout","time":111.39063815,"data":"GEOMET GMET-0011 {'vnir_low_cube': [78, 119, 39], 'swir_low_cube': [78, 119, 75]} 0.97 MB\n"}
+,{"stream_name":"stdout","time":111.967873486,"data":"GEOMET GMET-0039 {'vnir_low_cube': [72, 125, 39], 'swir_low_cube': [72, 125, 75]} 0.96 MB\n"}
+,{"stream_name":"stdout","time":112.569297892,"data":"GEOMET GMET-0091 {'vnir_low_cube': [70, 130, 39], 'swir_low_cube': [70, 130, 75]} 0.96 MB\n"}
+,{"stream_name":"stdout","time":113.159966548,"data":"GEOMET GMET-0080 {'vnir_low_cube': [72, 126, 39], 'swir_low_cube': [72, 126, 75]} 0.95 MB\n"}
+,{"stream_name":"stdout","time":113.736951559,"data":"GEOMET GMET-0064 {'vnir_low_cube': [72, 126, 39], 'swir_low_cube': [72, 126, 75]} 0.97 MB\n"}
+,{"stream_name":"stdout","time":114.321200689,"data":"GEOMET GMET-0054 {'vnir_low_cube': [67, 126, 39], 'swir_low_cube': [67, 126, 75]} 0.88 MB\n"}
+,{"stream_name":"stdout","time":114.922074951,"data":"GEOMET GMET-0068 {'vnir_low_cube': [75, 126, 39], 'swir_low_cube': [75, 126, 75]} 1.02 MB\n"}
+,{"stream_name":"stdout","time":277.126824058,"data":"downloaded MINERAL1 4.68 GB in 162 s\n"}
+,{"stream_name":"stdout","time":277.136575661,"data":"MINERAL1 showcase ['M1-0078', 'M1-0021', 'M1-0013', 'M1-0079', 'M1-0095', 'M1-0066', 'M1-0070', 'M1-0030', 'M1-0043', 'M1-0084', 'M1-0053', 'M1-0041']\n"}
+,{"stream_name":"stdout","time":278.012410165,"data":"MINERAL1 M1-0078 {'vnir_low_cube': [85, 113, 39], 'swir_low_cube': [85, 113, 75]} 1.01 MB\n"}
+,{"stream_name":"stdout","time":278.583202536,"data":"MINERAL1 M1-0021 {'vnir_low_cube': [58, 90, 39], 'swir_low_cube': [58, 90, 75]} 0.57 MB\n"}
+,{"stream_name":"stdout","time":279.160960087,"data":"MINERAL1 M1-0013 {'vnir_low_cube': [60, 90, 39], 'swir_low_cube': [60, 90, 75]} 0.6 MB\n"}
+,{"stream_name":"stdout","time":279.601279892,"data":"MINERAL1 M1-0079 {'vnir_low_cube': [54, 67, 39], 'swir_low_cube': [54, 67, 75]} 0.4 MB\n"}
+,{"stream_name":"stdout","time":280.607585019,"data":"MINERAL1 M1-0095 {'vnir_low_cube': [99, 131, 39], 'swir_low_cube': [99, 131, 75]} 1.4 MB\n"}
+,{"stream_name":"stdout","time":281.490131062,"data":"MINERAL1 M1-0066 {'vnir_low_cube': [96, 109, 39], 'swir_low_cube': [96, 109, 75]} 1.08 MB\n"}
+,{"stream_name":"stdout","time":282.195846104,"data":"MINERAL1 M1-0070 {'vnir_low_cube': [77, 102, 39], 'swir_low_cube': [77, 102, 75]} 0.81 MB\n"}
+,{"stream_name":"stdout","time":282.92165841999997,"data":"MINERAL1 M1-0030 {'vnir_low_cube': [75, 108, 39], 'swir_low_cube': [75, 108, 75]} 0.89 MB\n"}
+,{"stream_name":"stdout","time":283.471816833,"data":"MINERAL1 M1-0043 {'vnir_low_cube': [73, 79, 39], 'swir_low_cube': [73, 79, 75]} 0.61 MB\n"}
+,{"stream_name":"stdout","time":284.245572047,"data":"MINERAL1 M1-0084 {'vnir_low_cube': [71, 135, 39], 'swir_low_cube': [71, 135, 75]} 0.98 MB\n"}
+,{"stream_name":"stdout","time":284.754285216,"data":"MINERAL1 M1-0053 {'vnir_low_cube': [74, 57, 39], 'swir_low_cube': [74, 57, 75]} 0.45 MB\n"}
+,{"stream_name":"stdout","time":285.533320675,"data":"MINERAL1 M1-0041 {'vnir_low_cube': [79, 116, 39], 'swir_low_cube': [79, 116, 75]} 0.98 MB\n"}
+,{"stream_name":"stdout","time":285.766975821,"data":"done\n"}
+,{"stream_name":"stderr","time":289.257409019,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":289.257457677,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":289.657066217,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":289.657102526,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":291.477011629,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":293.221945945,"data":"[NbConvertApp] Writing 324515 bytes to __results__.html\n"}
+]

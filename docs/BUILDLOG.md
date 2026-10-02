@@ -22,6 +22,35 @@ it is a press release.
 
 ---
 
+## 2026-10-02 (morning) — belt view, full-resolution scans, value chain, v7 (no gain), Bushveld correction
+
+**Asked:** make the belt and scans look right, keep training for accuracy, and show whether each prediction helps the next plant step and what it is worth, backed by evidence.
+
+**Display (REEFPRINT Live).**
+- **Full-resolution scans.** Kaggle `reefprint-hidsag-showcase-hr` (290 s) re-exported the same pre-registered showcase samples without the 2× downsample: 80×117 px instead of 40×58, uint8 per band. The predictions, intervals and decisions stay v6's out-of-fold values.
+- **Measured why the maps looked striped.** In the SWIR band-depth maps the column medians carry most of the pixel variance (column-median sd 46–54 of total 52–59, in display units) and are uncorrelated from one column to the next (lag-1 autocorrelation −0.1 to 0.36). That is detector pattern.
+- **Display destriping**, labelled and toggleable. It removes only the high-pass part of the column medians. No prediction uses it.
+- **Crisp integer scaling.**
+- **A Belt mode.** Real scans ride a conveyor past a fixed line scanner, natural colour (R640/G550/B460) upstream and the analysis layer downstream.
+- **Bug found by screenshot and fixed:** a belt cube cache smaller than the visible tiles thrashed and kept the page busy.
+
+**Value chain** (`training/value-chain-20261002`, `docs/16-decision-value-chain.md`).
+- **Hardness → mill feed rate**, simulated policies on 146 real out-of-fold predictions (Bond 1961; mill power, F80 and P80 cancel). Setting the feed for the upper end of the 80% interval gives **sim_ +2.0% throughput [+1.0, +3.0]**. Its overload risk matches the no-information P90 rule: 8.2% vs 8.9%, difference CI −4.8 to +4.1 pp. When a parcel is harder than planned, the energy shortfall is 5.0% vs 11.9%. All gates pass (Wilcoxon 1.2e−7, Mann-Whitney 4.2e−13, δ −0.48). This captures 14% of perfect information's +14.0%.
+- **Correction: Bushveld.** Routing by belt chemistry gives balanced accuracy 0.79, against 0.82 for the mine-plan seam; the seam is better (CI −0.056 to −0.004). The earlier "chemistry beats the average for Pt/Rh/4E" used a weaker baseline than one already in `results.json` (`r2_seam_only`), which rule 3 should have caught. It is no longer presented as grade control.
+- **Not decision-grade:** belt recovery, lime and pH (no significant difference against baseline), so no reagent-saving claim from the belt.
+
+**v7, pre-registered** (`training/hidsag-v7-ens-20261002`, PREREG committed `11f0c23` before the run; Kaggle 703 s).
+- **Tried:** widening the menu with gradient boosting, an RBF SVR and a fixed 5-model mean, with the same folds and calibration.
+- **Did not work:** no significant difference on any target. Work index R² 0.479 → 0.483. Mo recovery improved on the paired test (Holm p 0.004) but failed Mann-Whitney (0.17). v6 stays.
+- **Data check:** GEOMET has exactly five lab variables, all modelled.
+
+**Learned.** The accuracy limit is the data (146 samples, no hole ids), not the model menu. The value of a prediction depends on the strongest baseline *the operator already has*, which for PGE grade is the mine plan.
+
+**Left open.**
+- Deck v8: withdraw slide 13 (MINERAL1) and reframe any Bushveld grade claim.
+- A site pilot logging feed rate, power and grind.
+- Re-record the Live demo with Belt mode.
+
 ## 2026-10-01 (night) — ClauDex v6 plan, REEFPRINT Live, real-plant and Bushveld tracks, and a correction
 
 **Plan.** `PLAN-live-v6.md`, adversarially reviewed by Codex gpt-6-astra (read-only) over 3 rounds: 26 + 12 findings, then APPROVED. 37 were accepted; phone and LLM features were kept as R-3 under constraints. Log: `PLAN-live-v6-REVIEW-LOG.md`.

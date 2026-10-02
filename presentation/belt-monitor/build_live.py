@@ -23,7 +23,8 @@ SRC = {"v6_results": os.path.join(T, "hidsag-v6-live-20261001", "output", "hidsa
        "plant_h3": os.path.join(T, "plant-softsensor-20261001", "app_series_h3.json"),
        "bushveld_results": os.path.join(T, "bushveld-xrf-pge-20261001", "results.json"),
        "bushveld_app": os.path.join(T, "bushveld-xrf-pge-20261001", "app_bushveld.json"),
-       "plan_review_log": os.path.join(R, "PLAN-live-v6-REVIEW-LOG.md")}
+       "plan_review_log": os.path.join(R, "PLAN-live-v6-REVIEW-LOG.md"),
+       "value_chain": os.path.join(T, "value-chain-20261002", "results.json")}
 
 
 def sha(p):
@@ -49,6 +50,24 @@ if os.path.exists(dst):
     shutil.rmtree(dst)
 shutil.copytree(os.path.join(T, "hidsag-v6-live-20261001", "output", "showcase"), dst)
 show = {rec: sorted(f[:-5] for f in os.listdir(os.path.join(dst, rec)) if f.endswith(".json")) for rec in os.listdir(dst)}
+# Display assets at full resolution (export_hr.py, Kaggle reefprint-hidsag-showcase-hr): same pre-registered samples, no 2x
+# downsample, uint8 per band. Predictions, intervals, decisions and explanations stay v6's out-of-fold values.
+HR = os.path.join(T, "hidsag-v6-live-20261001", "export_hr", "out", "showcase_hr")
+n_hr = 0
+for rec in show:
+    for s in show[rec]:
+        hj, hb = os.path.join(HR, rec, s + ".json"), os.path.join(HR, rec, s + ".bin.gz")
+        if not (os.path.exists(hj) and os.path.exists(hb)):
+            continue
+        h6, hr = json.load(open(os.path.join(dst, rec, s + ".json"))), json.load(open(hj))
+        h6["arrays"] = hr["arrays"]
+        for k in ("vnir_low_wavelengths", "swir_low_wavelengths", "encoding", "clusters"):
+            h6[k] = hr[k]
+        h6["resolution"] = "full HIDSAG low product (5% border crop); v6 predictions unchanged"
+        json.dump(h6, open(os.path.join(dst, rec, s + ".json"), "w"))
+        shutil.copyfile(hb, os.path.join(dst, rec, s + ".bin.gz"))
+        n_hr += 1
+print("full-resolution display cubes merged:", n_hr)
 
 # evidence bar per target: used in decisions only if the deployable model beat the strongest baseline (all gates)
 evidence = {}
@@ -131,7 +150,7 @@ with open(os.path.join(sd, "xrf_BUSHVELD_belt.csv"), "w", newline="") as f:
 
 # ---------------- summary
 pl = {f"delay{r['delay_h']}_h{r['horizon_h']}": {"model": r["model"], **{k: r["test"][k] for k in ("mae_model", "mae_persistence", "mae_mean", "verdict", "coverage", "coverage_ci95_block", "width", "strongest_baseline")}, "n_test": r["n"]["test"]} for r in PL["runs"]}
-summary = {"built": "2026-10-01", "hashes_sha256": hashes, "showcase": show, "evidence": evidence,
+summary = {"built": "2026-10-02", "hashes_sha256": hashes, "showcase": show, "evidence": evidence, "value": json.load(open(SRC["value_chain"])),
            "v6_records": {rec: {"n": A["records"][rec]["n"], "n_units": A["records"][rec]["n_units"], "ood": A["records"][rec]["ood"],
                                 "calibration": A["records"][rec]["calibration"], "blends": A["records"][rec]["blends"] and {k: v for k, v in A["records"][rec]["blends"].items() if k != "targets"}}
                           for rec in A["records"]},
