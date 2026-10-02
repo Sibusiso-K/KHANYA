@@ -1,0 +1,323 @@
+{
+ "spec": "SPEC.md",
+ "identity": {
+  "records_in_file": 99,
+  "skipped": 0,
+  "duplicates_collapsed": [],
+  "records_analysed": 99,
+  "dataset_paper_physical_samples": 94,
+  "crop_count_distribution": {
+   "1": 99
+  },
+  "n_composites": 36,
+  "n_months": 12,
+  "strata": [
+   "P1|coarse",
+   "P1|fine",
+   "P1|mixed",
+   "P2|coarse",
+   "P2|fine",
+   "P2|mixed",
+   "P3|coarse",
+   "P3|fine",
+   "P3|mixed"
+  ]
+ },
+ "hypotheses": {
+  "mask_v6/primary_mean_spectrum": {
+   "H1": {
+    "feature": [
+     "aloh_2200_depth"
+    ],
+    "qemscan_group": [
+     "Muscovite/Sericite",
+     "Kaolinite"
+    ],
+    "in_holm": true,
+    "partial_spearman": 0.13472326847011745,
+    "ci95_cluster_composite": [
+     -0.10187716559381921,
+     0.3923868245751268
+    ],
+    "ci95_cluster_month": [
+     -0.05906685862168021,
+     0.3626235190210985
+    ],
+    "p_one_sided_positive": 0.13496625843539115,
+    "raw_spearman": 0.41427846977157484,
+    "feature_vs_fraction_only_r2": 0.8819418676561533,
+    "p_holm": 0.2699325168707823,
+    "verdict": "inconclusive"
+   },
+   "H2": {
+    "feature": [
+     "feoh_2250_depth",
+     "mgoh_2330_depth"
+    ],
+    "qemscan_group": [
+     "Chlorite",
+     "Biotite"
+    ],
+    "in_holm": true,
+    "partial_spearman": 0.27054770986501187,
+    "ci95_cluster_composite": [
+     0.02846220210819875,
+     0.48617262965430763
+    ],
+    "ci95_cluster_month": [
+     0.07632602807695217,
+     0.40223851609919636
+    ],
+    "p_one_sided_positive": 0.014996250937265684,
+    "raw_spearman": 0.5276180994640327,
+    "feature_vs_fraction_only_r2": 0.8343939393939394,
+    "p_holm": 0.04498875281179705,
+    "verdict": "positive but below the minimum useful effect or Holm"
+   },
+   "H4": {
+    "feature": [
+     "fe3_900_depth"
+    ],
+    "qemscan_group": [
+     "Fe Oxides"
+    ],
+    "in_holm": true,
+    "partial_spearman": 0.0324961953139772,
+    "ci95_cluster_composite": [
+     -0.19544157081516786,
+     0.27865492465061964
+    ],
+    "ci95_cluster_month": [
+     -0.1908625546863789,
+     0.2606414470246007
+    ],
+    "p_one_sided_positive": 0.3934016495876031,
+    "raw_spearman": 0.014666403146699569,
+    "feature_vs_fraction_only_r2": 0.21562633134061693,
+    "p_holm": 0.3934016495876031,
+    "verdict": "inconclusive"
+   },
+   "H3": {
+    "feature": [
+     "h2o_1750_gypsum_depth"
+    ],
+    "qemscan_group": [
+     "Anhydrite/Gypsum"
+    ],
+    "in_holm": false,
+    "partial_spearman": 0.009595005079444252,
+    "ci95_cluster_composite": [
+     -0.22151569860075573,
+     0.23332759261037198
+    ],
+    "ci95_cluster_month": [
+     -0.27454781562488323,
+     0.250239298151798
+    ],
+    "p_one_sided_positive": 0.47363159210197453,
+    "raw_spearman": -0.00293769308007123,
+    "feature_vs_fraction_only_r2": 0.5518903318903319,
+    "verdict": "inconclusive"
+   }
+  },
+  "mask_none/primary_mean_spectrum": {
+   "H1": {
+    "feature": [
+     "aloh_2200_depth"
+    ],
+    "qemscan_group": [
+     "Muscovite/Sericite",
+     "Kaolinite"
+    ],
+    "in_holm": true,
+    "partial_spearman": 0.134817160876509,
+    "ci95_cluster_composite": [
+     -0.09997897375326845,
+     0.3907316926937692
+    ],
+    "ci95_cluster_month": [
+     -0.06493653916859345,
+     0.360735556219557
+    ],
+    "p_one_sided_positive": 0.13321669582604348,
+    "raw_spearman": 0.41457531945433945,
+    "feature_vs_fraction_only_r2": 0.8829756751185323,
+    "p_holm": 0.26643339165208696,
+    "verdict": "inconclusive"
+   },
+   "H2": {
+    "feature": [
+     "feoh_2250_depth",
+     "mgoh_2330_depth"
+    ],
+    "qemscan_group": [
+     "Chlorite",
+     "Biotite"
+    ],
+    "in_holm": true,
+    "partial_spearman": 0.2667528746480309,
+    "ci95_cluster_composite": [
+     0.012290767629672619,
+     0.4858650521700812
+    ],
+    "ci95_cluster_month": [
+     0.07099765361214985,
+     0.4085243422040461
+    ],
+    "p_one_sided_positive": 0.020494876280929768,
+    "raw_spearman": 0.5266347757678658,
+    "feature_vs_fraction_only_r2": 0.8343905036762179,
+    "p_holm": 0.0614846288427893,
+    "verdict": "positive but below the minimum useful effect or Holm"
+   },
+   "H4": {
+    "feature": [
+     "fe3_900_depth"
+    ],
+    "qemscan_group": [
+     "Fe Oxides"
+    ],
+    "in_holm": true,
+    "partial_spearman": 0.04412819960118126,
+    "ci95_cluster_composite": [
+     -0.18315417324128178,
+     0.28391138570707947
+    ],
+    "ci95_cluster_month": [
+     -0.1766438456820797,
+     0.26736759447482183
+    ],
+    "p_one_sided_positive": 0.35316170957260684,
+    "raw_spearman": 0.026821393523445522,
+    "feature_vs_fraction_only_r2": 0.21565553494124934,
+    "p_holm": 0.35316170957260684,
+    "verdict": "inconclusive"
+   },
+   "H3": {
+    "feature": [
+     "h2o_1750_gypsum_depth"
+    ],
+    "qemscan_group": [
+     "Anhydrite/Gypsum"
+    ],
+    "in_holm": false,
+    "partial_spearman": 0.0015977190335965733,
+    "ci95_cluster_composite": [
+     -0.232370647276454,
+     0.22752499911837631
+    ],
+    "ci95_cluster_month": [
+     -0.2909076295900126,
+     0.2500452147581025
+    ],
+    "p_one_sided_positive": 0.5136215946013497,
+    "raw_spearman": -0.00035870778661922385,
+    "feature_vs_fraction_only_r2": 0.559215282072425,
+    "verdict": "inconclusive"
+   }
+  },
+  "mask_v6/secondary_median_pixel": {
+   "H1": {
+    "feature": [
+     "aloh_2200_depth"
+    ],
+    "qemscan_group": [
+     "Muscovite/Sericite",
+     "Kaolinite"
+    ],
+    "in_holm": true,
+    "partial_spearman": 0.1738357570052333,
+    "ci95_cluster_composite": [
+     -0.038249796390625125,
+     0.4126128730251426
+    ],
+    "ci95_cluster_month": [
+     -0.031179672009915217,
+     0.38625163573878324
+    ],
+    "p_one_sided_positive": 0.05398650337415646,
+    "raw_spearman": 0.4758933320504039,
+    "feature_vs_fraction_only_r2": 0.8932951968666254,
+    "p_holm": 0.05398650337415646,
+    "verdict": "inconclusive"
+   },
+   "H2": {
+    "feature": [
+     "feoh_2250_depth",
+     "mgoh_2330_depth"
+    ],
+    "qemscan_group": [
+     "Chlorite",
+     "Biotite"
+    ],
+    "in_holm": true,
+    "partial_spearman": 0.26370104638768477,
+    "ci95_cluster_composite": [
+     0.028675632001443376,
+     0.46825110046760593
+    ],
+    "ci95_cluster_month": [
+     0.07280646559343593,
+     0.4167662163032162
+    ],
+    "p_one_sided_positive": 0.012496875781054736,
+    "raw_spearman": 0.4849950371119438,
+    "feature_vs_fraction_only_r2": 0.827550333264619,
+    "p_holm": 0.02499375156210947,
+    "verdict": "positive but below the minimum useful effect or Holm"
+   },
+   "H4": {
+    "feature": [
+     "fe3_900_depth"
+    ],
+    "qemscan_group": [
+     "Fe Oxides"
+    ],
+    "in_holm": true,
+    "partial_spearman": 0.3959321413715278,
+    "ci95_cluster_composite": [
+     0.18572091468459015,
+     0.5561619419041836
+    ],
+    "ci95_cluster_month": [
+     0.1380267564106555,
+     0.5759957798734162
+    ],
+    "p_one_sided_positive": 0.0004998750312421895,
+    "raw_spearman": -0.4804592430242298,
+    "feature_vs_fraction_only_r2": 0.7653511303511304,
+    "p_holm": 0.0014996250937265685,
+    "verdict": "pass: validated spectral association"
+   },
+   "H3": {
+    "feature": [
+     "h2o_1750_gypsum_depth"
+    ],
+    "qemscan_group": [
+     "Anhydrite/Gypsum"
+    ],
+    "in_holm": false,
+    "partial_spearman": 0.05065131034322095,
+    "ci95_cluster_composite": [
+     -0.138887875285245,
+     0.25953185231753834
+    ],
+    "ci95_cluster_month": [
+     -0.17811686250417627,
+     0.3246329159234685
+    ],
+    "p_one_sided_positive": 0.2976755811047238,
+    "raw_spearman": 0.021646159537366955,
+    "feature_vs_fraction_only_r2": 0.505359719645434,
+    "verdict": "inconclusive"
+   }
+  }
+ },
+ "power": {
+  "rho_0.3": 0.3631729220533298,
+  "rho_0.4": 0.620057796339288,
+  "rho_0.5": 0.847902356483055,
+  "rho_0.6": 0.9681148346685974
+ },
+ "power_note": "Fisher-z approximation with n = 36 composites and a Bonferroni-level alpha of 0.05/3 one-sided (conservative vs Holm)"
+}
