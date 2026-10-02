@@ -37,6 +37,7 @@ TRAIN = os.path.join(ROOT, "training")
 VIDEO = os.environ.get("REEFPRINT_V8_VIDEO", os.path.join(ROOT, "presentation", "video", "REEFPRINT-v8-demo-embed.mp4"))
 MICRO = os.path.join(ROOT, "demo-images", "test_11.jpg")
 POSTER = os.path.join(IMG, "video_poster.jpg")  # a frame of the v8 video
+QR_URL = os.environ.get("REEFPRINT_QR_URL", "lethabomh14-reefprint.static.hf.space")
 os.makedirs(GEN, exist_ok=True)
 os.makedirs(OUT, exist_ok=True)
 
@@ -166,6 +167,19 @@ def lens(src, out, size=900, crop=None, ring=(255, 255, 255)):
     return path
 
 
+def fitcrop(src, out, aspect, radius=16, focus=(0.5, 0.5)):
+    """Crop to an exact aspect ratio before placing, so nothing is ever stretched."""
+    im = Image.open(src).convert("RGB")
+    w, h = im.size
+    if w / h > aspect:
+        nw = int(h * aspect); x0 = int((w - nw) * focus[0]); im = im.crop((x0, 0, x0 + nw, h))
+    else:
+        nh = int(w / aspect); y0 = int((h - nh) * focus[1]); im = im.crop((0, y0, w, y0 + nh))
+    tmp = os.path.join(GEN, "_fit_" + out.replace(".png", ".jpg"))
+    im.save(tmp, quality=95)
+    return rounded(tmp, out, radius=radius)
+
+
 def stock(name, fallback):
     p = os.path.join(STOCK, name)
     return p if os.path.exists(p) else fallback
@@ -174,11 +188,12 @@ def stock(name, fallback):
 G = {
     "bg_title": darken(stock("mixkit_45821.jpg", MICRO), "bg_title.jpg", 0.58),
     "bg_close": darken(stock("mixkit_45825.jpg", MICRO), "bg_close.jpg", 0.66),
-    "lens": lens(MICRO, "lens_title.png", crop=(800, 400, 2400, 2000)),
+    "lens": lens(os.path.join(IMG, "panel_clusters.png"), "lens_title.png", crop=(500, 420, 1200, 1120)),
+    "cube": rounded(os.path.join(IMG, "panel_cube.png"), "hero_cube_r.png", crop=(130, 300, 1600, 1080), radius=24),
     "khanya": rounded(os.path.join(IMG, "khanya_phases.png"), "khanya.png", radius=18),
-    "kh_thumb": rounded(os.path.join(IMG, "khanya_phases.png"), "kh_thumb.png", crop=(160, 140, 840, 545), radius=16),
-    "belt_thumb": rounded(os.path.join(IMG, "app_live.png"), "belt_thumb.png", crop=(616, 876, 2040, 1560), radius=16),
-    "dec_thumb": rounded(os.path.join(IMG, "app_decisions_approved.png"), "dec_thumb.png", crop=(49, 504, 1680, 1220), radius=16),
+    "kh_thumb": fitcrop(os.path.join(IMG, "khanya_phases.png"), "kh_thumb.png", 3.45 / 1.75, focus=(0.35, 0.4)),
+    "belt_thumb": fitcrop(os.path.join(IMG, "panel_cube.png"), "belt_thumb.png", 3.45 / 1.75, focus=(0.5, 0.3)),
+    "dec_thumb": fitcrop(os.path.join(IMG, "app_decisions_approved.png"), "dec_thumb.png", 3.45 / 1.75, focus=(0.0, 0.3)),
     "decisions": rounded(os.path.join(IMG, "app_decisions_approved.png"), "decisions.png", crop=(49, 504, 2831, 1634), radius=16),
     "physics": rounded(os.path.join(IMG, "app_evidence.png"), "physics.png", crop=(49, 482, 2831, 1289), radius=16),
     "haul": rounded(stock("mixkit_45822.jpg", MICRO), "haul.png", radius=18),
@@ -323,7 +338,14 @@ def chrome(slide, eyebrow, title, dark=False, title_size=None):
                                      ("  ·  KHANYA  ·  Team Sonar", {"size": 10.5, "color": sub})]], name="!!brand")
     text(slide, 11.6, 0.35, 1.13, 0.3, f"{len(S):02d} / 12", size=10.5, color=sub, align=PP_ALIGN.RIGHT, name="!!page")
     text(slide, 0.6, 0.86, 9, 0.3, eyebrow.upper(), size=11, color=COPPER, font=BODYB, bold=True)
-    text(slide, 0.6, 1.14, 12.1, 0.8, title, size=title_size, color=c, font=HEAD, bold=True, line=1.0, name="!!headline")
+    text(slide, 0.6, 1.14, 11.3, 0.8, title, size=title_size, color=c, font=HEAD, bold=True, line=1.0, name="!!headline")
+    lens_badge(slide)
+
+
+def lens_badge(slide, x=12.08, y=0.8, d=0.64):
+    p = pic(slide, G["lens"], x, y, w=d, h=d)
+    p.name = "!!lens"
+    return p
 
 
 def source(slide, s, dark=False):
@@ -385,28 +407,27 @@ On the belt, grinding hardness is the one prediction that beats every baseline. 
 The camera says this parcel is a little harder than design: the upper bound on its work index is sixteen point nine. So the proposal is: feed at ninety-eight point two percent of design, inside an envelope of eighty-five to a hundred and ten.
 The metallurgist has ninety seconds, the time it takes to reach the mill. Approve, modify, reject, or escalate. Do nothing, and the conservative setting applies automatically. Never "unknown". Never "hold the last value".
 Replayed over {N['n_parcels']} real drill-core samples, this policy pushed {N['thr']:.1%} more tonnes through the same mill, with no more overloads. Simulated, and provisional: the pilot confirms it. And the flotation? At most a quarter of a point on the steep part of the curve; nothing on the plateau."""),
-    7: ("4:30–5:10", """Now, the brain. Five layers.
+    7: ("4:25–5:00", """Now, the brain. Five layers.
 SENSE: a visible-and-infrared line scanner on the belt, a microscope in the lab.
 SEE: a segmentation network for minerals and spectral models for hardness, trained only on public data, never on Mintek's.
 DOUBT: this is what we're proudest of. Conformal prediction puts a guaranteed bound on every number, and an out-of-distribution gate refuses ore it has never seen.
 DECIDE: the bound goes through Bond's grinding law, inside the envelope and the ramp limits. That's where the optimisation lives, and a language model never touches a number.
 PROVE: every decision is hash-chained and signed twice, once classically and once with ML-DSA, the post-quantum standard NIST published in 2024.
 All of it runs offline, on one laptop, in ninety-two milliseconds a parcel."""),
-    8: ("5:10–7:35", """"Let me show you." (Click to play. The video runs 2:25. Stand to the side and watch the screen with the audience.)
+    8: ("5:00–8:05", """"Let me show you." (Click to play. The video runs 3:03. Stand to the side and watch the screen with the audience.)
 If the video fails: open the app, Continue as guest, then Decisions, Approve proposal, Verify chain, Signed checkpoint. Then the Evidence tab."""),
-    9: ("7:35–8:05", f"""Is it actually possible? We tested every claim against its physics, and the failures stay on the page.
-Hardness to tonnes: provisional pass. Flotation: check the headroom first. "More tonnes during load-shedding by re-ordering ore": tested, and REJECTED, because energy is conserved.
-Unseen captures: the accuracy holds. Wavelength drift: that's our real weak spot, so the design adds a hardware calibration gate.
-Power cut: the record survives and the safe setting applies. Attack: role-based sign-in, encrypted uploads, seventeen security tests, and signatures built to stay secure against quantum computers."""),
-    10: ("8:05–8:45", f"""So what's it worth? Look at this chart. The pilot pays for itself somewhere between {N['breakeven'][0]:.2f} and {N['breakeven'][1]:.2f} of a recovery point. Valterra reported moves of one and two WHOLE points last year. The bar we must clear is tiny next to the moves this industry already makes.
-For the metallurgist: a decision in seconds, not days. For the CEO: recovery, which is revenue. For the country: less energy lost when the mill is overloaded, no radioactive source on site, data that stays on site, and new skilled jobs, with a named person in charge of every decision."""),
-    11: ("8:45–9:25", f"""The pathway. Step one: a lab pilot with KHANYA, about two hundred and ten thousand rand, then a monthly licence. Step two: one belt, shadow mode for three months, advisory for three. Installed: half a million to three million US dollars, and it breaks even at a fraction of a point. Step three: a subscription priced as a share of the value we MEASURE. If we don't move the number, we don't get paid.
+    9: ("8:05–8:30", f"""Is it actually possible? Every claim against its physics, failures on the page: one money story we REJECTED ourselves.
+And security, because mines get hacked: a South African PGM producer was hit by ransomware in 2024. If that happens to us, the plant restores from sealed offline backups, and the signed checkpoints PROVE nothing was altered. No web admin to attack, deny-by-default roles, seventeen security tests, and signatures built to survive quantum computers."""),
+    10: ("8:30–9:10", f"""Now the money, because this has to pay. The producer pays for a pilot, then a share of the value we MEASURE. If we don't move the number, we don't get paid.
+One recovery point is worth {rm(N['pp_zond'][0])} to {rm(N['pp_zond'][1])} a year at ONE plant. The pilot pays for itself at {N['breakeven'][0]:.2f} to {N['breakeven'][1]:.2f} of a point. Valterra moved whole points last year.
+And Mintek doesn't just like this, Mintek NEEDS it. It is Mintek's own mandate, in software. Every pilot buys QEMSCAN work from Mintek's lab. It gives Mintek's own MillStar and FloatStar a feed-forward signal from the ore itself. And the IP stays in South Africa, through MOTT, while every alternative on the market is foreign."""),
+    11: ("9:10–9:40", f"""Where we stand: TRL 4, validated end to end on held-out public data, and live online right now. The pilot takes us to TRL 6 and 7. The pathway. Step one: a lab pilot with KHANYA, about two hundred and ten thousand rand, then a monthly licence. Step two: one belt, shadow mode for three months, advisory for three. Installed: half a million to three million US dollars, and it breaks even at a fraction of a point. Step three: a subscription priced as a share of the value we MEASURE. If we don't move the number, we don't get paid.
 We need three partners: a producer with a belt; Mintek, as the truth lab and our route into FloatStar and MillStar; and development funding, with TIA the natural route.
 And after ONE mentor session with a chemist, a mineralogist and a metallurgist, we made {N['commits']} commits in twenty-four hours. Imagine what a site does for us."""),
-    12: ("9:25–10:00", """Mintek has five values. One of them is integrity: "We do what we say we will do, when we say we will do it." That's why every number tonight carries its source, and every failure stays on the page.
+    12: ("9:40–10:10", """Mintek has five values. One of them is integrity: "We do what we say we will do, when we say we will do it." That's why every number tonight carries its source, and every failure stays on the page.
 Mintek's work helped make UG2 commercially viable. We want to help it be read in real time: by a young metallurgist, on a phone, at the belt, on a Tuesday night shift, just after the power goes off.
 We have always read the ore days late. (beat) Let's read it on the belt.
-(If the QR deployment is live:) Scan the code. It's live. Try to break it. Thank you."""),
+Scan the code. It's live, right now, on your phone. Try to break it. Thank you."""),
 }
 
 
@@ -424,18 +445,24 @@ text(s, 0.6, 5.55, 4, 0.3, "TEAM SONAR", size=11, color=COPPER, font=BODYB, bold
 text(s, 0.6, 5.85, 8.0, 0.4, [[("Lethabo Hoaeane", {"bold": True, "font": BODYB}), ("  Unisa      ", {"color": SOFT}),
                                ("Sibusiso Khumalo", {"bold": True, "font": BODYB}), ("  Wits      ", {"color": SOFT}),
                                ("Ipeleng Modise", {"bold": True, "font": BODYB}), ("  TUT", {"color": SOFT})]], size=14, color=WHITE)
-pic(s, G["lens"], 8.75, 1.35, w=3.9)
-text(s, 8.75, 5.35, 3.9, 0.5, "Real micrograph, LumenStone S2 test_11: the pentlandite and pyrrhotite the app separates.",
-     size=10, color=SOFT, align=PP_ALIGN.CENTER, line=1.05)
+pic(s, G["cube"], 7.55, 1.35, w=5.2, h=2.76)
+lp = pic(s, G["lens"], 10.75, 3.3, w=2.0, h=2.0)
+lp.name = "!!lens"
+text(s, 7.55, 5.45, 3.1, 0.8, "Real hyperspectral data cube and spectral clusters from the live app (HIDSAG drill core, CC0): what the belt camera sees.",
+     size=10, color=SOFT, line=1.05)
 source(s, "Background: illustrative stock footage still (Mixkit free licence), not a REEFPRINT site.", dark=True)
 notes(s, 1)
 
 # 2 — The problem: a timeline the audience can read in 3 seconds
 s = new_slide()
 chrome(s, "The problem", "The plant decides blind, every shift.")
+qb = box(s, 0.6, 1.92, 12.13, 0.62, fill=NAVY, radius=0.1)
+text(s, 0.85, 2.0, 11.7, 0.5, [[("The brief, in its own words:  ", {"bold": True, "font": BODYB, "color": COPPER}),
+                                ("“without real-time feedback, processing plants cannot adjust to changes in ore quality, leading to inefficient chemical usage and lower mineral yields.”",
+                                 {"italic": True, "color": WHITE})]], size=12.5, line=1.0)
 X0, X1, HMAX = 0.95, 8.15, 80.0
 sx = (X1 - X0) / HMAX
-AX = 4.55
+AX = 4.85
 box(s, X0, AX, X1 - X0, 0.04, fill=INK, shape=MSO_SHAPE.RECTANGLE)
 for h in range(0, 73, 8):
     box(s, X0 + h * sx - 0.008, AX - 0.08, 0.016, 0.2, fill=MUTED, shape=MSO_SHAPE.RECTANGLE)
@@ -444,31 +471,31 @@ for h in (0, 24, 48, 72):
 text(s, X0 + 8 * sx - 0.2, AX + 0.18, 1.2, 0.25, "8-h shift ticks", size=9, color=MUTED)
 # belt -> mill marker
 box(s, X0 - 0.13, AX - 0.11, 0.26, 0.26, fill=COPPER, shape=MSO_SHAPE.OVAL)
-text(s, X0 - 0.35, 2.15, 3.0, 0.9, [[("Ore reaches the mill", {"bold": True, "font": BODYB})], "in minutes (90 s assumed)"],
+text(s, X0 - 0.35, 2.75, 3.0, 0.7, [[("Ore reaches the mill", {"bold": True, "font": BODYB})], "in minutes (90 s assumed)"],
      size=12, color=INK, line=1.05)
-box(s, X0 - 0.01, 3.0, 0.02, AX - 3.0, fill=COPPER, shape=MSO_SHAPE.RECTANGLE)
+box(s, X0 - 0.01, 3.4, 0.02, AX - 3.4, fill=COPPER, shape=MSO_SHAPE.RECTANGLE)
 # fire assay window
-fa = box(s, X0 + 24 * sx, 3.55, 48 * sx, 0.62, fill=MAG_L, line=MAG, radius=0.1)
+fa = box(s, X0 + 24 * sx, 3.95, 48 * sx, 0.6, fill=MAG_L, line=MAG, radius=0.1)
 label_in(fa, [[("Fire assay returns: 24–72 h", {"bold": True, "font": BODYB})]], size=12, color=RGBColor(0x6B, 0x4E, 0x00))
 # QEMSCAN beyond
-q = box(s, X0 + 60 * sx, 2.65, 21 * sx + 0.25, 0.62, fill=PENT, shape=MSO_SHAPE.PENTAGON)
+q = box(s, X0 + 60 * sx, 3.1, 21 * sx + 0.25, 0.62, fill=PENT, shape=MSO_SHAPE.PENTAGON)
 label_in(q, [[("QEMSCAN: days", {"bold": True, "font": BODYB})], "US$1,500 a sample"], size=10.5, color=WHITE)
 # ore milled while waiting: a wedge
-w = s.shapes.add_shape(MSO_SHAPE.RIGHT_TRIANGLE, Inches(X0), Inches(AX + 0.55), Inches(72 * sx), Inches(1.15))
+w = s.shapes.add_shape(MSO_SHAPE.RIGHT_TRIANGLE, Inches(X0), Inches(AX + 0.5), Inches(72 * sx), Inches(0.85))
 w.fill.solid()
 w.fill.fore_color.rgb = COPPER_L
 w.line.fill.background()
 etree.SubElement(w.element.spPr, qn("a:effectLst"))
 w.element.spPr.find(qn("a:xfrm")).set("flipH", "1")  # zero at 0 h, tallest at 72 h
-text(s, X0 + 72 * sx - 2.3, AX + 1.75, 2.45, 0.5, [[(f"{N['kt72']:.1f} kt", {"size": 22, "font": HEAD, "bold": True, "color": COPPER})]],
+text(s, X0 + 72 * sx - 2.3, AX + 1.38, 2.45, 0.5, [[(f"{N['kt72']:.1f} kt", {"size": 22, "font": HEAD, "bold": True, "color": COPPER})]],
      align=PP_ALIGN.RIGHT)
-text(s, X0 + 24 * sx - 0.8, AX + 1.75, 1.6, 0.5, [[(f"{N['kt24']:.1f} kt", {"size": 16, "font": HEAD, "bold": True, "color": COPPER})]],
+text(s, X0 + 24 * sx - 0.8, AX + 1.38, 1.6, 0.5, [[(f"{N['kt24']:.1f} kt", {"size": 16, "font": HEAD, "bold": True, "color": COPPER})]],
      align=PP_ALIGN.CENTER)
-text(s, X0 + 0.05, AX + 0.6, 3.0, 0.5, "ore milled before the answer arrives, at a Zondereinde-size plant (2.25 Mt a year)",
-     size=10.5, color=INK, line=1.03)
-tag(s, X0 + 0.05, AX + 1.12, "ASSUMPTION")
+text(s, X0 + 0.05, AX + 0.5, 3.2, 0.5, "ore milled before the answer arrives, at a Zondereinde-size plant (2.25 Mt a year)",
+     size=10, color=INK, line=1.0)
+tag(s, X0 + 3.4, AX + 0.55, "ASSUMPTION")
 # who waits
-text(s, 8.85, 2.15, 3.9, 0.35, "WHO WAITS, AND FOR WHAT", size=11, color=COPPER, font=BODYB, bold=True)
+text(s, 8.85, 2.72, 3.9, 0.35, "WHO WAITS, AND FOR WHAT", size=11, color=COPPER, font=BODYB, bold=True)
 WHO = [("Geologist", "grade control from drill core, not the blend on the belt", PYRR),
        ("Mineralogist", "a QEMSCAN queue measured in days", PENT),
        ("Chemist", "fire assay: 24–72 h, by design", MAG),
@@ -477,7 +504,7 @@ WHO = [("Geologist", "grade control from drill core, not the blend on the belt",
        ("CEO & plant manager", "recovery is revenue: every blind tonne is a guess", NAVY),
        ("Policy makers", "beneficiation, energy and jobs ride on recovery", GREEN)]
 for i, (r, d_, c) in enumerate(WHO):
-    y = 2.55 + i * 0.6
+    y = 3.05 + i * 0.555
     box(s, 8.85, y + 0.07, 0.14, 0.14, fill=c, shape=MSO_SHAPE.OVAL)
     text(s, 9.1, y, 3.65, 0.6, [[(r, {"bold": True, "font": BODYB, "size": 12})], [(d_, {"size": 10.5, "color": MUTED})]], line=1.0)
 source(s, "Fire assay 24–72 h [S]; QEMSCAN US$1,500/sample: Saskatchewan Research Council price list 4/2017 [P]. Tonnes: Northam F2025 Zondereinde tonnes milled "
@@ -517,15 +544,17 @@ CARDS = [("MICROSCOPE · KHANYA", G["kh_thumb"], "~80 s", "for a quick six-field
 for i, (h, im, big, lab, tg, c) in enumerate(CARDS):
     x = 0.6 + i * 4.18
     box(s, x, 2.1, 3.85, 3.55, fill=PAPER, radius=0.14)
-    p = pic(s, im, x + 0.2, 2.3, w=3.45)
-    if p.height > Inches(1.75):
-        p.height = Inches(1.75)
+    p = pic(s, im, x + 0.2, 2.3, w=3.45, h=1.75)
     text(s, x + 0.2, 4.15, 3.45, 0.3, h, size=10.5, color=c, font=BODYB, bold=True)
     text(s, x + 0.2, 4.4, 1.6, 0.6, big, size=30, color=INK, font=HEAD, bold=True)
     text(s, x + 1.65, 4.48, 2.05, 0.95, lab, size=10.5, color=INK, line=1.03)
     tag(s, x + 0.2, 5.25, tg)
     if i < 2:
         arrow(s, x + 3.92, 3.7, 0.2, 0.32, color=COPPER)
+tb_ = box(s, 7.3, 1.2, 4.6, 0.62, fill=NAVY, radius=0.1)
+text(s, 7.48, 1.24, 4.3, 0.56, [[("WHERE WE STAND  ", {"bold": True, "font": BODYB, "color": COPPER, "size": 10}),
+                                ("TRL 4 (self-assessed)", {"bold": True, "font": BODYB, "color": WHITE, "size": 13})],
+                               [("validated end to end on held-out public data; live online · pilot → TRL 6–7", {"color": SOFT, "size": 9.5})]], line=1.0)
 text(s, 0.6, 5.88, 3.0, 0.3, "THE BRIEF, TICKED", size=11, color=COPPER, font=BODYB, bold=True)
 TICKS = ["≥ 3 mineral phases", "Accuracy report", "Adjusts a plant parameter", "Real-time: 92 ms · ~80 s", "Integrates: OPC UA, APC"]
 for i, t in enumerate(TICKS):
@@ -634,7 +663,7 @@ notes(s, 7)
 
 # 8 — Demo video
 s = new_slide(dark=True)
-chrome(s, "The demo · 2:25", "From the pit to the control room.", dark=True)
+chrome(s, "The demo · 3:03", "From the pit to the control room.", dark=True)
 VW = 8.75
 VH = VW * 9 / 16
 vx = (13.333 - VW) / 2
@@ -662,62 +691,75 @@ text(s, 4.85, 5.0, 3.5, 0.3, "FITS A REAL PLANT", size=10, color=COPPER, font=BO
 text(s, 4.85, 5.3, 3.5, 1.5, ["Specim SX25: 12.3 mm lines at 2 m/s → parcel-level, not particle-level",
                              "Design: IP66 enclosure (assumed rating), purge air, white and wavelength references",
                              "No radioactive source, unlike PGNAA"], size=10.5, color=INK, line=1.05, spacing=3)
-RIGHT = [("POWER CUTS & LOAD-SHEDDING", "UPS ride-through. Append-only record with torn-write recovery. After a restart the conservative setting holds until the checks pass."),
-         ("CYBER & RANSOMWARE", "Roles, sessions, CSRF, rate limits, encrypted uploads, and offline signed checkpoints for a verified restore."),
-         ("QUANTUM-SAFE", "Hybrid Ed25519 + ML-DSA-65 checkpoints; X25519 + ML-KEM-768 exports. NIST FIPS 203/204, August 2024.")]
+RIGHT = [("POWER CUTS & LOAD-SHEDDING", "UPS ride-through; append-only record survives a torn write; after a restart the safe setting holds until checks pass."),
+         ("RANSOMWARE & HACKING", "Ransomware hit a SA PGM producer in 2024. Ours: AES-256-GCM sealed offline backups + signed checkpoints kept off the server, so a restore can PROVE nothing was altered. No web admin; deny-by-default roles; scrypt + lockout; CSRF, strict CSP, rate limits; uploads re-encoded. 17 security tests; 9 CVEs patched."),
+         ("QUANTUM-SAFE", "Ed25519 + ML-DSA-65 signed checkpoints; X25519 + ML-KEM-768 exports (NIST FIPS 203/204).")]
+YS, HS = [2.05, 3.3, 5.6], [1.12, 2.18, 1.12]
 for i, (h, d_) in enumerate(RIGHT):
-    y = 2.05 + i * 1.6
-    box(s, 8.85, y, 3.9, 1.45, fill=INK if i == 2 else PAPER, radius=0.12)
+    y = YS[i]
+    box(s, 8.85, y, 3.9, HS[i], fill=INK if i == 1 else PAPER, radius=0.12)
     text(s, 9.05, y + 0.15, 3.5, 0.3, h, size=10, color=COPPER, font=BODYB, bold=True)
-    text(s, 9.05, y + 0.45, 3.55, 1.0, d_, size=10.5, color=WHITE if i == 2 else INK, line=1.05)
+    text(s, 9.05, y + 0.42, 3.55, HS[i] - 0.45, d_, size=10 if i == 1 else 10.5, color=WHITE if i == 1 else INK, line=1.03)
 source(s, "training/physics-checks-20261002, hidsag-v9-robustness-20261002 (RESULT.md), installation-20261002/sensor_geometry.py (Specim SX25 datasheet [P]); "
           "docs/18, 19, 21. Belt width 1.2 m and speed 2 m/s ASSUMED. Security: test_secure_server.py, Bandit 0, pip-audit clean (2026-10-02).")
 notes(s, 9)
 
-# 10 — Value and impact
+# 10 — The money, and why Mintek needs it
 s = new_slide()
-chrome(s, "Value and impact", "Break-even is a fraction of a point.")
+chrome(s, "The money · and why Mintek needs it", "Who pays, how it pays back, why Mintek needs it.")
+MONEY = [("WHO PAYS", "The producer (GM metallurgy). Pilot: US$0.5–3 M installed; then a subscription of ≤ 20% of the value we MEASURE. No value, no fee."),
+         ("THE PRIZE", f"R{N['pp_zond'][0] / 1e6:.0f}–{N['pp_zond'][1] / 1e6:.0f} M a year per recovery point at one plant; R{N['pp_impl'][0] / 1e9:.1f}–{N['pp_impl'][1] / 1e9:.1f} bn at group scale.")]
+for i, (h, d_) in enumerate(MONEY):
+    y = 2.0 + i * 1.02
+    box(s, 0.6, y, 6.45, 0.92, fill=PAPER, radius=0.12)
+    text(s, 0.8, y + 0.1, 1.4, 0.3, h, size=10, color=COPPER, font=BODYB, bold=True)
+    text(s, 2.15, y + 0.1, 4.8, 0.8, d_, size=10.5, color=INK, line=1.03)
 cd = CategoryChartData()
-cd.categories = ["Pilot break-even, best case", "Pilot break-even, worst case", "Valterra Mototolo, 2025", "Valterra Amandelbult, 2025"]
+cd.categories = ["Break-even, best case", "Break-even, worst case", "Valterra Mototolo 2025", "Valterra Amandelbult 2025"]
 cd.add_series("Recovery points", [round(N["breakeven"][0], 2), round(N["breakeven"][1], 2), 1.0, 2.0])
-gf = s.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, Inches(0.6), Inches(2.35), Inches(6.5), Inches(3.3), cd)
+gf = s.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, Inches(0.6), Inches(4.35), Inches(6.45), Inches(1.95), cd)
 ch = gf.chart
-style_chart(ch, 11)
+style_chart(ch, 10)
 ch.has_title = False
 pl = ch.plots[0]
-pl.gap_width = 55
+pl.gap_width = 40
 pl.has_data_labels = True
 pl.data_labels.number_format = '+0.00" pp";-0.00" pp"'
 pl.data_labels.number_format_is_linked = False
 pl.data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
-pl.data_labels.font.size = Pt(11)
+pl.data_labels.font.size = Pt(10)
 pl.data_labels.font.bold = True
 for i, pt in enumerate(pl.series[0].points):
     pt.format.fill.solid()
     pt.format.fill.fore_color.rgb = COPPER if i < 2 else INK
 va = ch.value_axis
-va.minimum_scale, va.maximum_scale = 0, 2.5
+va.minimum_scale, va.maximum_scale = 0, 2.6
 va.visible = False
 va.has_major_gridlines = False
 ch.category_axis.reverse_order = True
 ch.category_axis.format.line.fill.background()
-text(s, 0.6, 2.02, 6.5, 0.3, "Recovery gain needed to pay back a belt pilot, versus moves already reported", size=11, color=INK, font=BODYB, bold=True)
-tagcap(s, 0.6, 5.85, "ASSUMPTION", "break-even: US$0.5–3 M capex, US$0.1–0.6 M a year opex, 5 years at 10%", w=6.5, size=10)
-tagcap(s, 0.6, 6.25, "SOURCE", "Valterra Platinum 2025 results: recovery moves at two concentrators [P]", w=6.5, size=10)
-IMPACT = [("Money", f"R{N['pp_zond'][0] / 1e6:.0f}–{N['pp_zond'][1] / 1e6:.0f} M a year per recovery point at one plant; R{N['pp_impl'][0] / 1e9:.1f}–{N['pp_impl'][1] / 1e9:.1f} bn at group scale (ASSUMED)"),
-          ("Time", "Days become seconds: a bound before the ore reaches the mill, not an assay after it has gone"),
-          ("Energy", f"When a parcel is harder than planned, the energy shortfall falls from {N['short_blind']:.0%} to {N['short_dep']:.0%} (sim_)"),
-          ("Skilled jobs", "Instrument technicians and data-literate metallurgists; a named person approves every action"),
-          ("Safety & environment", "No radioactive source; fewer severe overloads; chromite control protects the smelter"),
-          ("Sovereignty & access", "Runs offline on site, data stays home; a laptop or a phone is enough to use it")]
-for i, (h, d_) in enumerate(IMPACT):
-    x = 7.45 + (i % 2) * 2.7
-    y = 2.05 + (i // 2) * 1.58
-    box(s, x, y, 2.55, 1.45, fill=PAPER, radius=0.12)
-    text(s, x + 0.17, y + 0.12, 2.25, 0.3, h.upper(), size=10, color=COPPER, font=BODYB, bold=True)
-    text(s, x + 0.17, y + 0.42, 2.25, 1.0, d_, size=10, color=INK, line=1.03)
-source(s, "training/economics-20261002 (V1, V4; payability and net 4E price ASSUMED, R32,611/oz basket [P]); value-chain-20261002 (energy shortfall when overloaded, "
-          "sim_ on HIDSAG). Valterra 2025 [P]. Nothing here is a site measurement: the pilot measures it.")
+text(s, 0.6, 4.08, 6.45, 0.3, "PAYBACK: the pilot needs a fraction of the moves the industry already reports", size=10, color=COPPER, font=BODYB, bold=True)
+tagcap(s, 0.6, 6.38, "ASSUMPTION", "money inputs (payability, net price, capex/opex grid); Valterra 2025 moves are [P]", w=6.45, size=9.5)
+box(s, 7.35, 2.0, 5.38, 4.65, fill=NAVY, radius=0.14)
+text(s, 7.6, 2.15, 5.0, 0.35, "WHY MINTEK NEEDS THIS, NOT 'MIGHT LIKE IT'", size=11, color=COPPER, font=BODYB, bold=True)
+NEED = [("Its mandate, as software.", "“Utilising minerals to drive sustainable industry development and inclusive economic growth”: Mintek Shareholder Compact 2023."),
+        ("More truth-lab work, not less.", "Every pilot buys QEMSCAN/MLA composites to train and audit the model, and Mintek runs both."),
+        ("Feed-forward for its own APC.", "A belt hardness bound that MillStar/FloatStar can act on inside their limits: control from the ore itself."),
+        ("IP that stays South African.", "Licensed through MOTT with invention credits, while the alternatives on the market are foreign (Plotlogic, MineSense, IntelliSense.io).")]
+for i, (h, d_) in enumerate(NEED):
+    y = 2.6 + i * 1.0
+    numdot(s, 7.6, y + 0.03, i + 1, color=COPPER, d=0.34, size=10)
+    text(s, 8.08, y, 4.5, 0.95, [[(h, {"bold": True, "font": BODYB, "size": 12, "color": WHITE})], [(d_, {"size": 10, "color": RGBColor(0xDC, 0xE3, 0xEB)})]], line=1.02)
+IMP = ["Skilled jobs", f"Overload energy shortfall {N['short_blind']:.0%} → {N['short_dep']:.0%} (sim_)", "No radioactive source", "Data stays on site", "Offline on one laptop"]
+x = 0.6
+for t_ in IMP:
+    wdt = 0.3 + 0.075 * len(t_)
+    c_ = box(s, x, 6.72, wdt, 0.28, fill=GREEN_L, radius=0.14)
+    label_in(c_, t_, size=8.5, color=INK, bold=True, font=BODYB)
+    c_.text_frame.margin_top = c_.text_frame.margin_bottom = 0
+    x += wdt + 0.1
+source(s, "Economics V1/V4 (training/economics-20261002, ASSUMED inputs). Mintek Shareholder Compact 2023 [P]. FloatStar/MillStar and Mintek's QEMSCAN/MLA: docs/20 [P]/[S]. "
+          "Competitors: docs/20 (vendor claims [V]). Subscription share is a hypothesis to test.")
 notes(s, 10)
 
 # 11 — Pathway
@@ -730,12 +772,14 @@ for i, (a, b_) in enumerate(CHEV):
     c = box(s, x, 2.05, 2.13, 0.85, fill=INK if i < 5 else COPPER, shape=MSO_SHAPE.CHEVRON if i else MSO_SHAPE.PENTAGON)
     label_in(c, [[(a, {"bold": True, "size": 10.5, "font": BODYB, "color": COPPER_L if i < 5 else WHITE})], [(b_, {"size": 9})]], color=WHITE)
     c.text_frame.margin_left = Inches(0.3)
+for i, trl in enumerate(["TRL 4 · today", "TRL 5", "TRL 6", "TRL 7", "TRL 7", "TRL 8"]):
+    text(s, 0.6 + i * 1.99, 2.93, 2.1, 0.25, trl, size=9.5, color=COPPER if i == 0 else MUTED, font=BODYB, bold=True, align=PP_ALIGN.CENTER)
 rows = [("Step", "What it costs", "Status"),
         ("1 · Lab pilot (KHANYA)", "~R210,000 paid pilot, then ~R12,000 a month licence + deployment fee", "HYPOTHESIS"),
         ("2 · Belt pilot (one concentrator)", "US$0.5–3.0 M installed + US$0.1–0.6 M a year for sampling, Bond tests, QEMSCAN, support", "ASSUMPTION"),
         ("3 · Scale", "Subscription ≤ 20% of the measured net value, per concentrator per year: no value, no fee", "ASSUMPTION"),
         ("Break-even", f"{N['breakeven'][0]:.2f}–{N['breakeven'][1]:.2f} recovery points", "ASSUMPTION")]
-tb = s.shapes.add_table(len(rows), 3, Inches(0.6), Inches(3.15), Inches(7.0), Inches(2.5)).table
+tb = s.shapes.add_table(len(rows), 3, Inches(0.6), Inches(3.3), Inches(7.0), Inches(2.4)).table
 tb.columns[0].width, tb.columns[1].width, tb.columns[2].width = Inches(2.05), Inches(3.85), Inches(1.1)
 for r, row in enumerate(rows):
     for c_, val in enumerate(row):
@@ -757,7 +801,7 @@ WHO2 = [("Producer · buyer", "GM metallurgy at Valterra, Implats, Sibanye-Still
         ("Funding · the ask", "TIA technology-development funding, with producer co-funding"),
         ("Team Sonar · 3 FTE", "product and domain · ML and computer vision · software, security and deployment")]
 for i, (h, d_) in enumerate(WHO2):
-    y = 3.15 + i * 0.64
+    y = 3.3 + i * 0.62
     numdot(s, 7.95, y + 0.04, i + 1, color=COPPER if i == 2 else INK, d=0.32, size=10)
     text(s, 8.4, y, 4.35, 0.65, [[(h, {"bold": True, "font": BODYB, "size": 11})], [(d_, {"size": 9.5, "color": MUTED})]], line=1.0)
 rb = box(s, 0.6, 5.9, 7.0, 0.95, fill=PAPER, radius=0.12)
@@ -790,9 +834,10 @@ text(s, 0.6, 4.55, 9.4, 1.2, [[("We have always read the ore days late.", {"colo
      size=30, font=HEAD, bold=True, line=1.05)
 text(s, 0.6, 6.0, 9.2, 0.6, [[("The ask: ", {"bold": True, "font": BODYB, "color": WHITE}),
                               ("one belt · one truth lab · nine months · paid on measured value.", {"color": RGBColor(0xDC, 0xE3, 0xEB)})]], size=14)
-qr = box(s, 10.55, 4.35, 2.2, 2.2, fill=WHITE, radius=0.1)
-label_in(qr, [[("QR", {"bold": True, "size": 22, "font": BODYB})], [("generated from the live https link at deploy (deploy/make_qr.py)", {"size": 8.5, "color": MUTED})]], color=INK)
-text(s, 10.55, 6.62, 2.2, 0.3, "Scan · try it · break it", size=10.5, color=WHITE, align=PP_ALIGN.CENTER, font=BODYB, bold=True)
+box(s, 10.45, 4.25, 2.3, 2.3, fill=WHITE, radius=0.1)
+pic(s, os.path.join(IMG, "qr_live.png"), 10.55, 4.35, w=2.1, h=2.1)
+text(s, 10.2, 6.6, 2.8, 0.4, [[("Scan · try it live", {"bold": True, "font": BODYB, "size": 11, "color": WHITE})],
+                              [(QR_URL, {"size": 7.5, "color": SOFT})]], align=PP_ALIGN.CENTER, line=1.0)
 source(s, "Mintek values and mission: Mintek Shareholder Compact 2023 [P]. Background: illustrative stock still (Mixkit).", dark=True)
 notes(s, 12)
 

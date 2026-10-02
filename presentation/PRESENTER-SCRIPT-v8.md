@@ -80,7 +80,7 @@ The metallurgist has ninety seconds, the time it takes to reach the mill. Approv
 
 Replayed over 146 real drill-core samples, this policy pushed 1.9% more tonnes through the same mill, with no more overloads. Simulated, and provisional: the pilot confirms it. And the flotation? At most a quarter of a point on the steep part of the curve; nothing on the plateau.
 
-## 7. Innovation: the brain  (4:30–5:10)
+## 7. Innovation: the brain  (4:25–5:00)
 
 Now, the brain. Five layers.
 
@@ -96,37 +96,35 @@ PROVE: every decision is hash-chained and signed twice, once classically and onc
 
 All of it runs offline, on one laptop, in ninety-two milliseconds a parcel.
 
-## 8. Demo video  (5:10–7:35)
+## 8. Demo video  (5:00–8:05)
 
-"Let me show you." (Click to play. The video runs 2:25. Stand to the side and watch the screen with the audience.)
+"Let me show you." (Click to play. The video runs 3:03. Stand to the side and watch the screen with the audience.)
 
 If the video fails: open the app, Continue as guest, then Decisions, Approve proposal, Verify chain, Signed checkpoint. Then the Evidence tab.
 
-## 9. Feasibility  (7:35–8:05)
+## 9. Feasibility  (8:05–8:30)
 
-Is it actually possible? We tested every claim against its physics, and the failures stay on the page.
+Is it actually possible? Every claim against its physics, failures on the page: one money story we REJECTED ourselves.
 
-Hardness to tonnes: provisional pass. Flotation: check the headroom first. "More tonnes during load-shedding by re-ordering ore": tested, and REJECTED, because energy is conserved.
+And security, because mines get hacked: a South African PGM producer was hit by ransomware in 2024. If that happens to us, the plant restores from sealed offline backups, and the signed checkpoints PROVE nothing was altered. No web admin to attack, deny-by-default roles, seventeen security tests, and signatures built to survive quantum computers.
 
-Unseen captures: the accuracy holds. Wavelength drift: that's our real weak spot, so the design adds a hardware calibration gate.
+## 10. Value and impact  (8:30–9:10)
 
-Power cut: the record survives and the safe setting applies. Attack: role-based sign-in, encrypted uploads, seventeen security tests, and signatures built to stay secure against quantum computers.
+Now the money, because this has to pay. The producer pays for a pilot, then a share of the value we MEASURE. If we don't move the number, we don't get paid.
 
-## 10. Value and impact  (8:05–8:45)
+One recovery point is worth R64 M to R153 M a year at ONE plant. The pilot pays for itself at 0.04 to 0.26 of a point. Valterra moved whole points last year.
 
-So what's it worth? Look at this chart. The pilot pays for itself somewhere between 0.04 and 0.26 of a recovery point. Valterra reported moves of one and two WHOLE points last year. The bar we must clear is tiny next to the moves this industry already makes.
+And Mintek doesn't just like this, Mintek NEEDS it. It is Mintek's own mandate, in software. Every pilot buys QEMSCAN work from Mintek's lab. It gives Mintek's own MillStar and FloatStar a feed-forward signal from the ore itself. And the IP stays in South Africa, through MOTT, while every alternative on the market is foreign.
 
-For the metallurgist: a decision in seconds, not days. For the CEO: recovery, which is revenue. For the country: less energy lost when the mill is overloaded, no radioactive source on site, data that stays on site, and new skilled jobs, with a named person in charge of every decision.
+## 11. The pathway  (9:10–9:40)
 
-## 11. The pathway  (8:45–9:25)
-
-The pathway. Step one: a lab pilot with KHANYA, about two hundred and ten thousand rand, then a monthly licence. Step two: one belt, shadow mode for three months, advisory for three. Installed: half a million to three million US dollars, and it breaks even at a fraction of a point. Step three: a subscription priced as a share of the value we MEASURE. If we don't move the number, we don't get paid.
+Where we stand: TRL 4, validated end to end on held-out public data, and live online right now. The pilot takes us to TRL 6 and 7. The pathway. Step one: a lab pilot with KHANYA, about two hundred and ten thousand rand, then a monthly licence. Step two: one belt, shadow mode for three months, advisory for three. Installed: half a million to three million US dollars, and it breaks even at a fraction of a point. Step three: a subscription priced as a share of the value we MEASURE. If we don't move the number, we don't get paid.
 
 We need three partners: a producer with a belt; Mintek, as the truth lab and our route into FloatStar and MillStar; and development funding, with TIA the natural route.
 
 And after ONE mentor session with a chemist, a mineralogist and a metallurgist, we made 38 commits in twenty-four hours. Imagine what a site does for us.
 
-## 12. Close  (9:25–10:00)
+## 12. Close  (9:40–10:10)
 
 Mintek has five values. One of them is integrity: "We do what we say we will do, when we say we will do it." That's why every number tonight carries its source, and every failure stays on the page.
 
@@ -134,7 +132,7 @@ Mintek's work helped make UG2 commercially viable. We want to help it be read in
 
 We have always read the ore days late. (beat) Let's read it on the belt.
 
-(If the QR deployment is live:) Scan the code. It's live. Try to break it. Thank you.
+Scan the code. It's live, right now, on your phone. Try to break it. Thank you.
 
 ## Questions judges are likely to ask
 
@@ -162,4 +160,4 @@ Two clean, dated git histories. We follow Mintek's MOTT process and invention cr
 **What does it cost?**  
 Lab pilot about R210,000 as a hypothesis; a belt pilot US$0.5–3 M installed. It breaks even at 0.04–0.26 recovery points. After that we charge a share of measured value.
 
-*Spoken words outside the video: 1282.*
+*Spoken words outside the video: 1314.*

@@ -10,7 +10,11 @@ Environment:
     REEFPRINT_DATA_KEY        32-byte base64 data key (production: from a secret store; demo: a key file is created)
     REEFPRINT_HOSTS           extra allowed Host values, comma-separated (e.g. the public hostname behind a tunnel)
     REEFPRINT_SECURE_COOKIES  1 behind TLS (adds Secure to cookies and HSTS)
-    REEFPRINT_TRUST_PROXY     1 only behind a trusted proxy (then CF-Connecting-IP is used for rate limits)
+    REEFPRINT_TRUST_PROXY     1 only behind a trusted proxy (then CF-Connecting-IP, else the first X-Forwarded-For entry, keys rate limits;
+                          global per-path ceilings still apply, so a forged header cannot lift the total)
+REEFPRINT_FRAME_ANCESTORS space-separated origins allowed to frame the app (default none; e.g. https://huggingface.co)
+REEFPRINT_SEED_USERS      staff accounts to create at start if missing: "username:role:scrypt$..." separated by ";".
+                          Hashes only (manage.py hash-password); never a password. For hosts without a shell.
     REEFPRINT_ALLOW_EXTERNAL_LLM  1 to let the router call AIML/Featherless (question text leaves the machine)
 
 The offline demo server (server.py) is unchanged and still works without any of this.
@@ -38,12 +42,14 @@ HOSTS = {f"127.0.0.1:{PORT}", f"localhost:{PORT}"} | {h.strip() for h in os.envi
 SECURE_COOKIE = os.environ.get("REEFPRINT_SECURE_COOKIES") == "1"
 TRUST_PROXY = os.environ.get("REEFPRINT_TRUST_PROXY") == "1"
 ALLOW_EXT_LLM = os.environ.get("REEFPRINT_ALLOW_EXTERNAL_LLM") == "1"
+FRAME_ANCESTORS = " ".join(o for o in os.environ.get("REEFPRINT_FRAME_ANCESTORS", "").split() if o.startswith("https://")) or "'none'"
 COOKIE = "reef_sess"
 CSP = ("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob:; "
-       "connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'")
+       "connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors " + FRAME_ANCESTORS)
 LIMITS = {"/api/login": int(os.environ.get("REEFPRINT_LOGIN_LIMIT_PER_MIN", "10")), "/api/guest": 20, "/api/route": 20, "/api/upload/csv": 10, "/api/upload/image": 10}
 GUEST_LIMITS = {"/api/route": 5, "/api/upload/csv": 5, "/api/upload/image": 5}
 DEFAULT_LIMIT = 120
+GLOBAL_LIMITS = {"/api/login": 120, "/api/guest": 600, "/api/route": 300, "/api/upload/csv": 120, "/api/upload/image": 120}  # all clients together
 MAX_BODY = {"/api/upload/csv": ingest.MAX_CSV, "/api/upload/image": ingest.MAX_IMG}
 DEFAULT_BODY = 8000
 
@@ -52,6 +58,30 @@ store.init(str(DB))
 store.init(str(SANDBOX))
 VAULT = vlt.Vault(str(DATA / "keys"), os.environ.get("REEFPRINT_DATA_KEY"))
 VAULT_SANDBOX = vlt.Vault(str(DATA / "keys_sandbox"))   # guests never get a signature from the production key
+
+
+def seed_users():
+    """Create staff accounts from REEFPRINT_SEED_USERS (scrypt hashes) when the host has no shell for manage.py."""
+    raw = os.environ.get("REEFPRINT_SEED_USERS", "")
+    if not raw.strip():
+        return
+    con = store.connect(str(DB))
+    try:
+        for item in raw.replace("\n", ";").split(";"):
+            parts = item.strip().split(":", 2)
+            if len(parts) != 3:
+                continue
+            name, role, h = parts
+            if role not in rbac.STAFF or not h.startswith("scrypt$") or not name.isascii() or not 2 <= len(name) <= 40:
+                continue
+            if con.execute("SELECT 1 FROM users WHERE username = ?", (name,)).fetchone() is None:
+                con.execute("INSERT INTO users(username, role, pw, created) VALUES (?,?,?,?)", (name, role, h, time.time()))
+        con.commit()
+    finally:
+        con.close()
+
+
+seed_users()
 REGISTRY = json.load(open(ROOT / "live" / "targets.json", encoding="utf-8"))
 
 
@@ -83,7 +113,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header("Content-Security-Policy", CSP)
         self.send_header("X-Content-Type-Options", "nosniff")
-        self.send_header("X-Frame-Options", "DENY")
+        if FRAME_ANCESTORS == "'none'":
+            self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "no-referrer")
         self.send_header("Permissions-Policy", "camera=(self), microphone=(), geolocation=(), payment=(), usb=()")
         self.send_header("Cross-Origin-Opener-Policy", "same-origin")
@@ -113,8 +144,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         return urllib.parse.urlparse(o).netloc in HOSTS
 
     def _client(self):
-        if TRUST_PROXY and self.headers.get("CF-Connecting-IP"):
-            return self.headers["CF-Connecting-IP"][:64]
+        if TRUST_PROXY:
+            if self.headers.get("CF-Connecting-IP"):
+                return self.headers["CF-Connecting-IP"][:64]
+            xff = self.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+            if xff:
+                if xff.count(":") == 1:          # Azure's front end sends ip:port
+                    xff = xff.split(":")[0]
+                return xff[:64]
         return self.client_address[0]
 
     def _token(self):
@@ -133,6 +170,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         limit = (GUEST_LIMITS.get(path) if guest else None) or LIMITS.get(path, DEFAULT_LIMIT)
         now, key = time.time(), f"{path}|{who}"
         con.execute("DELETE FROM hits WHERE ts < ?", (now - 60,))
+        if path in GLOBAL_LIMITS and con.execute("SELECT COUNT(*) FROM hits WHERE key LIKE ? AND ts >= ?",
+                                                 (path.replace("%", "") + "|%", now - 60)).fetchone()[0] >= GLOBAL_LIMITS[path]:
+            return False
         n = con.execute("SELECT COUNT(*) FROM hits WHERE key = ? AND ts >= ?", (key, now - 60)).fetchone()[0]
         if n >= limit:
             return False

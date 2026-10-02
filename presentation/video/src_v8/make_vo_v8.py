@@ -1,4 +1,4 @@
-"""Synthesise the v8 narration with edge-tts (Microsoft en-GB-RyanNeural, synthetic voice); record durations and word timings.
+﻿"""Synthesise the v8 narration with edge-tts (Microsoft en-GB-RyanNeural, synthetic voice); record durations and word timings.
 
 python make_vo_v8.py [VOICE] [ONLY_KEYS]   -> vo/<VOICE>/<key>.wav, durations.json, words.json
 """
@@ -11,7 +11,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FF = r"C:\Users\USER\Desktop\REEFPRINT\.workbench\media-tools\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe"
 VOICE = sys.argv[1] if len(sys.argv) > 1 else "en-GB-RyanNeural"
 ONLY = set(sys.argv[2].split(",")) if len(sys.argv) > 2 else None
-OUT = os.path.join(HERE, "vo", VOICE)
+OUT = os.path.join(HERE, "vo", os.environ.get("REEF_VODIR", VOICE))
 os.makedirs(OUT, exist_ok=True)
 SAY = {"KHANYA": "Kaanya", "REEFPRINT": "Reef print"}  # spoken respellings; captions keep the real spelling
 
@@ -37,7 +37,7 @@ async def synth(key, text):
 
 
 async def main():
-    lines = json.load(open(os.path.join(HERE, "narration_v8.json"), encoding="utf-8"))
+    lines = json.load(open(os.path.join(HERE, os.environ.get("REEF_NARR", "narration_v8.json")), encoding="utf-8"))
     dpath, wpath = os.path.join(OUT, "durations.json"), os.path.join(OUT, "words.json")
     res = json.load(open(dpath)) if os.path.exists(dpath) else {}
     allw = json.load(open(wpath)) if os.path.exists(wpath) else {}
@@ -53,3 +53,4 @@ async def main():
 
 
 asyncio.run(main())
+

@@ -2,6 +2,7 @@
 
     python manage.py init
     python manage.py add-user <username> <operator|metallurgist|mineralogist|manager>     (password at a hidden prompt)
+    python manage.py hash-password                 scrypt hash for REEFPRINT_SEED_USERS on a host with no shell (hidden prompt)
     python manage.py disable <username>
     python manage.py users
     python manage.py verify                       chain check of the real ledger
@@ -50,6 +51,12 @@ def main(argv):
         pw = os.environ.get("REEFPRINT_NEW_PASSWORD") or getpass.getpass("password (min 12 chars): ")
         authn.create_user(con, name, role, pw)
         print("created", name, role)
+    elif cmd == "hash-password":
+        pw = getpass.getpass("password (min 12 chars): ")
+        problem = authn.password_problem(pw)
+        if problem:
+            sys.exit("password " + problem)
+        print(authn.hash_password(pw))
     elif cmd == "disable":
         con.execute("UPDATE users SET disabled = 1 WHERE username = ?", (args[0],))
         con.execute("DELETE FROM sessions WHERE user_id = (SELECT id FROM users WHERE username = ?)", (args[0],))

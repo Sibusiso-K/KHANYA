@@ -639,7 +639,27 @@ $("signBtn").onclick = async () => { if (S.auth) { await api("POST", "/api/logou
 
 /* ---------------- Decisions: envelope, arrival deadline, immediate fallback, signed decision record ---------------- */
 const ACT = { acknowledge: ["operator", "metallurgist"], approve: ["metallurgist"], modify: ["metallurgist"], reject: ["metallurgist"], escalate: ["operator", "metallurgist", "mineralogist"], note: ["operator", "metallurgist", "mineralogist", "manager"] };
-const can = a => S.auth && (S.auth.role === "guest" || (ACT[a] || []).includes(S.auth.role));
+const can = a => !S.secure || (S.auth && (S.auth.role === "guest" || (ACT[a] || []).includes(S.auth.role)));
+/* Browser sandbox: when no secure server answers (static hosting), decisions are hash-chained (SHA-256) in this
+   browser only. Unsigned and not shared; the secure server adds sign-in, one shared record and post-quantum signatures. */
+const LOCAL = { events: [] };
+const ZERO = "0".repeat(64);
+async function sha256hex(t) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); }
+const evMsg = e => JSON.stringify([e.seq, e.ts, e.type, e.ref, e.actor_role, e.body]);
+async function localAppend(type, ref, body) {
+  const prev = LOCAL.events.length ? LOCAL.events[LOCAL.events.length - 1].hash : ZERO;
+  const e = { seq: LOCAL.events.length + 1, ts: Date.now() / 1000, type, ref: ref ?? null, actor_role: "guest", body };
+  e.hash = await sha256hex(prev + evMsg(e)); LOCAL.events.push(e); return e;
+}
+async function localVerify() {
+  let prev = ZERO;
+  for (const e of LOCAL.events) { const h = await sha256hex(prev + evMsg(e)); if (h !== e.hash) return { ok: false, first_bad_seq: e.seq, n: LOCAL.events.length }; prev = h; }
+  return { ok: true, n: LOCAL.events.length };
+}
+async function ledgerPost(type, ref, body) {
+  if (S.secure) return api("POST", "/api/ledger/event", ref == null ? { type, body } : { type, ref, body });
+  try { const e = await localAppend(type, ref, body); return { ok: true, data: { seq: e.seq } }; } catch (err) { return { ok: false, error: "this browser cannot hash (needs https)" }; }
+}
 function proposal(rec, h) {
   const E = S.env, t = (h.targets || {}).WI, d = decide(rec, h);
   if (!E) return { value: null, why: "No envelope loaded." };
@@ -651,9 +671,9 @@ function proposal(rec, h) {
 }
 let decTimer = 0;
 async function recordAdvice(key, rec, s, h, pr) {
-  if (!(S.secure && S.auth) || S.adv[key]) return;
+  if ((S.secure && !S.auth) || S.adv[key]) return;
   const body = { sample: s, record: rec, proposal_pct: pr.value, fallback: !!pr.fallback, ood: h.ood, envelope_version: S.env ? S.env.version : "none", deadline_s: S.env ? S.env.arrival_deadline_s : 0 };
-  const j = await api("POST", "/api/ledger/event", { type: "advice_shown", body });
+  const j = await ledgerPost("advice_shown", null, body);
   S.adv[key] = { seq: j.ok ? j.data.seq : null, t0: Date.now(), state: pr.fallback ? "fallback" : "open", err: j.ok ? null : j.error };
 }
 async function act(kind) {
@@ -662,7 +682,7 @@ async function act(kind) {
   if (kind === "modify") { const v = parseFloat(prompt(`New feed setting, % of design (${S.env.min}–${S.env.max}):`, "")); if (!isFinite(v) || v < S.env.min || v > S.env.max) { alert("Outside the approved envelope: refused."); return; } body.value_pct = v; }
   if (kind === "reject") body.value_pct = S.env.conservative;
   if (kind === "escalate") body.level = $("decEsc").value;
-  const j = await api("POST", "/api/ledger/event", { type: kind, ref: a.seq, body });
+  const j = await ledgerPost(kind, a.seq, body);
   if (j.ok && ["approve", "modify", "reject"].includes(kind)) a.state = kind;
   if (j.ok && kind === "acknowledge" && a.state === "open") a.state = "acknowledged";
   if (j.ok) $("decNote").value = "";
@@ -689,9 +709,9 @@ async function renderDecisions() {
   const rec = S.rec, s = S.cur, h = S.headers[rec][s], E = S.env, pr = proposal(rec, h), key = rec + "|" + s;
   await recordAdvice(key, rec, s, h, pr);
   const a = S.adv[key], left = decLeft(a, E);
-  if (a && a.state === "open" && left === 0 && S.secure && S.auth) {
+  if (a && a.state === "open" && left === 0 && (!S.secure || S.auth)) {
     a.state = "fallback";
-    if (can("acknowledge") || S.auth.role === "guest") await api("POST", "/api/ledger/event", { type: "fallback_applied", ref: a.seq, body: { value_pct: E.conservative, reason: "parcel reached the mill without an approval", envelope_version: E.version } });
+    await ledgerPost("fallback_applied", a.seq, { value_pct: E.conservative, reason: "parcel reached the mill without an approval", envelope_version: E.version });
   }
   const stTxt = decStatus(a, E, left);
   const keep = S.decKey === key && $("decNote") ? { note: $("decNote").value, focus: document.activeElement && document.activeElement.id === "decNote", esc: $("decEsc") ? $("decEsc").value : null } : null;
@@ -706,12 +726,17 @@ async function renderDecisions() {
     <div class="copy muted" id="decMsg">${a && a.err ? esc(a.err) : ""}</div></div>
   <div class="panel"><div class="sh"><div><h2>Operating envelope</h2><p>${E ? esc(E.status) : "not loaded"}</p></div><span class="badge warn">STIPULATED</span></div>
     ${E ? `<dl class="kv"><dt>Variable</dt><dd>${esc(E.variable)}</dd><dt>Unit</dt><dd>${esc(E.unit)}</dd><dt>Range</dt><dd>${E.min}–${E.max}%</dd><dt>Conservative setting</dt><dd>${E.conservative}%</dd><dt>Approve within envelope</dt><dd>${esc(E.authority.approve_within_envelope)}</dd><dt>Arrival deadline</dt><dd>${E.arrival_deadline_s} s (${esc(E.arrival_note)})</dd><dt>Fallback rule</dt><dd>${esc(E.fallback_rule)}</dd><dt>Version / expiry</dt><dd>${esc(E.version)} / ${esc(E.expiry)}</dd></dl>` : ""}</div></div>
-  <div class="panel"><div class="sh"><div><h2>Decision record ${S.auth && (S.auth.role === "guest") ? "(demo sandbox, reset daily)" : ""}</h2><p>Append-only, hash-chained. Checkpoints are signed with Ed25519 and ML-DSA-65 (NIST FIPS 204, post-quantum); keep them off the server to prove later edits or truncation.</p></div>
-    <div class="toolbar"><button class="btn small" id="ledVerify" ${S.auth ? "" : "disabled"}>Verify chain</button><button class="btn small primary" id="ledCheck" ${S.auth && ["guest", "metallurgist", "manager"].includes(S.auth.role) ? "" : "disabled"}>Signed checkpoint</button></div></div>
-    <div class="copy" id="ledState">${S.secure ? (S.auth ? "" : "Sign in or continue as guest to see the record.") : "Offline demo mode: start <code>app_server.py</code> for sign-in, roles and the signed decision record."}</div>
+  <div class="panel"><div class="sh"><div><h2>Decision record ${!S.secure ? "(browser sandbox)" : S.auth && (S.auth.role === "guest") ? "(demo sandbox, reset daily)" : ""}</h2><p>${S.secure ? "Append-only, hash-chained. Checkpoints are signed with Ed25519 and ML-DSA-65 (NIST FIPS 204, post-quantum); keep them off the server to prove later edits or truncation." : "Hash-chained (SHA-256) in this browser only, unsigned and not shared. The secure server version adds sign-in, roles, one shared record and Ed25519 + ML-DSA-65 (post-quantum) signed checkpoints."}</p></div>
+    <div class="toolbar"><button class="btn small" id="ledVerify" ${S.auth || !S.secure ? "" : "disabled"}>Verify chain</button><button class="btn small primary" id="ledCheck" ${!S.secure || (S.auth && ["guest", "metallurgist", "manager"].includes(S.auth.role)) ? "" : "disabled"}>${S.secure ? "Signed checkpoint" : "Checkpoint (unsigned)"}</button></div></div>
+    <div class="copy" id="ledState">${S.secure ? (S.auth ? "" : "Sign in or continue as guest to see the record.") : ""}</div>
     <div id="ledList" style="max-height:320px;overflow:auto"></div></div>`;
   el.querySelectorAll("[data-act]").forEach(b => b.onclick = () => act(b.dataset.act));
   if (keep) { $("decNote").value = keep.note; if (keep.esc) $("decEsc").value = keep.esc; if (keep.focus) { const n = $("decNote"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); } }
+  if (!S.secure) {
+    $("ledVerify").onclick = async () => { const c = await localVerify(); $("ledState").innerHTML = `Chain ${c.ok ? "<b>intact</b>" : "<b class='bad'>BROKEN at seq " + c.first_bad_seq + "</b>"}: ${c.n} events (browser sandbox, SHA-256).`; };
+    $("ledCheck").onclick = () => { const h = LOCAL.events.length ? LOCAL.events[LOCAL.events.length - 1] : null; download(`reefprint_browser_checkpoint_seq${h ? h.seq : 0}.json`, JSON.stringify({ kind: "browser-sandbox checkpoint (unsigned)", seq: h ? h.seq : 0, head_hash: h ? h.hash : ZERO, created: new Date().toISOString(), note: "The secure server signs checkpoints with Ed25519 + ML-DSA-65." }, null, 1), "application/json"); $("ledState").textContent = `Checkpoint at seq ${h ? h.seq : 0} downloaded (unsigned, browser sandbox).`; };
+    $("ledList").innerHTML = `<table><thead><tr><th class="num">Seq</th><th>Time</th><th>Event</th><th>Ref</th><th>Role</th><th>Detail</th><th>Hash</th></tr></thead><tbody>${LOCAL.events.slice().reverse().slice(0, 60).map(e => `<tr><td class="num">${e.seq}</td><td>${new Date(e.ts * 1000).toLocaleTimeString()}</td><td>${esc(e.type)}</td><td>${e.ref ?? ""}</td><td>${esc(e.actor_role)}</td><td>${esc(Object.entries(e.body).map(([k, v]) => k + "=" + v).join(", ").slice(0, 140))}</td><td><code>${esc(e.hash.slice(0, 10))}</code></td></tr>`).join("")}</tbody></table>`;
+  }
   if (S.auth) {
     $("ledVerify").onclick = async () => { const j = await api("GET", "/api/ledger/verify"); $("ledState").innerHTML = j.ok ? `Chain ${j.data.chain.ok ? "<b>intact</b>" : "<b class='bad'>BROKEN at seq " + j.data.chain.first_bad_seq + "</b>"}: ${j.data.chain.n} events${j.data.last_checkpoint ? `; last signed checkpoint at seq ${j.data.last_checkpoint.seq}` : ""}.` : esc(j.error); };
     $("ledCheck").onclick = async () => { const j = await api("POST", "/api/ledger/checkpoint", {}); if (j.ok) { download(`reefprint_checkpoint_seq${j.data.checkpoint.seq}.json`, JSON.stringify(j.data.checkpoint, null, 1), "application/json"); $("ledState").textContent = `Signed checkpoint at seq ${j.data.checkpoint.seq} downloaded (Ed25519 + ML-DSA-65). ${j.data.keep_this}`; } else $("ledState").textContent = j.error; };
@@ -869,6 +894,11 @@ function camCheck(pt) {
 function redrawAll() { if (!S.summary) return; if (S.cube) { paint(); drawSpec(); } if ($("v-bushveld").classList.contains("on")) drawBushveld(); if ($("v-plant").classList.contains("on")) drawPlant(); }
 window.addEventListener("resize", () => { if (S.cube) { paint(); beltTick(); } });
 async function boot() {
+  /* Inside a frame (e.g. the Hugging Face Space page) sign-in cookies are not sent, so offer the full-screen app. */
+  if (window.top !== window.self) {
+    const u = new URL(location.href); u.searchParams.set("guest", "1");
+    document.body.insertAdjacentHTML("afterbegin", `<div class="banner" style="position:sticky;top:0;z-index:50;text-align:center;font-size:18px"><b>Open REEFPRINT full screen to sign in and use every feature:</b> <a href="${esc(u.toString())}" target="_top" rel="noopener">open the app</a></div>`);
+  }
   let t0 = P.get("theme"); if (!t0) { try { t0 = localStorage.getItem("reef-live-theme"); } catch (e) {} } setTheme(["workbench", "mineral-night", "field-paper"].includes(t0) ? t0 : "workbench");
   const get = u => fetch(u).then(r => { if (!r.ok) throw new Error(u + " " + r.status); return r.json(); });
   [S.summary, S.reg, S.bv, S.plant["1"], S.plant["3"]] = await Promise.all(["live/summary.json", "live/targets.json", "live/bushveld.json", "live/plant_h1.json", "live/plant_h3.json"].map(get));
