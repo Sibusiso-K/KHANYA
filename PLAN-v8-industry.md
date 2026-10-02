@@ -239,3 +239,141 @@ Every refusal, borderline case or stale case emits the envelope's conservative s
 - A 3D flowsheet.
 - Individual scoring.
 - Cloud deployment.
+
+
+---
+
+## Addendum — round-1b (08:05): new requirements from the user, folded in before Codex round 2
+
+**What the user asked for (summarised):**
+- competitors, how our build compares, and the gaps built;
+- **security**: RBAC, login, authentication, encryption, a secure SDLC, secure by design, injection- and ransomware-resistant;
+- **quantum technology**: post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA) and anything quantum usable today;
+- a **real, working deployment** reachable by a QR code on the slides (ingest data and images, take live photos, talk to the AI);
+- a **database**;
+- the business case: who we pitch to, cost, timeline, team;
+- the story "one mentor session yesterday → this much today".
+
+### Evidence gathered for the addendum (docs/17 tags)
+
+- **Ransomware hits SA PGM.** Sibanye-Stillwater's global IT was hit in July 2024. The Columbus smelter was disrupted, RansomHouse claimed 1.2 TB exfiltrated, and a Stillwater breach affected 7,258 employees **[S]**.
+- **NIST** finalised FIPS 203 (ML-KEM), 204 (ML-DSA) and 205 (SLH-DSA) on 13 August 2024 **[S]**.
+- **Cloudflare** applies hybrid X25519MLKEM768 key agreement by default; about 43% of human connections were PQ-protected by September 2025. For Tunnel it is "post-quantum by default, not by guarantee" **[S]**.
+- **Libraries** (versions checked on PyPI 2026-10-02):
+  - `pqcrypto` 1.0.0 (Apache-2.0, PQClean bindings): ML-KEM, ML-DSA and SLH-DSA, with a Windows abi3 wheel;
+  - `cryptography` (Apache-2.0 / BSD-3): AES-GCM, X25519, Ed25519;
+  - `qrcode` (BSD) and Pillow (MIT-CMU);
+  - stdlib `sqlite3` and `hashlib.scrypt`.
+- **AI-platform competitors:**
+  - IntelliSense.io brains.app: flotation recovery +1–3% at a South American copper operation **[V]**;
+  - PETRA MAXTA (acquired by Maptek, March 2026): tailings grade predicted 6 h ahead **[V]**.
+
+### Track S — security by design (P0)
+
+**S1. Threat model** (docs/19):
+- STRIDE over the app, the server, ingestion, the ledger, the LLM router and the OT link;
+- IEC 62443 zones and conduits;
+- OWASP ASVS L2 as the requirement list, with NIST SSDF (SP 800-218) practices as the SSDLC;
+- ransomware: offline immutable backups, least privilege, no inbound OT connections, segmentation.
+
+**S2. Authentication and RBAC** in `server.py` (stdlib, no framework):
+- **SQLite** (WAL) holds users, sessions, uploads and the ledger;
+- **scrypt** password hashing;
+- server-side sessions with a 256-bit random id, stored only as a hash;
+- cookie `HttpOnly; SameSite=Strict; Secure` behind TLS;
+- idle and absolute timeouts;
+- **CSRF**: a per-session token header on every POST;
+- login throttling and lockout;
+- optional TOTP (RFC 6238, stdlib) for admin;
+- user management **CLI-only**, so there is no web admin attack surface.
+
+**Roles (least privilege, deny by default):**
+
+| Role | Can |
+|---|---|
+| `guest` | QR demo: read, sandboxed upload, assistant |
+| `operator` | acknowledge, apply the envelope |
+| `metallurgist` | approve within the envelope, notes |
+| `mineralogist` | lab imports, refusal resolution |
+| `manager` | reports |
+| `admin` | CLI only |
+
+**S3. Ingestion API:**
+- `/api/upload/csv`: size caps, magic-byte checks, server-side CSV validation that mirrors the typed import (formula neutralisation);
+- `/api/upload/image`: **images re-encoded by Pillow, EXIF/GPS stripped**, stored **encrypted at rest (AES-256-GCM)** outside the web root, never served raw;
+- guest uploads are sandboxed and auto-deleted after 24 h;
+- photos get quality gates only (no ore prediction, as before).
+
+**S4. Ledger in SQLite:**
+- an append-only table with **triggers that refuse UPDATE/DELETE**;
+- a hash chain, with outcome events linked;
+- **hybrid-signed checkpoints: Ed25519 + ML-DSA-65** (FIPS 204, `pqcrypto`), plus an SLH-DSA option for algorithm diversity;
+- a verification CLI and endpoint;
+- **encrypted exports to a named recipient**: hybrid KEM (X25519 + ML-KEM-768) → AES-256-GCM.
+
+**What is claimed:** tamper-evidence against edits and truncation, given checkpoints held outside the server. **Not** protection against deletion of the whole database; the offline backups cover that.
+
+**S5. SSDLC gates:**
+- **Bandit** (SAST), **pip-audit** (dependencies), secret scanning, the SBOM;
+- security unit tests: auth bypass, IDOR, CSRF, injection, traversal, upload polyglots, rate limits, session fixation;
+- strict CSP and headers: HSTS behind TLS, `frame-ancestors 'none'`, `nosniff`, `Referrer-Policy`, `Permissions-Policy camera=(self)`;
+- ClauDex review of the security diff.
+
+**S6. LLM:** router only (unchanged). External providers off by default; when on, guests get tight caps, and prompt-injection text cannot reach tools beyond the allowlist.
+
+### Track D — deployment (P0 artefacts; the public deploy needs the user's explicit go-ahead)
+
+- **D1.** A `Dockerfile`: python-slim, non-root, read-only root filesystem, a single data volume, a healthcheck. A deployment runbook. **Cloudflare Tunnel** config: no inbound ports, and PQ-hybrid TLS at the edge where the client supports it **[S]**.
+- **D2.** SQLite on the volume. Nightly **encrypted backup**, plus an offline copy procedure (ransomware). A restore test.
+- **D3.** A **QR code** generated for the final URL. It lands on a guest view: upload a CSV or photo, ask the assistant, browse the evidence.
+- **D4.** **The public deploy is not done without the user's explicit approval** of the host, account, cost and data policy (it is publishing). Until then it is local plus a tested container.
+
+### Track B — competitors and business (docs/20) (P0)
+
+**B1. Competitor matrix.** It covers:
+- **sensors:** Blue Cube, Plotlogic, MineSense, PGNAA, TOMRA, froth and size cameras;
+- **AI platforms:** IntelliSense.io, PETRA/Maptek;
+- **APC:** Mintek FloatStar/MillStar;
+- **labs:** QEMSCAN/MLA at Mintek.
+
+For each: what they do, with evidence tags; where they are stronger (maturity, installed base); and where we differ:
+- the mineralogy-taught belt layer;
+- the calibrated refusal plus typed conservative envelope;
+- the PGM/chromite physics;
+- open validation with published corrections;
+- PQ-signed auditability;
+- offline operation and cost.
+
+No "way better" claim. Honest axes only.
+
+**B2. Business case** (all ASSUMED, labelled):
+- **buyers:** concentrator and metallurgy managers at SA PGM producers (Valterra, Implats, Sibanye-Stillwater, Northam, Tharisa, ARM);
+- **partner and channel:** Mintek (truth lab, APC integration, MOTT IP);
+- **offer:** a paid pilot, then a per-site subscription, priced against the break-even;
+- **timeline:** about 7–9 months to a pilot decision;
+- **team:** roles and FTE; budget ranges; a risk register;
+- **"velocity" evidence:** git history since the mentor session (commits, analyses, corrections), counted from `git log`.
+
+### Track Q — quantum, honestly
+
+- **Q1. Post-quantum cryptography is real and deployable today.** Done in S4 and D1.
+- **Q2. Quantum computing gives no practical advantage today** for our workloads (regression with n = 146, small scheduling and blending problems); classical solvers win. We **will not** claim quantum computing. A QUBO formulation of stockpile blending, solvable by D-Wave Leap later, is a documented idea, not a deliverable.
+- **Q3. Quantum sensing** (magnetometers, gravimeters) is exploration-side, not plant control. It is mentioned, not built.
+
+### Revised priority (replaces the earlier cut order)
+
+**P0:**
+1. Phase 1 corrections (done).
+2. S1–S6.
+3. D1–D3 (local and container).
+4. Envelope and advisory timing.
+5. The SQLite ledger with PQ checkpoints.
+6. Ingestion.
+7. B1–B2.
+8. Integration of the v8 evidence.
+
+**P1:** map, minimal mass balance, learning-loop UI.
+
+**P2:** three.js cube.
+
+**Deferred:** 3D flowsheet, general reconciliation, automatic retraining, quantum computing.
