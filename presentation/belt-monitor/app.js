@@ -729,8 +729,17 @@ function proofPanel() {
   return `<div class="panel"><div class="sh"><div><h2>Is it physically possible? Every claim against its physics</h2><p>Computed from real held-out data and datasheets. A failed check stays on the page. Full write-up: docs/21.</p></div></div>
   <table><thead><tr><th>Claim</th><th>Physics</th><th>Result</th><th>Status</th></tr></thead><tbody>${rows.map(r => `<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${r[2]}</td><td><span class="badge ${r[3][0]}">${esc(r[3][1])}</span></td></tr>`).join("")}</tbody></table></div>`;
 }
+const POWER_ROWS = [
+  ["Short dip or brown-out", "Drives may trip", "UPS rides through for the edge PC, encoder and network. Any parcel scanned while the lamps are below the white-reference level is refused, not predicted."],
+  ["Power cut", "Mills and conveyors stop", "The edge PC on UPS finishes writing and shuts down cleanly. The decision record is append-only in SQLite (WAL) with torn-write recovery: nothing acknowledged is lost."],
+  ["Restart", "Mills restart under transient conditions", "Lamp warm-up and a fresh white/dark reference come before any prediction. The first parcels are usually out of domain, so the envelope's conservative setting applies until the gate passes. Stale predictions fall back."],
+  ["Eskom curtailment (mining: 20% for 10 h at stage 6 [S])", "Less mill power", "The feed for the reduced power comes from the same hardness bound, so the grind holds; the window's tonnes are forecast. No tonnage gain is claimed from re-ordering ore (tested and rejected: energy is conserved)."],
+  ["Network to the control room lost", "—", "Store-and-forward at the edge. The control room shows 'stale' and the fallback applies."],
+  ["Whole site dark, or a cyber incident", "—", "The app runs fully offline on one laptop. Signed checkpoints and offline encrypted backups allow a verified restore (docs/19)."]];
 function renderWhere() {
   $("where").innerHTML = `
+  <div class="panel"><div class="sh"><div><h2>When the power goes: load-shedding, curtailment, restarts</h2><p>The tool never makes lost production time worse: no decision on bad light, stale data or unfamiliar ore. It says so, gives the safe setting and records it (docs/21 §2).</p></div></div>
+  <table><thead><tr><th>Event</th><th>Plant</th><th>REEFPRINT</th></tr></thead><tbody>${POWER_ROWS.map(r => `<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join("")}</tbody></table></div>
   <div class="panel"><div class="sh"><div><h2>Model orchestration: one router, one referee, one policy</h2><p>Every input type has its own validated path; nothing is promoted without its evidence bar</p></div></div>
   <table><thead><tr><th>Input</th><th>Router sends it to</th><th>Referee</th><th>What reaches the shift</th></tr></thead><tbody>
   <tr><td>Hyperspectral belt scan (VNIR + SWIR)</td><td>Belt models v6 (per-target nested choice)</td><td>80% split-conformal interval · spectral OOD gate (p95 / p99)</td><td>Bond work index decision; other targets as context</td></tr>

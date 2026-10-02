@@ -76,6 +76,7 @@ It covers the 2.2–2.35 µm Al-OH and Mg-OH features. The Specim FX17 (900–17
 | **Wet ore / dust-suppression water** | 1.4 / 1.9 µm water-band depth above a site-calibrated level | Refuse the parcel → envelope fallback. **Report usable coverage** by moisture class in the pilot (refusal may be common; it is budgeted). Hydrated minerals such as gypsum also absorb there, so this is acknowledged as ambiguous |
 | **Fines coating rocks** | Low spectral contrast across all features; a brightness shift | Flag; compare with a periodic grab sample |
 | **Empty or overloaded belt** | Burden height and a brightness floor | No prediction; no false "soft ore" |
+| **Wavelength-calibration drift** (v9: one band costs about +25% error, mostly unflagged) | Measure known absorption-feature positions on a wavelength reference at every white-reference cycle | Refuse if a position moves by more than half a band → recalibrate. A hardware QA gate |
 | **Lamp ageing / reference drift** | White-reference trend; out-of-tolerance → refuse | Recalibrate; lamp change |
 | **Window fouling** | Reference response and spatial non-uniformity | Purge, clean, log |
 | **Shadows / burden geometry** | Height map + brightness | Mask the pixels |

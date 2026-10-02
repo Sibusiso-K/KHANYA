@@ -21,7 +21,7 @@
 | The belt camera identifies ≥ 3 minerals | Vibrational SWIR absorption (Al-OH, Fe-OH, Mg-OH, H₂O) | Pre-registered test against QEMSCAN on 36 composites | **Not shown.** H2 ρ +0.27 is below the 0.30 minimum useful effect. **KHANYA's microscope carries ≥ 3 phases** |
 | The camera resolves the ore on a fast belt | Line pitch = speed ÷ line rate | Computed from the SX25 datasheet **[P]** | 9–19 mm lines, 1.4–2.3 mm pixels. **Parcel-level, not particle-level** |
 | It is real-time | Compute time per parcel | Measured | **92 ms median** (Kaggle 4-core CPU); 159 ms on this laptop |
-| It works on a capture it has never seen | Generalisation | v9: new-capture, partial, gain, noise and wavelength-shift variants, scored by the fold model that never saw the parcel | **Running.** Pre-registered gate: new-capture MAE within +10% of the report |
+| It works on a capture it has never seen | Generalisation | v9: new-capture, partial, gain, noise and wavelength-shift variants, scored by the fold model that never saw the parcel | **New capture: MAE ×1.00 [0.99, 1.01]: equivalent (gate passed).** Partial view, noise and ±15% light are tolerant. **Wavelength drift of one band: ×1.25, mostly not flagged.** Hence a wavelength-calibration gate (docs/18) |
 
 ## 2. Power cuts, load-shedding and curtailment: what the plant does, and what REEFPRINT does
 
@@ -130,7 +130,7 @@
 - No APC comparison.
 - No plant trial.
 - The belt does **not** yet identify minerals.
-- The OOD gate accepted 0–80% of a foreign ore across folds (inconsistent).
+- The OOD gate accepted 0–80% of a foreign ore across folds (inconsistent), and it barely flags wavelength drift (v9).
 - The throughput non-inferiority is provisional.
 - No radiation sensing.
 - Water chemistry is not an input yet.
@@ -161,6 +161,6 @@
 ## 12. Will it work on an image it has never seen?
 
 - **What the accuracy report already is.** Every number is **out-of-fold**: each parcel was scored by a model that never saw it. A new parcel of the same ore type, passing the OOD gate, should perform like the report.
-- **v9 (running)** tests that directly: new captures, partial views, lighting changes, noise and wavelength drift.
+- **v9 tested this directly.** A new capture of the same ore gives the same error (×1.00). Partial view, noise and light changes are tolerated. Wavelength-calibration drift is the one real gap (×1.25, mostly silent), so a hardware calibration gate was added (training/hidsag-v9-robustness-20261002/RESULT.md).
 - **A different ore** should be refused, and the existing evidence says the gate is **not yet reliable** for that (§9).
 - **A phone photo** is ingested and quality-checked, but gets **no ore prediction**, because no phone-camera dataset exists to validate one.
