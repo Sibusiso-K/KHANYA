@@ -1,0 +1,40 @@
+downloading MINERAL1
+downloaded MINERAL1 4.68 GB in 178 s
+MINERAL1 zip members 893 json 99
+example json MINERAL1/M1-0001/metadata.json {"datarecord": "MINERAL1", "sample_name": "M1-0001", "vars": {"Chalcopyrite": 0.5, "Bornite": 0.01, "Chalcosite/Digenite": 0.03, "Covelite": 0.0, "Pyrite": 0.86, "Molybdenite": 0.0, "Fe Oxides": 0.61, "Rutile": 0.63, "Quartz": 30.49, "K-Feldspar": 0.44, "Anorthite": 2.99, "Bytownite_An80": 2.12, "Labradorite_An60": 3.94, "Andesina_An40": 2.81, "Oligoclasa_An20": 5.81, "Albite": 4.03, "Tourmaline": 1.08, "Muscovite/Sericite": 22.74, "Kaolinite": 1.31, "Biotite": 5.58, "Chlorite": 9.97, "Epidote": 0.05, "Actinolite": 0.19, "Other Amphibole": 0.09, "Pyroxene": 0.43, "Fe-Clays": 1.08, "Calcite": 0.02, "Siderite": 0.13, "Others Carbonates": 0.09, "Anhydrite/Gypsum": 0.72, "Apatite": 0.21, "Others Ti Minerals": 0.84, "Others": 0.2}, "crops": [{"tags": ["P1", "S1", "coarse"], "01": {"swir_low": {"path_hsi": "01/swir_low.h5", "path_rgb": "01/swir_low.png", "image_dims": {"width": 44, "height": 28}, "real_dims": {"width": 27.3, "height": 22.8}, "spectral_binning": 1, "spatial_binning": 1, "sample_frequency": 50, "integrations_time": 4, "dolly_speed": 40}, "vnir_low": {"path_hsi": "01/vnir_low.h5", "path_rgb": "01/vnir_low.png", "image_dims": {"width": 44, "height": 28}, "real_dims": {"width": 27.3, "height": 22.8}, "spectral_binning": 1, "spatial_binning": 2, "sample_frequency": 50, "integrations_time": 12.7, "dolly_speed": 40}, "vnir_high": {"path_hsi": "01/vnir_high.h5", "path_rgb": "01/vnir_high.png", "image_dims": {"width": 99, "height": 29}, "real_dims": {"width": 27.4, "height":
+MINERAL1 samples with features 99
+MINERAL1 groups 36 from 99 samples: ['P1S1', 'P1S10', 'P1S11', 'P1S12', 'P1S2', 'P1S3', 'P1S4', 'P1S5', 'P1S6', 'P1S7', 'P1S8', 'P1S9', 'P2S1', 'P2S10', 'P2S11', 'P2S12', 'P2S2', 'P2S3', 'P2S4', 'P2S5']
+MINERAL1 vars.Actinolite                          n= 99  best=ridge R2=0.159 [-0.00,0.29]  MAE=0.036 vs baseline 0.042
+MINERAL1 vars.Albite                              n= 99  best=pls   R2=0.322 [0.11,0.47]  MAE=0.925 vs baseline 1.182
+MINERAL1 vars.Andesina_An40                       n= 99  best=ridge R2=0.116 [-0.15,0.30]  MAE=0.458 vs baseline 0.516
+MINERAL1 vars.Anhydrite/Gypsum                    n= 99  best=ridge R2=0.936 [0.91,0.95]  MAE=0.674 vs baseline 2.985
+MINERAL1 vars.Anorthite                           n= 99  best=ridge R2=0.792 [0.71,0.85]  MAE=0.492 vs baseline 1.127
+MINERAL1 vars.Apatite                             n= 99  best=ridge R2=0.239 [-0.04,0.46]  MAE=0.067 vs baseline 0.084
+MINERAL1 vars.Biotite                             n= 99  best=ridge R2=0.906 [0.87,0.93]  MAE=0.884 vs baseline 3.216
+MINERAL1 vars.Bornite                             n= 99  best=pls   R2=0.729 [0.65,0.79]  MAE=0.067 vs baseline 0.140
+MINERAL1 vars.Bytownite_An80                      n= 99  best=ridge R2=0.772 [0.67,0.85]  MAE=0.218 vs baseline 0.509
+MINERAL1 vars.Calcite                             n= 99  best=ridge R2=0.723 [0.62,0.82]  MAE=0.056 vs baseline 0.124
+MINERAL1 vars.Chalcopyrite                        n= 99  best=ridge R2=0.894 [0.85,0.93]  MAE=0.222 vs baseline 0.788
+MINERAL1 vars.Chalcosite/Digenite                 n= 99  best=ridge R2=0.678 [0.54,0.77]  MAE=0.027 vs baseline 0.051
+MINERAL1 vars.Chlorite                            n= 99  best=pls   R2=0.732 [0.65,0.81]  MAE=0.684 vs baseline 1.487
+MINERAL1 vars.Covelite                            n= 99  best=ridge R2=0.596 [0.43,0.70]  MAE=0.007 vs baseline 0.013
+MINERAL1 vars.Epidote                             n= 99  best=ridge R2=0.202 [0.06,0.33]  MAE=0.038 vs baseline 0.044
+MINERAL1 vars.Fe Oxides                           n= 99  best=ridge R2=0.408 [0.16,0.62]  MAE=0.124 vs baseline 0.191
+MINERAL1 vars.Fe-Clays                            n= 99  best=ridge R2=0.622 [0.52,0.71]  MAE=0.101 vs baseline 0.178
+MINERAL1 vars.K-Feldspar                          n= 99  best=pls   R2=0.828 [0.77,0.87]  MAE=0.486 vs baseline 1.267
+MINERAL1 vars.Kaolinite                           n= 99  best=ridge R2=0.632 [0.52,0.71]  MAE=0.174 vs baseline 0.309
+MINERAL1 vars.Labradorite_An60                    n= 99  best=ridge R2=0.509 [0.34,0.62]  MAE=0.455 vs baseline 0.679
+MINERAL1 vars.Molybdenite                         n= 99  best=pls   R2=0.165 [-0.07,0.40]  MAE=0.018 vs baseline 0.022
+MINERAL1 vars.Muscovite/Sericite                  n= 99  best=pls   R2=0.898 [0.86,0.93]  MAE=1.243 vs baseline 4.771
+MINERAL1 vars.Oligoclasa_An20                     n= 99  best=pls   R2=0.499 [0.30,0.64]  MAE=0.853 vs baseline 1.347
+MINERAL1 vars.Other Amphibole                     n= 99  best=pls   R2=0.349 [0.04,0.56]  MAE=0.022 vs baseline 0.030
+MINERAL1 vars.Others                              n= 99  best=ridge R2=0.518 [0.36,0.64]  MAE=0.046 vs baseline 0.073
+MINERAL1 vars.Others Carbonates                   n= 99  best=pls   R2=0.253 [0.09,0.50]  MAE=0.051 vs baseline 0.074
+MINERAL1 vars.Others Ti Minerals                  n= 99  best=ridge R2=0.079 [-0.16,0.26]  MAE=0.179 vs baseline 0.184
+MINERAL1 vars.Pyrite                              n= 99  best=ridge R2=0.835 [0.78,0.87]  MAE=0.516 vs baseline 1.277
+MINERAL1 vars.Pyroxene                            n= 99  best=pls   R2=0.720 [0.66,0.79]  MAE=0.031 vs baseline 0.067
+MINERAL1 vars.Quartz                              n= 99  best=pls   R2=0.766 [0.67,0.84]  MAE=1.220 vs baseline 2.931
+MINERAL1 vars.Rutile                              n= 99  best=ridge R2=0.453 [0.30,0.56]  MAE=0.075 vs baseline 0.101
+MINERAL1 vars.Siderite                            n= 99  best=ridge R2=0.336 [0.08,0.48]  MAE=0.060 vs baseline 0.087
+MINERAL1 vars.Tourmaline                          n= 99  best=pls   R2=0.336 [0.16,0.45]  MAE=0.280 vs baseline 0.357
+done in 538 s

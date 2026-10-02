@@ -1,0 +1,11 @@
+downloading GEOMET
+downloaded GEOMET 3.26 GB in 123 s
+GEOMET pre-registered showcase ['GMET-0048', 'GMET-0112', 'GMET-0015', 'GMET-0035', 'GMET-0063', 'GMET-0071', 'GMET-0098', 'GMET-0114', 'GMET-0043', 'GMET-0113', 'GMET-0083', 'GMET-0116', 'GMET-0004', 'GMET-0105', 'GMET-0126', 'GMET-0007', 'GMET-0022', 'GMET-0011', 'GMET-0039', 'GMET-0091', 'GMET-0080', 'GMET-0064', 'GMET-0054', 'GMET-0068']
+GEOMET samples 146 skipped 0 showcase cubes 0
+GEOMET n 146 targets 5 units 146 additive False
+GEOMET fold 1/5: proper 81 cal_units 35 k 29 unbounded False ood_shift_accept None 61s
+GEOMET fold 2/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 59s
+GEOMET fold 3/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 61s
+GEOMET fold 4/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 60s
+GEOMET fold 5/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 59s
+done in 466 s

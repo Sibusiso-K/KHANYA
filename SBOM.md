@@ -20,6 +20,7 @@ from the upstream repository in this project's own records · **BLOCKED** do not
 |---|---|---|---|
 | Python 3.12 | PSF-2.0 | OK | |
 | `numpy` | BSD-3-Clause | OK | |
+| Public Sans (font, `@fontsource-variable/public-sans`) | OFL-1.1 | OK | Bundled as `presentation/belt-monitor/fonts/` with its licence file; the workbench already loads it via fontsource. Added to the SBOM 2026-10-01. |
 | `scipy` | BSD-3-Clause | OK | |
 | `scikit-image` | BSD-3-Clause | OK | |
 | `tifffile` | BSD-3-Clause | OK | **Preferred OME-TIFF reader/writer.** See Bio-Formats below. |
@@ -28,6 +29,11 @@ from the upstream repository in this project's own records · **BLOCKED** do not
 | `pillow` | MIT-CMU | OK | JPEG decode for public archives (LumenStone frames are JPEG). Licence read from the installed distribution's own `License-Expression` metadata, 12.3.0, 2026-08-20 — that is the SPDX declaration attached to the wheel we actually install. |
 | `opencv-python` | Apache-2.0 (library) / MIT (wheel packaging) | VERIFY | OpenCV relicensed 4.5.0→Apache-2.0. Confirm the pinned wheel. |
 | `pydantic` | MIT | VERIFY | Config and acquisition-metadata schemas. |
+
+| `cryptography` 50.0.2 | Apache-2.0 OR BSD-3-Clause | OK | Secure server: AES-256-GCM, Ed25519, X25519, HKDF. pip-audit flagged 9 CVEs in 46.0.6; upgraded 2026-10-02. |
+| `pqcrypto` 1.0.0 | Apache-2.0 (PQClean bindings) | OK | ML-DSA-65 (FIPS 204) checkpoint signatures, ML-KEM-768 (FIPS 203) export KEM, SLH-DSA available. Not a FIPS-validated module. Added 2026-10-02. |
+| Pillow 12.3.0 | MIT-CMU | OK | Upload re-encoding (EXIF/GPS stripped). Added 2026-10-02. |
+| `qrcode` 8.2 | BSD | OK | QR code for the demo URL. Added 2026-10-02. |
 
 ## Shipped — models and inference
 
@@ -72,6 +78,11 @@ licence here before any weight is used in a graded artefact.
 | `mlflow` | Apache-2.0 | DEV |
 | `dvc` | Apache-2.0 | DEV |
 | `napari` | BSD-3-Clause | DEV — dev-time visual inspection. The demo UI must not depend on it. |
+| `h5py` | BSD-3-Clause | DEV — Kaggle-only, reads the HIDSAG hyperspectral cubes in `training/hidsag-hyperspectral-20261001/run.py` (installed in the kernel if absent). Not a runtime dependency. Added 2026-10-01. |
+| `python-pptx` | MIT | DEV — builds the pitch deck (`presentation/deck-src/build_deck_v8.py`). Not shipped. Listed 2026-10-02. |
+| `playwright` (Python) | Apache-2.0 | DEV — screenshots and the screen recording of the real app for the deck and video; end-to-end checks. Uses the installed Microsoft Edge. Not shipped. Listed 2026-10-02. |
+| `edge-tts` | copyleft (GPL/LGPL-3.0 family) — VERIFY | DEV — synthesises the video narration (Microsoft neural voice, online service). Run from `.workbench/media-tools`, never imported by shipped code; the audio it produces is our script. Listed 2026-10-02. |
+| FFmpeg (via `imageio-ffmpeg` binary, v7.1) | `imageio-ffmpeg` BSD-2-Clause; bundled FFmpeg build GPL — VERIFY | DEV — encodes the demo video. Invoked as a separate executable, never linked or shipped. Listed 2026-10-02. |
 
 ## Flagged — resolve before it becomes load-bearing
 
@@ -94,9 +105,13 @@ Licence of *data* is separate from licence of *code*, and it constrains what may
 | LumenStone (S1, S2, S3, V1) | **Terms of use confirmed 2026-09-14** — no named OSI licence, but an explicit written grant, quoted verbatim from `imaging.cs.msu.ru/en/research/geology/lumenstone`: *"You are free to use the provided data in your own research work. If you intend to publish research work that uses this dataset, you have to cite the references whenever appropriate."* Citations: Korshunov et al. 2025, doi:10.17073/2500-0632-2025-05-416 (dataset authors' own paper). **V1 (colour-adaptation subset) downloaded 2026-09-15** directly from the dataset's own Yandex Disk link (`imaging.cs.msu.ru`'s summary table → 100 MB), verified as 30 images (10 samples × 3 imaging variations) matching the published description; staged at `data/lumenstone/V1_v1.zip` (gitignored, DVC-tracked convention) and uploaded as a private Kaggle dataset, `lethabomh14/lumenstone-v1-reefprint`, for use from either branch's kernels. | **CONDITION, no longer VERIFY** — usable, citation required whenever published. The petroscope README and library remain a **separate, blocked** dependency (GPL-3.0, row above) — this row covers the *data* only. |
 | IronOreRLM | 563 reflected-light images. ScienceDirect `S2352340925002720`. | VERIFY — check before training on it |
 | MUMDMC2025 | 14,400 photomicrographs, 5 silicate classes, 72 rotational positions at 5° over 360°, PPL + XPL. *Nature Sci Data* 2025. | VERIFY. **Transmitted light on granite silicates** — exercises the rotation pipeline, carries none of the reflected-light ore physics. Do not cite it as ore evidence. |
+| Kaggle "Quality Prediction in a Mining Process" (edumagalhaes) | **CC0-1.0**, read from the dataset metadata 2026-10-01. A real iron-ore flotation plant (Brazil), Mar–Sep 2017, 20 s process tags and hourly lab assays. Raw CSV in `data/kaggle_flotation/` (gitignored); hourly derived series ship in `presentation/belt-monitor/live/`. | **OK.** Iron ore, not PGM: a method demonstration for plant parameters. |
+| Bachmann et al. 2019, Bushveld chromitite assays (Mendeley 10.17632/dc8jcnbcvk.1) | **CC BY 4.0**, recorded in `data/bushveld_thaba_chromitite/SOURCE.md`. Derived out-of-fold predictions ship in `live/bushveld.json`. | **OK, cite** the dataset and the J. African Earth Sciences paper. |
+| HIDSAG (Ehrenfeld et al., *Scientific Data* 2023) | Figshare collection 10.6084/m9.figshare.c.5983921 — records marked **CC0** on Figshare (read 2026-10-01); the paper is CC BY 4.0. Porphyry Cu-Mo, Chile: GEOMET (146 drill-core samples with flotation and grinding tests), MINERAL1 (99 plant-feed size-fraction samples, QEMSCAN wt%). VNIR + SWIR cubes. Used for the belt hyperspectral track, 2026-10-01. | **OK** — cite the paper. Not PGM ore: results transfer as a method, not as numbers. |
 | CGS National Core Library specimens | Sampling policy — open question 2 | VERIFY — phone call |
 | Craig & Vaughan, *Ore Microscopy and Ore Petrography* 2nd ed. | Open access, MSA | Reference only; do not reproduce figures without checking |
 | Mine-sourced specimens | Possible MTA restrictions | Blind spot 3 — an MTA can make the open benchmark unreleasable |
+| Mixkit stock video (pitch video and deck backgrounds only) | Mixkit Stock Video Free License (checked per clip, 2026-10-01): use in a project without attribution; **no standalone redistribution**. | **CONDITION** — illustrative only, labelled on screen; raw clips and stills stay out of git (`presentation/deck-src/stock_v8/` is gitignored). Clip IDs in `presentation/video/STORYBOARD-v8.md`. |
 
 ---
 

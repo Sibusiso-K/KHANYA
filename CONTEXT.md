@@ -7,11 +7,21 @@ is the constitution — *what is true and what the rules are*. This file is the 
 
 Keep it current. A stale CONTEXT.md is worse than none, because it will be trusted.
 
-- **Last updated:** 2026-09-12
-- **Last commit at time of writing:** S3 v2's rotation frames are not registered — N3 and the extinction result both measured nothing
+**Latest implementation specification:** [model, live UI, reports and spatial build spec](docs/14-model-ui-report-and-spatial-build-spec.md), grounded in KHANYA main `57a6b66`. Next application tickets are P0 (fix `random.Random(None)`, reproducible resume, full-section validation) and U0 (API/schema/auth fixtures), followed by the real inference → reviewed simulator command → report path. This is a plan; no improved training result or PWA deployment has been produced by this update.
+
+- **2026-10-02, 12:50 — pitch v8 ready.** Deck: `presentation/output/REEFPRINT-KHANYA-Team-Sonar-pitch-v8.pptx` (generator `presentation/deck-src/build_deck_v8.py`; numbers loaded from result JSONs). Script: `presentation/PRESENTER-SCRIPT-v8.md`. Video: `presentation/video/REEFPRINT-v8-demo.mp4` (2:25; `STORYBOARD-v8.md` for provenance). Fixed: Decisions notes were wiped by the countdown re-render. Next: ClauDex round 2 (13:54); public deploy + QR only with the team's approval of host/account.
+- **2026-10-02, 11:25 — v8 continued.** Secure UI and Decisions view working (`app_server.py`); v9: a new capture keeps accuracy, wavelength drift is the gap; curtailment claim rejected; docs/21. ClauDex round 2 is still pending (Codex limit until 13:54).
+- **2026-10-02, 08:55 — v8 in progress.** Read PLAN-v8-industry.md + PLAN-v8-REVIEW-LOG.md (round 2 pending), docs/17–20. Secure server: `presentation/belt-monitor/app_server.py` (17 tests). Belt does NOT earn ≥3 phases (v8-features); throughput non-inferiority provisional.
+- **2026-10-02, 07:30 — value chain, belt view, v7 (no gain), Bushveld correction.** Read `docs/16-decision-value-chain.md`. Hardness → feed rate: sim_ +2.0% throughput [+1.0, +3.0] at the same overload risk (all gates). Bushveld chemistry routes PGE *worse* than the mine-plan seam (0.79 vs 0.82): not a grade-control claim. v7 wider model menu (pre-registered): no significant difference, v6 stays. REEFPRINT Live now has a Belt mode, full-resolution scans, destriping, and a Value tab.
+- **2026-10-01, 21:20 — REEFPRINT Live + v6 + correction.** Run `python presentation/belt-monitor/server.py`. MINERAL1 'camera reads mineralogy' is WITHDRAWN (size-fraction confound); only Bond WI drives belt decisions; plant model does not beat persistence; Bushveld chemistry→Pt/Rh/4E beats the mean. See BUILDLOG top entry and docs/15 §9.
+- **2026-10-01, 19:30 — refinement for the Top-5 round.** Read `docs/15-refinement-top5-strategy.md` first. v5 hyperspectral + belt simulation + cheap-camera results are in it; the Belt Monitor now matches the workbench (3 themes, 4 views).
+- **2026-10-01, 14:00 — hyperspectral belt track + deck v7.** HIDSAG (CC0) results are in deck v7; see the BUILDLOG top entry. MINERAL1 v3 numbers are superseded by v4 (grouping bug). Belt Monitor: `presentation/belt-monitor/`. FCN ensemble member did not beat 42646cfa on validation mIoU.
+- **2026-10-01, 04:40 — promo video ready.** `presentation/video/` holds the full cut (3:44) and a 90 s cut for the deck's demo slot. Both are built from real app footage (fresh `test_11` inference, report, held simulator) plus Mixkit stock labelled illustrative on screen. Read `presentation/video/CREDITS-AND-SOURCES.md` before showing it; the MP4s are local only, not in git.
+- **Last updated:** 2026-09-30 (new product handoff; older technical narrative below is historical)
+- **Current planning decision:** Supabase + Cloudflare Pages + FastAPI PWA, with private Kaggle model experiments. See [`docs/12-pwa-phase-identification-roadmap-2026-09-30.md`](docs/12-pwa-phase-identification-roadmap-2026-09-30.md) and the [cloud connection runbook](docs/13-cloudflare-azure-fastapi-connection-2026-09-30.md). Supabase is user-reported connected; Cloudflare CLI and Azure account selection have not been verified in this environment. The working 1 October demo still takes priority.
 - **Read [`WORKBOARD.md`](WORKBOARD.md) first.** It is the shared board Lethabo and Sibusiso both read: what in
   here is superseded, the scoreboard against the brief, the work queue, and the open decisions.
-- **Days to final:** 19 (final is 1 October 2026, 13:00 submission, 10-minute presentation)
+- **Final:** 1 October 2026, 10-minute presentation. The repository says 13:00 submission; the organiser email supplied by the user confirms the date but not the hour, so the team should verify the time.
 - **Abstract deadline: 30 August 2026 — submitted and complete.** Drafted and rendered:
   [`docs/06-abstract.md`](docs/06-abstract.md) is the wording,
   [`docs/06-abstract.pdf`](docs/06-abstract.pdf) is what was sent. **The submission packet is
@@ -100,6 +110,14 @@ hardware-facing half of `acquire` (which, per ADR-0002, has no rig to drive). Ea
 is missing — **the red test list is the backlog**, deliberately.
 
 ### The single next action
+
+**2026-09-30 update:** freeze and rehearse the current KHANYA three-phase/report/simulated-control
+demo for 1 October. Then implement the selected hosted PWA in KHANYA's application history, using
+the milestones and acceptance checks in `docs/12-pwa-phase-identification-roadmap-2026-09-30.md`.
+For model work, reproduce the existing checkpoint/report first and improve magnetite on
+training/validation data; do not tune against the examined 12-section publisher test. This
+planning update does not claim the PWA or improved model is built. The text below records earlier
+technical investigations and remains useful only with its dates and corrections.
 
 **2026-09-14 update — read this line first, then the historical narrative below.** P1–P5 have all
 now run at least once (P5 with a real, escalated non-reproducibility finding —

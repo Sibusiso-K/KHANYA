@@ -1,0 +1,31 @@
+{
+ "record": "GEOMET",
+ "rule": "first N by sha256('reefprint-v6|<record>|<sample>'), written before modelling",
+ "samples": [
+  "GMET-0048",
+  "GMET-0112",
+  "GMET-0015",
+  "GMET-0035",
+  "GMET-0063",
+  "GMET-0071",
+  "GMET-0098",
+  "GMET-0114",
+  "GMET-0043",
+  "GMET-0113",
+  "GMET-0083",
+  "GMET-0116",
+  "GMET-0004",
+  "GMET-0105",
+  "GMET-0126",
+  "GMET-0007",
+  "GMET-0022",
+  "GMET-0011",
+  "GMET-0039",
+  "GMET-0091",
+  "GMET-0080",
+  "GMET-0064",
+  "GMET-0054",
+  "GMET-0068"
+ ],
+ "written_unix": 1790932317.8782425
+}

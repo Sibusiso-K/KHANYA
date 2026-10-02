@@ -1,0 +1,2782 @@
+{
+ "built": "2026-10-02",
+ "hashes_sha256": {
+  "v6_results": "e9ee56dfab832dff6e0a62275bc3326849ed3e2b5c5b05edf385381881754f79",
+  "v6_analysis": "342e37b9b32c2bb0b35dc86f73ada738dc151652855902de5d6ceacf6f8d3938",
+  "mineral1_q2": "e0f50165f9675cfc417f0c47013e7eac5f0de5c54490d054ba3e7afd6a3c3f75",
+  "plant_results": "a2692f2c56180fd89686d46448c9c7db2eebdce10b134b5ebccb05f15a80a33f",
+  "plant_h1": "033a574e23b7a4095e4f868129439d8c3bcde9de8427d23077f90e0255f3f974",
+  "plant_h3": "85e112b2e2151eac474acc14f74a2af438da7b64ad24b07deb538a37540cda39",
+  "bushveld_results": "b51cb2f5890f3e3bacc1a9c38d2fa38a4237b2b2af3ea2dfbfa23b1795cd3587",
+  "bushveld_app": "879505b3bdd9cd607f2247a66e6ce9dc7e91f24d1e4a5099ae7dea155bea8226",
+  "plan_review_log": "696c774f1e3021a8539d8898df6d708225c37edcec76ee42a87642683ddb845c",
+  "value_chain": "aa219f040946164cb936d52d0930245c7c5707a6261bfa4bb7c78a709f0d1d88",
+  "economics": "9dce282f0cbdcb0d8ff78376a28a84f0b1a25b0c918ed7f7ce28bc11b4d4415b",
+  "physics": "685da76446dd0c61a5d99aac5b3f2cdd5d01f1617077d920fa12ee942d8e8b63",
+  "geometry": "cb01cc510570024e66a372a9ed86b49b7547e656539ebd577a68a3f1edaf8481",
+  "model_meta": "82ddc80caa47446cd9854881493cb608e91fc2fad96852569259e3fcd990ee9e",
+  "robustness": "0ba1c08d4ab47e3acdf964beda0b2947bbc5e421b530ba747b710883c1726153",
+  "v8_model_results": "ecc836dee4fa1d3a18ed9765160466c10430cf2f347a4213e206034ce7d06183"
+ },
+ "showcase": {
+  "GEOMET": [
+   "GMET-0004",
+   "GMET-0007",
+   "GMET-0011",
+   "GMET-0015",
+   "GMET-0022",
+   "GMET-0035",
+   "GMET-0039",
+   "GMET-0043",
+   "GMET-0048",
+   "GMET-0054",
+   "GMET-0063",
+   "GMET-0064",
+   "GMET-0068",
+   "GMET-0071",
+   "GMET-0080",
+   "GMET-0083",
+   "GMET-0091",
+   "GMET-0098",
+   "GMET-0105",
+   "GMET-0112",
+   "GMET-0113",
+   "GMET-0114",
+   "GMET-0116",
+   "GMET-0126"
+  ],
+  "MINERAL1": [
+   "M1-0013",
+   "M1-0021",
+   "M1-0030",
+   "M1-0041",
+   "M1-0043",
+   "M1-0053",
+   "M1-0066",
+   "M1-0070",
+   "M1-0078",
+   "M1-0079",
+   "M1-0084",
+   "M1-0095"
+  ]
+ },
+ "evidence": {
+  "GEOMET": {
+   "Cu rec": {
+    "r2_deployable": 0.3113727043758254,
+    "r2_full_refit": 0.3899530366296414,
+    "r2_v5": 0.4221266140447425,
+    "r2_rgb": 0.24331949659682095,
+    "strongest_baseline": "median",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.815068493150685,
+    "coverage_ci95": [
+     0.7424595175312287,
+     0.8744497630820487
+    ],
+    "median_width": 7.142444444444465,
+    "used_in_decision": false
+   },
+   "Lime cons": {
+    "r2_deployable": 0.2375893357974792,
+    "r2_full_refit": 0.2398396012822981,
+    "r2_v5": 0.3172001810129319,
+    "r2_rgb": 0.055555961829531486,
+    "strongest_baseline": "median",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.815068493150685,
+    "coverage_ci95": [
+     0.7424595175312287,
+     0.8744497630820487
+    ],
+    "median_width": 0.1888935430218205,
+    "used_in_decision": false
+   },
+   "Mo rec": {
+    "r2_deployable": 0.34017119408296603,
+    "r2_full_refit": 0.36038922732263534,
+    "r2_v5": 0.45066917496187475,
+    "r2_rgb": 0.18878903282433135,
+    "strongest_baseline": "median",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7808219178082192,
+    "coverage_ci95": [
+     0.7049065741969079,
+     0.8449923445064356
+    ],
+    "median_width": 44.652333333333345,
+    "used_in_decision": false
+   },
+   "PH": {
+    "r2_deployable": 0.21930701973003097,
+    "r2_full_refit": 0.2919637306271421,
+    "r2_v5": 0.3282244435287621,
+    "r2_rgb": 0.07101574038349667,
+    "strongest_baseline": "mean",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.821917808219178,
+    "coverage_ci95": [
+     0.750058686165666,
+     0.8802493126646438
+    ],
+    "median_width": 2.2766666666666655,
+    "used_in_decision": false
+   },
+   "WI": {
+    "r2_deployable": 0.479117652253626,
+    "r2_full_refit": 0.46964547778657273,
+    "r2_v5": 0.4791472646257434,
+    "r2_rgb": 0.20981705191047295,
+    "strongest_baseline": "mean",
+    "vs_baseline": "better",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.7945205479452054,
+    "coverage_ci95": [
+     0.7198435969339124,
+     0.8568624493329343
+    ],
+    "median_width": 3.2262222222222228,
+    "used_in_decision": true
+   }
+  },
+  "MINERAL1": {
+   "Actinolite": {
+    "r2_deployable": 0.004905285598192366,
+    "r2_full_refit": 0.032627810872140395,
+    "r2_v5": 0.043432713903319264,
+    "r2_rgb": 0.15826417321045483,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.75,
+    "coverage_ci95": [
+     0.577970415421856,
+     0.8787967058761648
+    ],
+    "median_width": 0.1967571244592073,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.03085497505198964
+   },
+   "Albite": {
+    "r2_deployable": 0.3487998398998965,
+    "r2_full_refit": 0.3963456477112559,
+    "r2_v5": 0.3542204509221035,
+    "r2_rgb": -0.16885941261486215,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 4.349124029813755,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.06857691307957492
+   },
+   "Andesina_An40": {
+    "r2_deployable": 0.16298300055550907,
+    "r2_full_refit": 0.1528881677060303,
+    "r2_v5": 0.19679857411011126,
+    "r2_rgb": -0.03371614920256394,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 1.8958702071456468,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.17748066449479016
+   },
+   "Anhydrite/Gypsum": {
+    "r2_deployable": 0.9107768442258594,
+    "r2_full_refit": 0.9275575625918849,
+    "r2_v5": 0.9240168334644445,
+    "r2_rgb": 0.6848460312906034,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.9166666666666666,
+    "coverage_ci95": [
+     0.7753102394430269,
+     0.9824735040760655
+    ],
+    "median_width": 3.7623138120779736,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.9493846970719184
+   },
+   "Anorthite": {
+    "r2_deployable": 0.7652518716908253,
+    "r2_full_refit": 0.7747445703491829,
+    "r2_v5": 0.7766486300045279,
+    "r2_rgb": 0.615893708816065,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8611111111111112,
+    "coverage_ci95": [
+     0.7050250518892913,
+     0.9533223393969105
+    ],
+    "median_width": 3.112426396592179,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7334113491317393
+   },
+   "Apatite": {
+    "r2_deployable": 0.2593195774576925,
+    "r2_full_refit": 0.23593491787018317,
+    "r2_v5": 0.246432457854194,
+    "r2_rgb": 0.15721898765051112,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 0.2874281141248233,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "worse",
+    "r2_size_fraction_lookup": 0.2532007452736659
+   },
+   "Biotite": {
+    "r2_deployable": 0.9446827139378452,
+    "r2_full_refit": 0.9413912205542385,
+    "r2_v5": 0.9323517903469405,
+    "r2_rgb": 0.7313343669247139,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 3.59505949672268,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.9384481142840586
+   },
+   "Bornite": {
+    "r2_deployable": 0.7561261231117005,
+    "r2_full_refit": 0.7704076574272498,
+    "r2_v5": 0.7197485765560598,
+    "r2_rgb": 0.6439435758014982,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 0.38201111111111113,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7643659306852523
+   },
+   "Bytownite_An80": {
+    "r2_deployable": 0.681165480348074,
+    "r2_full_refit": 0.7183699367052132,
+    "r2_v5": 0.7741693826990592,
+    "r2_rgb": 0.5869683630652063,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.75,
+    "coverage_ci95": [
+     0.577970415421856,
+     0.8787967058761648
+    ],
+    "median_width": 1.0578779029081016,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.6766768042912614
+   },
+   "Calcite": {
+    "r2_deployable": 0.7707246367715823,
+    "r2_full_refit": 0.7672304447761116,
+    "r2_v5": 0.7498556575344217,
+    "r2_rgb": 0.5059559406755143,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8888888888888888,
+    "coverage_ci95": [
+     0.7393890794889078,
+     0.9688838600549851
+    ],
+    "median_width": 0.2912554828156967,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7602829314635763
+   },
+   "Chalcopyrite": {
+    "r2_deployable": 0.8865244452148752,
+    "r2_full_refit": 0.9009055037938406,
+    "r2_v5": 0.900019778869722,
+    "r2_rgb": 0.6806222680546771,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.8611111111111112,
+    "coverage_ci95": [
+     0.7050250518892913,
+     0.9533223393969105
+    ],
+    "median_width": 1.1032888888888897,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.9233792874874248
+   },
+   "Chalcosite/Digenite": {
+    "r2_deployable": 0.7403633099958163,
+    "r2_full_refit": 0.7316866767431784,
+    "r2_v5": 0.7146678631747339,
+    "r2_rgb": 0.5713737736651563,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8611111111111112,
+    "coverage_ci95": [
+     0.7050250518892913,
+     0.9533223393969105
+    ],
+    "median_width": 0.1583444444444443,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.6654204343875743
+   },
+   "Chlorite": {
+    "r2_deployable": 0.7417828194582734,
+    "r2_full_refit": 0.7837961644774645,
+    "r2_v5": 0.7980359888466766,
+    "r2_rgb": 0.5878083228188806,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 3.1211329968979147,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7101493659627361
+   },
+   "Covelite": {
+    "r2_deployable": 0.6016137877775805,
+    "r2_full_refit": 0.5815424815504413,
+    "r2_v5": 0.6279857277976901,
+    "r2_rgb": 0.6174601914131012,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 0.034477777777777774,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "worse",
+    "r2_size_fraction_lookup": 0.5792284219703574
+   },
+   "Epidote": {
+    "r2_deployable": 0.09738442081951126,
+    "r2_full_refit": 0.16182826229998415,
+    "r2_v5": 0.1484258904659811,
+    "r2_rgb": 0.22260894704647005,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "worse",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 0.21870000000000006,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.24243450103032083
+   },
+   "Fe Oxides": {
+    "r2_deployable": 0.3530977133042629,
+    "r2_full_refit": 0.3427597405971947,
+    "r2_v5": 0.45863422087428907,
+    "r2_rgb": 0.39574924643501774,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 0.535918891276385,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.44165386786384697
+   },
+   "Fe-Clays": {
+    "r2_deployable": 0.6470302507800887,
+    "r2_full_refit": 0.730358974730013,
+    "r2_v5": 0.7456356192708872,
+    "r2_rgb": 0.6164728862167008,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 0.37161838945509396,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.5972871467935523
+   },
+   "K-Feldspar": {
+    "r2_deployable": 0.7687127181932699,
+    "r2_full_refit": 0.8020222825650863,
+    "r2_v5": 0.8243334633116435,
+    "r2_rgb": 0.6583163332337052,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.75,
+    "coverage_ci95": [
+     0.577970415421856,
+     0.8787967058761648
+    ],
+    "median_width": 2.453339417258686,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "worse",
+    "r2_size_fraction_lookup": 0.8321234030341206
+   },
+   "Kaolinite": {
+    "r2_deployable": 0.6020205673403622,
+    "r2_full_refit": 0.6555084525342102,
+    "r2_v5": 0.652056056702388,
+    "r2_rgb": 0.357934166817358,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8888888888888888,
+    "coverage_ci95": [
+     0.7393890794889078,
+     0.9688838600549851
+    ],
+    "median_width": 0.9236239301653435,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.6693134109624927
+   },
+   "Labradorite_An60": {
+    "r2_deployable": 0.5119060498179981,
+    "r2_full_refit": 0.48645177609813084,
+    "r2_v5": 0.45485271883561174,
+    "r2_rgb": 0.4133136393553912,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 2.9445444444444453,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.5053060541305734
+   },
+   "Molybdenite": {
+    "r2_deployable": 0.1703705918028806,
+    "r2_full_refit": 0.25063839936561894,
+    "r2_v5": 0.2709768443661482,
+    "r2_rgb": 0.046862723896172964,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7777777777777778,
+    "coverage_ci95": [
+     0.6084823508426492,
+     0.8988494696550872
+    ],
+    "median_width": 0.06773333333333333,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.21382432469341484
+   },
+   "Muscovite/Sericite": {
+    "r2_deployable": 0.9043628193543234,
+    "r2_full_refit": 0.9024949134644202,
+    "r2_v5": 0.9262916575867248,
+    "r2_rgb": 0.6272029634444224,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.7777777777777778,
+    "coverage_ci95": [
+     0.6084823508426492,
+     0.8988494696550872
+    ],
+    "median_width": 6.670635855869868,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.9057881171016129
+   },
+   "Oligoclasa_An20": {
+    "r2_deployable": 0.2521968287418268,
+    "r2_full_refit": 0.31685715597416586,
+    "r2_v5": 0.3815343313928985,
+    "r2_rgb": 0.24598728485275168,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8611111111111112,
+    "coverage_ci95": [
+     0.7050250518892913,
+     0.9533223393969105
+    ],
+    "median_width": 4.078822222222225,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.2392044359453841
+   },
+   "Other Amphibole": {
+    "r2_deployable": 0.2837410671280647,
+    "r2_full_refit": 0.30680644642681654,
+    "r2_v5": 0.3214428588944038,
+    "r2_rgb": 0.35661770155621475,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8333333333333334,
+    "coverage_ci95": [
+     0.6718840679570812,
+     0.9362798663916145
+    ],
+    "median_width": 0.1264488881405697,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.3979754252615111
+   },
+   "Others": {
+    "r2_deployable": 0.3748590935181455,
+    "r2_full_refit": 0.405559537055766,
+    "r2_v5": 0.4397260850705923,
+    "r2_rgb": 0.33487063523852023,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 0.21470000000000025,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "worse",
+    "r2_size_fraction_lookup": 0.5996039310000758
+   },
+   "Others Carbonates": {
+    "r2_deployable": 0.22409776859856878,
+    "r2_full_refit": 0.22331266237180858,
+    "r2_v5": 0.2479456091919886,
+    "r2_rgb": 0.0435247022058638,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.6666666666666666,
+    "coverage_ci95": [
+     0.49029745334810876,
+     0.8144381901741213
+    ],
+    "median_width": 0.16570000000000012,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.2909234110496859
+   },
+   "Others Ti Minerals": {
+    "r2_deployable": -0.11395680711211975,
+    "r2_full_refit": 0.019742506010171912,
+    "r2_v5": 0.021987640059335956,
+    "r2_rgb": -0.07782600354081604,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7222222222222222,
+    "coverage_ci95": [
+     0.548138854932161,
+     0.8579975527365981
+    ],
+    "median_width": 0.8283888888888895,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": -0.06651316493335413
+   },
+   "Pyrite": {
+    "r2_deployable": 0.7617907885242681,
+    "r2_full_refit": 0.8092732025187009,
+    "r2_v5": 0.8727897189937127,
+    "r2_rgb": 0.7626144581840189,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.75,
+    "coverage_ci95": [
+     0.577970415421856,
+     0.8787967058761648
+    ],
+    "median_width": 3.148025892120966,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.9086335705219291
+   },
+   "Pyroxene": {
+    "r2_deployable": 0.8081542837987408,
+    "r2_full_refit": 0.807852072696776,
+    "r2_v5": 0.7980169207014638,
+    "r2_rgb": 0.4894710394996207,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "better",
+    "coverage": 0.8611111111111112,
+    "coverage_ci95": [
+     0.7050250518892913,
+     0.9533223393969105
+    ],
+    "median_width": 0.12964444444444448,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7213857073898544
+   },
+   "Quartz": {
+    "r2_deployable": 0.7405151192872965,
+    "r2_full_refit": 0.7764171975077714,
+    "r2_v5": 0.7739624441515286,
+    "r2_rgb": 0.5812417962940066,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7222222222222222,
+    "coverage_ci95": [
+     0.548138854932161,
+     0.8579975527365981
+    ],
+    "median_width": 4.4474777777777845,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.7216272151678262
+   },
+   "Rutile": {
+    "r2_deployable": 0.27795059606962214,
+    "r2_full_refit": 0.36554827102881104,
+    "r2_v5": 0.4853309849837343,
+    "r2_rgb": 0.2939157878762594,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7222222222222222,
+    "coverage_ci95": [
+     0.548138854932161,
+     0.8579975527365981
+    ],
+    "median_width": 0.3134803892072797,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.4822590938098278
+   },
+   "Siderite": {
+    "r2_deployable": 0.5016062726865413,
+    "r2_full_refit": 0.636464082387231,
+    "r2_v5": 0.6147014148273306,
+    "r2_rgb": 0.434648347458345,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.7222222222222222,
+    "coverage_ci95": [
+     0.548138854932161,
+     0.8579975527365981
+    ],
+    "median_width": 0.2069444444444446,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "worse",
+    "r2_size_fraction_lookup": 0.5580940968412427
+   },
+   "Tourmaline": {
+    "r2_deployable": 0.33127553276298705,
+    "r2_full_refit": 0.39979460764135766,
+    "r2_v5": 0.3057186506814815,
+    "r2_rgb": 0.30628537152894064,
+    "strongest_baseline": "metadata",
+    "vs_baseline": "no significant difference",
+    "vs_v5": "no significant difference",
+    "hs_vs_rgb": "no significant difference",
+    "coverage": 0.8055555555555556,
+    "coverage_ci95": [
+     0.6397519838249748,
+     0.9180563602347912
+    ],
+    "median_width": 1.2354111111111103,
+    "used_in_decision": false,
+    "spectrum_adds_over_metadata": "no significant difference",
+    "r2_size_fraction_lookup": 0.22013073367635794
+   }
+  }
+ },
+ "value": {
+  "note": "From prediction to the next plant step: what each REEFPRINT prediction changes, measured on real held-out data.",
+  "grinding": {
+   "n_parcels": 146,
+   "units": "samples (GEOMET has no drill-hole ids: may be optimistic)",
+   "ood_counts": {
+    "pass": 137,
+    "borderline": 5,
+    "refused": 4
+   },
+   "wi_true": {
+    "mean": 14.618493150684932,
+    "sd": 1.8703161927631358,
+    "min": 11.2,
+    "max": 21.8
+   },
+   "one_sided_bound": {
+    "alpha": 0.1,
+    "method": "split-conformal one-sided upper bound, signed calibration scores, one per unit (Kaggle reefprint-hidsag-v8-model); marginal finite-sample coverage >= 90% under exchangeability",
+    "cvplus_approx_empirical_exceedance": 0.0958904109589041,
+    "empirical_exceedance": 0.0684931506849315,
+    "empirical_exceedance_ci95": [
+     0.03424657534246575,
+     0.11643835616438356
+    ]
+   },
+   "policies": {
+    "blind_p90": {
+     "sim_throughput_vs_blind_p90": 0.0,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.0,
+      0.0
+     ],
+     "sim_overload_share": 0.08904109589041095,
+     "sim_overload_share_ci95": [
+      0.04794520547945205,
+      0.136986301369863
+     ],
+     "sim_excess_energy_required_when_overloaded": 0.1187334596015556,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.10066623351601961
+    },
+    "blind_mean": {
+     "sim_throughput_vs_blind_p90": 0.14024558271570298,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.1391696249564657,
+      0.14134006055594353
+     ],
+     "sim_overload_share": 0.4383561643835616,
+     "sim_overload_share_ci95": [
+      0.3561643835616438,
+      0.5205479452054794
+     ],
+     "sim_excess_energy_required_when_overloaded": 0.11294658294626737,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.09479452641643668
+    },
+    "belt_symmetric80_hi (old, comparator)": {
+     "sim_throughput_vs_blind_p90": 0.02014792073583771,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.009553266678778517,
+      0.03014445047787696
+     ],
+     "sim_overload_share": 0.0821917808219178,
+     "sim_overload_share_ci95": [
+      0.0410958904109589,
+      0.13013698630136986
+     ],
+     "sim_excess_energy_required_when_overloaded": 0.049886286681433856,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.046475574530573605
+    },
+    "belt_onesided90_all": {
+     "sim_throughput_vs_blind_p90": 0.021756543205245782,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.01109763572306302,
+      0.031798242768905374
+     ],
+     "sim_overload_share": 0.0684931506849315,
+     "sim_overload_share_ci95": [
+      0.03424657534246575,
+      0.11643835616438356
+     ],
+     "sim_excess_energy_required_when_overloaded": 0.051950866681117744,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.04861714394153677
+    },
+    "belt_deployed": {
+     "sim_throughput_vs_blind_p90": 0.0193174572741468,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.009131021173504162,
+      0.029118911714911933
+     ],
+     "sim_overload_share": 0.0684931506849315,
+     "sim_overload_share_ci95": [
+      0.03424657534246575,
+      0.11643835616438356
+     ],
+     "sim_excess_energy_required_when_overloaded": 0.051950866681117744,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.04861714394153677
+    },
+    "belt_point": {
+     "sim_throughput_vs_blind_p90": 0.13589984063221205,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.12311488867413914,
+      0.14837972928862167
+     ],
+     "sim_overload_share": 0.4520547945205479,
+     "sim_overload_share_ci95": [
+      0.3698630136986301,
+      0.5342465753424658
+     ],
+     "sim_excess_energy_required_when_overloaded": 0.07304467707554836,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.065792065406314
+    },
+    "oracle": {
+     "sim_throughput_vs_blind_p90": 0.14016773649440095,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.11690000096666994,
+      0.16366075549624462
+     ],
+     "sim_overload_share": 0.0,
+     "sim_overload_share_ci95": [
+      0.0,
+      0.0
+     ],
+     "sim_excess_energy_required_when_overloaded": 0.0,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.0
+    }
+   },
+   "belt_deployed_vs_blind_p90": {
+    "median_paired_diff_wi_used": -0.42030555555555615,
+    "wilcoxon_p_less": 6.012304641190467e-07,
+    "mannwhitney_p_less": 1.1244006327699138e-09,
+    "cliffs_delta": -0.40209232501407394,
+    "throughput_ci95": [
+     0.009131021173504162,
+     0.029118911714911933
+    ],
+    "overload_diff": -0.02054794520547945,
+    "noninferiority_margin": 0.03,
+    "overload_diff_onesided95_upper": 0.0136986301369863,
+    "noninferior": true,
+    "throughput_verdict": "better",
+    "claim": "throughput gain at no worse than +3% overload risk"
+   },
+   "ramp_limits_over_random_orders": {
+    "unlimited": {
+     "throughput_vs_blind_mean": 0.0193174572741468,
+     "throughput_p05_p95": [
+      0.0193174572741468,
+      0.0193174572741468
+     ],
+     "overload_diff_mean": -0.02054794520547945,
+     "overload_diff_p05_p95": [
+      -0.02054794520547945,
+      -0.02054794520547945
+     ]
+    },
+    "10pct_per_parcel": {
+     "throughput_vs_blind_mean": 0.02064169320331889,
+     "throughput_p05_p95": [
+      0.018008261711298112,
+      0.02403085968961759
+     ],
+     "overload_diff_mean": -0.003321917808219178,
+     "overload_diff_p05_p95": [
+      -0.0136986301369863,
+      0.00684931506849315
+     ]
+    },
+    "5pct_per_parcel": {
+     "throughput_vs_blind_mean": 0.02295853888094084,
+     "throughput_p05_p95": [
+      0.019502498124480617,
+      0.026350717464504278
+     ],
+     "overload_diff_mean": 0.021130136986301368,
+     "overload_diff_p05_p95": [
+      0.00684931506849315,
+      0.0410958904109589
+     ]
+    },
+    "2pct_per_parcel": {
+     "throughput_vs_blind_mean": 0.02416209813514477,
+     "throughput_p05_p95": [
+      0.018181768556629164,
+      0.028411132686427597
+     ],
+     "overload_diff_mean": 0.04715753424657534,
+     "overload_diff_p05_p95": [
+      0.0273972602739726,
+      0.07534246575342465
+     ]
+    }
+   },
+   "share_of_perfect_information_captured": 0.13781671700832837,
+   "not_simulated": [
+    "an APC/feedback baseline: HIDSAG samples are not a time series, so no dynamic baseline can be simulated honestly",
+    "stale data, belt-to-mill transit and stockpile mixing (no timing exists in the data)",
+    "downstream constraints (flotation capacity, concentrate handling)"
+   ],
+   "assumptions": [
+    "ASSUMED: the mill is power-limited and its feed rate can follow each parcel within the ramp limit",
+    "ASSUMED: Bond's law applies (ball-mill energy); a SAG circuit also needs the A\u00d7b parameter, which HIDSAG lacks",
+    "ASSUMED: HIDSAG's WI is the Bond ball-mill work index in kWh/t, as earlier runs and the registry treat it",
+    "ASSUMED: non-inferiority margin +3 pp overload share (pre-registered in PLAN-v8 D3; a site sets the real margin)",
+    "Mill power, F80 and P80 cancel in every ratio: no plant parameter is needed for the relative results"
+   ]
+  },
+  "routing": {
+   "n_intervals": 1112,
+   "n_projects": 123,
+   "cut_off": "training-fold median 4E (ppm = g/t)",
+   "cut_off_values_g_per_t": [
+    1.37,
+    1.425,
+    1.44,
+    1.475,
+    1.64
+   ],
+   "policies": {
+    "belt_chemistry": {
+     "balanced_accuracy": 0.7929933524188462,
+     "metal_to_mill": 0.7474211896269161,
+     "low_grade_mass_to_mill": 0.3027027027027027,
+     "mass_to_mill": 0.5962230215827338,
+     "balanced_accuracy_ci95": [
+      0.7439289995444343,
+      0.8350452327655744
+     ],
+     "metal_to_mill_ci95": [
+      0.6933581873186224,
+      0.7935008946743686
+     ],
+     "low_grade_mass_to_mill_ci95": [
+      0.2220803060281215,
+      0.39549039257548696
+     ]
+    },
+    "mine_plan_seam": {
+     "balanced_accuracy": 0.8216927879405438,
+     "metal_to_mill": 0.8280944306769271,
+     "low_grade_mass_to_mill": 0.3171171171171171,
+     "mass_to_mill": 0.6393884892086331,
+     "balanced_accuracy_ci95": [
+      0.7766262194560594,
+      0.8620785921538685
+     ],
+     "metal_to_mill_ci95": [
+      0.7748913485411272,
+      0.8682254992490089
+     ],
+     "low_grade_mass_to_mill_ci95": [
+      0.23899350076832002,
+      0.40692937199786516
+     ]
+    },
+    "no_information_all_to_mill": {
+     "balanced_accuracy": 0.5,
+     "metal_to_mill": 1.0,
+     "low_grade_mass_to_mill": 1.0,
+     "mass_to_mill": 1.0,
+     "balanced_accuracy_ci95": [
+      0.5,
+      0.5
+     ],
+     "metal_to_mill_ci95": [
+      1.0,
+      1.0
+     ],
+     "low_grade_mass_to_mill_ci95": [
+      1.0,
+      1.0
+     ]
+    }
+   },
+   "chemistry_minus_seam_balanced_accuracy_ci95": [
+    -0.056224853519465455,
+    -0.004259482899908434
+   ],
+   "chemistry_vs_seam": "seam better",
+   "assumptions": [
+    "ASSUMED: parcels of equal mass; the cut-off is data-derived, not an economic cut-off",
+    "Seam baseline = what the mine plan already knows; belt chemistry must beat it to add value",
+    "Units for every interval are projects (rule 2); 4E = Pt+Pd+Rh+Au as reported"
+   ]
+  },
+  "sources": {
+   "grinding": "training/hidsag-v6-live-20261001/output/hidsag_v6_results.json (Kaggle reefprint-hidsag-v6-live)",
+   "routing": "training/bushveld-xrf-pge-20261001/app_bushveld.json (bushveld.py, GroupKFold by ProjectCode)",
+   "bond": "Bond, F.C. (1961) Crushing and grinding calculations, Br. Chem. Eng. 6:378-385, 543-548 (textbook form; primary not re-read this session)"
+  }
+ },
+ "economics": {
+  "note": "What the levers could be worth: scenario arithmetic with provenance attached (rule 1 as a type: reefprint.quantity).",
+  "basis": "contained 4E oz x ASSUMED payability x ASSUMED net 4E price; FX separate",
+  "fx": {
+   "value": 17.61,
+   "unit": "ZAR/USD",
+   "provenance": "ASSUMED",
+   "sources": [
+    "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+   ]
+  },
+  "V1_net_value_per_recovery_pp_per_yr": {
+   "zondereinde_scale": {
+    "low": {
+     "value": 63959881.327479124,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability (smelting/refining losses and charges, toll terms)",
+      "ASSUMED low net 4E price"
+     ]
+    },
+    "base": {
+     "value": 94556071.27865912,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)"
+     ]
+    },
+    "high": {
+     "value": 152815336.30318266,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Northam Zondereinde revenue per equivalent refined 4E oz F2026, indicative [N]"
+     ]
+    }
+   },
+   "implats_group_scale": {
+    "low": {
+     "value": 633932345.4669222,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Implats FY2025 tonnes milled, managed operations",
+      "ASSUMED for illustration: no verified Implats group head grade was read",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability (smelting/refining losses and charges, toll terms)",
+      "ASSUMED low net 4E price"
+     ]
+    },
+    "base": {
+     "value": 937183603.2169882,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Implats FY2025 tonnes milled, managed operations",
+      "ASSUMED for illustration: no verified Implats group head grade was read",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)"
+     ]
+    },
+    "high": {
+     "value": 1514614826.5971346,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Implats FY2025 tonnes milled, managed operations",
+      "ASSUMED for illustration: no verified Implats group head grade was read",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Northam Zondereinde revenue per equivalent refined 4E oz F2026, indicative [N]"
+     ]
+    }
+   }
+  },
+  "V2_throughput_mill_constrained_only": {
+   "extra_tonnes_per_yr": {
+    "value": 295470.0,
+    "unit": "t/yr",
+    "provenance": "ASSUMED",
+    "sources": [
+     "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+     "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority"
+    ]
+   },
+   "net_revenue_per_extra_tonne": {
+    "low": {
+     "value": 1190.5823338695052,
+     "unit": "g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability (smelting/refining losses and charges, toll terms)",
+      "ASSUMED low net 4E price",
+      "troy ounce definition"
+     ]
+    },
+    "base": {
+     "value": 1760.1156488717686,
+     "unit": "g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "troy ounce definition"
+     ]
+    },
+    "high": {
+     "value": 2844.583760488152,
+     "unit": "g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability",
+      "ASSUMED: Northam Zondereinde revenue per equivalent refined 4E oz F2026, indicative [N]",
+      "troy ounce definition"
+     ]
+    }
+   },
+   "contribution_per_yr_if_variable_cost_is_fraction_of_revenue": {
+    "25pct": {
+     "value": 390046028.0791061,
+     "unit": "t/yr*g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+      "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority",
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "troy ounce definition",
+      "ASSUMED incremental variable cost = 25% of net revenue per tonne (mining/reclaim, milling, flotation, smelting/refining)"
+     ]
+    },
+    "50pct": {
+     "value": 260030685.38607073,
+     "unit": "t/yr*g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+      "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority",
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "troy ounce definition",
+      "ASSUMED incremental variable cost = 50% of net revenue per tonne (mining/reclaim, milling, flotation, smelting/refining)"
+     ]
+    },
+    "75pct": {
+     "value": 130015342.69303536,
+     "unit": "t/yr*g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+      "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority",
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "troy ounce definition",
+      "ASSUMED incremental variable cost = 75% of net revenue per tonne (mining/reclaim, milling, flotation, smelting/refining)"
+     ]
+    }
+   },
+   "zero_if": "the plant is ore-constrained (most underground PGM concentrators), or the extra tonnes move the bottleneck downstream",
+   "transfer_caveat": "the +2.0% is a Chilean Cu-Mo drill-core result under revision; no confidence interval is transferred to rands"
+  },
+  "V3_cr2o3_tradeoff_evidence_only": {
+   "jones_2005": "UG2 concentrate ~430 g/t at 87% recovery and 2.9% Cr2O3; >1000 g/t at >90% if Cr2O3 relaxed to 4-10% [P]",
+   "reading": "recovery and concentrate quality trade off; better chromite control moves the operating point, by an amount only a pilot can measure"
+  },
+  "V4_breakeven_recovery_pp_zondereinde_scale_base": {
+   "net_value_per_pp_usd": {
+    "value": 5369453.224228229,
+    "unit": "t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+    "provenance": "ASSUMED",
+    "sources": [
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+    ]
+   },
+   "breakeven_pp": {
+    "capex_0.5M_opex_0.1M": {
+     "value": 0.043188520453254206,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$100,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_0.5M_opex_0.3M": {
+     "value": 0.08043626089311003,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$300,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_0.5M_opex_0.6M": {
+     "value": 0.13630787155289373,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$600,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_1.5M_opex_0.1M": {
+     "value": 0.0923178209199068,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$1,500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$100,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_1.5M_opex_0.3M": {
+     "value": 0.1295655613597626,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$1,500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$300,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_1.5M_opex_0.6M": {
+     "value": 0.18543717201954632,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$1,500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$600,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_3.0M_opex_0.1M": {
+     "value": 0.1660117716198857,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$3,000,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$100,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_3.0M_opex_0.3M": {
+     "value": 0.2032595120597415,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$3,000,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$300,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_3.0M_opex_0.6M": {
+     "value": 0.2591311227195252,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$3,000,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$600,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    }
+   },
+   "formula": "(capex x CRF + opex) / net value per recovery pp"
+  },
+  "V5_qemscan_every_shift": {
+   "per_stream_per_yr_cad2017": {
+    "value": 2682750,
+    "unit": "CAD/sample*samples/yr",
+    "provenance": "ASSUMED",
+    "sources": [
+     "Saskatchewan Research Council QEMSCAN price list 4/2017 (Canadian lab, CAD, 2017): liberation analysis with predicted recovery [P]",
+     "SRC 4/2017: 30 mm block mount [P]",
+     "SRC 4/2017: crush, grind and sieve test samples [P]",
+     "ASSUMED cadence: one composite per stream per shift, three shifts, every day"
+    ]
+   },
+   "reading": "a 2017 Canadian list price; a local quote is required; still days late"
+  },
+  "V6_processed_before_assay_returns_zondereinde_scale": {
+   "24h": {
+    "tonnes": {
+     "value": 6158.57808219178,
+     "unit": "t/yr/h/yr*h",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "hours in a year",
+      "indicative [S]: 4E fire assay turnaround in practice 24-72 h"
+     ]
+    },
+    "contained_oz": {
+     "value": 934.5736084380509,
+     "unit": "t/yr/h/yr*h*g/t/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "hours in a year",
+      "indicative [S]: 4E fire assay turnaround in practice 24-72 h",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "troy ounce definition"
+     ]
+    }
+   },
+   "72h": {
+    "tonnes": {
+     "value": 18475.73424657534,
+     "unit": "t/yr/h/yr*h",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "hours in a year",
+      "indicative [S]: 4E fire assay turnaround in practice 24-72 h"
+     ]
+    },
+    "contained_oz": {
+     "value": 2803.7208253141525,
+     "unit": "t/yr/h/yr*h*g/t/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "hours in a year",
+      "indicative [S]: 4E fire assay turnaround in practice 24-72 h",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "troy ounce definition"
+     ]
+    }
+   }
+  },
+  "V7_stokes_illustration": {
+   "equal_settling_size_ratio": 1.3228756555322954,
+   "provenance": "ASSUMED",
+   "caveat": "industrial cyclone partition also depends on pressure, solids, viscosity, geometry, bypass and roping; measured mineral partition curves are needed before any control claim"
+  }
+ },
+ "physics": {
+  "note": "Physical-possibility checks for the claims, computed (code does the arithmetic) with labelled assumptions.",
+  "K1_kinetics_vs_throughput": {
+   "fit": {
+    "Rf": 0.6597987939570134,
+    "kf_per_min": 4.493632306628207,
+    "Rs": 0.2756246736546122,
+    "ks_per_min": 1.3379878385293111,
+    "rmse": 0.0010990326596765057
+   },
+   "source": "presentation/deck-src/kinetics_test11.json (slide 16: Mintek kinetics framework applied to KHANYA test_11 liberation)",
+   "throughput_gain": 0.0193,
+   "rows": [
+    {
+     "residence_lab_equiv_min": 1.0,
+     "recovery": 0.8557,
+     "recovery_after_gain": 0.8532,
+     "recovery_loss_pp": 0.251
+    },
+    {
+     "residence_lab_equiv_min": 2.0,
+     "recovery": 0.9164,
+     "recovery_after_gain": 0.9154,
+     "recovery_loss_pp": 0.1
+    },
+    {
+     "residence_lab_equiv_min": 3.0,
+     "recovery": 0.9304,
+     "recovery_after_gain": 0.9301,
+     "recovery_loss_pp": 0.039
+    },
+    {
+     "residence_lab_equiv_min": 5.0,
+     "recovery": 0.9351,
+     "recovery_after_gain": 0.935,
+     "recovery_loss_pp": 0.005
+    },
+    {
+     "residence_lab_equiv_min": 7.0,
+     "recovery": 0.9354,
+     "recovery_after_gain": 0.9354,
+     "recovery_loss_pp": 0.0
+    },
+    {
+     "residence_lab_equiv_min": 10.0,
+     "recovery": 0.9354,
+     "recovery_after_gain": 0.9354,
+     "recovery_loss_pp": 0.0
+    }
+   ],
+   "reading": "near the plateau the recovery cost of +1.9% tonnes is negligible; on the steep part of the curve it is not. A plant must know where its cells sit; the advice must check flotation residence time before raising feed.",
+   "assumption": "ASSUMED lab-to-plant residence mapping; the curve is a modelled one (liberation classes x published rate constants), not a plant measurement"
+  },
+  "L1_load_curtailment": {
+   "regime": "Eskom mining curtailment at stage 6: 20% of contracted supply for 10 h (14:00-24:00) [S]",
+   "sim_gain_tonnes_belt_vs_blind_mean": -0.038182883676391215,
+   "sim_gain_p05_p95": [
+    -0.08216026235032055,
+    -0.000180827402492168
+   ],
+   "sim_gain_oracle_mean": -0.030395183520365115,
+   "day_capacity_lost_to_curtailment_pct": 8.33,
+   "assumptions": [
+    "ASSUMED: the mill is power-limited and curtailment cuts mill power by the full 20% (mines usually shed other loads first, which makes this an upper bound on the problem)",
+    "ASSUMED: stockpile/ROM reclaim can choose parcels (belt at reclaim, not only at mill feed) and parcels are of equal mass",
+    "ASSUMED: Bond energy proportional to Wi at fixed grind; 60 reclaimable parcels per day drawn from the 146 real ones (500 repeats)",
+    "Selection uses out-of-fold PREDICTED Wi; tonnes are computed with TRUE Wi"
+   ],
+   "verdict": "REJECTED as a tonnage claim",
+   "reading": "Re-ordering ore cannot create tonnes: over a cycle the energy needed for all the ore is fixed, so sending soft ore through the curtailed window only defers the hard ore (the simulation loses tonnes, and so does an oracle). REEFPRINT does NOT claim a curtailment throughput gain. Its real roles under curtailment: (1) set the feed for the reduced power from the hardness bound, so the grind holds when power drops; (2) forecast the tonnes the window will lose from the hardness of the ore about to be reclaimed, for production planning."
+  }
+ },
+ "geometry": {
+  "camera": "Specim SX25 technical datasheet 01 [P]",
+  "rows": [
+   {
+    "belt_width_m": 0.9,
+    "belt_speed_m_s": 1.5,
+    "line_pitch_mm_at_162fps": 9.3,
+    "cross_track_pixel_mm": 1.41,
+    "motion_blur_mm_at_full_exposure": 9.3,
+    "working_distance_m": {
+     "OLES17_38deg": 1.31,
+     "OLES9_66deg": 0.69
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 0.9,
+    "belt_speed_m_s": 2.0,
+    "line_pitch_mm_at_162fps": 12.3,
+    "cross_track_pixel_mm": 1.41,
+    "motion_blur_mm_at_full_exposure": 12.3,
+    "working_distance_m": {
+     "OLES17_38deg": 1.31,
+     "OLES9_66deg": 0.69
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 0.9,
+    "belt_speed_m_s": 3.0,
+    "line_pitch_mm_at_162fps": 18.5,
+    "cross_track_pixel_mm": 1.41,
+    "motion_blur_mm_at_full_exposure": 18.5,
+    "working_distance_m": {
+     "OLES17_38deg": 1.31,
+     "OLES9_66deg": 0.69
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.2,
+    "belt_speed_m_s": 1.5,
+    "line_pitch_mm_at_162fps": 9.3,
+    "cross_track_pixel_mm": 1.88,
+    "motion_blur_mm_at_full_exposure": 9.3,
+    "working_distance_m": {
+     "OLES17_38deg": 1.74,
+     "OLES9_66deg": 0.92
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.2,
+    "belt_speed_m_s": 2.0,
+    "line_pitch_mm_at_162fps": 12.3,
+    "cross_track_pixel_mm": 1.88,
+    "motion_blur_mm_at_full_exposure": 12.3,
+    "working_distance_m": {
+     "OLES17_38deg": 1.74,
+     "OLES9_66deg": 0.92
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.2,
+    "belt_speed_m_s": 3.0,
+    "line_pitch_mm_at_162fps": 18.5,
+    "cross_track_pixel_mm": 1.88,
+    "motion_blur_mm_at_full_exposure": 18.5,
+    "working_distance_m": {
+     "OLES17_38deg": 1.74,
+     "OLES9_66deg": 0.92
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.5,
+    "belt_speed_m_s": 1.5,
+    "line_pitch_mm_at_162fps": 9.3,
+    "cross_track_pixel_mm": 2.34,
+    "motion_blur_mm_at_full_exposure": 9.3,
+    "working_distance_m": {
+     "OLES17_38deg": 2.18,
+     "OLES9_66deg": 1.15
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.5,
+    "belt_speed_m_s": 2.0,
+    "line_pitch_mm_at_162fps": 12.3,
+    "cross_track_pixel_mm": 2.34,
+    "motion_blur_mm_at_full_exposure": 12.3,
+    "working_distance_m": {
+     "OLES17_38deg": 2.18,
+     "OLES9_66deg": 1.15
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.5,
+    "belt_speed_m_s": 3.0,
+    "line_pitch_mm_at_162fps": 18.5,
+    "cross_track_pixel_mm": 2.34,
+    "motion_blur_mm_at_full_exposure": 18.5,
+    "working_distance_m": {
+     "OLES17_38deg": 2.18,
+     "OLES9_66deg": 1.15
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   }
+  ],
+  "data_rate_MB_s_full_frame": 81.3,
+  "data_rate_MB_s_75_band_roi": 15.6,
+  "conclusion": "At plant belt speeds the SWIR line scanner samples the surface in lines about 9-19 mm apart with ~1.4-2.3 mm cross-track pixels: adequate for parcel-level averages (our models use pooled pixels), not for particle-by-particle mapping or sorting."
+ },
+ "model_meta": {
+  "record": "GEOMET",
+  "n_train": 146,
+  "best": [
+   "nl_et",
+   "nl_et",
+   "lin_pls8",
+   "nl_et",
+   "nl_et"
+  ],
+  "targets": [
+   "Cu rec",
+   "Lime cons",
+   "Mo rec",
+   "PH",
+   "WI"
+  ],
+  "sklearn": "1.8.0",
+  "numpy": "2.0.2",
+  "python": "3.12.13",
+  "cpu": "x86_64",
+  "cpus": 4,
+  "latency_ms_features_plus_inference_plus_ood": {
+   "median": 92.18904349995682,
+   "p95": 99.94528420006075,
+   "n": 40
+  },
+  "latency_ms_grid_mapping_synthetic_raw_size": 25.148337999996784,
+  "latency_note": "Kaggle CPU, not the edge PC; per parcel from an already-sampled pixel pool (POOL px per sensor); grid mapping timed on a synthetic array of the raw cube size",
+  "q_up_median_over_folds": {
+   "Cu rec": 3.6836666666666673,
+   "Lime cons": 0.08887777777777772,
+   "Mo rec": 20.058065000911583,
+   "PH": 1.0087222222222216,
+   "WI": 1.6290555555555564
+  },
+  "ood": {
+   "p95": 20.237007524204955,
+   "p99": 38.1263502292037,
+   "rule": "median over the 5 outer folds of the calibration-unit percentiles (deployment approximation)"
+  }
+ },
+ "robustness": {
+  "prereg": "PREREG.md",
+  "n": 146,
+  "reproduces_v6_max_abs_diff": {
+   "Cu rec": 1.4210854715202004e-14,
+   "Lime cons": 5.551115123125783e-17,
+   "Mo rec": 1.4210854715202004e-14,
+   "PH": 8.881784197001252e-16,
+   "WI": 1.7763568394002505e-15
+  },
+  "targets": {
+   "Cu rec": {
+    "original": {
+     "mae": 2.227408892671441,
+     "mae_ratio_vs_original": 1.0,
+     "ratio_ci95": [
+      1.0,
+      1.0
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1232876712328767
+    },
+    "resample": {
+     "mae": 2.227899949125224,
+     "mae_ratio_vs_original": 1.0002204608482075,
+     "ratio_ci95": [
+      0.9896574711107885,
+      1.010759810827805
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1232876712328767,
+     "gate_upper": 1.1,
+     "verdict": "equivalent within +10%"
+    },
+    "half": {
+     "mae": 2.2381059955529587,
+     "mae_ratio_vs_original": 1.0048024872831895,
+     "ratio_ci95": [
+      0.9791791538839293,
+      1.0305593158527628
+     ],
+     "flagged_borderline_or_refused": 0.07534246575342465,
+     "refused": 0.0410958904109589,
+     "silent_large_errors": 0.10273972602739725,
+     "gate_upper": 1.25,
+     "verdict": "tolerant"
+    },
+    "gain_0.85": {
+     "mae": 2.2219763817906206,
+     "mae_ratio_vs_original": 0.9975610625877026,
+     "ratio_ci95": [
+      0.9904032853824718,
+      1.0037362387954205
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1232876712328767
+    },
+    "gain_1.15": {
+     "mae": 2.255202974867576,
+     "mae_ratio_vs_original": 1.0124782128183032,
+     "ratio_ci95": [
+      1.0025747483546577,
+      1.0240026077625672
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.11643835616438356
+    },
+    "noise_2pct": {
+     "mae": 2.2359511225993867,
+     "mae_ratio_vs_original": 1.0038350524486328,
+     "ratio_ci95": [
+      0.9853094536240333,
+      1.0253170793785435
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0410958904109589,
+     "silent_large_errors": 0.1232876712328767,
+     "gate_upper": 1.25,
+     "verdict": "tolerant"
+    },
+    "shift_1band": {
+     "mae": 3.1915172221465666,
+     "mae_ratio_vs_original": 1.4328385024623043,
+     "ratio_ci95": [
+      1.2767768617956086,
+      1.622048153840935
+     ],
+     "flagged_borderline_or_refused": 0.08904109589041095,
+     "refused": 0.0684931506849315,
+     "silent_large_errors": 0.2534246575342466
+    }
+   },
+   "Lime cons": {
+    "original": {
+     "mae": 0.06361922201061025,
+     "mae_ratio_vs_original": 1.0,
+     "ratio_ci95": [
+      1.0,
+      1.0
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.10273972602739725
+    },
+    "resample": {
+     "mae": 0.06343183061061515,
+     "mae_ratio_vs_original": 0.997054484571285,
+     "ratio_ci95": [
+      0.9852854568713137,
+      1.0091530038681096
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1095890410958904,
+     "gate_upper": 1.1,
+     "verdict": "equivalent within +10%"
+    },
+    "half": {
+     "mae": 0.06527793425508548,
+     "mae_ratio_vs_original": 1.026072501235532,
+     "ratio_ci95": [
+      0.9978948464938217,
+      1.058823082227154
+     ],
+     "flagged_borderline_or_refused": 0.07534246575342465,
+     "refused": 0.0410958904109589,
+     "silent_large_errors": 0.10273972602739725,
+     "gate_upper": 1.25,
+     "verdict": "tolerant"
+    },
+    "gain_0.85": {
+     "mae": 0.06438418197118834,
+     "mae_ratio_vs_original": 1.0120240382765213,
+     "ratio_ci95": [
+      0.9738426287140198,
+      1.0523036660129934
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.08904109589041095
+    },
+    "gain_1.15": {
+     "mae": 0.06681113797131784,
+     "mae_ratio_vs_original": 1.050172194186456,
+     "ratio_ci95": [
+      1.0101748184838881,
+      1.0970353895970484
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1232876712328767
+    },
+    "noise_2pct": {
+     "mae": 0.06451737819730773,
+     "mae_ratio_vs_original": 1.0141176857923173,
+     "ratio_ci95": [
+      0.9952575933250383,
+      1.036198947426846
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0410958904109589,
+     "silent_large_errors": 0.1095890410958904,
+     "gate_upper": 1.25,
+     "verdict": "tolerant"
+    },
+    "shift_1band": {
+     "mae": 0.08706218998639538,
+     "mae_ratio_vs_original": 1.3684887559906873,
+     "ratio_ci95": [
+      1.2384627018969874,
+      1.5374121316850737
+     ],
+     "flagged_borderline_or_refused": 0.08904109589041095,
+     "refused": 0.0684931506849315,
+     "silent_large_errors": 0.21232876712328766
+    }
+   },
+   "Mo rec": {
+    "original": {
+     "mae": 13.60460405852845,
+     "mae_ratio_vs_original": 1.0,
+     "ratio_ci95": [
+      1.0,
+      1.0
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1232876712328767
+    },
+    "resample": {
+     "mae": 13.535334652576147,
+     "mae_ratio_vs_original": 0.994908385010376,
+     "ratio_ci95": [
+      0.9864109746986347,
+      1.0032195327675615
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1232876712328767,
+     "gate_upper": 1.1,
+     "verdict": "equivalent within +10%"
+    },
+    "half": {
+     "mae": 13.830987811652804,
+     "mae_ratio_vs_original": 1.0166402309211224,
+     "ratio_ci95": [
+      0.9986013147562415,
+      1.0349818291499489
+     ],
+     "flagged_borderline_or_refused": 0.07534246575342465,
+     "refused": 0.0410958904109589,
+     "silent_large_errors": 0.136986301369863,
+     "gate_upper": 1.25,
+     "verdict": "tolerant"
+    },
+    "gain_0.85": {
+     "mae": 13.642566073057694,
+     "mae_ratio_vs_original": 1.0027903799600435,
+     "ratio_ci95": [
+      0.9718501981243853,
+      1.033350889347204
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.136986301369863
+    },
+    "gain_1.15": {
+     "mae": 13.763670645340579,
+     "mae_ratio_vs_original": 1.0116921143847926,
+     "ratio_ci95": [
+      0.9810922746736119,
+      1.044596057239024
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.13013698630136986
+    },
+    "noise_2pct": {
+     "mae": 13.624695075217986,
+     "mae_ratio_vs_original": 1.0014767806988798,
+     "ratio_ci95": [
+      0.9832656369854311,
+      1.0196471919479704
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0410958904109589,
+     "silent_large_errors": 0.1232876712328767,
+     "gate_upper": 1.25,
+     "verdict": "tolerant"
+    },
+    "shift_1band": {
+     "mae": 16.46211459145685,
+     "mae_ratio_vs_original": 1.2100399629886387,
+     "ratio_ci95": [
+      1.1369942237024961,
+      1.2917752683913284
+     ],
+     "flagged_borderline_or_refused": 0.08904109589041095,
+     "refused": 0.0684931506849315,
+     "silent_large_errors": 0.1643835616438356
+    }
+   },
+   "PH": {
+    "original": {
+     "mae": 0.6727473255562368,
+     "mae_ratio_vs_original": 1.0,
+     "ratio_ci95": [
+      1.0,
+      1.0
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1095890410958904
+    },
+    "resample": {
+     "mae": 0.6742618838652564,
+     "mae_ratio_vs_original": 1.0022513033519194,
+     "ratio_ci95": [
+      0.9953246597887998,
+      1.0091386219791312
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1095890410958904,
+     "gate_upper": 1.1,
+     "verdict": "equivalent within +10%"
+    },
+    "half": {
+     "mae": 0.6782940239726613,
+     "mae_ratio_vs_original": 1.0082448464761096,
+     "ratio_ci95": [
+      0.9875408377711978,
+      1.0313687326860255
+     ],
+     "flagged_borderline_or_refused": 0.07534246575342465,
+     "refused": 0.0410958904109589,
+     "silent_large_errors": 0.10273972602739725,
+     "gate_upper": 1.25,
+     "verdict": "tolerant"
+    },
+    "gain_0.85": {
+     "mae": 0.671142449947233,
+     "mae_ratio_vs_original": 0.9976144452039599,
+     "ratio_ci95": [
+      0.9861125382900786,
+      1.0088688877383887
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.10273972602739725
+    },
+    "gain_1.15": {
+     "mae": 0.6798404202981444,
+     "mae_ratio_vs_original": 1.0105434751985716,
+     "ratio_ci95": [
+      0.9989044186753783,
+      1.0224669450113255
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.0958904109589041
+    },
+    "noise_2pct": {
+     "mae": 0.6775903697962709,
+     "mae_ratio_vs_original": 1.0071989052294332,
+     "ratio_ci95": [
+      0.9918318733404177,
+      1.023422572733214
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0410958904109589,
+     "silent_large_errors": 0.10273972602739725,
+     "gate_upper": 1.25,
+     "verdict": "tolerant"
+    },
+    "shift_1band": {
+     "mae": 0.7498013115565263,
+     "mae_ratio_vs_original": 1.114536294791778,
+     "ratio_ci95": [
+      1.053600617672865,
+      1.1806531450665572
+     ],
+     "flagged_borderline_or_refused": 0.08904109589041095,
+     "refused": 0.0684931506849315,
+     "silent_large_errors": 0.14383561643835616
+    }
+   },
+   "WI": {
+    "original": {
+     "mae": 1.0517636986301373,
+     "mae_ratio_vs_original": 1.0,
+     "ratio_ci95": [
+      1.0,
+      1.0
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1095890410958904
+    },
+    "resample": {
+     "mae": 1.0521191019786913,
+     "mae_ratio_vs_original": 1.000337911784764,
+     "ratio_ci95": [
+      0.9906813578272029,
+      1.010000998709406
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.11643835616438356,
+     "gate_upper": 1.1,
+     "verdict": "equivalent within +10%"
+    },
+    "half": {
+     "mae": 1.0591853120243533,
+     "mae_ratio_vs_original": 1.0070563505889034,
+     "ratio_ci95": [
+      0.9863072441982814,
+      1.0276994804888402
+     ],
+     "flagged_borderline_or_refused": 0.07534246575342465,
+     "refused": 0.0410958904109589,
+     "silent_large_errors": 0.1095890410958904,
+     "gate_upper": 1.25,
+     "verdict": "tolerant"
+    },
+    "gain_0.85": {
+     "mae": 1.0537541856925419,
+     "mae_ratio_vs_original": 1.0018925230686295,
+     "ratio_ci95": [
+      0.9983709435633078,
+      1.0053516513563776
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1095890410958904
+    },
+    "gain_1.15": {
+     "mae": 1.0572526636225266,
+     "mae_ratio_vs_original": 1.0052188195880294,
+     "ratio_ci95": [
+      1.0006492063682293,
+      1.0101178702179625
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0273972602739726,
+     "silent_large_errors": 0.1095890410958904
+    },
+    "noise_2pct": {
+     "mae": 1.0501750380517505,
+     "mae_ratio_vs_original": 0.9984895270863066,
+     "ratio_ci95": [
+      0.9794695305045292,
+      1.0172437866373454
+     ],
+     "flagged_borderline_or_refused": 0.06164383561643835,
+     "refused": 0.0410958904109589,
+     "silent_large_errors": 0.1095890410958904,
+     "gate_upper": 1.25,
+     "verdict": "tolerant"
+    },
+    "shift_1band": {
+     "mae": 1.3101008371385086,
+     "mae_ratio_vs_original": 1.2456227942120848,
+     "ratio_ci95": [
+      1.1548898009838988,
+      1.342950229005485
+     ],
+     "flagged_borderline_or_refused": 0.08904109589041095,
+     "refused": 0.0684931506849315,
+     "silent_large_errors": 0.1643835616438356
+    }
+   }
+  }
+ },
+ "v6_records": {
+  "GEOMET": {
+   "n": 146,
+   "n_units": 146,
+   "ood": {
+    "refused": 0.0273972602739726,
+    "borderline": 0.03424657534246575,
+    "shift_accept_le_p99_per_fold": [
+     0.797979797979798,
+     0.1111111111111111,
+     0.010101010101010102,
+     0.21212121212121213,
+     0.0
+    ]
+   },
+   "calibration": [
+    {
+     "n_cal_units": 35,
+     "k": 29,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 35,
+     "k": 29,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 35,
+     "k": 29,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 35,
+     "k": 29,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 35,
+     "k": 29,
+     "unbounded": false
+    }
+   ],
+   "blends": null
+  },
+  "MINERAL1": {
+   "n": 99,
+   "n_units": 36,
+   "ood": {
+    "refused": 0.030303030303030304,
+    "borderline": 0.050505050505050504,
+    "shift_accept_le_p99_per_fold": [
+     0.00684931506849315,
+     0.0,
+     0.02054794520547945,
+     0.0273972602739726,
+     0.0
+    ]
+   },
+   "calibration": [
+    {
+     "n_cal_units": 9,
+     "k": 8,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 9,
+     "k": 8,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 8,
+     "k": 8,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 9,
+     "k": 8,
+     "unbounded": false
+    },
+    {
+     "n_cal_units": 9,
+     "k": 8,
+     "unbounded": false
+    }
+   ],
+   "blends": {
+    "n_blends": 96,
+    "n_parent_pairs": 48,
+    "median_r2": -0.2223692814241638,
+    "beats_mean_ci": 10
+   }
+  }
+ },
+ "plant": {
+  "runs": {
+   "delay1_h1": {
+    "model": "ridge10",
+    "mae_model": 0.7166662701199703,
+    "mae_persistence": 0.6253224580561577,
+    "mae_mean": 0.9213376712143583,
+    "verdict": "no significant difference",
+    "coverage": 0.7684729064039408,
+    "coverage_ci95_block": [
+     0.645320197044335,
+     0.8620689655172413
+    ],
+    "width": 1.8486460154206248,
+    "strongest_baseline": "persistence",
+    "n_test": 203
+   },
+   "delay1_h3": {
+    "model": "ridge100",
+    "mae_model": 0.9744799741254555,
+    "mae_persistence": 0.82636959899801,
+    "mae_mean": 0.926279742286198,
+    "verdict": "no significant difference",
+    "coverage": 0.7412935323383084,
+    "coverage_ci95_block": [
+     0.5771144278606966,
+     0.8706467661691543
+    ],
+    "width": 2.342777282792741,
+    "strongest_baseline": "persistence",
+    "n_test": 201
+   },
+   "delay2_h1": {
+    "model": "ridge100",
+    "mae_model": 0.7800897977998666,
+    "mae_persistence": 0.7376780846285714,
+    "mae_mean": 0.9213292578087444,
+    "verdict": "no significant difference",
+    "coverage": 0.7783251231527094,
+    "coverage_ci95_block": [
+     0.645320197044335,
+     0.8817733990147784
+    ],
+    "width": 2.1335092325457232,
+    "strongest_baseline": "persistence",
+    "n_test": 203
+   },
+   "delay2_h3": {
+    "model": "ridge100",
+    "mae_model": 1.0426939650644584,
+    "mae_persistence": 0.8872715795303484,
+    "mae_mean": 0.9262717954245536,
+    "verdict": "no significant difference",
+    "coverage": 0.7263681592039801,
+    "coverage_ci95_block": [
+     0.5373134328358209,
+     0.8706467661691543
+    ],
+    "width": 2.601631395755402,
+    "strongest_baseline": "persistence",
+    "n_test": 201
+   },
+   "delay4_h1": {
+    "model": "ridge100",
+    "mae_model": 0.9497664733948179,
+    "mae_persistence": 0.8934068349044335,
+    "mae_mean": 0.9213136932967589,
+    "verdict": "no significant difference",
+    "coverage": 0.7487684729064039,
+    "coverage_ci95_block": [
+     0.5811576354679803,
+     0.8866995073891626
+    ],
+    "width": 2.584293792369791,
+    "strongest_baseline": "persistence",
+    "n_test": 203
+   },
+   "delay4_h3": {
+    "model": "ridge100",
+    "mae_model": 1.1445629139218072,
+    "mae_persistence": 0.9754139780089551,
+    "mae_mean": 0.9262658332141891,
+    "verdict": "no significant difference",
+    "coverage": 0.7114427860696517,
+    "coverage_ci95_block": [
+     0.5024875621890548,
+     0.8706467661691543
+    ],
+    "width": 2.7858149397747844,
+    "strongest_baseline": "training mean",
+    "n_test": 201
+   }
+  },
+  "assumptions": {
+   "lab_delay_h": "ASSUMED 2 h after the bin closes; sensitivity at 1 h and 4 h",
+   "feed_grades": "treated as lab-type values with the same delay (conservative)",
+   "threshold": "upper band = training p75 of silica, illustrative, not a site specification"
+  },
+  "data": "Kaggle edumagalhaes/quality-prediction-in-a-mining-process, CC0-1.0, iron-ore flotation plant (Brazil), Mar-Sep 2017"
+ },
+ "bushveld": {
+  "data": "Bachmann et al. 2019, Mendeley 10.17632/dc8jcnbcvk.1, CC BY 4.0",
+  "n_intervals": 1112,
+  "n_projects": 123,
+  "n_boreholes": 305,
+  "seam": {
+   "balanced_accuracy": 0.4179223474236421,
+   "majority_class": "MG4",
+   "balanced_accuracy_majority": 0.125,
+   "accuracy": 0.5197841726618705,
+   "recall_per_seam": {
+    "LG6": 0.9513274336283186,
+    "LG6A": 0.17142857142857143,
+    "MG1": 0.5535714285714286,
+    "MG2": 0.323943661971831,
+    "MG3": 0.4187192118226601,
+    "MG4": 0.5813148788927336,
+    "MG4A": 0.08333333333333333,
+    "MG4Zero": 0.2597402597402597
+   }
+  },
+  "targets": {
+   "Pt_ICP_ppm": {
+    "r2_chem": 0.40099938075091845,
+    "r2_chem_seam": 0.5464274951333052,
+    "r2_seam_only": 0.4812139478020696,
+    "Q1_chem_vs_mean": {
+     "mae_new": 0.1773551124078196,
+     "mae_base": 0.2854201935799671,
+     "mae_diff_ci95_project_boot": [
+      -0.14106263148122639,
+      -0.0803246844787269
+     ],
+     "wilcoxon_p_less_projects": 4.554655541869871e-12,
+     "matched_rank_biserial": 0.5609756097560976,
+     "mannwhitney_p_less": 3.4111274810659235e-66,
+     "cliffs_delta": -0.4198977149215879,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "Q2_chem_plus_seam_vs_seam_only": {
+     "mae_new": 0.14439536184978433,
+     "mae_base": 0.15524119396873373,
+     "mae_diff_ci95_project_boot": [
+      -0.016890662676770196,
+      -0.005013307480633443
+     ],
+     "wilcoxon_p_less_projects": 0.009390040352298493,
+     "matched_rank_biserial": 0.15447154471544716,
+     "mannwhitney_p_less": 0.23720082163569461,
+     "cliffs_delta": -0.017519797111950727,
+     "n_projects": 123,
+     "verdict": "no significant difference"
+    },
+    "seam_only_vs_mean": {
+     "mae_new": 0.15524119396873373,
+     "mae_base": 0.2854201935799671,
+     "mae_diff_ci95_project_boot": [
+      -0.16869158139138243,
+      -0.1001931901534769
+     ],
+     "wilcoxon_p_less_projects": 1.9208434761287673e-15,
+     "matched_rank_biserial": 0.7398373983739838,
+     "mannwhitney_p_less": 1.6096619139264218e-90,
+     "cliffs_delta": -0.49326833497230993,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "coverage_per_interval": 0.841726618705036,
+    "coverage_one_per_project": 0.8048780487804879,
+    "coverage_one_per_project_ci95": [
+     0.723729351561557,
+     0.870798756547624
+    ]
+   },
+   "Pd_ICP_ppm": {
+    "r2_chem": 0.20955159052428407,
+    "r2_chem_seam": 0.4746527251965178,
+    "r2_seam_only": 0.4303135585897855,
+    "Q1_chem_vs_median": {
+     "mae_new": 0.09782648771876595,
+     "mae_base": 0.11671035275103538,
+     "mae_diff_ci95_project_boot": [
+      -0.0284430634313767,
+      -0.008825928680782196
+     ],
+     "wilcoxon_p_less_projects": 0.06244013080711028,
+     "matched_rank_biserial": 0.056910569105691054,
+     "mannwhitney_p_less": 0.00010631270272884661,
+     "cliffs_delta": -0.09070118006314373,
+     "n_projects": 123,
+     "verdict": "no significant difference"
+    },
+    "Q2_chem_plus_seam_vs_seam_only": {
+     "mae_new": 0.07373946198701434,
+     "mae_base": 0.07452424306814541,
+     "mae_diff_ci95_project_boot": [
+      -0.0035715250448219954,
+      0.0016131085613002784
+     ],
+     "wilcoxon_p_less_projects": 0.054494242884241276,
+     "matched_rank_biserial": 0.17073170731707318,
+     "mannwhitney_p_less": 0.8814401065552915,
+     "cliffs_delta": 0.028951658816831427,
+     "n_projects": 123,
+     "verdict": "no significant difference"
+    },
+    "seam_only_vs_median": {
+     "mae_new": 0.07452424306814541,
+     "mae_base": 0.11671035275103538,
+     "mae_diff_ci95_project_boot": [
+      -0.05304834607142104,
+      -0.031179246312982085
+     ],
+     "wilcoxon_p_less_projects": 2.335132359196084e-07,
+     "matched_rank_biserial": 0.42276422764227645,
+     "mannwhitney_p_less": 4.272894622072534e-32,
+     "cliffs_delta": -0.28734602246260543,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "coverage_per_interval": 0.814748201438849,
+    "coverage_one_per_project": 0.8373983739837398,
+    "coverage_one_per_project_ci95": [
+     0.7601058957547159,
+     0.8977576678009215
+    ]
+   },
+   "Rh_ICP_ppm": {
+    "r2_chem": 0.26000389016220493,
+    "r2_chem_seam": 0.4582824024645684,
+    "r2_seam_only": 0.3888134427493698,
+    "Q1_chem_vs_median": {
+     "mae_new": 0.05873529581104552,
+     "mae_base": 0.07484134635708337,
+     "mae_diff_ci95_project_boot": [
+      -0.022315408907745967,
+      -0.010326897289673793
+     ],
+     "wilcoxon_p_less_projects": 3.047687278802456e-06,
+     "matched_rank_biserial": 0.34959349593495936,
+     "mannwhitney_p_less": 1.6536115991816875e-14,
+     "cliffs_delta": -0.1857758397598468,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "Q2_chem_plus_seam_vs_seam_only": {
+     "mae_new": 0.047365702123762586,
+     "mae_base": 0.050026384607313686,
+     "mae_diff_ci95_project_boot": [
+      -0.0039518855524741095,
+      -0.0014063139155946116
+     ],
+     "wilcoxon_p_less_projects": 0.0007421180550757533,
+     "matched_rank_biserial": 0.23577235772357724,
+     "mannwhitney_p_less": 0.19618798521834124,
+     "cliffs_delta": -0.020947091247865018,
+     "n_projects": 123,
+     "verdict": "no significant difference"
+    },
+    "seam_only_vs_median": {
+     "mae_new": 0.050026384607313686,
+     "mae_base": 0.07484134635708337,
+     "mae_diff_ci95_project_boot": [
+      -0.031125535696874825,
+      -0.019261270504740857
+     ],
+     "wilcoxon_p_less_projects": 1.280466520917836e-09,
+     "matched_rank_biserial": 0.5691056910569106,
+     "mannwhitney_p_less": 5.730009801614865e-34,
+     "cliffs_delta": -0.2961301821851871,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "coverage_per_interval": 0.8758992805755396,
+    "coverage_one_per_project": 0.8699186991869918,
+    "coverage_one_per_project_ci95": [
+     0.7973656485633626,
+     0.9237830589471386
+    ]
+   },
+   "4E_ppm": {
+    "r2_chem": 0.415634730430117,
+    "r2_chem_seam": 0.5900179230077245,
+    "r2_seam_only": 0.528981962546935,
+    "Q1_chem_vs_mean": {
+     "mae_new": 0.19649939877288158,
+     "mae_base": 0.31524552758957586,
+     "mae_diff_ci95_project_boot": [
+      -0.15629598186065563,
+      -0.08648373749112102
+     ],
+     "wilcoxon_p_less_projects": 1.7593926720105487e-11,
+     "matched_rank_biserial": 0.5772357723577236,
+     "mannwhitney_p_less": 2.5779392697754655e-62,
+     "cliffs_delta": -0.406987539464831,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "Q2_chem_plus_seam_vs_seam_only": {
+     "mae_new": 0.15562436919112907,
+     "mae_base": 0.16785740725840448,
+     "mae_diff_ci95_project_boot": [
+      -0.018492334726567236,
+      -0.006376941458222623
+     ],
+     "wilcoxon_p_less_projects": 0.0005599808728354291,
+     "matched_rank_biserial": 0.23577235772357724,
+     "mannwhitney_p_less": 0.15509193760414297,
+     "cliffs_delta": -0.024854756482583718,
+     "n_projects": 123,
+     "verdict": "no significant difference"
+    },
+    "seam_only_vs_mean": {
+     "mae_new": 0.16785740725840448,
+     "mae_base": 0.31524552758957586,
+     "mae_diff_ci95_project_boot": [
+      -0.1920924562795546,
+      -0.1115145087890958
+     ],
+     "wilcoxon_p_less_projects": 1.3676114798083828e-15,
+     "matched_rank_biserial": 0.7073170731707317,
+     "mannwhitney_p_less": 1.2785382317025054e-90,
+     "cliffs_delta": -0.4935481470938357,
+     "n_projects": 123,
+     "verdict": "better"
+    },
+    "coverage_per_interval": 0.8516187050359713,
+    "coverage_one_per_project": 0.8373983739837398,
+    "coverage_one_per_project_ci95": [
+     0.7601058957547159,
+     0.8977576678009215
+    ]
+   }
+  }
+ },
+ "pentlandite": {
+  "pooled": {
+   "brightness only": {
+    "pn_iou": 0.2876254041312116,
+    "pn_precision": 0.4986827120658211,
+    "pn_recall": 0.4046189217940359
+   },
+   "colour only": {
+    "pn_iou": 0.4635971211022869,
+    "pn_precision": 0.6165467853861022,
+    "pn_recall": 0.651419799946601
+   },
+   "colour + texture": {
+    "pn_iou": 0.4987779665698526,
+    "pn_precision": 0.6358218988071104,
+    "pn_recall": 0.6982593462735012
+   },
+   "all pyrrhotite (baseline)": {
+    "pn_iou": 0.0,
+    "pn_precision": null,
+    "pn_recall": 0.0
+   }
+  },
+  "per_section": {
+   "train_06": {
+    "brightness only": 0.360385872981123,
+    "colour only": 0.5758731502305598,
+    "colour + texture": 0.5239933359803846
+   },
+   "train_21": {
+    "brightness only": 0.3909238436451359,
+    "colour only": 0.25217796777071094,
+    "colour + texture": 0.302697199205554
+   },
+   "train_13": {
+    "brightness only": 0.13732085405089206,
+    "colour only": 0.21358479553496515,
+    "colour + texture": 0.3010074318744839
+   },
+   "train_10": {
+    "brightness only": 0.3078367494683498,
+    "colour only": 0.5743371853877296,
+    "colour + texture": 0.675361549524415
+   },
+   "train_23": {
+    "brightness only": 0.3836832294976573,
+    "colour only": 0.8808020726482487,
+    "colour + texture": 0.9186747333212594
+   },
+   "train_27": {
+    "brightness only": 0.0,
+    "colour only": 0.0,
+    "colour + texture": 0.0
+   }
+  },
+  "val_sections": [
+   "train_06",
+   "train_21",
+   "train_13",
+   "train_10",
+   "train_23",
+   "train_27"
+  ],
+  "train_sections": 31
+ },
+ "policy": {
+  "version": "belt-policy-1",
+  "alpha": 0.2,
+  "adverse": {
+   "Cu rec": "low",
+   "Mo rec": "low",
+   "Lime cons": "high",
+   "WI": "high",
+   "PH": "none"
+  },
+  "actions": {
+   "Cu rec": "Send the sample to the microscope; review collector dose",
+   "Mo rec": "Notify the moly circuit",
+   "Lime cons": "Review lime pre-dosing",
+   "WI": "Review feed rate with the control room"
+  },
+  "ood": "pass <= calibration p95 < borderline <= p99 < refused"
+ },
+ "shipped_assets_sha256": {
+  "bushveld.json": "879505b3bdd9cd607f2247a66e6ce9dc7e91f24d1e4a5099ae7dea155bea8226",
+  "envelope.json": "ce9cbf59ccd85ee4b3775078b327078a063b8c8cfc4094a3224d5e0158e0c550",
+  "plant_h1.json": "033a574e23b7a4095e4f868129439d8c3bcde9de8427d23077f90e0255f3f974",
+  "plant_h3.json": "85e112b2e2151eac474acc14f74a2af438da7b64ad24b07deb538a37540cda39",
+  "targets.json": "574b904570563756dc24a5fe6b3917791384be0b255f53f768accd3fbd1c31c1",
+  "samples/BAD_mixed_import.csv": "c58f0bda17787a20fd76b72156309ec37bf0e12c9b4df6a75ca18cb530c6319f",
+  "samples/assay_BUSHVELD_icp.csv": "96528f88b86e19129748dd4984ab0687913684f1f5d0ff8d4cf9e4b8485234d2",
+  "samples/lab_GEOMET_showcase.csv": "fb6c2e4c14c31fa8109baaa34f871a6be48f3904ad231016cf09708f6fcac2b5",
+  "samples/xrf_BUSHVELD_belt.csv": "28d1d1e3f95e596d0f18cff93e78823d61c26856c9d3c389f78eb6bd2f0613ad",
+  "showcase/GEOMET/GMET-0004.bin.gz": "0fa32e14b2ad9e8b5650f93acb5458827259ca72c2d54a17456092c96fdbb3bb",
+  "showcase/GEOMET/GMET-0004.json": "d33b95fbcf5952bb364957fed607626c5ef1dd7a62f97d2b6113c94c086cef9e",
+  "showcase/GEOMET/GMET-0007.bin.gz": "8a44409822bac7d264fcfd19167b53c9ad6767a3f6e4533d93e73b44e951adf3",
+  "showcase/GEOMET/GMET-0007.json": "46df3d861331e81257f707b866e7f5b92d82ce2542a4329d969368b099fbe0b2",
+  "showcase/GEOMET/GMET-0011.bin.gz": "3fc87de6f9ce9a7dc8f6b5294e8ca7b17bd778e20487dbeb316fb3c9f64aea88",
+  "showcase/GEOMET/GMET-0011.json": "3a1d77b097fccf9f2cef1e21b745f64bf1a257698e1e1d619ce38e3a2486f53f",
+  "showcase/GEOMET/GMET-0015.bin.gz": "aa30f7e8dd52d7e24680e4ef9c866a54171d41532ae9c05a3fb69f35f9b5a9ca",
+  "showcase/GEOMET/GMET-0015.json": "7db1198c2a78db89b7ebd7013b611c849bc6a6e791788fb30bdfdf276b696ff4",
+  "showcase/GEOMET/GMET-0022.bin.gz": "b1b87b090f2bad26f391ef070cf4230dc47dae2aa19f24f1bd9bbedf3e60d7d5",
+  "showcase/GEOMET/GMET-0022.json": "1ab5bfb31d3fd7c6c5e996ff2d8e89b4884f2e12ca846b2655e70a8988036431",
+  "showcase/GEOMET/GMET-0035.bin.gz": "d5c5c5738e6cfa8d27535b4bced93a976b6fbd77cc9d1dcefd429c39143884aa",
+  "showcase/GEOMET/GMET-0035.json": "bff48e94380a19b430dce1583446b9bf6c5a706118901709eae0eb52b1d7e1ba",
+  "showcase/GEOMET/GMET-0039.bin.gz": "5482e6c77c69c83e06d0a2e18310fb85b24cdaa7ded215d1aa2fcee03ce2ae81",
+  "showcase/GEOMET/GMET-0039.json": "a2ccdaf2fa02181a806151f9f8718afd0b6ba97f854c057c7e247e5028a39984",
+  "showcase/GEOMET/GMET-0043.bin.gz": "4bc489d25979faab9a705cdec34df936f93446a0455ae342a28574d9fdd723ab",
+  "showcase/GEOMET/GMET-0043.json": "a5a148addb28e05a778a47e13ac9c19af8554a30e892c187acfc8dae641fed94",
+  "showcase/GEOMET/GMET-0048.bin.gz": "b393b5d4501c966f79fc7c46e5234f0fda2959d0e295b192b009c9808f7a2138",
+  "showcase/GEOMET/GMET-0048.json": "8c62d403b0b60da1e6248c4848cf1223750233002642f36150ea59d2f64ce509",
+  "showcase/GEOMET/GMET-0054.bin.gz": "d5575c71bb6c247fd70cf6b664f676149bebb39661a827a8b176a807c52a97c1",
+  "showcase/GEOMET/GMET-0054.json": "c23826fc9efc4aaeb551dd7adbadb60d3ea45f3e7a4ab533eb6da15f8f920d6c",
+  "showcase/GEOMET/GMET-0063.bin.gz": "36db3f88377e305e1305de4fa04bd3be28b438d2b369b15b5f2c993d24d9a39d",
+  "showcase/GEOMET/GMET-0063.json": "d49876de1cdbfbc92dddf2034da42492438319bbcc001b192c3ddf59809a8f0f",
+  "showcase/GEOMET/GMET-0064.bin.gz": "6f57a245153513d1b94ae9fbd23aaf7e664647c2f4199b9ad20b3fd8030e3e75",
+  "showcase/GEOMET/GMET-0064.json": "b4b3bd319b4c8ca7e75652a3137d634210a682847d5ced3cc4639bae59ad330a",
+  "showcase/GEOMET/GMET-0068.bin.gz": "5eefbff47b996f3fe9ff7d47385922592870049ccb124ee32e6cbf7bf0fb8ae5",
+  "showcase/GEOMET/GMET-0068.json": "e6de51dd46c0765736770b8cc78fbca78d5652b5621c07d1da3faf9ab5806b25",
+  "showcase/GEOMET/GMET-0071.bin.gz": "119ec48c346acc8a19ad58f9cdf672848bc407ab1c126693c27469ca8c86ef0a",
+  "showcase/GEOMET/GMET-0071.json": "7f91faeb1e520ccc7cb159c7747d4e328f2d9489cc288e0e2d01588949da8867",
+  "showcase/GEOMET/GMET-0080.bin.gz": "b1acd635550fefe974fdf817ed083dfe1ac303a323ac9b843920b2a18d451d0d",
+  "showcase/GEOMET/GMET-0080.json": "17b90e85edac03f4148a945f8a4a34e95b854a6837d38e1dfb74c9964658a0f4",
+  "showcase/GEOMET/GMET-0083.bin.gz": "7a7adb175eb743422e59a84d784902df72f7a581dcd07600eaf4b0cfe1bc2c84",
+  "showcase/GEOMET/GMET-0083.json": "8fc7f43fea2727adcbbc6542b1eb030e055fdf10c8cd9a0f3c92be152af14bf4",
+  "showcase/GEOMET/GMET-0091.bin.gz": "243e09ef86582c9d3b8b7a0987e42d066522c01188d42b9fce4d3ea9d7bf493b",
+  "showcase/GEOMET/GMET-0091.json": "e619bec4f4865e766e82304bd500fec352bb516b926440009785af0125c22001",
+  "showcase/GEOMET/GMET-0098.bin.gz": "f9604ce4b58bed60054a6bcbac3498970f3337b609d667cb922fcec7420977da",
+  "showcase/GEOMET/GMET-0098.json": "926e833a9f23a380abdd28de661fb0e17096abe022edddc6cfeffe0a8446f709",
+  "showcase/GEOMET/GMET-0105.bin.gz": "b6a32c4e125fdaf59f47df672d9d6abeb5bbdf9b99f16ed51343d3f6f90e457a",
+  "showcase/GEOMET/GMET-0105.json": "7deb4f306547c5fe6480031fd66a990315135d875e52c4ed292494ffdacd2f71",
+  "showcase/GEOMET/GMET-0112.bin.gz": "9ec9b704e00aadb073b0594518df7354948017064ae65f8af9a93025ef8cc881",
+  "showcase/GEOMET/GMET-0112.json": "da03ccbd96b0593e23f3bed50b30225ea584b4472d35dfddfd2f6b0c92fd0ecd",
+  "showcase/GEOMET/GMET-0113.bin.gz": "0b28b0dc5b1cb3de3644c2e97ecb1e0bd6c9d07553cd34300755a50cecaf92b9",
+  "showcase/GEOMET/GMET-0113.json": "068e08fbcb29e8056653c8abe626160d36bef11da50cb4990f941ec02e3681a6",
+  "showcase/GEOMET/GMET-0114.bin.gz": "4cc6f3c0cf65f23a272ec7065946eada6942facce977c3c3f7f2c5de634b887d",
+  "showcase/GEOMET/GMET-0114.json": "ef97028e755ea2775a8177e9c3393edafae1cb2d3c0fd77e79e506b86705d79c",
+  "showcase/GEOMET/GMET-0116.bin.gz": "5f284a28adc7ab9456b7b2fbaf4d3a00c3a9aa3d7e8e3cc58ba6b1bafdc41e03",
+  "showcase/GEOMET/GMET-0116.json": "04b50219a0b6d27259d9419c43a548166daf7e5fb3b7cddd7430e0d10789df24",
+  "showcase/GEOMET/GMET-0126.bin.gz": "5f96d40f001e717e69ea30a39f30923c6b10ede4c6dc6d8540be08300f41ea63",
+  "showcase/GEOMET/GMET-0126.json": "80bdcb4203df67b6af2063774688f2a4769456bcd77897e9c6e44c9becd91b0c",
+  "showcase/MINERAL1/M1-0013.bin.gz": "7563b0a86a3d6709925f240a51ad996e7215f9dc7492c282215df9914b14aedc",
+  "showcase/MINERAL1/M1-0013.json": "e2cf3c1cc98a0d10657aa871d637157d375e758b0b7d8275edb7cb08f29481a8",
+  "showcase/MINERAL1/M1-0021.bin.gz": "7706996123e0baff2ab4382d1e8481c78bdecb5b0988d999929a3c0b9d5bd89e",
+  "showcase/MINERAL1/M1-0021.json": "e9b752f90053325da73c557661567fd7ce6b5764d00e1c794de5b44114f34808",
+  "showcase/MINERAL1/M1-0030.bin.gz": "22b5ce189692a742fb133f56f030dfec0a4cb40cedf21d9375abfbac02199e81",
+  "showcase/MINERAL1/M1-0030.json": "bd9c14b043be60567a5045c69b812cd300e37d58b5e37e2fc073b0e77849a3ee",
+  "showcase/MINERAL1/M1-0041.bin.gz": "ab11949c94ae61e82f1d27b6f6c14dd814a93a9d4d4c477db8237e7b12ef6326",
+  "showcase/MINERAL1/M1-0041.json": "e649ea256402df9f9a690199c724b5804a5e4a397763dd72c51546a29519d524",
+  "showcase/MINERAL1/M1-0043.bin.gz": "1f22158874dfba558a1fa514a1833bd1b6f63f8debdc78c664472f3814e6a219",
+  "showcase/MINERAL1/M1-0043.json": "9c98e04fd8f5de8b1f850a2d47ec283dfcee56291352648346db4c43721da804",
+  "showcase/MINERAL1/M1-0053.bin.gz": "0da800971615da6434041c733bad119ec814d127ec6fb804f69fbd6de5098335",
+  "showcase/MINERAL1/M1-0053.json": "1f4350143c04435e8bf37c4aac481095bea88dff2f82933c40980c9a5c3913a1",
+  "showcase/MINERAL1/M1-0066.bin.gz": "626565dac699b5be2ffad1245fe12d520a2ede60926467a06fc119cfb3b5a4d6",
+  "showcase/MINERAL1/M1-0066.json": "f91a17c2272cb39b6e994a3714061d6e074cdf3759b96ec9e3ad708627acc6dc",
+  "showcase/MINERAL1/M1-0070.bin.gz": "43825bd057a30a255c8b5ab9301f6baed0937f439495ec0205e7513f2f76c772",
+  "showcase/MINERAL1/M1-0070.json": "bcacc701d86a2fe5402e9d4690fede286845df437ab8afba43cf3475687b3588",
+  "showcase/MINERAL1/M1-0078.bin.gz": "5aa1a2679154a051cbcad4a78e06006a4b8204d416956867c13a42101e7bbb43",
+  "showcase/MINERAL1/M1-0078.json": "18ba0c8345f60881325ef4ebfd56d99d40156b9a361a09c531e40d6f074d9e57",
+  "showcase/MINERAL1/M1-0079.bin.gz": "310e5a968d8361a2317933c0866b38f0da41c653540566017549740f8af9ae2e",
+  "showcase/MINERAL1/M1-0079.json": "21d3ab90cbd2f07c0fa7a7136243aef57cb643a37cf62da75d6a9e49fc28704a",
+  "showcase/MINERAL1/M1-0084.bin.gz": "5bb46d7a3b209ab3b1a708ead2173bac5c2726a349d4cb27c48984be2bc37b10",
+  "showcase/MINERAL1/M1-0084.json": "c42dabd9779d5e6312a88b080036f1d25a91a41c5398c87b40c023d2c6ee2b72",
+  "showcase/MINERAL1/M1-0095.bin.gz": "aec7d4f2e1de43d798d971a89b36c2ee15f33b4580b94fbf1cd6ef2544320daf",
+  "showcase/MINERAL1/M1-0095.json": "4ef457957ebd53e06a95e364f3adc4835d4b229220f4a0bc62d4bc92c1a9662a"
+ }
+}

@@ -105,6 +105,7 @@ failure, and a supply-chain surface, in exchange for nothing.
 | **Week 5** — offline packaging | `uv sync --extra ml` then export ONNX | `onnxruntime` | MIT |
 | **If the OPC UA demo survives the kill list** | `uv sync --extra integrate` | `asyncua` | **LGPL-3.0 — CONDITION** |
 | **Dev-time inspection only, never the demo** | `uv sync --extra viz` | `napari[pyqt6]` | BSD-3 (PyQt6 is GPL/commercial — *this is why napari is dev-only and the demo UI is matplotlib*) |
+| **Kaggle kernels only — hyperspectral track** | installed inside the kernel by `run.py` | `h5py` | BSD-3 |
 | **When data volume justifies it** | `uv tool install dvc` | `dvc` | Apache-2.0 |
 | **When there are runs worth comparing** | `uv add --dev mlflow` | `mlflow` | Apache-2.0 |
 
@@ -183,3 +184,13 @@ None of these may be on the critical path for the demo. **The demo runs on one l
   `LICENSE` file. Do not cite an unverified row in the submission.
 - If something on the *not installing* list starts to look necessary, that is an ADR, not a
   `uv add`.
+
+## Pitch and video tooling (development only, added 2026-10-02)
+
+Nothing here ships; none of it is imported by `src/` or the app.
+
+- **`python-pptx`** (MIT): builds the deck. `python presentation/deck-src/build_deck_v8.py`. Rendered for QA with real PowerPoint via `presentation/deck-src/export_slides.ps1`.
+- **Playwright for Python** (Apache-2.0), using the installed Edge (`channel="msedge"`): app screenshots, the app screen recording (`presentation/video/src_v8/capture_v8.py`) and end-to-end checks.
+- **`edge-tts`** and an **FFmpeg 7.1** binary, both in `.workbench/media-tools/` (not on PATH): narration and video encoding. `compose_v8.py` finds FFmpeg by path. Licences are in SBOM.md (both VERIFY, development only).
+- **Mixkit stock clips**: illustrative footage, outside git; see SBOM.md (data table) and `presentation/video/STORYBOARD-v8.md`.
+

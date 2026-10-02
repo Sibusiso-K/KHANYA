@@ -1,0 +1,19 @@
+{
+ "record": "MINERAL1",
+ "rule": "first N by sha256('reefprint-v6|<record>|<sample>'), written before modelling",
+ "samples": [
+  "M1-0078",
+  "M1-0021",
+  "M1-0013",
+  "M1-0079",
+  "M1-0095",
+  "M1-0066",
+  "M1-0070",
+  "M1-0030",
+  "M1-0043",
+  "M1-0084",
+  "M1-0053",
+  "M1-0041"
+ ],
+ "written_unix": 1790878986.8520868
+}

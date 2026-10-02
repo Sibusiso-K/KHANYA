@@ -1,0 +1,283 @@
+1
+00:00:01,350 --> 00:00:04,167
+Every shift on a mine starts with the same question.
+
+2
+00:00:05,550 --> 00:00:08,603
+What is actually in the ore we're sending to the plant today?
+
+3
+00:00:09,500 --> 00:00:11,121
+Geologists log the core,
+
+4
+00:00:11,151 --> 00:00:15,095
+and a handheld XRF reads the elements: nickel, copper, chrome,
+
+5
+00:00:15,125 --> 00:00:15,997
+sulphur.
+
+6
+00:00:16,960 --> 00:00:19,309
+But elements are not minerals.
+
+7
+00:00:19,339 --> 00:00:22,045
+XRF can't tell you which mineral carries the nickel,
+
+8
+00:00:22,075 --> 00:00:23,908
+or whether that grain will float free,
+
+9
+00:00:23,938 --> 00:00:25,553
+or stay locked in rock.
+
+10
+00:00:26,780 --> 00:00:29,129
+That answer lives in the grains.
+
+11
+00:00:29,159 --> 00:00:32,625
+So a polished section goes under a reflected-light microscope,
+
+12
+00:00:33,290 --> 00:00:35,294
+and the image goes to REEFPRINT.
+
+13
+00:00:35,980 --> 00:00:38,317
+Open it on a laptop in the bakkie.
+
+14
+00:00:38,347 --> 00:00:40,546
+On a phone at the core yard.
+
+15
+00:00:40,576 --> 00:00:42,604
+At a desk in the plant office.
+
+16
+00:00:43,730 --> 00:00:46,858
+This is REEFPRINT, also known as KHANYA.
+
+17
+00:00:46,888 --> 00:00:49,398
+Mineral intelligence from a micrograph.
+
+18
+00:00:51,880 --> 00:00:54,091
+The dashboard puts the specimen library,
+
+19
+00:00:54,121 --> 00:00:57,508
+model readiness and recorded evidence in one view.
+
+20
+00:00:57,538 --> 00:01:01,717
+These are held-out LumenStone S2 sections: public data, from nickel,
+
+21
+00:01:01,747 --> 00:01:04,034
+copper and PGE sulphide ore.
+
+22
+00:01:04,730 --> 00:01:07,421
+Choose a section and run the analysis.
+
+23
+00:01:07,451 --> 00:01:12,692
+A DeepLabV3 network classifies six fields on an ordinary laptop CPU.
+
+24
+00:01:12,722 --> 00:01:17,810
+No cloud, no GPU. Every tile you see is real model output,
+
+25
+00:01:17,840 --> 00:01:18,995
+sped up here.
+
+26
+00:01:19,380 --> 00:01:22,920
+Deliverable one: mineral phases. Pyrrhotite,
+
+27
+00:01:22,950 --> 00:01:24,819
+pentlandite and chalcopyrite,
+
+28
+00:01:24,849 --> 00:01:26,281
+mapped pixel by pixel,
+
+29
+00:01:26,311 --> 00:01:28,244
+with the area fraction of each.
+
+30
+00:01:28,930 --> 00:01:30,551
+Every result carries its model,
+
+31
+00:01:30,581 --> 00:01:33,249
+its checkpoint hash and its runtime.
+
+32
+00:01:33,279 --> 00:01:35,937
+Confidence is shown, and labelled uncalibrated,
+
+33
+00:01:35,967 --> 00:01:37,063
+because it is.
+
+34
+00:01:38,080 --> 00:01:39,736
+Click any grain for its size,
+
+35
+00:01:39,766 --> 00:01:44,038
+its composition, and whether the valuable mineral is free, or locked.
+
+36
+00:01:44,068 --> 00:01:47,593
+That's liberation: the question a metallurgist actually asks.
+
+37
+00:01:48,630 --> 00:01:53,220
+Attach an XRF or lab assay to compare the chemistry with the phase map.
+
+38
+00:01:53,250 --> 00:01:55,543
+XRF measures elements.
+
+39
+00:01:55,573 --> 00:01:57,459
+REEFPRINT maps minerals.
+
+40
+00:01:58,180 --> 00:02:00,591
+Deliverable two: the accuracy report,
+
+41
+00:02:00,621 --> 00:02:02,923
+bound to the exact checkpoint.
+
+42
+00:02:02,953 --> 00:02:04,810
+Across twelve held-out sections,
+
+43
+00:02:04,840 --> 00:02:10,600
+mean IoU is 0.454, and pixel accuracy seventy-seven percent.
+
+44
+00:02:10,630 --> 00:02:12,286
+Magnetite scores zero,
+
+45
+00:02:12,316 --> 00:02:13,872
+and the report says so.
+
+46
+00:02:14,430 --> 00:02:18,834
+A retrained candidate records 0.632 on the same twelve sections,
+
+47
+00:02:18,864 --> 00:02:20,827
+and now finds most of the magnetite,
+
+48
+00:02:20,857 --> 00:02:23,336
+but with too many false alarms.
+
+49
+00:02:23,366 --> 00:02:24,881
+So it stays quarantined,
+
+50
+00:02:24,911 --> 00:02:26,903
+and the live model is unchanged.
+
+51
+00:02:27,680 --> 00:02:31,527
+Deliverable three: from mineralogy to a plant parameter.
+
+52
+00:02:31,557 --> 00:02:34,970
+The advisory reads a forty-one percent sulphide association,
+
+53
+00:02:35,000 --> 00:02:38,885
+inside the uncertainty band around the fifty percent floor.
+
+54
+00:02:38,915 --> 00:02:41,438
+So it says: verify before acting.
+
+55
+00:02:41,430 --> 00:02:43,909
+Test the setpoint in the simulator.
+
+56
+00:02:43,939 --> 00:02:46,091
+This checkpoint isn't approved for control,
+
+57
+00:02:46,121 --> 00:02:48,048
+so the setting is held.
+
+58
+00:02:48,078 --> 00:02:49,451
+When the evidence is thin,
+
+59
+00:02:49,481 --> 00:02:52,110
+REEFPRINT refuses, rather than guesses.
+
+60
+00:02:53,580 --> 00:02:56,840
+Every decision exports as a traceable record: the result,
+
+61
+00:02:56,870 --> 00:02:59,581
+the checkpoint, and the simulator's response.
+
+62
+00:03:00,430 --> 00:03:03,867
+Spatial ties samples to survey coordinates, plan maps,
+
+63
+00:03:03,897 --> 00:03:08,365
+sections and 3D, with synthetic geometry clearly marked as synthetic.
+
+64
+00:03:08,980 --> 00:03:12,334
+And the evidence companion answers questions about the selected result,
+
+65
+00:03:12,364 --> 00:03:13,514
+labelling what's measured,
+
+66
+00:03:13,544 --> 00:03:16,019
+what's predicted, and what's simulated.
+
+67
+00:03:17,480 --> 00:03:19,814
+The same workbench, in your pocket.
+
+68
+00:03:21,430 --> 00:03:24,157
+Three mineral phases identified.
+
+69
+00:03:24,187 --> 00:03:27,435
+An accuracy report, with every number traced.
+
+70
+00:03:27,465 --> 00:03:30,271
+And a path to the plant that knows when not to act.
+
+71
+00:03:31,430 --> 00:03:34,728
+REEFPRINT. Built by Team Sonar.

@@ -1,0 +1,599 @@
+{
+ "method": "cluster bootstrap over composites (P#S#), 4000 resamples, seed 0; point estimates unchanged from Kaggle v4",
+ "targets": {
+  "Actinolite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.15858780780785653,
+   "r2_ci95_cluster": [
+    -0.06562908677379599,
+    0.2931511703060213
+   ],
+   "mae": 0.03612873686808856,
+   "baseline_mae": 0.04217978716079983,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.010327365005951265,
+    -0.0016710972165597494
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Albite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.3218132490593507,
+   "r2_ci95_cluster": [
+    0.028090378088549084,
+    0.49090597072889475
+   ],
+   "mae": 0.9245009482740405,
+   "baseline_mae": 1.181508462177766,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.4521897570763989,
+    -0.04824312187342907
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Andesina_An40": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.11594066327594443,
+   "r2_ci95_cluster": [
+    -0.18760520295722524,
+    0.29525864021433235
+   ],
+   "mae": 0.4580176213445055,
+   "baseline_mae": 0.5161555882584363,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.12101282710192662,
+    0.006973554636163598
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": false
+  },
+  "Anhydrite/Gypsum": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.9361380137689881,
+   "r2_ci95_cluster": [
+    0.8991486197170357,
+    0.955443456696557
+   ],
+   "mae": 0.6739043484117373,
+   "baseline_mae": 2.985018955376551,
+   "mae_minus_baseline_ci95_cluster": [
+    -2.718597296375145,
+    -1.896727535200912
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Anorthite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.7924081982078289,
+   "r2_ci95_cluster": [
+    0.7107172219657484,
+    0.852474192967829
+   ],
+   "mae": 0.49229837437005114,
+   "baseline_mae": 1.126736510676384,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.8206794315526827,
+    -0.46066651241145923
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Apatite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.23907469663012504,
+   "r2_ci95_cluster": [
+    -0.019788300250749978,
+    0.47266549659811935
+   ],
+   "mae": 0.06676110512214149,
+   "baseline_mae": 0.08383271247037069,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.027732937958764196,
+    -0.00563574066153617
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Biotite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.906435445516375,
+   "r2_ci95_cluster": [
+    0.8513284954669059,
+    0.9375852923619931
+   ],
+   "mae": 0.8843377847603353,
+   "baseline_mae": 3.215853119395842,
+   "mae_minus_baseline_ci95_cluster": [
+    -2.849188810574811,
+    -1.8656523383085033
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Bornite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.7294524035754071,
+   "r2_ci95_cluster": [
+    0.6508721658348308,
+    0.7818048312512536
+   ],
+   "mae": 0.06714812916045197,
+   "baseline_mae": 0.14028231724908938,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.0883926609548635,
+    -0.05777559123507502
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Bytownite_An80": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.7721696783139216,
+   "r2_ci95_cluster": [
+    0.6372517704854279,
+    0.8614573791049454
+   ],
+   "mae": 0.21823546582034234,
+   "baseline_mae": 0.5089759154347763,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.3782861179832922,
+    -0.20833226290688028
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Calcite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.7232643705086642,
+   "r2_ci95_cluster": [
+    0.5987371548149776,
+    0.8191027682422072
+   ],
+   "mae": 0.05565352575797487,
+   "baseline_mae": 0.12350695858290797,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.0878213382748375,
+    -0.047201704929766664
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Chalcopyrite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.8936339804791932,
+   "r2_ci95_cluster": [
+    0.8471517667007223,
+    0.9313469447929729
+   ],
+   "mae": 0.22181838585141395,
+   "baseline_mae": 0.7880926753743209,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.6380821278022917,
+    -0.49221997862891026
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Chalcosite/Digenite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.6784182267854397,
+   "r2_ci95_cluster": [
+    0.5233065806737539,
+    0.7707702831243259
+   ],
+   "mae": 0.027067131115942153,
+   "baseline_mae": 0.051269500424563706,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.032866672630508735,
+    -0.015858616973024434
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Chlorite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.7316960455525998,
+   "r2_ci95_cluster": [
+    0.6163910570271677,
+    0.8151854506552765
+   ],
+   "mae": 0.6837743319631706,
+   "baseline_mae": 1.487251272871526,
+   "mae_minus_baseline_ci95_cluster": [
+    -1.0682244701855783,
+    -0.5350635493443452
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Covelite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.5959562493797825,
+   "r2_ci95_cluster": [
+    0.44943860113041667,
+    0.7080230875670392
+   ],
+   "mae": 0.006888514642519832,
+   "baseline_mae": 0.012635190758608479,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.007401894169386239,
+    -0.004158738726096376
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Epidote": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.2017614011693224,
+   "r2_ci95_cluster": [
+    0.008656584312191552,
+    0.332732735498897
+   ],
+   "mae": 0.03768963545756752,
+   "baseline_mae": 0.044299829272930545,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.011764416903684707,
+    -0.0011739264303552604
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Fe Oxides": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.40817798738907285,
+   "r2_ci95_cluster": [
+    0.1834447596072669,
+    0.632354490460769
+   ],
+   "mae": 0.12434586532754473,
+   "baseline_mae": 0.19115360436562967,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.08681883874623089,
+    -0.047733031698924726
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Fe-Clays": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.6222709227435809,
+   "r2_ci95_cluster": [
+    0.5304305402064727,
+    0.7113677080562512
+   ],
+   "mae": 0.10144562282640206,
+   "baseline_mae": 0.17796965885731708,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.09160780755005901,
+    -0.06166701936336694
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "K-Feldspar": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.828181787088673,
+   "r2_ci95_cluster": [
+    0.747628653430034,
+    0.8692723699681966
+   ],
+   "mae": 0.485746897272475,
+   "baseline_mae": 1.266819310436399,
+   "mae_minus_baseline_ci95_cluster": [
+    -1.0086787052199964,
+    -0.5505057391467014
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Kaolinite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.6318100264086278,
+   "r2_ci95_cluster": [
+    0.48358539125059896,
+    0.7214368807740799
+   ],
+   "mae": 0.17374864721805472,
+   "baseline_mae": 0.30886719556814496,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.1805923895114371,
+    -0.08927882410854879
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Labradorite_An60": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.5093514425130347,
+   "r2_ci95_cluster": [
+    0.3282280863679023,
+    0.6162014219439919
+   ],
+   "mae": 0.4545811251731148,
+   "baseline_mae": 0.6793318666214236,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.34151427135771634,
+    -0.11126722390214082
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Molybdenite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.16494123816406814,
+   "r2_ci95_cluster": [
+    -0.08348105200549813,
+    0.39916877771800285
+   ],
+   "mae": 0.01810286796139428,
+   "baseline_mae": 0.02208499019733197,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.006415218165497785,
+    -0.0013622267963384403
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Muscovite/Sericite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.8977572807020636,
+   "r2_ci95_cluster": [
+    0.8429213742897104,
+    0.9352472373118506
+   ],
+   "mae": 1.2433898825057288,
+   "baseline_mae": 4.770928791321196,
+   "mae_minus_baseline_ci95_cluster": [
+    -4.221509850928333,
+    -2.898901371986344
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Oligoclasa_An20": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.4991485587131399,
+   "r2_ci95_cluster": [
+    0.2742214528002349,
+    0.6504342508152163
+   ],
+   "mae": 0.8534859801561594,
+   "baseline_mae": 1.3470739142479649,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.6682421329749628,
+    -0.31916389405941076
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Other Amphibole": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.348532930408349,
+   "r2_ci95_cluster": [
+    0.0758666693516631,
+    0.5641042820355237
+   ],
+   "mae": 0.022014073713486654,
+   "baseline_mae": 0.03043683385297309,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.012945361220963363,
+    -0.0033800105075966957
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Others": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.517993841411304,
+   "r2_ci95_cluster": [
+    0.3836299817141273,
+    0.632818135322266
+   ],
+   "mae": 0.045859020350246756,
+   "baseline_mae": 0.07300810810146253,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.035762873962455366,
+    -0.017873779790722775
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Others Carbonates": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.2526910303950487,
+   "r2_ci95_cluster": [
+    0.02831464908037752,
+    0.5418217043363601
+   ],
+   "mae": 0.051034005244386706,
+   "baseline_mae": 0.07392024677151261,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.03829425426911616,
+    -0.005834593438676303
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Others Ti Minerals": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.07921346389534023,
+   "r2_ci95_cluster": [
+    -0.187494190931536,
+    0.26114027273080065
+   ],
+   "mae": 0.1787421703799638,
+   "baseline_mae": 0.18407051282051282,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.03345102865763856,
+    0.023174660820757455
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": false
+  },
+  "Pyrite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.8353382178728874,
+   "r2_ci95_cluster": [
+    0.7737482555754561,
+    0.8739522747400604
+   ],
+   "mae": 0.5155543311864426,
+   "baseline_mae": 1.2774309170084488,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.9943725103787479,
+    -0.5448080326002429
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Pyroxene": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.719562498116524,
+   "r2_ci95_cluster": [
+    0.6382680097831074,
+    0.806900639974295
+   ],
+   "mae": 0.031323739029639995,
+   "baseline_mae": 0.0667713908805681,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.04374487799012058,
+    -0.027281387918251562
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Quartz": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.7655923228881776,
+   "r2_ci95_cluster": [
+    0.6136335261706789,
+    0.8626730778136114
+   ],
+   "mae": 1.220096489033547,
+   "baseline_mae": 2.930751811772381,
+   "mae_minus_baseline_ci95_cluster": [
+    -2.381570679542896,
+    -1.0373591044411117
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Rutile": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.45320555277934116,
+   "r2_ci95_cluster": [
+    0.24220878296923568,
+    0.5700258514437716
+   ],
+   "mae": 0.07513079008234322,
+   "baseline_mae": 0.10142284742917658,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.04231951705196699,
+    -0.010099562423685258
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Siderite": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "ridge",
+   "r2": 0.3360555475196153,
+   "r2_ci95_cluster": [
+    -0.10360143734530863,
+    0.5246455477546244
+   ],
+   "mae": 0.060302740094107306,
+   "baseline_mae": 0.0865753785010114,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.04005990487290204,
+    -0.009090049296226586
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  },
+  "Tourmaline": {
+   "n_samples": 99,
+   "n_composites": 36,
+   "model": "pls",
+   "r2": 0.33566205277675054,
+   "r2_ci95_cluster": [
+    0.052188360846723486,
+    0.4519865268579308
+   ],
+   "mae": 0.2801930230126681,
+   "baseline_mae": 0.357095648959573,
+   "mae_minus_baseline_ci95_cluster": [
+    -0.13329247600917007,
+    -0.02276053058343544
+   ],
+   "beats_baseline_mae": true,
+   "beats_baseline_ci_excludes_zero": true
+  }
+ }
+}

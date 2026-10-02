@@ -1,3 +1,7 @@
+# Latest verified continuation — 1 October2026
+
+Read CONTINUE-REEFPRINT-2026-10-01.md. Candidate evaluation COMPLETE and audited; mIoU0.632038/pixelaccuracy0.855093 but weak magnetiteprecision/common-phase regressions. Live weights unchanged. CI allfourgreen2b763b2. Assistantreadingfixlive; candidate report UI integration next.
+
 # 00-STATUS — what is current, what is history
 
 **Read this before reading anything else in `docs/`.**
@@ -21,6 +25,7 @@ CLAUDE.md  >  docs/01-design-v3.md  >  docs/02-gauntlet-findings.md  >  everythi
 | [`../CLAUDE.md`](../CLAUDE.md) | Project constitution. Outranks everything here. |
 | [`../CONTEXT.md`](../CONTEXT.md) | **Situation report.** Where we are, the single next action, and the five things that have already bitten us. Read second, after CLAUDE.md. |
 | [`BUILDLOG.md`](BUILDLOG.md) | Append-only record of what was tried, what worked, what failed. Rule 8 — the commit history is the originality defence and this is its prose companion. |
+| [`12-pwa-phase-identification-roadmap-2026-09-30.md`](12-pwa-phase-identification-roadmap-2026-09-30.md) | User-selected Supabase / Cloudflare Pages / FastAPI application handoff and controlled phase-improvement queue. A plan for KHANYA's separate application history; no hosted app or improved checkpoint is claimed. |
 | [`05-toolchain.md`](05-toolchain.md) | Every piece of software we install, when, and what we deliberately do not. Supersedes `03-free-stack.md` §3. |
 | [`01-design-v3.md`](01-design-v3.md) | **The current design** for everything except the instrument. Computational ore microscope: quantitative reflectance + full linear Stokes polarimetry. Its 0.2–1.6 µm/px is now a *design target*, not something that will be measured — see ADR-0002 below. |
 | [`02-gauntlet-findings.md`](02-gauntlet-findings.md) | Adversarial review findings and dispositions. **Why the design is what it is.** Read before proposing anything. |
@@ -132,3 +137,11 @@ that **adaptive illumination is a leakage channel** (freeze the schedule for all
 | 6 | Backup demo video exists — **paired-host verified two-screen GIF generated from the offline demo** |
 
 Final: 1 October 2026, 13:00 submission, 10-minute presentation, Mintek Randburg.
+
+
+## Latest verified application update — 1 October 2026
+
+Actual model tiles now produce live previews/counts, with unknown pixels excluded. White workbench polish, original/prediction comparison, spatial map/sections/layers and voice/evidence assistant are implemented. 71 backend checks and seven serial browser tests passed, plus production build. Real test_11 inference took78.475s; no improved held-out accuracy claimed. Both extended Kaggle runs completed and are being audited. Public release/push status is documented in BUILDLOG. See LIVE-UI-RELEASE-2026-10-01.md for source snapshot, limitations and resume prompt. Current hosted model is unapproved fb78727d, so simulator HOLD is expected.
+
+Historical status follows; the entries below must not be read as the current release state.
+

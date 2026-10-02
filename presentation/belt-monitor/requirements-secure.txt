@@ -1,0 +1,5 @@
+cryptography==50.0.2
+pqcrypto==1.0.0
+pillow==12.3.0
+numpy==1.26.4
+qrcode==8.2

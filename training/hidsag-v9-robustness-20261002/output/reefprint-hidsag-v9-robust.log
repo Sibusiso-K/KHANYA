@@ -1,0 +1,18 @@
+[{"stream_name":"stdout","time":8.811353543,"data":"downloading GEOMET\n"}
+,{"stream_name":"stdout","time":131.828353722,"data":"downloaded GEOMET 3.26 GB in 123 s\n"}
+,{"stream_name":"stdout","time":131.840910872,"data":"GEOMET pre-registered showcase ['GMET-0048', 'GMET-0112', 'GMET-0015', 'GMET-0035', 'GMET-0063', 'GMET-0071', 'GMET-0098', 'GMET-0114', 'GMET-0043', 'GMET-0113', 'GMET-0083', 'GMET-0116', 'GMET-0004', 'GMET-0105', 'GMET-0126', 'GMET-0007', 'GMET-0022', 'GMET-0011', 'GMET-0039', 'GMET-0091', 'GMET-0080', 'GMET-0064', 'GMET-0054', 'GMET-0068']\n"}
+,{"stream_name":"stdout","time":173.28851538,"data":"GEOMET samples 146 skipped 0 showcase cubes 0\n"}
+,{"stream_name":"stdout","time":173.294986824,"data":"GEOMET n 146 targets 5 units 146 additive False\n"}
+,{"stream_name":"stdout","time":235.558629957,"data":"GEOMET fold 1/5: proper 81 cal_units 35 k 29 unbounded False ood_shift_accept None 61s\n"}
+,{"stream_name":"stdout","time":294.438594045,"data":"GEOMET fold 2/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 59s\n"}
+,{"stream_name":"stdout","time":355.459488566,"data":"GEOMET fold 3/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 61s\n"}
+,{"stream_name":"stdout","time":415.534988058,"data":"GEOMET fold 4/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 60s\n"}
+,{"stream_name":"stdout","time":474.97483972,"data":"GEOMET fold 5/5: proper 82 cal_units 35 k 29 unbounded False ood_shift_accept None 59s\n"}
+,{"stream_name":"stdout","time":475.077484449,"data":"done in 466 s\n"}
+,{"stream_name":"stderr","time":478.652129024,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":478.652173139,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":479.111296493,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":479.111337654,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":480.346173797,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":482.617124807,"data":"[NbConvertApp] Writing 500952 bytes to __results__.html\n"}
+]

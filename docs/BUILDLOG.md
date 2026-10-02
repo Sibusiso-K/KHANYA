@@ -22,6 +22,502 @@ it is a press release.
 
 ---
 
+## 2026-10-02 (12:05–12:50) — pitch v8 (12 slides), presenter script, 2:25 demo video, a notes bug fixed
+
+**Attempted.** A 12-slide pitch and a keynote script aligned with the v8 build, plus a 2:00–2:30 storytelling demo video, with every number traceable.
+
+**Worked:**
+- **Deck v8:** `presentation/deck-src/build_deck_v8.py` produces `presentation/output/REEFPRINT-KHANYA-Team-Sonar-pitch-v8.pptx`.
+  - **Order:** problem → solution → deliverables 1–3 → innovation ("the brain") → demo → feasibility → value → pathway → close.
+  - **Numbers:** every figure is loaded from the committed result JSONs (economics, value chain, v9, physics), never typed. Each carries a tag: LIVE APP / RECORDED / SOURCE / ASSUMPTION / SIMULATOR / HYPOTHESIS.
+  - **Screenshots:** recaptured from the current secure app. The stored ones predated v9 and still showed the withdrawn "same overload risk".
+  - **Render:** rendered with PowerPoint for QA. Fixed: a stat that wrapped, tag/caption overlaps, a chart title, and a chevron past the margin.
+- **Script:** `presentation/PRESENTER-SCRIPT-v8.md` is generated from the same table as the speaker notes, so the two cannot drift. It has an opening joke (geologist, mineralogist, chemist, mining engineer, metallurgist, policy maker), timings to 10:00, and eight likely judge questions with answers.
+- **Video:** `presentation/video/REEFPRINT-v8-demo.mp4`, about 2:25, built by `presentation/video/src_v8/`. The arc is pit → wait → real app → money → Mintek values → inclusive close.
+  - Stock scenes are labelled ILLUSTRATIVE (Mixkit). App screens are a real Playwright recording of the guest sandbox, paced to the narration.
+  - Provenance is in `presentation/video/STORYBOARD-v8.md`.
+
+**Did not work, then fixed (a real app bug, found by recording the demo).** The Decisions view rebuilt itself every second for the arrival countdown. That **wiped a note while it was being typed**: the approval reached the ledger as `note=`, which is visible at seq 5 in the sandbox. It also reset the escalation choice and re-fetched the ledger every tick.
+- **Fix:** the tick now updates only the countdown cell. A full render keeps the note, the escalation level and focus. The note box clears only after a successful write.
+- **Verified with Playwright:** a note typed slowly across ticks survives, and the escalation stays at L3. Approve writes `note=…` into the signed ledger (seq 11 in the recording). 17/17 security tests still pass.
+
+**Did not work.** The first full render stalled at frame 0, because the stock-clip reader seeked on every frame. Fixed with sequential reads and bounding-box overlay blending.
+
+**Learned.** Recording the product for a video is a test. It exercised typing at human speed, which the scripted e2e (`fill`, then click immediately) never did.
+
+**Left open:**
+- Official Mintek, TIA and team logo files: not supplied; text wordmarks are used.
+- The QR slide is a placeholder until the public deployment is approved (host and account are the team's decision).
+- ClauDex round 2 (Codex limit until 13:54).
+
+## 2026-10-02 (10:55–11:25) — secure UI, physics checks, robustness on unseen captures, resilience and compliance
+
+**Codex.** Round 2 was killed at the 33-minute background limit with no output. A ping showed the usage limit again (reset 13:54), so round 2 has not run. All work below is disclosed for it.
+
+**Secure UI** (commit 96bb149):
+- Sign-in or guest sandbox, and a role badge.
+- Server CSV and photo uploads: encrypted, EXIF stripped.
+- A **Decisions** view: a feed proposal from the exact one-sided bound inside a typed STIPULATED envelope, an arrival countdown, an immediate fallback, and the signed decision record.
+- **Tested end to end** on the real secure server: guest and metallurgist flows, chain verified, signed checkpoint downloaded.
+- Offline mode was regression-checked in every view and theme. One bug was found and fixed: the Decisions view was empty on a cold start.
+
+**Physics checks** (`training/physics-checks-20261002`):
+- **Kinetics:** +1.9% tonnes costs ≤ 0.25 pp recovery (1 lab-min), 0.04 pp at 3 min, and 0 on the plateau.
+- **Load-curtailment tonnage claim: tested and REJECTED.** Re-ordering ore gave −3.8%, and an oracle −3.0%; energy is conserved.
+
+**v9 robustness** (pre-registered; scored by fold models that never saw the parcel):
+- **A new capture of the same ore keeps the accuracy:** MAE ×1.00 [0.99, 1.01], so the gate passes.
+- A partial view, noise and ±15% light are tolerated.
+- **A one-band wavelength drift gives ×1.25 error, mostly unflagged**, so a hardware wavelength-calibration gate was added to docs/18.
+
+**Docs and app:**
+- docs/21: physical possibility, power cuts, kinetics, radiation (we do not detect it), waste and water, equipment and energy, SA compliance, scale-up, gaps, evidence.
+- The Evidence view gained a "physically possible" table; the Where view gained a power-loss card.
+
+**PR 15:** comment posted.
+
+**Learned.** A plausible money story (curtailment re-ordering) died to a two-line energy-conservation argument once it was simulated. It is worth simulating every "smart scheduling" claim before saying it.
+
+## 2026-10-02 (08:00–08:55) — v8: industry research, ClauDex round 1, corrections, evidence runs, secure server
+
+**Plan and review:**
+- PLAN-v8 plus its addendum (security, PQC, deployment, business).
+- Codex round 1 returned 40 findings (REVISE), all logged in PLAN-v8-REVIEW-LOG.md.
+- Round 2 was paused by Codex's usage limit; it was relaunched at 08:52 and its result is pending.
+
+**Corrections:**
+- "Same overload risk" withdrawn.
+- Economics restated as net value plus break-even (0.04–0.26 pp).
+- Import refuses blank values.
+- Every shipped asset is hashed.
+- Advice rows rewritten as diagnostic prompts.
+
+**Evidence:**
+- **v8-model:** the exact one-sided bound gives +1.9% throughput, non-inferior on overload (+1.4 pp upper bound). This is provisional because of a disclosed method switch. Latency is 92 ms per parcel. The exported model loads locally.
+- **v8-features:** no pre-registered hypothesis passes. H2 has ρ +0.27, below the minimum useful effect. The belt does not earn ≥3 phases; KHANYA carries that.
+
+**Security:**
+- Secure server (RBAC, sessions, CSRF, SQLite append-only ledger, Ed25519 + ML-DSA-65 checkpoints, ML-KEM-768 exports, encrypted EXIF-stripped uploads, guest sandbox).
+- 17 tests pass; Bandit 0; pip-audit clean after upgrading cryptography.
+
+**Docs:** 17 (industry dossier), 18 (installation and pilot), 19 (security), 20 (competitors and business).
+
+**Left open:**
+- process Codex round 2;
+- UI wiring for login, upload and the decision record;
+- Dockerfile, tunnel runbook and QR (the public deploy needs the owner's approval);
+- the map;
+- the mass balance;
+- deck v8.
+
+## 2026-10-02 (morning) — belt view, full-resolution scans, value chain, v7 (no gain), Bushveld correction
+
+**Asked:** make the belt and scans look right, keep training for accuracy, and show whether each prediction helps the next plant step and what it is worth, backed by evidence.
+
+**Display (REEFPRINT Live).**
+- **Full-resolution scans.** Kaggle `reefprint-hidsag-showcase-hr` (290 s) re-exported the same pre-registered showcase samples without the 2× downsample: 80×117 px instead of 40×58, uint8 per band. The predictions, intervals and decisions stay v6's out-of-fold values.
+- **Measured why the maps looked striped.** In the SWIR band-depth maps the column medians carry most of the pixel variance (column-median sd 46–54 of total 52–59, in display units) and are uncorrelated from one column to the next (lag-1 autocorrelation −0.1 to 0.36). That is detector pattern.
+- **Display destriping**, labelled and toggleable. It removes only the high-pass part of the column medians. No prediction uses it.
+- **Crisp integer scaling.**
+- **A Belt mode.** Real scans ride a conveyor past a fixed line scanner, natural colour (R640/G550/B460) upstream and the analysis layer downstream.
+- **Bug found by screenshot and fixed:** a belt cube cache smaller than the visible tiles thrashed and kept the page busy.
+
+**Value chain** (`training/value-chain-20261002`, `docs/16-decision-value-chain.md`).
+- **Hardness → mill feed rate**, simulated policies on 146 real out-of-fold predictions (Bond 1961; mill power, F80 and P80 cancel). Setting the feed for the upper end of the 80% interval gives **sim_ +2.0% throughput [+1.0, +3.0]**. Its overload risk matches the no-information P90 rule: 8.2% vs 8.9%, difference CI −4.8 to +4.1 pp. When a parcel is harder than planned, the energy shortfall is 5.0% vs 11.9%. All gates pass (Wilcoxon 1.2e−7, Mann-Whitney 4.2e−13, δ −0.48). This captures 14% of perfect information's +14.0%.
+- **Correction: Bushveld.** Routing by belt chemistry gives balanced accuracy 0.79, against 0.82 for the mine-plan seam; the seam is better (CI −0.056 to −0.004). The earlier "chemistry beats the average for Pt/Rh/4E" used a weaker baseline than one already in `results.json` (`r2_seam_only`), which rule 3 should have caught. It is no longer presented as grade control.
+- **Not decision-grade:** belt recovery, lime and pH (no significant difference against baseline), so no reagent-saving claim from the belt.
+
+**v7, pre-registered** (`training/hidsag-v7-ens-20261002`, PREREG committed `11f0c23` before the run; Kaggle 703 s).
+- **Tried:** widening the menu with gradient boosting, an RBF SVR and a fixed 5-model mean, with the same folds and calibration.
+- **Did not work:** no significant difference on any target. Work index R² 0.479 → 0.483. Mo recovery improved on the paired test (Holm p 0.004) but failed Mann-Whitney (0.17). v6 stays.
+- **Data check:** GEOMET has exactly five lab variables, all modelled.
+
+**Learned.** The accuracy limit is the data (146 samples, no hole ids), not the model menu. The value of a prediction depends on the strongest baseline *the operator already has*, which for PGE grade is the mine plan.
+
+**Left open.**
+- Deck v8: withdraw slide 13 (MINERAL1) and reframe any Bushveld grade claim.
+- A site pilot logging feed rate, power and grind.
+- Re-record the Live demo with Belt mode.
+
+## 2026-10-01 (night) — ClauDex v6 plan, REEFPRINT Live, real-plant and Bushveld tracks, and a correction
+
+**Plan.** `PLAN-live-v6.md`, adversarially reviewed by Codex gpt-6-astra (read-only) over 3 rounds: 26 + 12 findings, then APPROVED. 37 were accepted; phone and LLM features were kept as R-3 under constraints. Log: `PLAN-live-v6-REVIEW-LOG.md`.
+
+### T1 belt v6 (`training/hidsag-v6-live-20261001`, Kaggle 575 s)
+
+- **Method.**
+  - Calibration is split off before any selection.
+  - Strict nesting covers k-means, scaling and blends.
+  - Families: nonlinear, linear-in-reflectance, and blend-augmented linear.
+  - Intervals are 80% split-conformal with one score per unit.
+  - Explanations use occlusion with the pipeline recomputed.
+  - OOD uses Ledoit–Wolf on PCA scores; RGB is a matched simulation.
+  - Gates are run locally (`analyse_v6.py`).
+- **Results.**
+  - **v6 is not more accurate than v5** (no significant difference on any target). v5 was slightly flattered by a k-means leak.
+  - **Only Bond work index beats its strongest baseline under all gates.** It is the only belt decision target.
+  - 80% coverage is calibrated: median 0.82 for GEOMET (unit level) and 0.81 for MINERAL1 (simultaneous within composite).
+  - The OOD gate refuses 3% of in-domain samples. Shifted-domain acceptance is 0–21% in four folds but 80% in one.
+  - Hyperspectral beats simulated RGB on 2/5 GEOMET and 6/33 MINERAL1 targets, and is never worse.
+  - Blends remain open (median R² −0.22).
+
+### CORRECTION (rule 3, rule 9) — `mineral1_q2.py`
+
+The MINERAL1 "camera reads QEMSCAN mineralogy" result is **explained by size fraction and process line**:
+- a median lookup on those labels matches the spectral model;
+- adding the spectrum to a metadata model helps on **0 of 33** minerals and hurts on 5;
+- a size-fraction lookup alone gives chalcopyrite R² 0.92.
+
+Deck v7 slide 13 ("31 of 33 minerals beat the average guess") is literally true but misleading, and is **withdrawn**. The doc-15 MINERAL1 lines are superseded. v4's claim was against the mean only; the metadata-only baseline required by rule 3 had not been run.
+
+### T3 real plant (`training/plant-softsensor-20261001`, CC0 Kaggle flotation plant)
+
+- **Method.**
+  - Hourly completed bins and an ASSUMED lab delay (1/2/4 h).
+  - Clock horizons of 1 and 3 h.
+  - Periods: train Mar–Jun, tune Jul, calibrate Aug, test Sep, with purge gaps.
+- **Result: the model never beats persistence** (last available assay). At delay 2 h, horizon 1 h: MAE 0.780 vs 0.738. Coverage was 71–78% at nominal 80%.
+- **Reading:** plant tags react after the ore changes, which is the argument for measuring the ore first.
+
+### T4 Bushveld (`training/bushveld-xrf-pge-20261001`, Bachmann et al. 2019, CC BY 4.0)
+
+- **Data.** 1,112 intervals, 123 projects held out, LG6–MG4 seams.
+- **Q1 (chemistry vs average).** Belt-type chemistry beats the average for Pt (R² 0.40), Rh (0.26) and 4E (0.42). It does not for Pd (0.21).
+- **Q2 (chemistry on top of a known seam).** The extra gain over a seam already known from the mine plan passes the paired project tests (Wilcoxon p ≤ 0.01) but fails the doctrine's unpaired Mann–Whitney gate, so it is "no significant difference".
+- **Seam from chemistry.** Balanced accuracy 0.42 vs 0.125.
+- **Coverage.** 80–87% per project.
+
+### T2 pentlandite diagnostic (`training/pentlandite-diagnostic-20261001`, exploratory)
+
+- **Setup.** Oracle sulphide mask, so only pentlandite vs pyrrhotite is classified. HistGB on colour and texture. Trained on 31 sections, scored on the 6 audited validation sections; test sections never opened.
+- **Result (pooled pentlandite IoU).** Colour + texture **0.499**, colour only 0.464, brightness only 0.288, all-pyrrhotite baseline 0.
+- **Spread across sections.** From 0.92 (train_23) to 0 (train_27).
+- **Reading.** Even with perfect sulphide detection, colour and texture reach only about 0.5. The Pn/Po confusion is a ceiling for ordinary reflected light. This is the case for the rotating-analyser axis (isotropic pentlandite vs anisotropic pyrrhotite). S2 images and weights are not shipped.
+
+### REEFPRINT Live (`presentation/belt-monitor/`)
+
+- **Views:** Live scan, Bushveld PGE, Plant, Lab & exports, Evidence, Where it sits. All six use the workbench design and three themes.
+- **Live scan:** real cubes decoded in the browser, absorption and cluster maps, pixel spectra, a CSS 3D data cube, the total decision table, and an audit log with hashes.
+- **Lab & exports:**
+  - a typed registry with lab import (rejections listed with reasons) and reconciliation;
+  - LIMS CSV with formula neutralisation; provenance JSON;
+  - an OPC UA tag map, not a live server;
+  - GeoJSON with null geometry;
+  - a code-only shift report.
+- **Assistant.** It routes only; templates render the answers. `server.py` holds the AIML / Featherless keys server-side.
+- **Server security checks passed:** traversal and source files 404, bad host or origin 403, no token 401, oversize 413.
+- **Camera.** Quality gates only, ending in a refusal.
+- **Bug found by the browser test, not by the syntax check:** the `S.plant` store was not initialised, so boot failed. It is fixed.
+- **Second bug found the same way:** the pentlandite baseline's undefined precision was written as `NaN`, which is invalid JSON, so the whole app failed to load. `build_live.py` now converts NaN and Infinity to null, writes with `allow_nan=False`, and every JSON file under `live/` is validated. Lesson: the end-to-end browser check after every rebuild is a required step, not optional.
+
+## 2026-10-01 (evening) — Refinement for the Top-5 round: v5 hyperspectral, moving-belt simulation, cheap cameras, Belt Monitor restyle
+
+**Why.** After the v6 pitch the judges asked us to refine. The team asked whether to keep the belt; what else is on the
+market; who decides what; where the system sits; and what cheaper images could do. Plan and reasoning:
+`docs/15-refinement-top5-strategy.md`. The verdict: keep the belt as layer 1 of one system (belt → microscope → QEMSCAN
+teacher → one control-room screen), not a pivot.
+
+**v5 training (Kaggle `lethabomh14/reefprint-hidsag-v5-belt`, 799 s, all four HIDSAG records)**
+- **What changed.** Spectra are resampled onto a common grid, with brightness-normalised means, derivatives,
+  continuum-removed band depths and bag-of-spectra k-means fractions (fitted on training folds only).
+  PLS / ridge / extra-trees are **chosen per target by inner CV**. This removes the v3 "best of two on the same OOF
+  score" optimism.
+- **Three gates against a v3-style PLS in the same folds.**
+- **GEOMET.** Cu recovery R² 0.42 [0.31, 0.51] — **better** than v3-style 0.26, all three gates. Mo recovery 0.45, Bond
+  work index 0.48 and lime 0.32 have higher point estimates, but there is no significant difference against v3-style.
+  pH (0.33) no longer beats the average guess under the gates, so it is dropped from the belt screen.
+- **MINERAL1.** 30 of 33 minerals beat the average guess (grouped by 36 composites); chalcopyrite R² 0.90.
+- **MINERAL2 (n = 20) and GEOCHEM (n = 28) are too small to learn from.** GEOCHEM Ca 0.77 is the standout (carbonate).
+- **Moving-belt `sim_`.** ±15% lighting costs about 0 R² with the new features, against 0.04–0.58 lost by v3-style
+  features. Fewer than ~100 pixels hurts. The combined belt case (100 px, +10% light, 2% noise) costs 0.07–0.20 R².
+- **Blended ore is the open problem.** Median blend R² is −0.08 on MINERAL1. Next run trains on simulated blends.
+
+**Cheap cameras (`sensor_bands.py`, local, mean spectra only).**
+- **VNIR hyperspectral (silicon) alone:** kept ~98–109% of the full VNIR + SWIR skill on the median target, though Cu
+  recovery still gained from SWIR.
+- **6-band LED mono camera:** 65–90%.
+- **RGB:** 53–60%.
+- **Caveats:** talc's 2.31 µm feature is SWIR-only, and this is not PGM ore.
+
+**Bug caught before reporting.** `sensor_bands.py` first failed because the v3 jsonl stores targets as `vars.<name>`;
+fixed by normalising the key. **Not a bug, but recorded:** Playwright full-page screenshots of tall pages captured blank
+mains mid-animation. The real browser renders correctly (checked via computed opacity); viewport screenshots are used
+instead.
+
+**Belt Monitor restyled to match the workbench (`presentation/belt-monitor/`).**
+- **Look.** Public Sans (bundled, OFL), the two-layer brand mark with launch motion, and the masthead, panels,
+  provenance block and copper active tab of the main app.
+- **Themes.** White workbench / Mineral night / Field paper, with tokens copied from `codex/themes-launch`.
+- **Four views.**
+  - Belt: spectrum / absorption features / photo, predictions, and act · verify · conservative default.
+  - Feed mineralogy: MINERAL1/2, GEOCHEM.
+  - Belt robustness: sim tables and the cheap-camera table.
+  - Where it sits: placement and a roles table.
+- **Advice wording follows rule 5.** It shows a conservative default, never "hold the last setpoint". The first dark
+  version is kept as `index-v1-dark.html`.
+
+**Market and facts.** Plotlogic, Scantech/Thermo PGNAA, MineSense, TOMRA, Metso froth cameras, Mintek MillStar /
+FloatStar, NVCL, USGS splib07, the UG2 Cr₂O₃ penalty and talc/CMC are all from web-search summaries and marked
+**[indicative]** in docs/15 until read in full. The USGS ScienceBase download sits behind a browser check, so it is not
+automated; a person downloads it.
+
+## 2026-10-01 (afternoon) — Hyperspectral belt track on HIDSAG, Belt Monitor, deck v7, first ensemble member
+
+**Why.** The team asked for hyperspectral imaging as the data, decided before grinding, with a place for it on site. The
+honest version: a belt camera reads the host rock (gangue and alteration minerals) at millimetre pixels; platinum and
+base-metal sulphide grains are microns and opaque, so they stay with the microscope. Two scales, one control room.
+
+**What ran (Kaggle, `lethabomh14/reefprint-hidsag-hyperspectral`).** Per-sample VNIR + SWIR statistics (mean, std, p10,
+p90, slope) → PLS or ridge, scored out-of-fold against the training-mean baseline.
+
+- **GEOMET (v3), 146 drill-core samples, KFold 5 over samples.** All five lab results beat the average guess, modestly:
+  Cu recovery R² 0.374 [0.14, 0.52], Mo recovery 0.374 [0.21, 0.51], Bond work index 0.355 [0.14, 0.48], pH 0.317
+  [0.16, 0.45], lime consumption 0.270 [0.14, 0.38]; MAE 19.5–24.6% below baseline. **Limitation:** drill-hole IDs are
+  not in the published metadata, so a by-hole (locality) split could not be enforced — may be optimistic (rule 2).
+- **MINERAL1 — v3 was wrong, v4 is the result.** v3 read tags from a top-level key that does not exist (HIDSAG keeps
+  them in `crops[].tags`), so every sample became its own group and size fractions of one composite could straddle
+  folds. Caught on reading the metadata before reporting; v4 groups by composite (process line × month, 36 groups from
+  99 samples) and now **refuses to run** if grouping collapses to ~one group per sample. `grouped_ci.py` re-sizes the
+  CIs by cluster bootstrap over composites (rule 4). Result: 31 of 33 minerals beat the average guess (paired MAE
+  difference CI excludes zero); chalcopyrite R² 0.894 [0.85, 0.93], sericite 0.898, biotite 0.906, anhydrite/gypsum
+  0.936; failures: andesine, other Ti minerals. Read narrowly: sulphides have no SWIR features, so chalcopyrite is
+  predicted through the alteration minerals that travel with it in this deposit — site-specific, needs site QEMSCAN.
+- **Selection note:** the better of PLS/ridge per target is picked on the same out-of-fold score — mild optimism, stated
+  on the slide.
+
+**Belt Monitor** (`presentation/belt-monitor/`, offline, `python -m http.server 8530 --directory presentation/belt-monitor`):
+replays 60 held-out GEOMET samples — spectrum, out-of-fold predictions with typical error and lab marker, an
+illustrative quartile-based decision card. Labelled on screen as a replay, not a live belt. Narrated clip (Ryan, en-GB):
+`presentation/video/REEFPRINT-belt-monitor-demo.mp4` (67 s), silent embed for the deck.
+
+**Deck v7** (`presentation/output/REEFPRINT-KHANYA-Team-Sonar-pitch-v7.pptx`, 25 slides): + "Where it sits on site",
++ GEOMET results with the embedded clip, + "QEMSCAN teaches, the camera predicts" (MINERAL1); reference-spectra slide
+moved to the appendix; notes trimmed and retimed by word count to ~10:16 at 165 wpm.
+
+**Ensemble (validation only, no test set touched).** FCN seed 42 finished: alone 0.657 mIoU on the six validation
+sections; equal-probability average with the quarantined candidate 42646cfa scored 0.691 vs 0.704 for 42646cfa alone —
+**did not help mIoU**, though NLL/Brier/ECE improved. Pre-declared gate not passed; it stays out. DeepLab seed 43 still
+running at 13:22. *Update 14:10:* DeepLab seed 43 finished — alone 0.614; averaged with 42646cfa 0.709 vs 0.704 alone on the same six validation sections (+0.005, within noise on n = 6, and calibration got worse: ECE 0.091 vs 0.062). No significant difference; gate not passed; stays out.
+
+## 2026-10-01 (05:15–10:15) — British re-voice, the 10-minute deck, and the themes branch
+
+### Attempted
+
+Lethabo asked for a different English narration voice, the 10-minute PowerPoint and its script, the app
+themes with a launch animation, and answers on phone photos, API keys and model training.
+
+### Worked
+
+- **Re-voice.** Five voice samples were offered (en-ZA Leah, en-NZ Mitchell, en-GB Ryan and Thomas, en-AU
+  William), and Lethabo chose **en-GB-RyanNeural**.
+  - Narration was regenerated at +6% rate, so the full cut still runs 224.4 s and the short cut 91.8 s.
+    "bakkie" is respelled for speech only; the captions keep the real word.
+  - Both cuts were re-rendered with every word-synced overlay re-timed. The Luke versions are kept in
+    `presentation/video/luke-voice/`.
+- **Deck.** `presentation/output/REEFPRINT-KHANYA-Team-Sonar-pitch.pptx` has 16 slides plus 2 appendices,
+  built with python-pptx (`presentation/deck-src/build_deck.py`).
+  - It passes `validate.py` and was checked slide by slide as real PowerPoint renders.
+  - Charts are native; transitions are Morph with a recurring micrograph "lens".
+  - Every number carries a provenance tag (LIVE APP, RECORDED, SOURCE, ASSUMPTION, ILLUSTRATIVE), and
+    every derived figure is computed in the script.
+  - Sources: USGS MCS 2025 (SA ≈ 71% of 2024 platinum mine production; reserves 63,000 t of
+    >81,000 t), DMPR Mining Sector Performance 2024 (6.1% of GDP; 474,736 jobs), and Valterra H1 2026
+    (R45,993 per PGM ounce sold, read from the PDF).
+- **Script.** `presentation/PRESENTER-SCRIPT.md` is timed to 9:45, with a speaker split, a fictional
+  user journey and a Q&A crib. The same script is in the speaker notes.
+- **Themes branch.** `codex/themes-launch` (`540e29f`) finishes the uncommitted Codex theme pass in an
+  isolated worktree, without touching the live demo.
+  - It adds three themes, Settings, the brand-mark launch motion and the candidate report.
+  - Two defects were found and fixed: the Mineral-night step bar was unreadable, and the model badge
+    overflowed 375 px screens.
+  - Checks: tsc and vite build; `themes.spec.ts` 3/3 in Edge; 36 backend tests passed.
+
+### Did not work
+
+- Running two render processes at once ran out of memory again (7.7 GB machine). `drive.py` now renders
+  one process at a time and resumes from the last frame written.
+- `os.replace` onto an MP4 that was open in a player failed with WinError 5. The new cut was renamed
+  instead, and the old file moved to `luke-voice/`.
+- The first theme-test run timed out waiting for Vite, then failed because Playwright's bundled browser
+  was missing. Starting Vite manually and setting `REEFPRINT_BROWSER_CHANNEL=msedge` fixed both.
+
+### Learned
+
+- **The "half of sections answered" triage figure in `MINTEK-FIT.md` §3.1 is stale.** It predates the
+  30 September evidence gate. With the shipped refined pipeline, `decision_gap_patches_refined.json`
+  gives **4/12 confident answers** (1 continue, 3 grind finer); 8 are verify or too-few-particles.
+  The exact 95% interval is 10–65%. The deck uses 4/12, and `MINTEK-FIT.md` still needs correcting.
+
+### Left open
+
+- Promote `codex/themes-launch` to the live demo only after the presentation, or on Lethabo's
+  explicit say-so.
+- Model training toward a specialist ensemble is designed (deck slide 13) but has not been run.
+
+## 2026-10-01 — promo video for the final, built from the live workbench
+
+### Attempted
+
+Lethabo asked for an advert-style video to sit inside the presentation. The brief: open on a mine site; show
+how the images are obtained (geologist in PPE, XRF, the lab); show where REEFPRINT gets opened (bakkie, phone,
+office); then run through the whole app with narration, deliverables first. Before building it, the session
+also pulled every branch from `Sibusiso-K/KHANYA` and launched the app.
+
+### Worked
+
+- **Repo state.** `git fetch --all --prune` found every local branch already equal to its remote, and
+  upstream had deleted `khanya/evidence-sufficiency`. The newest work is `codex/launch-live-demo` @ `2b763b2`
+  (PR 15, 00:50 today), which is the live workbench. Its Codex worktree has staged but uncommitted
+  candidate-report work; this session did not touch it.
+- **App launched and verified.** The local server on :8510 (no auth) returned 200. The public server on
+  :8766 returned 401 to unauthenticated `/api/samples`, as designed.
+- **Real footage only, for the product.** Headless Playwright at 1920×1080 captured every section,
+  including a **fresh live inference** on `test_11`: 278 frames over 220 s, app runtime 98.2 s, source
+  `fresh`. It also captured the assistant answer with its predicted, measured and simulated labels; the
+  simulator's "Checkpoint is not approved for demo control. Setting held."; the candidate report
+  (`42646cfa`, 0.632, "Candidate not deployed"); the opt-in synthetic spatial scene; and mobile at
+  390×844@3x.
+- **Field footage.** 13 Mixkit clips, each checked as "Mixkit Stock Video Free License" on its own clip
+  page. The green-screen laptop and phone clips were keyed with real UI screenshots. Every stock shot
+  carries an on-screen "ILLUSTRATIVE STOCK FOOTAGE · MIXKIT" label.
+- **XRF beat, honest version.** The element tiles carry no values. The pentlandite highlight is the
+  active model's own prediction on `test_11`, labelled "model prediction" on screen.
+- **Sound.** Narration is 24 lines of edge-tts `en-ZA-LukeNeural`; its word timings drive the captions
+  and on-screen text. Music and effects were synthesised in NumPy, with no samples.
+- **Outputs** in `presentation/video/`: the full cut (3:44), a 90 s cut for the deck's demo slot,
+  `.srt` captions, `CREDITS-AND-SOURCES.md` (every clip and every limit) and `NARRATION-AND-TIMELINE.md`.
+  The MP4s are not committed because of their size. The generator source is committed in
+  `presentation/video/src/`.
+
+### Did not work
+
+- **AI-generated people.** Gamma's `generate_image` returned 403 "Insufficient credits remaining"
+  (free plan, 0 credits). Figma Weave video models returned "You haven't linked your Figma account to
+  Weave yet."
+- **Pexels and Pixabay** return 403 to scripted fetches. Mixkit worked.
+- **First full render.** One process ran at 0.5 s per frame. Four parallel segments then failed with
+  `numpy.core._exceptions._ArrayMemoryError` on a 7.7 GB machine with 0.4 GB free. The cause was the
+  sprite cache: animated letter-spacing and growing highlight boxes cached a new sprite every frame. A
+  byte-bounded LRU fixed it. The partial segments were still valid (ffmpeg finalises on stdin EOF), so
+  only the missing frame ranges were re-rendered.
+- **Invisible overlays in the first previews.** The fade-out term `prog(t, b, b - fo)` reversed the
+  interval, and `prog` returns a step for b < a, so every box, callout, pop-out and caption had zero
+  opacity. Fixed before the full render.
+- **Wrong dashboard capture.** The `d01_dashboard` capture was actually the Workspace, because the app
+  reopens the last section. The earlier real Dashboard capture replaced it.
+
+### Learned
+
+- Render a dozen preview frames before any long render. That caught three defects, each of which would
+  have cost a full re-render.
+
+### Left open
+
+- The full cut is 3:44 and the deck's demo slot is 90 s, so use the 90 s cut there.
+- The stock scenes are not South African sites. Location-specific footage needs Weave linked to Figma,
+  plus approval to spend credits.
+
+## 2026-09-30 — REEFPRINT design-skill setup — `3d382a3`
+
+### Attempted
+
+Add reusable UI implementation guidance to the REEFPRINT project for the planned responsive web app, using the supplied white dashboard and dark field-capture mockups as visual references.
+
+### Worked
+
+- Installed the upstream DaisyUI Codex skill into `.agents/skills/daisyui` with the documented `npx skills add saadeghi/daisyui --agent codex --yes` command; the installer reported one skill installed and no security alerts.
+- Added `skills-lock.json` to pin the DaisyUI source and content hash.
+- Verified Impeccable and Frontend Design already exist in the user's shared skill directory.
+- Kept scope as design guidance only: the current dashboard is Streamlit/Jinja and does not use Tailwind, so DaisyUI is for the planned web-app UI rather than an unrelated dependency added to the prototype.
+
+### Did not work
+
+- TypeUI is distributed as an authenticated remote MCP connection, not a downloadable local skill. Its documented `codex mcp add typeui --url https://mcp.typeui.sh/mcp` could not be verified because this shell's Codex CLI fails with `failed to resolve CODEX_HOME: Could not find home directory`.
+- OpenDesign's Codex plugin requires its desktop application version 0.17.0 or newer. No installation was found at the standard Windows application paths; per its installer instructions, the desktop installer step awaits user confirmation.
+
+### Left open
+
+Connect TypeUI after the Codex CLI can access its configuration, then install and verify OpenDesign's local MCP/plugin only after its desktop-app prerequisite is installed. The supplied mockups remain the visual acceptance references for future UI work.
+
+---
+
+## 2026-09-30 — grounded model improvement and live product specification
+
+### Attempted
+
+Turn the user's accuracy, live UI, professional reports, plant demonstration and 3D requirements into an implementable sequence aligned with the judging brief.
+
+### Worked
+
+- Inspected KHANYA main `57a6b665a5370e5d8ba49a16ffaf95451538bc1e`, including the accuracy report, trainer/sampler, Stitch-derived Jinja dashboard and OPC UA regrind command module.
+- Identified `random.Random(None)` as an explicit training reproducibility defect and balanced-patch checkpoint selection as a validation/deployment mismatch. The new specification makes deterministic sampling/resume and whole-section validation the first ticket.
+- Added `docs/14-model-ui-report-and-spatial-build-spec.md`: staged run budgets and promotion gates; UI/data/state contracts; separate sample/accuracy reports; approved and acknowledged simulated plant commands; honest assay/geographical 3D boundaries; Figma/reference design workflow, acceptance tests and implementation prompt.
+- Verified primary references for Petroscope, ZEISS, Leapfrog, QGIS, Carbon Figma kits, Supabase Realtime, OpenSeadragon and deck.gl. Read the existing dashboard's explicit removal of fabricated accreditation, recovery and plant-connection claims; retain those corrections in the PWA.
+
+### Did not work
+
+- Original generated mockup images were not located in the searched workspace/repo paths. The existing Stitch-derived template is available as the initial visual reference. The public Figma preview did not fetch; no Figma design was inspected or modified. The UI Skills catalogue CLI stalled and was stopped; local baseline UI guidance was read.
+- No training run or deployed UI is claimed from this planning change. Better accuracy remains an experimental outcome, subject to frozen validation gates.
+
+### Left open
+
+Implement P0/U0 in the application history, then train the staged candidates and complete one real inference→reviewed simulator action→report path. Exact mockup comparison needs the original assets or Figma node URLs. External South African specimens and plant trials are still needed for generalisation and impact claims.
+
+---
+
+## 2026-09-30 — cloud CLI and FastAPI connection handoff
+
+### Attempted
+
+Translate the chosen Supabase + Cloudflare Pages + FastAPI stack into exact login, Git integration, local API and optional Azure steps without assuming a cloud deployment already exists.
+
+### Worked
+
+- Added `docs/13-cloudflare-azure-fastapi-connection-2026-09-30.md` with the service boundaries, CLI commands, Git-integrated Pages setup, configuration names, acceptance checks and official docs.
+- Checked the local toolchain: Node 24.18.0, npm 11.16.0, Python 3.11.9, uv 0.9.30 and Azure CLI are present. The application folders and Wrangler are not present in this checkout.
+
+### Did not work
+
+- The restricted Codex shell cannot read the user's existing Azure CLI profile (`PermissionError` on `.azure/azureProfile.json`). A clean temporary Azure config says `Please run 'az login'`; this is not evidence about the normal terminal's login state. No Cloudflare or Azure resources were created.
+
+### Left open
+
+Confirm the intended Cloudflare account and Azure student subscription in the user's normal terminal, create the KHANYA app skeleton after the pitch freeze, then test a real authenticated fixture path locally before any optional paid API deployment.
+
+---
+
+## 2026-09-30 — product stack and phase-identification implementation handoff
+
+### Attempted
+
+Turn the user's Supabase + Cloudflare Pages + FastAPI decision into a build sequence that Luna or
+Claude Sonnet can execute, while preserving the 1 October evidence-backed demo and the separate
+REEFPRINT/KHANYA histories.
+
+### Worked
+
+- Added `docs/12-pwa-phase-identification-roadmap-2026-09-30.md` with the service boundaries,
+  sample/inference API contracts, phone and desktop user journeys, UI states, mineral experiment
+  queue, acceptance gates, source anchors and a copy-paste implementation prompt.
+- Checked the existing local handover and S2 baseline. The private Kaggle retrain reports 0.4543
+  pooled five-class mIoU and misses magnetite; the stronger KHANYA checkpoint's merged accuracy
+  report remains separate. The plan requires model/report hashes and does not transfer one run's
+  scores to another.
+
+### Did not work
+
+- No cloud account or model service was provisioned in this planning step; the new stack has no
+  observed deployment or latency result yet. The current local checkout is the REEFPRINT
+  measurement history, whereas the application code is on KHANYA's separate history.
+
+### Left open
+
+Implement the authenticated app skeleton and real pinned-checkpoint path on KHANYA after the pitch
+freeze; run the reproducibility and rare-class experiments on training/validation data; acquire
+independent South African expert-labelled sections before any site-performance claim.
+
+---
+
 ## 2026-09-15 — session 39 · found a real J0/J1/J2 blocker before it could burn a GPU-hour
 
 ### Attempted
@@ -3837,3 +4333,47 @@ have already been killed here for a stated reason.
 ### Left open
 
 Everything past `polarim`, `acquire` and `viz`. Deliberately — the red test list is the backlog.
+
+## 2026-09-30 — Application work preserved separately
+Responsive React/FastAPI application implemented in attached KHANYA worktree, pushed as 63041cb to codex/launch-live-demo / PR15. Physics history is unchanged. Restart instructions: handover/START-HERE-WORKBENCH-2026-09-30.md. Recovery source snapshot: handover/workbench-source-2026-09-30/. Actual model runs and remaining limits are documented there.
+
+
+## 2026-10-01 — actual tile predictions, spatial tools, voice and evidence assistant
+
+Real inference telemetry replaces the decorative scanning animation. Completed predictor callbacks publish a source-aligned transparent PNG, native analysed-pixel counts, phase fractions, actual completed boxes and coverage. Unknown pixels never enter the progress denominator. The last completed field is outlined; the neural network computes a field/tile together, not a visible pixel-by-pixel reasoning sequence. Full-mode overlapping previews remain preliminary until final logit blending.
+
+The white workbench now has refined typography, phone navigation, a prediction/original comparison slider and a research companion. The local helper explains server-resolved selected evidence, labels predicted/measured/simulated facts and proposes four bounded click-approved tasks. It does not pretend to be an LLM. Optional AIMLAPI/Featherless/Hugging Face/Ollama integrations require server-side configuration and explicit context sharing. No real provider key or live LLM call has been verified. Voice notes offer permission-based browser dictation, editable text drafts and a local recording/download fallback; real microphone transcription remains to be checked in a supported browser.
+
+Spatial now includes an offline metric plan map, scale bar, coordinate query, pan/zoom/fit, corridor-filtered sections, 3D transparency and layer controls. Imported survey points can link to sample images; synthetic geometry is opt-in and labelled. These tools do not reconstruct an orebody from a micrograph. Survey imports remain account-scoped browser-local; notes/results use the existing authenticated backend and private Supabase storage.
+
+## Evidence and tests
+- 71 focused backend checks passed, including progress, source/result identity and tenant isolation.
+- All seven serial browser tests passed: real-count UI, assistant approval, voice draft flow, provider consent, grain selection, phone/offline layout and spatial tools.
+- TypeScript and production build passed. Five new spatial geometry checks passed in the delegated run.
+- Actual trained-model inference on publisher test_11 completed in 78.475 seconds on local CPU: six 512px fields, 18.184% source coverage, 55.352% uncalibrated confidence. Result bb0ce7f8188c4da5b07dc0297f7f657d. Live overlays and the assistant were captured from real inference, not mocked predictions. Controlled browser speech/provider fixtures are not real service proofs.
+- Actual screenshots and exported result are in Desktop REEFPRINT/handover: real-live-analysis-desktop.png, real-live-analysis-mobile.png, real-result-refined.png, real-assistant-evidence.png, real-progress-result.json.
+
+## Model and deliverables
+Active checkpoint remains fb78727d… DeepLabV3/ResNet-50, with recorded 12-section mIoU0.4543 / pixel accuracy0.7716 and magnetiteIoU0. The stronger approved de7135a9… weights have not been recovered on this host. No new test accuracy or recovery improvement is claimed. The guarded Process simulator continues to HOLD the unapproved live model. A separate OPC UA engineering fixture demonstrated0→1; it must not be represented as this live model's successful plant actuation. The three-phase demo and checkpoint-bound report remain available, with limits visible.
+
+Both extended-dice and small-grain-dice Kaggle runs changed from RUNNING to COMPLETE during this release. Their validation audit is a separate report; do not deploy weights or infer held-out test improvement from validation alone.
+
+
+Continuation: LIVE-UI-RELEASE-2026-10-01.md. Public restart and GitHub publication are verified separately below.
+
+
+### Publication and live verification — 1 October 2026
+Implementation commit0e2255c and merged release93729da pushed to KHANYA PR15. Collaborator commits3e68f12..a719efe retained, including model warmup and measured per-stage timing. Actual preview/count logic remains the common source for provisional phase aliases; unknown pixels stay excluded. Production bundle regenerated after resolving source/generated conflicts.
+
+Post-merge:72 backend checks passed, two relevant desktop/mobile browser rechecks passed; earlier complete seven-browser suite passed. Public/health returned200, cloud_sync/auth_required true and warmed model_ready true; signed-out samples/assistant returned401. Existing user signed-in browser visibly loaded new UI and completed fresh public six-field inference in92.2s, then opened the evidence companion. Local8510 and public8766 restarted. Current process IDs:24020(local),5340(public); exec sessions43430 and18268. QA8770 is separate and can be stopped after use. Temporary tunnel remains the approved existing address.
+
+GitHub workbench API, offline frontend and security checks passed. Base tests initially failed collection because one new API fixture imported optional FastAPI unconditionally; importorskip added to match other API fixtures, while dedicated API CI continues exercising it. CI after that correction must be checked; do not imply all checks are green until observed.
+
+Both extended training runs audited COMPLETE. Native validation foregroundIoU0.6467023, allfiveIoU0.7036325, magnetiteIoU0.4094622/recall0.6948409. Smallgrain is weaker and regresses pentlandite. These are validation scores from selected checkpoints, not test accuracy or production gains. Native epoch12 chosen before a one-off test evaluation; the evaluation-only notebook is being reviewed/launched separately. Active hosted weights/report/gates are unchanged. See reports/EXTENDED-TRAINING-AUDIT-2026-09-30.md.
+
+Sibusiso's eight open PR heads remain unchanged; author acknowledges retired Streamlit UI on19–22. Existing correctness and stacked-base review blockers remain; no duplicate comments or unsafe merge performed. See reports/PR-AUDIT-2026-10-01.md. Optional provider model options are documented; no key or real microphone/LLM call has been verified. An additional provider metadata check hit the approval service usage limit and was not bypassed.
+
+
+## 1 October2026 — candidate test evaluation completed; assistant reading fix
+Single private native-selected-test-20261001-v1 evaluation completed; two independent audits matched all12section matrices,103,795,344pixels, every score and source/checkpoint/protocol identity. Candidate42646cfa testmIoU0.632038, foreground0.577958, accuracy0.855093. MagnetiteIoU0.247730/recall0.893240/precision0.255289 exposes2,140,808FP; historical common-phase regression remains. Candidate not deployed or control-approved. Reports/reproduction artifacts copied, no images/weights/secrets. Completed training monitor deleted. Read CONTINUE-REEFPRINT-2026-10-01.md for facts and limits.
+AllfourCIchecks passed9674b29 and2b763b2. The assistant now retains readable answer beginnings via internal conversation scrolling; three focused browser checks andproductionbuild passed. Fresh signed-in public UI returned the active model's correct report; actual screenshot saved privately onDesktop. Existingtemporarytunnel/auth scope preserved. Candidate report runtime/UI verification will be recorded after completion.

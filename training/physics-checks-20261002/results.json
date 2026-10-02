@@ -1,0 +1,72 @@
+{
+ "note": "Physical-possibility checks for the claims, computed (code does the arithmetic) with labelled assumptions.",
+ "K1_kinetics_vs_throughput": {
+  "fit": {
+   "Rf": 0.6597987939570134,
+   "kf_per_min": 4.493632306628207,
+   "Rs": 0.2756246736546122,
+   "ks_per_min": 1.3379878385293111,
+   "rmse": 0.0010990326596765057
+  },
+  "source": "presentation/deck-src/kinetics_test11.json (slide 16: Mintek kinetics framework applied to KHANYA test_11 liberation)",
+  "throughput_gain": 0.0193,
+  "rows": [
+   {
+    "residence_lab_equiv_min": 1.0,
+    "recovery": 0.8557,
+    "recovery_after_gain": 0.8532,
+    "recovery_loss_pp": 0.251
+   },
+   {
+    "residence_lab_equiv_min": 2.0,
+    "recovery": 0.9164,
+    "recovery_after_gain": 0.9154,
+    "recovery_loss_pp": 0.1
+   },
+   {
+    "residence_lab_equiv_min": 3.0,
+    "recovery": 0.9304,
+    "recovery_after_gain": 0.9301,
+    "recovery_loss_pp": 0.039
+   },
+   {
+    "residence_lab_equiv_min": 5.0,
+    "recovery": 0.9351,
+    "recovery_after_gain": 0.935,
+    "recovery_loss_pp": 0.005
+   },
+   {
+    "residence_lab_equiv_min": 7.0,
+    "recovery": 0.9354,
+    "recovery_after_gain": 0.9354,
+    "recovery_loss_pp": 0.0
+   },
+   {
+    "residence_lab_equiv_min": 10.0,
+    "recovery": 0.9354,
+    "recovery_after_gain": 0.9354,
+    "recovery_loss_pp": 0.0
+   }
+  ],
+  "reading": "near the plateau the recovery cost of +1.9% tonnes is negligible; on the steep part of the curve it is not. A plant must know where its cells sit; the advice must check flotation residence time before raising feed.",
+  "assumption": "ASSUMED lab-to-plant residence mapping; the curve is a modelled one (liberation classes x published rate constants), not a plant measurement"
+ },
+ "L1_load_curtailment": {
+  "regime": "Eskom mining curtailment at stage 6: 20% of contracted supply for 10 h (14:00-24:00) [S]",
+  "sim_gain_tonnes_belt_vs_blind_mean": -0.038182883676391215,
+  "sim_gain_p05_p95": [
+   -0.08216026235032055,
+   -0.000180827402492168
+  ],
+  "sim_gain_oracle_mean": -0.030395183520365115,
+  "day_capacity_lost_to_curtailment_pct": 8.33,
+  "assumptions": [
+   "ASSUMED: the mill is power-limited and curtailment cuts mill power by the full 20% (mines usually shed other loads first, which makes this an upper bound on the problem)",
+   "ASSUMED: stockpile/ROM reclaim can choose parcels (belt at reclaim, not only at mill feed) and parcels are of equal mass",
+   "ASSUMED: Bond energy proportional to Wi at fixed grind; 60 reclaimable parcels per day drawn from the 146 real ones (500 repeats)",
+   "Selection uses out-of-fold PREDICTED Wi; tonnes are computed with TRUE Wi"
+  ],
+  "verdict": "REJECTED as a tonnage claim",
+  "reading": "Re-ordering ore cannot create tonnes: over a cycle the energy needed for all the ore is fixed, so sending soft ore through the curtailed window only defers the hard ore (the simulation loses tonnes, and so does an oracle). REEFPRINT does NOT claim a curtailment throughput gain. Its real roles under curtailment: (1) set the feed for the reduced power from the hardness bound, so the grind holds when power drops; (2) forecast the tonnes the window will lose from the hardness of the ore about to be reclaimed, for production planning."
+ }
+}

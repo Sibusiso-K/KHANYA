@@ -1,0 +1,581 @@
+{
+ "version": "2026-10-01.1",
+ "targets": [
+  {
+   "id": "GEOMET:Cu rec",
+   "record": "GEOMET",
+   "analyte_type": "recovery_%",
+   "unit": "%",
+   "units_accepted": {
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "GEOMET:Mo rec",
+   "record": "GEOMET",
+   "analyte_type": "recovery_%",
+   "unit": "%",
+   "units_accepted": {
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "GEOMET:Lime cons",
+   "record": "GEOMET",
+   "analyte_type": "reagent_kg_per_t",
+   "unit": "kg/t",
+   "units_accepted": {
+    "kg/t": 1.0,
+    "g/t": 0.001
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "GEOMET:PH",
+   "record": "GEOMET",
+   "analyte_type": "ph",
+   "unit": "pH",
+   "units_accepted": {
+    "pH": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "GEOMET:WI",
+   "record": "GEOMET",
+   "analyte_type": "work_index_kWh_per_t",
+   "unit": "kWh/t",
+   "units_accepted": {
+    "kWh/t": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "MINERAL1:Actinolite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Albite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Andesina_An40",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Anhydrite/Gypsum",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Anorthite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Apatite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Biotite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Bornite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Bytownite_An80",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Calcite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Chalcopyrite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Chalcosite/Digenite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Chlorite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Covelite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Epidote",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Fe Oxides",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Fe-Clays",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:K-Feldspar",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Kaolinite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Labradorite_An60",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Molybdenite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Muscovite/Sericite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Oligoclasa_An20",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Other Amphibole",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Others",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Others Carbonates",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Others Ti Minerals",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Pyrite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Pyroxene",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Quartz",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Rutile",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Siderite",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "MINERAL1:Tourmaline",
+   "record": "MINERAL1",
+   "analyte_type": "mineral_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "from_sample"
+  },
+  {
+   "id": "BUSHVELD:Pt_ICP_ppm",
+   "record": "BUSHVELD",
+   "analyte_type": "element_g_per_t",
+   "unit": "g/t",
+   "units_accepted": {
+    "g/t": 1.0,
+    "ppm": 1.0,
+    "ppb": 0.001
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "BUSHVELD:Pd_ICP_ppm",
+   "record": "BUSHVELD",
+   "analyte_type": "element_g_per_t",
+   "unit": "g/t",
+   "units_accepted": {
+    "g/t": 1.0,
+    "ppm": 1.0,
+    "ppb": 0.001
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "BUSHVELD:Rh_ICP_ppm",
+   "record": "BUSHVELD",
+   "analyte_type": "element_g_per_t",
+   "unit": "g/t",
+   "units_accepted": {
+    "g/t": 1.0,
+    "ppm": 1.0,
+    "ppb": 0.001
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "BUSHVELD:4E_ppm",
+   "record": "BUSHVELD",
+   "analyte_type": "element_g_per_t",
+   "unit": "g/t",
+   "units_accepted": {
+    "g/t": 1.0,
+    "ppm": 1.0,
+    "ppb": 0.001
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "BUSHVELD:Cr2O3_%",
+   "record": "BUSHVELD",
+   "analyte_type": "oxide_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "BUSHVELD:FeO_%",
+   "record": "BUSHVELD",
+   "analyte_type": "oxide_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "BUSHVELD:SiO2_%",
+   "record": "BUSHVELD",
+   "analyte_type": "oxide_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "BUSHVELD:MgO_%",
+   "record": "BUSHVELD",
+   "analyte_type": "oxide_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "BUSHVELD:Al2O3_%",
+   "record": "BUSHVELD",
+   "analyte_type": "oxide_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  },
+  {
+   "id": "BUSHVELD:CaO_%",
+   "record": "BUSHVELD",
+   "analyte_type": "oxide_wt%",
+   "unit": "wt%",
+   "units_accepted": {
+    "wt%": 1.0,
+    "%": 1.0
+   },
+   "basis": "dry_mass",
+   "size_fraction": "none"
+  }
+ ]
+}

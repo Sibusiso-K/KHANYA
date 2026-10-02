@@ -1,0 +1,2271 @@
+{
+  "run_id": "20261001-s2-fcn-seed42-native-ensemble-v1",
+  "fixed_ensemble_weights": [
+    0.5,
+    0.5
+  ],
+  "calibration_fitted": false,
+  "validation_image_ids": [
+    "train_06",
+    "train_21",
+    "train_13",
+    "train_10",
+    "train_23",
+    "train_27"
+  ],
+  "n_validation_sections": 6,
+  "test_evaluation_performed": false,
+  "test_metrics": null,
+  "automatic_deployment": false,
+  "reference_checkpoint_sha256": "42646cfafbeac5398386dba17f7ad3531ffcea572e6342cc4fcba42ed0b44b3b",
+  "candidate_checkpoint_sha256": "95b316cac38f77b306e191527868a7a07d0e181b5011048e840d087f310238e9",
+  "elapsed_validation_comparison_seconds": 181.6061503640003,
+  "models": {
+    "candidate": {
+      "iou_per_class": [
+        0.9400096296935383,
+        0.7133148423875846,
+        0.36614844387457746,
+        0.8804457744561838,
+        0.38290980829292637
+      ],
+      "mean_iou": 0.6565656997409621,
+      "pixel_accuracy": 0.9081703896082275,
+      "tp_per_class": [
+        22814750,
+        6339652,
+        50259,
+        15890251,
+        2037017
+      ],
+      "fp_per_class": [
+        503755,
+        2093308,
+        32014,
+        1595175,
+        541491
+      ],
+      "fn_per_class": [
+        952257,
+        454633,
+        54991,
+        562535,
+        2741327
+      ],
+      "recall_per_class": [
+        0.9599336592950051,
+        0.9330859685750598,
+        0.47752019002375296,
+        0.9658091340882936,
+        0.42630187361981475
+      ],
+      "precision_per_class": [
+        0.9783967711480646,
+        0.7517706712708231,
+        0.6108808479087915,
+        0.9087711674854247,
+        0.7899983246125278
+      ],
+      "foreground_macro_iou": 0.585704717252818,
+      "confusion_matrix": [
+        [
+          22814750,
+          557978,
+          18401,
+          301048,
+          74830
+        ],
+        [
+          110218,
+          6339652,
+          545,
+          144915,
+          198955
+        ],
+        [
+          50746,
+          401,
+          50259,
+          3055,
+          789
+        ],
+        [
+          127661,
+          157738,
+          10219,
+          15890251,
+          266917
+        ],
+        [
+          215130,
+          1377191,
+          2849,
+          1146157,
+          2037017
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        23767007,
+        6794285,
+        105250,
+        16452786,
+        4778344
+      ],
+      "per_section": {
+        "train_06": {
+          "iou_per_class": [
+            0.9726471538103089,
+            0.7791352621028006,
+            0.0,
+            0.8224904236605455,
+            0.5551227571255292
+          ],
+          "mean_iou": 0.6258791193398368,
+          "pixel_accuracy": 0.9469643262611086,
+          "tp_per_class": [
+            5984269,
+            1066090,
+            0,
+            800474,
+            340041
+          ],
+          "fp_per_class": [
+            41268,
+            282905,
+            1709,
+            44763,
+            88093
+          ],
+          "fn_per_class": [
+            127022,
+            19304,
+            0,
+            127995,
+            184417
+          ],
+          "recall_per_class": [
+            0.9792151936472997,
+            0.982214753352239,
+            null,
+            0.8621440241946688,
+            0.6483665040861232
+          ],
+          "precision_per_class": [
+            0.9931511498477231,
+            0.7902846192906571,
+            0.0,
+            0.9470408891234057,
+            0.7942396539401215
+          ],
+          "foreground_macro_iou": 0.5391871107222188,
+          "confusion_matrix": [
+            [
+              5984269,
+              90293,
+              687,
+              25484,
+              10558
+            ],
+            [
+              14561,
+              1066090,
+              3,
+              596,
+              4144
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              17026,
+              36588,
+              990,
+              800474,
+              73391
+            ],
+            [
+              9681,
+              156024,
+              29,
+              18683,
+              340041
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            6111291,
+            1085394,
+            0,
+            928469,
+            524458
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.767500982999991,
+            "reference_forward_seconds": 6.027043121001043,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 314712
+        },
+        "train_10": {
+          "iou_per_class": [
+            0.955655794141923,
+            0.8602166558572455,
+            null,
+            0.8749721454295637,
+            0.4914219876486993
+          ],
+          "mean_iou": 0.7955666457693579,
+          "pixel_accuracy": 0.9393940444958687,
+          "tp_per_class": [
+            4469239,
+            2453725,
+            0,
+            899173,
+            303257
+          ],
+          "fp_per_class": [
+            89689,
+            267209,
+            0,
+            21998,
+            145322
+          ],
+          "fn_per_class": [
+            117692,
+            131516,
+            0,
+            106488,
+            168522
+          ],
+          "recall_per_class": [
+            0.9743418856747572,
+            0.9491281470470257,
+            null,
+            0.8941114351655279,
+            0.6427946135796634
+          ],
+          "precision_per_class": [
+            0.9803267347060537,
+            0.9017951188819722,
+            null,
+            0.9761195261248997,
+            0.676039226089496
+          ],
+          "foreground_macro_iou": 0.7422035963118362,
+          "confusion_matrix": [
+            [
+              4469239,
+              96630,
+              0,
+              6876,
+              14186
+            ],
+            [
+              33577,
+              2453725,
+              0,
+              903,
+              97036
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              10202,
+              62186,
+              0,
+              899173,
+              34100
+            ],
+            [
+              45910,
+              108393,
+              0,
+              14219,
+              303257
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            4586931,
+            2585241,
+            0,
+            1005661,
+            471779
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.603043217002778,
+            "reference_forward_seconds": 5.995328191998851,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 514121
+        },
+        "train_13": {
+          "iou_per_class": [
+            0.9757711337256624,
+            0.9123591417640342,
+            0.0,
+            0.9490534847566787,
+            0.34539944439767656
+          ],
+          "mean_iou": 0.6365166409288104,
+          "pixel_accuracy": 0.978136360336163,
+          "tp_per_class": [
+            5934279,
+            1449423,
+            0,
+            1060386,
+            16412
+          ],
+          "fp_per_class": [
+            43994,
+            108963,
+            3615,
+            22448,
+            10092
+          ],
+          "fn_per_class": [
+            103357,
+            30268,
+            0,
+            34475,
+            21012
+          ],
+          "recall_per_class": [
+            0.9828812137730728,
+            0.9795443778464558,
+            null,
+            0.968511984626359,
+            0.43854211201368104
+          ],
+          "precision_per_class": [
+            0.9926410185684059,
+            0.9300795823371103,
+            0.0,
+            0.9792692139330682,
+            0.6192272864473287
+          ],
+          "foreground_macro_iou": 0.5517030177295974,
+          "confusion_matrix": [
+            [
+              5934279,
+              86074,
+              71,
+              15145,
+              2067
+            ],
+            [
+              26444,
+              1449423,
+              0,
+              898,
+              2926
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              11391,
+              14441,
+              3544,
+              1060386,
+              5099
+            ],
+            [
+              6159,
+              8448,
+              0,
+              6405,
+              16412
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            6037636,
+            1479691,
+            0,
+            1094861,
+            37424
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.5977966649961672,
+            "reference_forward_seconds": 5.950404739000987,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 182727
+        },
+        "train_21": {
+          "iou_per_class": [
+            0.7197623474391915,
+            0.5228022352460133,
+            0.38466664706631776,
+            0.8029963909304658,
+            0.4079747847132324
+          ],
+          "mean_iou": 0.5676404810790442,
+          "pixel_accuracy": 0.823400517849818,
+          "tp_per_class": [
+            591916,
+            115074,
+            39251,
+            5469793,
+            906061
+          ],
+          "fp_per_class": [
+            59172,
+            13699,
+            26395,
+            1230193,
+            198058
+          ],
+          "fn_per_class": [
+            171289,
+            91337,
+            36393,
+            111742,
+            1116756
+          ],
+          "recall_per_class": [
+            0.7755661978105489,
+            0.5574993580768467,
+            0.5188911215694569,
+            0.9799800592489342,
+            0.4479204001152848
+          ],
+          "precision_per_class": [
+            0.9091182758705428,
+            0.8936190039837544,
+            0.5979191420650154,
+            0.8163887208122524,
+            0.8206189731360478
+          ],
+          "foreground_macro_iou": 0.5296100144890074,
+          "confusion_matrix": [
+            [
+              591916,
+              7592,
+              17358,
+              120174,
+              26165
+            ],
+            [
+              751,
+              115074,
+              542,
+              4919,
+              85125
+            ],
+            [
+              34185,
+              17,
+              39251,
+              2054,
+              137
+            ],
+            [
+              15525,
+              3911,
+              5675,
+              5469793,
+              86631
+            ],
+            [
+              8711,
+              2179,
+              2820,
+              1103046,
+              906061
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            763205,
+            206411,
+            75644,
+            5581535,
+            2022817
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.5942211470037364,
+            "reference_forward_seconds": 5.972424234996652,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 1151697
+        },
+        "train_23": {
+          "iou_per_class": [
+            0.9187629251739301,
+            0.44153341833371346,
+            0.36827138603593057,
+            0.0,
+            0.27024720732624175
+          ],
+          "mean_iou": 0.39976298737396315,
+          "pixel_accuracy": 0.813015774580409,
+          "tp_per_class": [
+            5421428,
+            1128589,
+            11008,
+            0,
+            471246
+          ],
+          "fp_per_class": [
+            189937,
+            1400108,
+            285,
+            5118,
+            21893
+          ],
+          "fn_per_class": [
+            289426,
+            27370,
+            18598,
+            31327,
+            1250620
+          ],
+          "recall_per_class": [
+            0.9493200141344885,
+            0.976322689645567,
+            0.3718165236776329,
+            0.0,
+            0.2736833179817709
+          ],
+          "precision_per_class": [
+            0.9661513731507396,
+            0.4463124684373019,
+            0.9747631276011689,
+            0.0,
+            0.9556048091917289
+          ],
+          "foreground_macro_iou": 0.27001300292397146,
+          "confusion_matrix": [
+            [
+              5421428,
+              270268,
+              285,
+              313,
+              18560
+            ],
+            [
+              26555,
+              1128589,
+              0,
+              0,
+              815
+            ],
+            [
+              16561,
+              384,
+              11008,
+              1001,
+              652
+            ],
+            [
+              2152,
+              27309,
+              0,
+              0,
+              1866
+            ],
+            [
+              144669,
+              1102147,
+              0,
+              3804,
+              471246
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            5710854,
+            1155959,
+            29606,
+            31327,
+            1721866
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.6064795770034834,
+            "reference_forward_seconds": 6.009317304997239,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 851924
+        },
+        "train_27": {
+          "iou_per_class": [
+            0.6495426242766397,
+            0.41968723200656927,
+            0.0,
+            0.947886108522236,
+            0.0
+          ],
+          "mean_iou": 0.40342319296108897,
+          "pixel_accuracy": 0.9481113141259978,
+          "tp_per_class": [
+            413619,
+            126751,
+            0,
+            7660425,
+            0
+          ],
+          "fp_per_class": [
+            79695,
+            20424,
+            10,
+            270655,
+            78033
+          ],
+          "fn_per_class": [
+            143471,
+            154838,
+            0,
+            150508,
+            0
+          ],
+          "recall_per_class": [
+            0.7424635157694448,
+            0.4501276683393172,
+            null,
+            0.9807311111233447,
+            null
+          ],
+          "precision_per_class": [
+            0.8384497500577726,
+            0.8612264311194157,
+            0.0,
+            0.9658741306354242,
+            0.0
+          ],
+          "foreground_macro_iou": 0.3418933351322013,
+          "confusion_matrix": [
+            [
+              413619,
+              7121,
+              0,
+              133056,
+              3294
+            ],
+            [
+              8330,
+              126751,
+              0,
+              137599,
+              8909
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              71365,
+              13303,
+              10,
+              7660425,
+              65830
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            557090,
+            281589,
+            0,
+            7810933,
+            0
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.5807012739978745,
+            "reference_forward_seconds": 5.964195771005507,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 255190
+        }
+      },
+      "probability_diagnostics": {
+        "n_pixels": 51897672,
+        "mean_nll": 0.28810506353003945,
+        "multiclass_brier": 0.1377088744261296,
+        "mean_predictive_entropy": 0.2752564977229709,
+        "ece_10_equal_width_bins": 0.009204744348869259,
+        "confidence_bins": [
+          {
+            "count": 0,
+            "confidence_sum": 0.0,
+            "correct_sum": 0
+          },
+          {
+            "count": 0,
+            "confidence_sum": 0.0,
+            "correct_sum": 0
+          },
+          {
+            "count": 16844,
+            "confidence_sum": 4792.129444643855,
+            "correct_sum": 5138
+          },
+          {
+            "count": 298264,
+            "confidence_sum": 108143.50825497508,
+            "correct_sum": 113436
+          },
+          {
+            "count": 934621,
+            "confidence_sum": 429607.1506125331,
+            "correct_sum": 428100
+          },
+          {
+            "count": 1660315,
+            "confidence_sum": 913629.1425679922,
+            "correct_sum": 873548
+          },
+          {
+            "count": 1811632,
+            "confidence_sum": 1179817.3530464768,
+            "correct_sum": 1094487
+          },
+          {
+            "count": 2340052,
+            "confidence_sum": 1762398.500929296,
+            "correct_sum": 1619993
+          },
+          {
+            "count": 4283229,
+            "confidence_sum": 3671907.2376909256,
+            "correct_sum": 3487294
+          },
+          {
+            "count": 40552715,
+            "confidence_sum": 39491803.944086134,
+            "correct_sum": 39509933
+          }
+        ],
+        "note": "Unfitted validation diagnostics; pixel bins are not independent samples and are not a guarantee of calibrated or out-of-domain accuracy."
+      }
+    },
+    "reference": {
+      "iou_per_class": [
+        0.9313533464131778,
+        0.7618357665518977,
+        0.40946222110243274,
+        0.8879552116472572,
+        0.527556101452088
+      ],
+      "mean_iou": 0.7036325294333706,
+      "pixel_accuracy": 0.9201153955422123,
+      "tp_per_class": [
+        23067172,
+        5926840,
+        73132,
+        15727080,
+        2957623
+      ],
+      "fp_per_class": [
+        1000362,
+        985397,
+        73355,
+        1258783,
+        827928
+      ],
+      "fn_per_class": [
+        699835,
+        867445,
+        32118,
+        725706,
+        1820721
+      ],
+      "recall_per_class": [
+        0.9705543487238423,
+        0.87232725739353,
+        0.6948408551068883,
+        0.9558916040116245,
+        0.6189640176596746
+      ],
+      "precision_per_class": [
+        0.9584352098557335,
+        0.8574416646882912,
+        0.4992388403066484,
+        0.9258923140967286,
+        0.7812926044319572
+      ],
+      "foreground_macro_iou": 0.6467023251884189,
+      "confusion_matrix": [
+        [
+          23067172,
+          198252,
+          63306,
+          297205,
+          141072
+        ],
+        [
+          429361,
+          5926840,
+          876,
+          199808,
+          237400
+        ],
+        [
+          25148,
+          0,
+          73132,
+          6684,
+          286
+        ],
+        [
+          157620,
+          111166,
+          7750,
+          15727080,
+          449170
+        ],
+        [
+          388233,
+          675979,
+          1423,
+          755086,
+          2957623
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        23767007,
+        6794285,
+        105250,
+        16452786,
+        4778344
+      ],
+      "per_section": {
+        "train_06": {
+          "iou_per_class": [
+            0.9734235208728884,
+            0.8327787055600243,
+            0.0,
+            0.7975242146496718,
+            0.5830630706555682
+          ],
+          "mean_iou": 0.6373579023476306,
+          "pixel_accuracy": 0.950668885494517,
+          "tp_per_class": [
+            6033901,
+            1019775,
+            0,
+            781809,
+            387432
+          ],
+          "fp_per_class": [
+            87348,
+            139151,
+            8351,
+            51826,
+            140019
+          ],
+          "fn_per_class": [
+            77390,
+            65619,
+            0,
+            146660,
+            137026
+          ],
+          "recall_per_class": [
+            0.987336554583966,
+            0.9395436127341776,
+            null,
+            0.8420410374498233,
+            0.7387283633770483
+          ],
+          "precision_per_class": [
+            0.9857303631987524,
+            0.8799310741151721,
+            0.0,
+            0.9378313050675655,
+            0.7345364782700194
+          ],
+          "foreground_macro_iou": 0.553341497716316,
+          "confusion_matrix": [
+            [
+              6033901,
+              28117,
+              7781,
+              27650,
+              13842
+            ],
+            [
+              47329,
+              1019775,
+              460,
+              3704,
+              14126
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              19323,
+              15205,
+              81,
+              781809,
+              112051
+            ],
+            [
+              20696,
+              95829,
+              29,
+              20472,
+              387432
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            6111291,
+            1085394,
+            0,
+            928469,
+            524458
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.767500982999991,
+            "reference_forward_seconds": 6.027043121001043,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 314712
+        },
+        "train_10": {
+          "iou_per_class": [
+            0.937373464928087,
+            0.8689578331680278,
+            0.0,
+            0.8312968654435716,
+            0.5578157646356515
+          ],
+          "mean_iou": 0.6390887856350675,
+          "pixel_accuracy": 0.9359146976766125,
+          "tp_per_class": [
+            4538797,
+            2343601,
+            0,
+            867164,
+            345737
+          ],
+          "fp_per_class": [
+            255106,
+            111784,
+            1912,
+            37485,
+            148026
+          ],
+          "fn_per_class": [
+            48134,
+            241640,
+            0,
+            138497,
+            126042
+          ],
+          "recall_per_class": [
+            0.9895062733666584,
+            0.906530957848804,
+            null,
+            0.8622826180989419,
+            0.7328367731501402
+          ],
+          "precision_per_class": [
+            0.94678532294041,
+            0.9544739419683674,
+            0.0,
+            0.9585640397546452,
+            0.700208399576315
+          ],
+          "foreground_macro_iou": 0.5645176158118127,
+          "confusion_matrix": [
+            [
+              4538797,
+              25796,
+              1912,
+              5605,
+              14821
+            ],
+            [
+              158519,
+              2343601,
+              0,
+              4393,
+              78728
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              21329,
+              62691,
+              0,
+              867164,
+              54477
+            ],
+            [
+              75258,
+              23297,
+              0,
+              27487,
+              345737
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            4586931,
+            2585241,
+            0,
+            1005661,
+            471779
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.603043217002778,
+            "reference_forward_seconds": 5.995328191998851,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 514121
+        },
+        "train_13": {
+          "iou_per_class": [
+            0.9703029689240669,
+            0.9028139350250969,
+            0.0,
+            0.9518218047889382,
+            0.351656281902348
+          ],
+          "mean_iou": 0.63531899812809,
+          "pixel_accuracy": 0.974847657906505,
+          "tp_per_class": [
+            5978448,
+            1369139,
+            0,
+            1064488,
+            19979
+          ],
+          "fp_per_class": [
+            123788,
+            36833,
+            14039,
+            23508,
+            19390
+          ],
+          "fn_per_class": [
+            59188,
+            110552,
+            0,
+            30373,
+            17445
+          ],
+          "recall_per_class": [
+            0.9901968253799998,
+            0.9252871038615494,
+            null,
+            0.9722585789428978,
+            0.5338552800342027
+          ],
+          "precision_per_class": [
+            0.9797143211111468,
+            0.9738024654829541,
+            0.0,
+            0.9783933029165548,
+            0.5074805049658361
+          ],
+          "foreground_macro_iou": 0.5515730054290957,
+          "confusion_matrix": [
+            [
+              5978448,
+              30608,
+              10125,
+              15299,
+              3156
+            ],
+            [
+              101040,
+              1369139,
+              29,
+              1682,
+              7801
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              13784,
+              4271,
+              3885,
+              1064488,
+              8433
+            ],
+            [
+              8964,
+              1954,
+              0,
+              6527,
+              19979
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            6037636,
+            1479691,
+            0,
+            1094861,
+            37424
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.5977966649961672,
+            "reference_forward_seconds": 5.950404739000987,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 182727
+        },
+        "train_21": {
+          "iou_per_class": [
+            0.6909076982383971,
+            0.3500366293304544,
+            0.4880474541158191,
+            0.8307902579135001,
+            0.5425076437587084
+          ],
+          "mean_iou": 0.5804579366713758,
+          "pixel_accuracy": 0.8470663192753617,
+          "tp_per_class": [
+            550223,
+            72627,
+            60309,
+            5317488,
+            1326148
+          ],
+          "fp_per_class": [
+            33172,
+            1073,
+            47928,
+            818983,
+            421661
+          ],
+          "fn_per_class": [
+            212982,
+            133784,
+            15335,
+            264047,
+            696669
+          ],
+          "recall_per_class": [
+            0.7209373628317425,
+            0.3518562479712806,
+            0.7972740732906773,
+            0.9526927628331633,
+            0.6555946484531225
+          ],
+          "precision_per_class": [
+            0.9431397252290472,
+            0.9854409769335143,
+            0.5571939355303639,
+            0.8665384387867229,
+            0.7587488106537957
+          ],
+          "foreground_macro_iou": 0.5528454962796205,
+          "confusion_matrix": [
+            [
+              550223,
+              1066,
+              42446,
+              116782,
+              52688
+            ],
+            [
+              1637,
+              72627,
+              387,
+              10164,
+              121596
+            ],
+            [
+              11788,
+              0,
+              60309,
+              3261,
+              286
+            ],
+            [
+              13172,
+              0,
+              3784,
+              5317488,
+              247091
+            ],
+            [
+              6575,
+              7,
+              1311,
+              688776,
+              1326148
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            763205,
+            206411,
+            75644,
+            5581535,
+            2022817
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.5942211470037364,
+            "reference_forward_seconds": 5.972424234996652,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 1151697
+        },
+        "train_23": {
+          "iou_per_class": [
+            0.9069214327738544,
+            0.5675768454847177,
+            0.41726595294653607,
+            0.05462149902201507,
+            0.4932243402632321
+          ],
+          "mean_iou": 0.48792201409807107,
+          "pixel_accuracy": 0.8651917565782141,
+          "tp_per_class": [
+            5543209,
+            1046589,
+            12823,
+            2625,
+            878327
+          ],
+          "fp_per_class": [
+            401262,
+            688001,
+            1125,
+            16731,
+            58920
+          ],
+          "fn_per_class": [
+            167645,
+            109370,
+            16783,
+            28702,
+            843539
+          ],
+          "recall_per_class": [
+            0.9706444955518037,
+            0.90538591766663,
+            0.43312166452746065,
+            0.08379353273534013,
+            0.510101831385253
+          ],
+          "precision_per_class": [
+            0.9324982828581383,
+            0.6033639073210384,
+            0.9193432750215085,
+            0.1356168629882207,
+            0.9371350348414025
+          ],
+          "foreground_macro_iou": 0.3831721594291252,
+          "confusion_matrix": [
+            [
+              5543209,
+              110908,
+              1042,
+              807,
+              54888
+            ],
+            [
+              105926,
+              1046589,
+              0,
+              677,
+              2767
+            ],
+            [
+              13360,
+              0,
+              12823,
+              3423,
+              0
+            ],
+            [
+              5236,
+              22201,
+              0,
+              2625,
+              1265
+            ],
+            [
+              276740,
+              554892,
+              83,
+              11824,
+              878327
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            5710854,
+            1155959,
+            29606,
+            31327,
+            1721866
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.6064795770034834,
+            "reference_forward_seconds": 6.009317304997239,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 851924
+        },
+        "train_27": {
+          "iou_per_class": [
+            0.6434370318038418,
+            0.2588680103672659,
+            null,
+            0.9473380910145727,
+            0.0
+          ],
+          "mean_iou": 0.4624107832964201,
+          "pixel_accuracy": 0.9470030563220639,
+          "tp_per_class": [
+            422594,
+            75109,
+            0,
+            7693506,
+            0
+          ],
+          "fp_per_class": [
+            99686,
+            8555,
+            0,
+            310250,
+            39912
+          ],
+          "fn_per_class": [
+            134496,
+            206480,
+            0,
+            117427,
+            0
+          ],
+          "recall_per_class": [
+            0.7585740185607353,
+            0.26673272038325363,
+            null,
+            0.9849663286063265,
+            null
+          ],
+          "precision_per_class": [
+            0.8091330320900666,
+            0.8977457448842991,
+            null,
+            0.9612369492523261,
+            0.0
+          ],
+          "foreground_macro_iou": 0.4020687004606129,
+          "confusion_matrix": [
+            [
+              422594,
+              1757,
+              0,
+              131062,
+              1677
+            ],
+            [
+              14910,
+              75109,
+              0,
+              179188,
+              12382
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              84776,
+              6798,
+              0,
+              7693506,
+              25853
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            557090,
+            281589,
+            0,
+            7810933,
+            0
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.5807012739978745,
+            "reference_forward_seconds": 5.964195771005507,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 255190
+        }
+      },
+      "probability_diagnostics": {
+        "n_pixels": 51897672,
+        "mean_nll": 0.27878365339333466,
+        "multiclass_brier": 0.12796914344022614,
+        "mean_predictive_entropy": 0.4557975285641452,
+        "ece_10_equal_width_bins": 0.06234749614504314,
+        "confidence_bins": [
+          {
+            "count": 0,
+            "confidence_sum": 0.0,
+            "correct_sum": 0
+          },
+          {
+            "count": 0,
+            "confidence_sum": 0.0,
+            "correct_sum": 0
+          },
+          {
+            "count": 42656,
+            "confidence_sum": 12059.467774167657,
+            "correct_sum": 12909
+          },
+          {
+            "count": 583092,
+            "confidence_sum": 211058.60889863968,
+            "correct_sum": 236835
+          },
+          {
+            "count": 1636498,
+            "confidence_sum": 749442.112125963,
+            "correct_sum": 826122
+          },
+          {
+            "count": 2553946,
+            "confidence_sum": 1406169.3992581367,
+            "correct_sum": 1573921
+          },
+          {
+            "count": 3026928,
+            "confidence_sum": 1973993.3581689,
+            "correct_sum": 2296083
+          },
+          {
+            "count": 4653362,
+            "confidence_sum": 3512970.773575008,
+            "correct_sum": 4081847
+          },
+          {
+            "count": 9595944,
+            "confidence_sum": 8225025.297199726,
+            "correct_sum": 9189067
+          },
+          {
+            "count": 29805246,
+            "confidence_sum": 28425438.078042746,
+            "correct_sum": 29535063
+          }
+        ],
+        "note": "Unfitted validation diagnostics; pixel bins are not independent samples and are not a guarantee of calibrated or out-of-domain accuracy."
+      }
+    },
+    "equal_probability_ensemble": {
+      "iou_per_class": [
+        0.9403531129824209,
+        0.7424308903755359,
+        0.4395428509157285,
+        0.8874847004906541,
+        0.4455325903122012
+      ],
+      "mean_iou": 0.6910688290153081,
+      "pixel_accuracy": 0.9165428075463578,
+      "tp_per_class": [
+        22979031,
+        6230287,
+        64535,
+        15928831,
+        2363754
+      ],
+      "fp_per_class": [
+        669591,
+        1597455,
+        41573,
+        1495502,
+        527113
+      ],
+      "fn_per_class": [
+        787976,
+        563998,
+        40715,
+        523955,
+        2414590
+      ],
+      "recall_per_class": [
+        0.9668458043539097,
+        0.9169893520804617,
+        0.6131591448931116,
+        0.9681540257072572,
+        0.4946805839010335
+      ],
+      "precision_per_class": [
+        0.9716858343796945,
+        0.795923907558527,
+        0.6082010781467938,
+        0.914171635723445,
+        0.8176626596796047
+      ],
+      "foreground_macro_iou": 0.6287477580235299,
+      "confusion_matrix": [
+        [
+          22979031,
+          361785,
+          32304,
+          302025,
+          91862
+        ],
+        [
+          210411,
+          6230287,
+          694,
+          165791,
+          187102
+        ],
+        [
+          35875,
+          95,
+          64535,
+          4567,
+          178
+        ],
+        [
+          136194,
+          132876,
+          6914,
+          15928831,
+          247971
+        ],
+        [
+          287111,
+          1102699,
+          1661,
+          1023119,
+          2363754
+        ]
+      ],
+      "ground_truth_pixels_per_class": [
+        23767007,
+        6794285,
+        105250,
+        16452786,
+        4778344
+      ],
+      "per_section": {
+        "train_06": {
+          "iou_per_class": [
+            0.9757070520787005,
+            0.8122532656693622,
+            0.0,
+            0.8274801904020843,
+            0.5797690464319604
+          ],
+          "mean_iou": 0.6390419109164215,
+          "pixel_accuracy": 0.9523128898729792,
+          "tp_per_class": [
+            6015474,
+            1055091,
+            0,
+            806089,
+            360483
+          ],
+          "fp_per_class": [
+            53955,
+            213574,
+            1954,
+            45680,
+            97312
+          ],
+          "fn_per_class": [
+            95817,
+            30303,
+            0,
+            122380,
+            163975
+          ],
+          "recall_per_class": [
+            0.9843213160688961,
+            0.9720811060315424,
+            null,
+            0.8681916143673079,
+            0.6873438864503926
+          ],
+          "precision_per_class": [
+            0.9911103663952573,
+            0.8316545344909807,
+            0.0,
+            0.9463704361158952,
+            0.7874332397688922
+          ],
+          "foreground_macro_iou": 0.5548756256258517,
+          "confusion_matrix": [
+            [
+              6015474,
+              56784,
+              1740,
+              26186,
+              11107
+            ],
+            [
+              23036,
+              1055091,
+              185,
+              822,
+              6260
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              17721,
+              24698,
+              16,
+              806089,
+              79945
+            ],
+            [
+              13198,
+              132092,
+              13,
+              18672,
+              360483
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            6111291,
+            1085394,
+            0,
+            928469,
+            524458
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.767500982999991,
+            "reference_forward_seconds": 6.027043121001043,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 314712
+        },
+        "train_10": {
+          "iou_per_class": [
+            0.9524181887274487,
+            0.8802482648660145,
+            0.0,
+            0.8692344279321692,
+            0.5503166594654029
+          ],
+          "mean_iou": 0.650443508198207,
+          "pixel_accuracy": 0.9445775139971596,
+          "tp_per_class": [
+            4513846,
+            2433559,
+            0,
+            895494,
+            327330
+          ],
+          "fp_per_class": [
+            152422,
+            179387,
+            1,
+            24549,
+            123024
+          ],
+          "fn_per_class": [
+            73085,
+            151682,
+            0,
+            110167,
+            144449
+          ],
+          "recall_per_class": [
+            0.9840666885985423,
+            0.9413277137411947,
+            null,
+            0.890453144747584,
+            0.6938206236394583
+          ],
+          "precision_per_class": [
+            0.967335352362959,
+            0.9313468399270403,
+            0.0,
+            0.9733175514622686,
+            0.726828228460278
+          ],
+          "foreground_macro_iou": 0.5749498380658966,
+          "confusion_matrix": [
+            [
+              4513846,
+              53109,
+              1,
+              6152,
+              13823
+            ],
+            [
+              75505,
+              2433559,
+              0,
+              1124,
+              75053
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              15417,
+              60602,
+              0,
+              895494,
+              34148
+            ],
+            [
+              61500,
+              65676,
+              0,
+              17273,
+              327330
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            4586931,
+            2585241,
+            0,
+            1005661,
+            471779
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.603043217002778,
+            "reference_forward_seconds": 5.995328191998851,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 514121
+        },
+        "train_13": {
+          "iou_per_class": [
+            0.976316395213412,
+            0.9192245859469261,
+            0.0,
+            0.9515507187894524,
+            0.38531014249790446
+          ],
+          "mean_iou": 0.646480368489539,
+          "pixel_accuracy": 0.9793384951833678,
+          "tp_per_class": [
+            5963569,
+            1425448,
+            0,
+            1063494,
+            18387
+          ],
+          "fp_per_class": [
+            70598,
+            71016,
+            4022,
+            22782,
+            10296
+          ],
+          "fn_per_class": [
+            74067,
+            54243,
+            0,
+            31367,
+            19037
+          ],
+          "recall_per_class": [
+            0.987732450250396,
+            0.9633416706596174,
+            null,
+            0.9713507011392314,
+            0.4913157332193245
+          ],
+          "precision_per_class": [
+            0.9883002906614948,
+            0.9525441306974307,
+            0.0,
+            0.979027429493057,
+            0.6410417320363979
+          ],
+          "foreground_macro_iou": 0.5640213618085708,
+          "confusion_matrix": [
+            [
+              5963569,
+              56219,
+              345,
+              15256,
+              2247
+            ],
+            [
+              50288,
+              1425448,
+              0,
+              1055,
+              2900
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              12539,
+              10002,
+              3677,
+              1063494,
+              5149
+            ],
+            [
+              7771,
+              4795,
+              0,
+              6471,
+              18387
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            6037636,
+            1479691,
+            0,
+            1094861,
+            37424
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.5977966649961672,
+            "reference_forward_seconds": 5.950404739000987,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 182727
+        },
+        "train_21": {
+          "iou_per_class": [
+            0.714000558607206,
+            0.4902422626855287,
+            0.4728166726813425,
+            0.8176334922501873,
+            0.46116469165012464
+          ],
+          "mean_iou": 0.5911715355748778,
+          "pixel_accuracy": 0.8366119775083553,
+          "tp_per_class": [
+            575181,
+            104276,
+            52407,
+            5469520,
+            1034985
+          ],
+          "fp_per_class": [
+            42370,
+            6292,
+            35196,
+            1107917,
+            221468
+          ],
+          "fn_per_class": [
+            188024,
+            102135,
+            23237,
+            112015,
+            987832
+          ],
+          "recall_per_class": [
+            0.7536389305625618,
+            0.5051862546085237,
+            0.6928110623446672,
+            0.9799311479727351,
+            0.5116552807297942
+          ],
+          "precision_per_class": [
+            0.9313902819362287,
+            0.9430938427031329,
+            0.5982329372281772,
+            0.8315579457469529,
+            0.8237355476090232
+          ],
+          "foreground_macro_iou": 0.5604642798167958,
+          "confusion_matrix": [
+            [
+              575181,
+              4443,
+              29833,
+              121860,
+              31888
+            ],
+            [
+              883,
+              104276,
+              509,
+              5148,
+              95595
+            ],
+            [
+              20519,
+              12,
+              52407,
+              2528,
+              178
+            ],
+            [
+              13591,
+              1396,
+              3221,
+              5469520,
+              93807
+            ],
+            [
+              7377,
+              441,
+              1633,
+              978381,
+              1034985
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            763205,
+            206411,
+            75644,
+            5581535,
+            2022817
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.5942211470037364,
+            "reference_forward_seconds": 5.972424234996652,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 1151697
+        },
+        "train_23": {
+          "iou_per_class": [
+            0.9188917500330454,
+            0.48724096818341095,
+            0.40418582950076654,
+            0.001423785594639866,
+            0.3545555192338577
+          ],
+          "mean_iou": 0.4332595705091441,
+          "pixel_accuracy": 0.8361148453826599,
+          "tp_per_class": [
+            5491876,
+            1105445,
+            12128,
+            51,
+            622569
+          ],
+          "fp_per_class": [
+            265776,
+            1112826,
+            400,
+            4493,
+            34048
+          ],
+          "fn_per_class": [
+            218978,
+            50514,
+            17478,
+            31276,
+            1099297
+          ],
+          "recall_per_class": [
+            0.9616558224041448,
+            0.9563012182958046,
+            0.4096466932378572,
+            0.0016279886360008938,
+            0.36156646336009884
+          ],
+          "precision_per_class": [
+            0.9538395165251391,
+            0.49833631688824315,
+            0.9680715197956578,
+            0.011223591549295775,
+            0.9481463318799239
+          ],
+          "foreground_macro_iou": 0.31185152562816876,
+          "confusion_matrix": [
+            [
+              5491876,
+              187037,
+              385,
+              132,
+              31424
+            ],
+            [
+              49763,
+              1105445,
+              0,
+              0,
+              751
+            ],
+            [
+              15356,
+              83,
+              12128,
+              2039,
+              0
+            ],
+            [
+              3392,
+              26011,
+              0,
+              51,
+              1873
+            ],
+            [
+              197265,
+              899695,
+              15,
+              2322,
+              622569
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            5710854,
+            1155959,
+            29606,
+            31327,
+            1721866
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.6064795770034834,
+            "reference_forward_seconds": 6.009317304997239,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 851924
+        },
+        "train_27": {
+          "iou_per_class": [
+            0.6532280690816136,
+            0.3597511733440559,
+            null,
+            0.9497802373875666,
+            0.0
+          ],
+          "mean_iou": 0.490689869953309,
+          "pixel_accuracy": 0.9503011233336247,
+          "tp_per_class": [
+            419085,
+            106468,
+            0,
+            7694183,
+            0
+          ],
+          "fp_per_class": [
+            84470,
+            14360,
+            0,
+            290081,
+            40965
+          ],
+          "fn_per_class": [
+            138005,
+            175121,
+            0,
+            116750,
+            0
+          ],
+          "recall_per_class": [
+            0.7522752158538117,
+            0.37809715578378417,
+            null,
+            0.9850530019909274,
+            null
+          ],
+          "precision_per_class": [
+            0.8322526834208775,
+            0.8811533750455193,
+            null,
+            0.9636684107639727,
+            0.0
+          ],
+          "foreground_macro_iou": 0.4365104702438742,
+          "confusion_matrix": [
+            [
+              419085,
+              4193,
+              0,
+              132439,
+              1373
+            ],
+            [
+              10936,
+              106468,
+              0,
+              157642,
+              6543
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              73534,
+              10167,
+              0,
+              7694183,
+              33049
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "ground_truth_pixels_per_class": [
+            557090,
+            281589,
+            0,
+            7810933,
+            0
+          ],
+          "n_pixels": 8649612,
+          "timing": {
+            "candidate_forward_seconds": 3.5807012739978745,
+            "reference_forward_seconds": 5.964195771005507,
+            "tiles_per_model": 48,
+            "note": "Synchronized tile forwards including GPU-to-CPU logits transfer; not a complete application latency measurement."
+          },
+          "candidate_reference_disagreement_pixels": 255190
+        }
+      },
+      "probability_diagnostics": {
+        "n_pixels": 51897672,
+        "mean_nll": 0.25913308925835354,
+        "multiclass_brier": 0.12272035894661552,
+        "mean_predictive_entropy": 0.3876210505481975,
+        "ece_10_equal_width_bins": 0.03583719314200128,
+        "confidence_bins": [
+          {
+            "count": 0,
+            "confidence_sum": 0.0,
+            "correct_sum": 0
+          },
+          {
+            "count": 0,
+            "confidence_sum": 0.0,
+            "correct_sum": 0
+          },
+          {
+            "count": 24440,
+            "confidence_sum": 6937.530092269182,
+            "correct_sum": 7618
+          },
+          {
+            "count": 432891,
+            "confidence_sum": 157008.2072326541,
+            "correct_sum": 166285
+          },
+          {
+            "count": 1391676,
+            "confidence_sum": 639952.6250345707,
+            "correct_sum": 667892
+          },
+          {
+            "count": 2323019,
+            "confidence_sum": 1277844.9135728478,
+            "correct_sum": 1280923
+          },
+          {
+            "count": 2481114,
+            "confidence_sum": 1615373.6243773699,
+            "correct_sum": 1635440
+          },
+          {
+            "count": 3314561,
+            "confidence_sum": 2498416.482337177,
+            "correct_sum": 2677642
+          },
+          {
+            "count": 7427566,
+            "confidence_sum": 6380820.805323303,
+            "correct_sum": 6980207
+          },
+          {
+            "count": 34502405,
+            "confidence_sum": 33130216.916945577,
+            "correct_sum": 34150431
+          }
+        ],
+        "note": "Unfitted validation diagnostics; pixel bins are not independent samples and are not a guarantee of calibrated or out-of-domain accuracy."
+      }
+    }
+  },
+  "ood_detector_trained_or_validated": false,
+  "disagreement_is_validated_ood_gate": false,
+  "limitations": "Same six sections select checkpoints and diagnose ensemble; single new seed per architecture. No independent locality/OOD metadata or test-tuned routing. Fixed equal averaging is an exploratory diagnostic; it may worsen phase performance and roughly adds two model forward costs.",
+  "passes_predeclared_exploratory_validation_gate": false,
+  "gate_is_deployment_approval": false
+}

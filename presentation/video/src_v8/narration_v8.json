@@ -1,0 +1,19 @@
+[
+ ["n01", "Every shift, thousands of tonnes of ore leave the pit and head for the mill."],
+ ["n02", "Inside every load is a story: how hard it will be to grind, and where the metal is hiding."],
+ ["n03", "The people who run the plant have to read that story in minutes."],
+ ["n04", "But the answer comes from the lab. A fire assay takes one to three days."],
+ ["n05", "A full mineral analysis costs fifteen hundred dollars a sample, and takes days."],
+ ["n06", "So the plant is set blind. By the time the answer arrives, up to eighteen thousand tonnes have already gone through the mill."],
+ ["n07", "REEFPRINT changes the order. See the ore first. Then decide."],
+ ["n08", "A hyperspectral camera scans each parcel on the belt. The model predicts how hard it will be to grind, with an honest upper bound, in under a tenth of a second."],
+ ["n09", "That bound becomes a feed-rate proposal, inside limits the site has approved."],
+ ["n10", "The metallurgist has ninety seconds, the time it takes the ore to reach the mill. Approve, and it's done. Do nothing, and the safe setting applies by itself."],
+ ["n11", "Every decision is hash-chained and signed with post-quantum cryptography, so nobody can quietly rewrite what happened."],
+ ["n12", "In the lab, KHANYA reads a polished section in about eighty seconds: pyrrhotite, pentlandite and chalcopyrite, pixel by pixel."],
+ ["n13", "And every claim is tested against its physics. The ones that failed stay on the page."],
+ ["n14", "Replayed on a hundred and forty-six real samples, this policy moved one point nine percent more ore through the same mill, with no more overloads. Simulated, and waiting for a pilot."],
+ ["n15", "At one South African concentrator, a single recovery point is worth sixty-four to a hundred and fifty-three million rand a year, on assumed prices."],
+ ["n16", "Mintek's values ask us to do what we say we will do. So every number here carries its source."],
+ ["n17", "The next generation of metallurgists, from Rustenburg to Steelpoort, on a laptop or a phone, won't wait three days to know their ore. They'll read it on the belt."]
+]

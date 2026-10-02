@@ -71,3 +71,14 @@ desktop.ini
 #     git history outlives a visibility setting and the originality defence may
 #     yet require opening it. Regenerate from docs/ + submission/README-private.md.
 submission/
+
+# REEFPRINT secure server runtime data: database, keys, encrypted uploads (never commit)
+presentation/belt-monitor/data_secure/
+presentation/belt-monitor/data_test*/
+presentation/deck-src/stock_v8/
+presentation/video/src_v8/cap/
+presentation/video/src_v8/out/
+presentation/video/src_v8/vo/
+presentation/deck-src/gen_v8/
+presentation/video/src_v8/cap_b/
+presentation/video/src_v8/out_b/

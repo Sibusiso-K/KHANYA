@@ -1,0 +1,14 @@
+{
+  "id": "lethabomh14/reefprint-hidsag-showcase-hr",
+  "title": "reefprint-hidsag-showcase-hr",
+  "code_file": "export_hr.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": []
+}
