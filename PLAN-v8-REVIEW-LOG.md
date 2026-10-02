@@ -157,3 +157,72 @@ VERDICT: REVISE
 - **40** Scope is cut and phased (Phase 1 corrections are blocking). The **2D map is kept**: the user asked for mapping, real public-domain locations exist, and an SVG fallback bounds the cost. The 3D flowsheet, general reconciliation, automatic retraining and individual scoring are deferred. The three.js cube is optional, last.
 
 **Rejected:** none outright.
+
+
+### Between rounds 1 and 2 (07:43–08:50): Codex usage limit; work done in the interim (disclosed)
+
+Codex's round-2 resume failed at 07:43 with a usage limit (reset 08:51). Rather than idle, the following was done. **Round 2 reviews the plan and this code together.**
+
+**Phase 1: accepted, verified corrections** (commits e2829e2, d6793a6):
+- **Import.** A blank value is now refused (it used to become Number("") = 0). Timestamp and revision are kept and validated.
+- **Hashing.** Every shipped asset is hashed into `summary.json`.
+- **Economics.** Restated as net payable value per recovery point plus break-even across a capex/opex grid; E2 removed; cadence set to ASSUMED.
+- **Dossier advice table.** Rewritten as diagnostic prompts with a prerequisite for each row. The froth-depth direction was fixed and spirals restricted to size-appropriate streams.
+- **Value chain** (findings 17–19):
+  - "Same risk" withdrawn.
+  - The **CV+-style approximation failed** the pre-registered +3 pp non-inferiority test (upper bound +4.8 pp).
+  - The plan's stated fallback (D2) was then run: Kaggle `reefprint-hidsag-v8-model` recomputed v6 with **signed calibration scores**, reproducing v6's predictions exactly (max diff 0.0).
+  - With the **exact one-sided split-conformal bound**, the deployed policy gains +1.9% [+0.9, +2.9] and is non-inferior on overload: −2.1 pp, one-sided upper bound +1.4 pp.
+  - **This is a method switch after a failure, disclosed everywhere, and labelled provisional.** Codex: please judge whether that is acceptable or should be withdrawn.
+
+**Phase 3 evidence:**
+- **v8-model** (Kaggle, about 10 min):
+  - an exported deployable model that loads locally (sklearn 1.8.0);
+  - **92 ms median per parcel** (features + inference + OOD) on a 4-core Kaggle CPU;
+  - 159 ms on this laptop, first call.
+- **v8-features** (SPEC and the analysis script committed *before* output existed; commits 81e75fb and 4e34c04):
+  - **no hypothesis passes the gate**;
+  - H2 (Fe-OH + Mg-OH ↔ chlorite + biotite) has partial ρ +0.27 [+0.03, +0.49], Holm p 0.045, below the 0.30 minimum useful effect;
+  - the raw correlations are mostly fraction × line;
+  - a secondary aggregation's H4 "pass" has an unstable sign and is not claimed;
+  - **the belt sensor does not earn ≥3 phases; KHANYA carries that deliverable.**
+
+**Phase 4 docs:**
+- docs/18: installation design computed from the **SX25 datasheet [P]**. Line pitch 9–19 mm and cross-track 1.4–2.3 mm (parcel-level, not particle-level). Also the site acceptance sheet, edge cases and the pilot protocol.
+- docs/19: security by design.
+- docs/20: competitors, business, team and velocity.
+
+**Track S code, written before approval** (commit 830f8e4). It is the new user requirement; standard controls, low rework risk. Code is in `presentation/belt-monitor/secure/`, `app_server.py`, `manage.py` and `test_secure_server.py`:
+
+- **Authentication and access:**
+  - RBAC, deny by default;
+  - scrypt passwords;
+  - server-side sessions (token stored hashed);
+  - CSRF header;
+  - lockout and throttling;
+  - Host and Origin checks;
+  - strict CSP with no inline script;
+  - CLI-only admin.
+- **The decision record:**
+  - SQLite ledger, append-only by trigger;
+  - hash chain;
+  - **hybrid Ed25519 + ML-DSA-65 signed checkpoints** (pqcrypto);
+  - **X25519 + ML-KEM-768 sealed exports**.
+- **Uploads:**
+  - CSV and image ingestion, with EXIF stripped by re-encoding;
+  - AES-256-GCM at rest;
+  - guest expiry after 24 h.
+- **The guest sandbox:** a separate database **and separate signing keys**. A self-review caught that guests could have obtained production signatures; fixed before commit.
+- **Gates:**
+  - **17 security tests pass**;
+  - **Bandit: 0 issues** in 904 lines;
+  - **pip-audit found 9 known vulnerabilities in cryptography 46.0.6**, which was upgraded to 50.0.2 and is now clean.
+
+**Not done yet:**
+- the UI wiring (login overlay, upload panel, decision-record panel with deadline and envelope);
+- the Dockerfile and tunnel runbook;
+- the QR code;
+- the map;
+- the mass balance;
+- SBOM and toolchain updates for cryptography, pqcrypto, Pillow and qrcode;
+- the BUILDLOG.
