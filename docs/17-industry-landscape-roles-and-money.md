@@ -112,8 +112,8 @@ These are inputs to `economics.py`; the outputs are there, not here.
 | Northam group | F2026 4E basket **USD 2,338/oz** (F2025: 1,372); Zondereinde revenue per refined 4E oz **R47,156**; group cash cost **R27,376/4E oz** | [N] (Investing.com summary of Northam's results slides) |
 | Valterra Platinum | 2025 average realised basket **R32,611 per PGM oz** (USD 1,852); year-end USD 2,562; total production 3,200,600 oz; own-mined 2,060,300 oz (down, after flooding at Amandelbult) | [P] |
 | Valterra Mogalakwena | record 14.7 Mt milled; throughput-led, blending lower-grade stockpiles (a mill-constrained open pit) | [S] / [P] that tonnes rose |
-| Implats | 26.29 Mt milled FY2025 (managed); concentrator recovery about 89% Merensky, about 79% UG2 | [S] |
-| Comminution | about 53% of mine-site energy; grinding is 80–90% of comminution energy; about 1.8% of world electricity (CEEC) | [S] |
+| Implats | 26.29 Mt milled FY2025, managed [S]. "PGMs in Merensky ore are recovered at around 89%, while that in UG2 is recovered at around 79%"; ore is allocated to the UG2 plant "for higher chromium grade material" | recovery and routing: [P] (Impala fact sheet, Dec 2018) |
+| Comminution | "Comminution consumes 1–4% of all electrical power generated in the world (7–10% in Australia)"; "About 50% of minesite energy consumption is in comminution" | [P] (Napier-Munn, JKMRC/CEEC presentation) |
 | Eskom | direct-customer tariffs +12.74% from 1 April 2025 | [S] |
 
 **Edge case on throughput value.** Many underground PGM concentrators are **ore-supply-constrained**, so mill throughput gains only pay where the mill is the bottleneck: open pits with stockpiles (Mogalakwena), tailings retreatment, or toll ore. Where ore is the constraint, hardness knowledge pays through **energy per tonne and a stable grind**, which protects recovery, not through extra tonnes.
@@ -134,6 +134,12 @@ These are inputs to `economics.py`; the outputs are there, not here.
 The app's advice engine encodes this table as rules with sources. A model chooses *which* row applies (with an interval); a person approves the action.
 
 ---
+
+## 6b. Bushveld-specific leads found during review (not yet read)
+
+- **Hyperspectral on Bushveld PGE ore exists in the literature.** A 2025 *Minerals Engineering* study (S0892687525005102) combined VNIR (380–1000 nm), SWIR (1000–2500 nm) and LWIR (7.7–12.3 µm) hyperspectral imaging with portable XRF on Merensky Reef drill core. It was validated against reference methods for "real-time, high-throughput ore characterisation" **[S]**. This is the nearest published support for transferring the belt layer from Chilean Cu-Mo to Bushveld ore, and it should be read before the pitch.
+- **Mintek already operates the truth lab.** It runs SEM, EPMA, XRD, XRF, micro-XRF, 3D tomography, LA-ICP-MS, FTIR, MLA and QEMSCAN (Mining Weekly, 26 June 2026) **[S]**. In the pilot, Mintek is therefore the natural source of the QEMSCAN/MLA composites that retrain the model, and the business fit is a **service partnership**, not a competitor.
+- **Map data is available.** USGS MRDS (public domain) returns 178 PGE-coded sites with coordinates in the Bushveld bounding box (26–31°E, 23–26.5°S), including "Northam Platinum" (plant), "Rustenburg Mine", "Impala Platinum", "Amandelbult Mine", "Union Mine", "Western Platinum Mine" and "Kroondal Chrome Mine" **[P]** (WFS query, 2026-10-02). Its locations are historical database points, not survey-grade.
 
 ## 7. What we will not claim
 
