@@ -22,6 +22,34 @@ it is a press release.
 
 ---
 
+## 2026-10-02 (10:55–11:25) — secure UI, physics checks, robustness on unseen captures, resilience and compliance
+
+**Codex.** Round 2 was killed at the 33-minute background limit with no output. A ping showed the usage limit again (reset 13:54), so round 2 has not run. All work below is disclosed for it.
+
+**Secure UI** (commit 96bb149):
+- Sign-in or guest sandbox, and a role badge.
+- Server CSV and photo uploads: encrypted, EXIF stripped.
+- A **Decisions** view: a feed proposal from the exact one-sided bound inside a typed STIPULATED envelope, an arrival countdown, an immediate fallback, and the signed decision record.
+- **Tested end to end** on the real secure server: guest and metallurgist flows, chain verified, signed checkpoint downloaded.
+- Offline mode was regression-checked in every view and theme. One bug was found and fixed: the Decisions view was empty on a cold start.
+
+**Physics checks** (`training/physics-checks-20261002`):
+- **Kinetics:** +1.9% tonnes costs ≤ 0.25 pp recovery (1 lab-min), 0.04 pp at 3 min, and 0 on the plateau.
+- **Load-curtailment tonnage claim: tested and REJECTED.** Re-ordering ore gave −3.8%, and an oracle −3.0%; energy is conserved.
+
+**v9 robustness** (pre-registered; scored by fold models that never saw the parcel):
+- **A new capture of the same ore keeps the accuracy:** MAE ×1.00 [0.99, 1.01], so the gate passes.
+- A partial view, noise and ±15% light are tolerated.
+- **A one-band wavelength drift gives ×1.25 error, mostly unflagged**, so a hardware wavelength-calibration gate was added to docs/18.
+
+**Docs and app:**
+- docs/21: physical possibility, power cuts, kinetics, radiation (we do not detect it), waste and water, equipment and energy, SA compliance, scale-up, gaps, evidence.
+- The Evidence view gained a "physically possible" table; the Where view gained a power-loss card.
+
+**PR 15:** comment posted.
+
+**Learned.** A plausible money story (curtailment re-ordering) died to a two-line energy-conservation argument once it was simulated. It is worth simulating every "smart scheduling" claim before saying it.
+
 ## 2026-10-02 (08:00–08:55) — v8: industry research, ClauDex round 1, corrections, evidence runs, secure server
 
 **Plan and review:**
