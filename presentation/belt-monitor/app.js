@@ -540,7 +540,7 @@ function renderEvidence() {
   const mTop = Object.entries(M).sort((a, b) => b[1].r2_full_refit - a[1].r2_full_refit).slice(0, 10).map(([k, x]) => `<tr><td>${esc(nice(k))}</td><td class="num">${x.r2_full_refit.toFixed(2)}</td><td class="num">${x.r2_size_fraction_lookup != null ? x.r2_size_fraction_lookup.toFixed(2) : "—"}</td><td>${v(x.spectrum_adds_over_metadata)}</td><td>${v(x.hs_vs_rgb)}</td><td class="num">${Math.round(x.coverage * 100)}%</td></tr>`).join("");
   const mAdd = Object.values(M).filter(x => x.spectrum_adds_over_metadata === "better").length, mWorse = Object.values(M).filter(x => x.spectrum_adds_over_metadata === "worse").length;
   const ood = r => `${Math.round(R6[r].ood.refused * 100)}% refused, ${Math.round(R6[r].ood.borderline * 100)}% borderline in-domain; shifted-domain acceptance per fold ${R6[r].ood.shift_accept_le_p99_per_fold.map(a => a == null ? "—" : Math.round(a * 100) + "%").join(" / ")}`;
-  $("evidence").innerHTML = `
+  $("evidence").innerHTML = proofPanel() + `
   <div class="panel"><div class="sh"><div><h2>Belt (HIDSAG GEOMET, drill core → lab tests)</h2><p>${R6.GEOMET.n} samples, sample folds (no hole ids exist), deployable model trained on 70% of each outer-training set</p></div></div>
   <table><thead><tr><th>Lab test</th><th class="num">R² deployable</th><th class="num">R² full refit</th><th class="num">R² v5</th><th class="num">R² simulated RGB</th><th>vs strongest baseline</th><th>v6 vs v5</th><th>Hyperspectral vs RGB</th><th class="num">80% coverage</th><th>Drives decisions</th></tr></thead><tbody>${gRows}</tbody></table>
   <div class="copy"><p><b>Reading.</b> Only Bond work index (grinding hardness) clears the strongest baseline under every gate, so it is the only target the belt policy acts on. v6 is not more accurate than v5: v5's numbers were slightly flattered by a k-means leak the ClauDex review found. v6 is the honest version, with calibrated intervals. Hyperspectral is never worse than a simulated colour camera and is better on ${Object.values(G).filter(x => x.hs_vs_rgb === "better").length} of 5 tests.</p><p>OOD gate: ${ood("GEOMET")}.</p></div></div>
@@ -702,6 +702,33 @@ async function renderDecisions() {
   if (a && a.state === "open" && $("v-decisions").classList.contains("on")) decTimer = setTimeout(renderDecisions, 1000);
 }
 
+function proofPanel() {
+  const PH = S.summary.physics, RB = S.summary.robustness, MM = S.summary.model_meta, GE = S.summary.geometry, VG = S.summary.value ? S.summary.value.grinding : null;
+  const k1 = PH ? PH.K1_kinetics_vs_throughput.rows : [], l1 = PH ? PH.L1_load_curtailment : null, rw = RB ? RB.targets.WI : null;
+  const geo = GE ? GE.rows.find(r => r.belt_width_m === 1.2 && r.belt_speed_m_s === 2) : null;
+  const ni = VG ? VG.belt_deployed_vs_blind_p90 : null;
+  const rows = [
+    ["Belt hardness → feed rate gains tonnes", "Bond (1961): energy per tonne ∝ Wi",
+      VG ? `sim_ ${pc(VG.policies.belt_deployed.sim_throughput_vs_blind_p90)} ${ci(VG.policies.belt_deployed.sim_throughput_vs_blind_p90_ci95)}; overload non-inferior: ${ni.noninferior ? "yes" : "no"} (upper ${pc(ni.overload_diff_onesided95_upper)})` : "—",
+      ni && ni.noninferior ? ["ok", "provisional"] : ["warn", "not shown"]],
+    ["…without losing flotation recovery", "First-order kinetics (Mintek framework, slide 16)",
+      k1.length ? k1.slice(0, 4).map(r => `${r.residence_lab_equiv_min} min: −${r.recovery_loss_pp} pp`).join(" · ") : "—", ["ok", "check headroom first"]],
+    ["More tonnes under Eskom curtailment by re-ordering ore", "Energy is conserved over a cycle",
+      l1 ? `sim_ ${pc(l1.sim_gain_tonnes_belt_vs_blind_mean)} (even an oracle ${pc(l1.sim_gain_oracle_mean)})` : "—", ["bad", "rejected"]],
+    ["Works on a capture it has never seen", "Out-of-fold models + new-capture variants (v9)",
+      rw ? `new capture: MAE ×${rw.resample.mae_ratio_vs_original.toFixed(2)} [${rw.resample.ratio_ci95.map(x => x.toFixed(2)).join(", ")}] → ${esc(rw.resample.verdict)}; partial view ×${rw.half.mae_ratio_vs_original.toFixed(2)}; uncalibrated light +15% ×${rw["gain_1.15"].mae_ratio_vs_original.toFixed(2)}, flagged ${Math.round(rw["gain_1.15"].flagged_borderline_or_refused * 100)}%` : "v9 running",
+      rw ? (rw.resample.verdict.startsWith("equivalent") ? ["ok", "holds"] : ["warn", "check"]) : ["", "pending"]],
+    ["Real-time", "Compute per parcel",
+      MM ? `${Math.round(MM.latency_ms_features_plus_inference_plus_ood.median)} ms median on a 4-core CPU (Kaggle); grid mapping ${Math.round(MM.latency_ms_grid_mapping_synthetic_raw_size)} ms` : "—", ["ok", "measured"]],
+    ["The camera resolves the belt", "Line pitch = speed ÷ line rate (SX25 datasheet)",
+      geo ? `${geo.line_pitch_mm_at_162fps} mm lines, ${geo.cross_track_pixel_mm} mm pixels at 1.2 m and 2 m/s: parcel-level, not particle-level` : "—", ["ok", "computed"]],
+    ["Belt camera identifies ≥ 3 minerals", "SWIR absorption features vs QEMSCAN",
+      "No pre-registered hypothesis passed (H2 ρ +0.27, below 0.30). The microscope (KHANYA) carries ≥ 3 phases", ["warn", "not shown"]],
+    ["Detects radiation", "Optical 0.4–2.5 µm sensor",
+      "No. A gamma monitor can be added as an input (NNR NORM guides RG-0018 / RG-0024 [S])", ["", "no"]]];
+  return `<div class="panel"><div class="sh"><div><h2>Is it physically possible? Every claim against its physics</h2><p>Computed from real held-out data and datasheets. A failed check stays on the page. Full write-up: docs/21.</p></div></div>
+  <table><thead><tr><th>Claim</th><th>Physics</th><th>Result</th><th>Status</th></tr></thead><tbody>${rows.map(r => `<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${r[2]}</td><td><span class="badge ${r[3][0]}">${esc(r[3][1])}</span></td></tr>`).join("")}</tbody></table></div>`;
+}
 function renderWhere() {
   $("where").innerHTML = `
   <div class="panel"><div class="sh"><div><h2>Model orchestration: one router, one referee, one policy</h2><p>Every input type has its own validated path; nothing is promoted without its evidence bar</p></div></div>

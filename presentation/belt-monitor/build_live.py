@@ -25,7 +25,13 @@ SRC = {"v6_results": os.path.join(T, "hidsag-v6-live-20261001", "output", "hidsa
        "bushveld_app": os.path.join(T, "bushveld-xrf-pge-20261001", "app_bushveld.json"),
        "plan_review_log": os.path.join(R, "PLAN-live-v6-REVIEW-LOG.md"),
        "value_chain": os.path.join(T, "value-chain-20261002", "results.json"),
-       "economics": os.path.join(T, "economics-20261002", "results.json")}
+       "economics": os.path.join(T, "economics-20261002", "results.json"),
+       "physics": os.path.join(T, "physics-checks-20261002", "results.json"),
+       "geometry": os.path.join(T, "installation-20261002", "sensor_geometry.json"),
+       "model_meta": os.path.join(T, "hidsag-v8-model-20261002", "output", "geomet_model_meta.json")}
+_v9 = os.path.join(T, "hidsag-v9-robustness-20261002", "analysis_v9.json")
+if os.path.exists(_v9):
+    SRC["robustness"] = _v9
 
 
 def sha(p):
@@ -182,7 +188,7 @@ with open(os.path.join(sd, "xrf_BUSHVELD_belt.csv"), "w", newline="") as f:
 
 # ---------------- summary
 pl = {f"delay{r['delay_h']}_h{r['horizon_h']}": {"model": r["model"], **{k: r["test"][k] for k in ("mae_model", "mae_persistence", "mae_mean", "verdict", "coverage", "coverage_ci95_block", "width", "strongest_baseline")}, "n_test": r["n"]["test"]} for r in PL["runs"]}
-summary = {"built": "2026-10-02", "hashes_sha256": hashes, "showcase": show, "evidence": evidence, "value": json.load(open(SRC["value_chain"])), "economics": json.load(open(SRC["economics"], encoding="utf-8")),
+summary = {"built": "2026-10-02", "hashes_sha256": hashes, "showcase": show, "evidence": evidence, "value": json.load(open(SRC["value_chain"])), "economics": json.load(open(SRC["economics"], encoding="utf-8")), "physics": json.load(open(SRC["physics"])), "geometry": json.load(open(SRC["geometry"])), "model_meta": json.load(open(SRC["model_meta"])), "robustness": json.load(open(SRC["robustness"])) if "robustness" in SRC else None,
            "v6_records": {rec: {"n": A["records"][rec]["n"], "n_units": A["records"][rec]["n_units"], "ood": A["records"][rec]["ood"],
                                 "calibration": A["records"][rec]["calibration"], "blends": A["records"][rec]["blends"] and {k: v for k, v in A["records"][rec]["blends"].items() if k != "targets"}}
                           for rec in A["records"]},

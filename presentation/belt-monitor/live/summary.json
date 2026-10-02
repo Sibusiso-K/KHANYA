@@ -12,6 +12,9 @@
   "plan_review_log": "696c774f1e3021a8539d8898df6d708225c37edcec76ee42a87642683ddb845c",
   "value_chain": "aa219f040946164cb936d52d0930245c7c5707a6261bfa4bb7c78a709f0d1d88",
   "economics": "9dce282f0cbdcb0d8ff78376a28a84f0b1a25b0c918ed7f7ce28bc11b4d4415b",
+  "physics": "685da76446dd0c61a5d99aac5b3f2cdd5d01f1617077d920fa12ee942d8e8b63",
+  "geometry": "cb01cc510570024e66a372a9ed86b49b7547e656539ebd577a68a3f1edaf8481",
+  "model_meta": "82ddc80caa47446cd9854881493cb608e91fc2fad96852569259e3fcd990ee9e",
   "v8_model_results": "ecc836dee4fa1d3a18ed9765160466c10430cf2f347a4213e206034ce7d06183"
  },
  "showcase": {
@@ -1503,6 +1506,246 @@
    "caveat": "industrial cyclone partition also depends on pressure, solids, viscosity, geometry, bypass and roping; measured mineral partition curves are needed before any control claim"
   }
  },
+ "physics": {
+  "note": "Physical-possibility checks for the claims, computed (code does the arithmetic) with labelled assumptions.",
+  "K1_kinetics_vs_throughput": {
+   "fit": {
+    "Rf": 0.6597987939570134,
+    "kf_per_min": 4.493632306628207,
+    "Rs": 0.2756246736546122,
+    "ks_per_min": 1.3379878385293111,
+    "rmse": 0.0010990326596765057
+   },
+   "source": "presentation/deck-src/kinetics_test11.json (slide 16: Mintek kinetics framework applied to KHANYA test_11 liberation)",
+   "throughput_gain": 0.0193,
+   "rows": [
+    {
+     "residence_lab_equiv_min": 1.0,
+     "recovery": 0.8557,
+     "recovery_after_gain": 0.8532,
+     "recovery_loss_pp": 0.251
+    },
+    {
+     "residence_lab_equiv_min": 2.0,
+     "recovery": 0.9164,
+     "recovery_after_gain": 0.9154,
+     "recovery_loss_pp": 0.1
+    },
+    {
+     "residence_lab_equiv_min": 3.0,
+     "recovery": 0.9304,
+     "recovery_after_gain": 0.9301,
+     "recovery_loss_pp": 0.039
+    },
+    {
+     "residence_lab_equiv_min": 5.0,
+     "recovery": 0.9351,
+     "recovery_after_gain": 0.935,
+     "recovery_loss_pp": 0.005
+    },
+    {
+     "residence_lab_equiv_min": 7.0,
+     "recovery": 0.9354,
+     "recovery_after_gain": 0.9354,
+     "recovery_loss_pp": 0.0
+    },
+    {
+     "residence_lab_equiv_min": 10.0,
+     "recovery": 0.9354,
+     "recovery_after_gain": 0.9354,
+     "recovery_loss_pp": 0.0
+    }
+   ],
+   "reading": "near the plateau the recovery cost of +1.9% tonnes is negligible; on the steep part of the curve it is not. A plant must know where its cells sit; the advice must check flotation residence time before raising feed.",
+   "assumption": "ASSUMED lab-to-plant residence mapping; the curve is a modelled one (liberation classes x published rate constants), not a plant measurement"
+  },
+  "L1_load_curtailment": {
+   "regime": "Eskom mining curtailment at stage 6: 20% of contracted supply for 10 h (14:00-24:00) [S]",
+   "sim_gain_tonnes_belt_vs_blind_mean": -0.038182883676391215,
+   "sim_gain_p05_p95": [
+    -0.08216026235032055,
+    -0.000180827402492168
+   ],
+   "sim_gain_oracle_mean": -0.030395183520365115,
+   "day_capacity_lost_to_curtailment_pct": 8.33,
+   "assumptions": [
+    "ASSUMED: the mill is power-limited and curtailment cuts mill power by the full 20% (mines usually shed other loads first, which makes this an upper bound on the problem)",
+    "ASSUMED: stockpile/ROM reclaim can choose parcels (belt at reclaim, not only at mill feed) and parcels are of equal mass",
+    "ASSUMED: Bond energy proportional to Wi at fixed grind; 60 reclaimable parcels per day drawn from the 146 real ones (500 repeats)",
+    "Selection uses out-of-fold PREDICTED Wi; tonnes are computed with TRUE Wi"
+   ],
+   "verdict": "REJECTED as a tonnage claim",
+   "reading": "Re-ordering ore cannot create tonnes: over a cycle the energy needed for all the ore is fixed, so sending soft ore through the curtailed window only defers the hard ore (the simulation loses tonnes, and so does an oracle). REEFPRINT does NOT claim a curtailment throughput gain. Its real roles under curtailment: (1) set the feed for the reduced power from the hardness bound, so the grind holds when power drops; (2) forecast the tonnes the window will lose from the hardness of the ore about to be reclaimed, for production planning."
+  }
+ },
+ "geometry": {
+  "camera": "Specim SX25 technical datasheet 01 [P]",
+  "rows": [
+   {
+    "belt_width_m": 0.9,
+    "belt_speed_m_s": 1.5,
+    "line_pitch_mm_at_162fps": 9.3,
+    "cross_track_pixel_mm": 1.41,
+    "motion_blur_mm_at_full_exposure": 9.3,
+    "working_distance_m": {
+     "OLES17_38deg": 1.31,
+     "OLES9_66deg": 0.69
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 0.9,
+    "belt_speed_m_s": 2.0,
+    "line_pitch_mm_at_162fps": 12.3,
+    "cross_track_pixel_mm": 1.41,
+    "motion_blur_mm_at_full_exposure": 12.3,
+    "working_distance_m": {
+     "OLES17_38deg": 1.31,
+     "OLES9_66deg": 0.69
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 0.9,
+    "belt_speed_m_s": 3.0,
+    "line_pitch_mm_at_162fps": 18.5,
+    "cross_track_pixel_mm": 1.41,
+    "motion_blur_mm_at_full_exposure": 18.5,
+    "working_distance_m": {
+     "OLES17_38deg": 1.31,
+     "OLES9_66deg": 0.69
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.2,
+    "belt_speed_m_s": 1.5,
+    "line_pitch_mm_at_162fps": 9.3,
+    "cross_track_pixel_mm": 1.88,
+    "motion_blur_mm_at_full_exposure": 9.3,
+    "working_distance_m": {
+     "OLES17_38deg": 1.74,
+     "OLES9_66deg": 0.92
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.2,
+    "belt_speed_m_s": 2.0,
+    "line_pitch_mm_at_162fps": 12.3,
+    "cross_track_pixel_mm": 1.88,
+    "motion_blur_mm_at_full_exposure": 12.3,
+    "working_distance_m": {
+     "OLES17_38deg": 1.74,
+     "OLES9_66deg": 0.92
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.2,
+    "belt_speed_m_s": 3.0,
+    "line_pitch_mm_at_162fps": 18.5,
+    "cross_track_pixel_mm": 1.88,
+    "motion_blur_mm_at_full_exposure": 18.5,
+    "working_distance_m": {
+     "OLES17_38deg": 1.74,
+     "OLES9_66deg": 0.92
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.5,
+    "belt_speed_m_s": 1.5,
+    "line_pitch_mm_at_162fps": 9.3,
+    "cross_track_pixel_mm": 2.34,
+    "motion_blur_mm_at_full_exposure": 9.3,
+    "working_distance_m": {
+     "OLES17_38deg": 2.18,
+     "OLES9_66deg": 1.15
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.5,
+    "belt_speed_m_s": 2.0,
+    "line_pitch_mm_at_162fps": 12.3,
+    "cross_track_pixel_mm": 2.34,
+    "motion_blur_mm_at_full_exposure": 12.3,
+    "working_distance_m": {
+     "OLES17_38deg": 2.18,
+     "OLES9_66deg": 1.15
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   },
+   {
+    "belt_width_m": 1.5,
+    "belt_speed_m_s": 3.0,
+    "line_pitch_mm_at_162fps": 18.5,
+    "cross_track_pixel_mm": 2.34,
+    "motion_blur_mm_at_full_exposure": 18.5,
+    "working_distance_m": {
+     "OLES17_38deg": 2.18,
+     "OLES9_66deg": 1.15
+    },
+    "lines_per_tonne_note": "parcel-level averaging, not particle mapping",
+    "provenance": "ASSUMED (width, speed) x CITED (datasheet)"
+   }
+  ],
+  "data_rate_MB_s_full_frame": 81.3,
+  "data_rate_MB_s_75_band_roi": 15.6,
+  "conclusion": "At plant belt speeds the SWIR line scanner samples the surface in lines about 9-19 mm apart with ~1.4-2.3 mm cross-track pixels: adequate for parcel-level averages (our models use pooled pixels), not for particle-by-particle mapping or sorting."
+ },
+ "model_meta": {
+  "record": "GEOMET",
+  "n_train": 146,
+  "best": [
+   "nl_et",
+   "nl_et",
+   "lin_pls8",
+   "nl_et",
+   "nl_et"
+  ],
+  "targets": [
+   "Cu rec",
+   "Lime cons",
+   "Mo rec",
+   "PH",
+   "WI"
+  ],
+  "sklearn": "1.8.0",
+  "numpy": "2.0.2",
+  "python": "3.12.13",
+  "cpu": "x86_64",
+  "cpus": 4,
+  "latency_ms_features_plus_inference_plus_ood": {
+   "median": 92.18904349995682,
+   "p95": 99.94528420006075,
+   "n": 40
+  },
+  "latency_ms_grid_mapping_synthetic_raw_size": 25.148337999996784,
+  "latency_note": "Kaggle CPU, not the edge PC; per parcel from an already-sampled pixel pool (POOL px per sensor); grid mapping timed on a synthetic array of the raw cube size",
+  "q_up_median_over_folds": {
+   "Cu rec": 3.6836666666666673,
+   "Lime cons": 0.08887777777777772,
+   "Mo rec": 20.058065000911583,
+   "PH": 1.0087222222222216,
+   "WI": 1.6290555555555564
+  },
+  "ood": {
+   "p95": 20.237007524204955,
+   "p99": 38.1263502292037,
+   "rule": "median over the 5 outer folds of the calibration-unit percentiles (deployment approximation)"
+  }
+ },
+ "robustness": null,
  "v6_records": {
   "GEOMET": {
    "n": 146,
