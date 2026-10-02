@@ -99,7 +99,12 @@ def grinding():
     pmean = np.array([true[fold != f].mean() for f in fold])
     units = np.array([r["sample"] for r in S])                             # no drill-hole ids exist in GEOMET
     resid = true - pred                                                    # signed out-of-fold residuals
-    ub90 = one_sided_bound(pred, resid, fold)
+    ub90_cvplus = one_sided_bound(pred, resid, fold)                       # approximation, kept as a comparator
+    # EXACT one-sided split-conformal bound from Kaggle reefprint-hidsag-v8-model (signed calibration scores, one per unit,
+    # k = ceil((n_cal+1)(1-0.10))); v8 reproduces v6's out-of-fold predictions exactly (smoke_load.py: max diff 0.0)
+    V8 = {r["sample"]: r for r in json.load(open(os.path.join(T, "hidsag-v8-model-20261002", "output", "hidsag_v8_model_results.json")))["records"]["GEOMET"]["samples"]}
+    assert all(abs(V8[r["sample"]]["pred"][t] - r["pred"][t]) < 1e-9 for r in S), "v8 predictions differ from v6"
+    ub90 = np.array([np.inf if V8[r["sample"]]["hi_up"][t] is None else V8[r["sample"]]["hi_up"][t] for r in S])
     # the policy as it would be deployed: refused -> conservative envelope; borderline -> the stricter; pass -> the bound
     deployed = np.where(ood == "refused", p90, np.where(ood == "borderline", np.maximum(ub90, p90), ub90))
     policies = {"blind_p90": p90, "blind_mean": pmean, "belt_symmetric80_hi (old, comparator)": hi80,
@@ -111,7 +116,8 @@ def grinding():
     out = {"n_parcels": int(len(true)), "units": "samples (GEOMET has no drill-hole ids: may be optimistic)",
            "ood_counts": {k: int((ood == k).sum()) for k in ("pass", "borderline", "refused")},
            "wi_true": {"mean": float(true.mean()), "sd": float(true.std()), "min": float(true.min()), "max": float(true.max())},
-           "one_sided_bound": {"alpha": ALPHA_UP, "method": "cross-fold residual quantile (CV+-style approximation, Barber et al. 2021); validity not claimed",
+           "one_sided_bound": {"alpha": ALPHA_UP, "method": "split-conformal one-sided upper bound, signed calibration scores, one per unit (Kaggle reefprint-hidsag-v8-model); marginal finite-sample coverage >= 90% under exchangeability",
+                               "cvplus_approx_empirical_exceedance": float((true > ub90_cvplus).mean()),
                                "empirical_exceedance": float((true > ub90).mean()),
                                "empirical_exceedance_ci95": boot_ci(lambda b: float((true[b] > ub90[b]).mean()), units)},
            "policies": {}}

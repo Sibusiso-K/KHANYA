@@ -7,6 +7,13 @@
 >
 > **Result: the throughput gain survives (+1.9% [+0.8, +2.9]), but non-inferiority on overload risk is not shown (upper bound +4.8 pp).** So there is no throughput claim until a pilot.
 
+> **Update 08:10, after the exact bound.** Kaggle `reefprint-hidsag-v8-model` recomputed v6 with **signed calibration scores**. It reproduces v6's predictions exactly and gives an **exact one-sided 90% split-conformal bound**. With that bound:
+> - the deployed policy gains **+1.9% [+0.9, +2.9]**;
+> - it overloads **6.8% vs 8.9%** of parcels;
+> - the one-sided 95% upper bound of the difference is **+1.4 pp**, within the +3 pp margin, so **non-inferiority holds**.
+>
+> **Disclosed:** the CV+-style approximation below was tried first and did not pass. The exact bound was the plan's stated fallback (PLAN-v8 D2), but the switch came after a failure, so the claim is **provisional until a pilot**. `training/value-chain-20261002/results.json` holds both.
+
 *Written 2026-10-02 for the Top-5 refinement. Every number below was computed by code from real held-out predictions on public data. The file is named next to each number. Anything assumed is labelled **ASSUMED**. Anything simulated carries **sim_**. Nothing here is a site measurement.*
 
 ## 1. The problem we pitched, and the test a prediction must pass

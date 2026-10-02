@@ -1,0 +1,42 @@
+{
+ "record": "GEOMET",
+ "n_train": 146,
+ "best": [
+  "nl_et",
+  "nl_et",
+  "lin_pls8",
+  "nl_et",
+  "nl_et"
+ ],
+ "targets": [
+  "Cu rec",
+  "Lime cons",
+  "Mo rec",
+  "PH",
+  "WI"
+ ],
+ "sklearn": "1.8.0",
+ "numpy": "2.0.2",
+ "python": "3.12.13",
+ "cpu": "x86_64",
+ "cpus": 4,
+ "latency_ms_features_plus_inference_plus_ood": {
+  "median": 92.18904349995682,
+  "p95": 99.94528420006075,
+  "n": 40
+ },
+ "latency_ms_grid_mapping_synthetic_raw_size": 25.148337999996784,
+ "latency_note": "Kaggle CPU, not the edge PC; per parcel from an already-sampled pixel pool (POOL px per sensor); grid mapping timed on a synthetic array of the raw cube size",
+ "q_up_median_over_folds": {
+  "Cu rec": 3.6836666666666673,
+  "Lime cons": 0.08887777777777772,
+  "Mo rec": 20.058065000911583,
+  "PH": 1.0087222222222216,
+  "WI": 1.6290555555555564
+ },
+ "ood": {
+  "p95": 20.237007524204955,
+  "p99": 38.1263502292037,
+  "rule": "median over the 5 outer folds of the calibration-unit percentiles (deployment approximation)"
+ }
+}
