@@ -22,6 +22,38 @@ it is a press release.
 
 ---
 
+## 2026-10-02 (08:00–08:55) — v8: industry research, ClauDex round 1, corrections, evidence runs, secure server
+
+**Plan and review:**
+- PLAN-v8 plus its addendum (security, PQC, deployment, business).
+- Codex round 1 returned 40 findings (REVISE), all logged in PLAN-v8-REVIEW-LOG.md.
+- Round 2 was paused by Codex's usage limit; it was relaunched at 08:52 and its result is pending.
+
+**Corrections:**
+- "Same overload risk" withdrawn.
+- Economics restated as net value plus break-even (0.04–0.26 pp).
+- Import refuses blank values.
+- Every shipped asset is hashed.
+- Advice rows rewritten as diagnostic prompts.
+
+**Evidence:**
+- **v8-model:** the exact one-sided bound gives +1.9% throughput, non-inferior on overload (+1.4 pp upper bound). This is provisional because of a disclosed method switch. Latency is 92 ms per parcel. The exported model loads locally.
+- **v8-features:** no pre-registered hypothesis passes. H2 has ρ +0.27, below the minimum useful effect. The belt does not earn ≥3 phases; KHANYA carries that.
+
+**Security:**
+- Secure server (RBAC, sessions, CSRF, SQLite append-only ledger, Ed25519 + ML-DSA-65 checkpoints, ML-KEM-768 exports, encrypted EXIF-stripped uploads, guest sandbox).
+- 17 tests pass; Bandit 0; pip-audit clean after upgrading cryptography.
+
+**Docs:** 17 (industry dossier), 18 (installation and pilot), 19 (security), 20 (competitors and business).
+
+**Left open:**
+- process Codex round 2;
+- UI wiring for login, upload and the decision record;
+- Dockerfile, tunnel runbook and QR (the public deploy needs the owner's approval);
+- the map;
+- the mass balance;
+- deck v8.
+
 ## 2026-10-02 (morning) — belt view, full-resolution scans, value chain, v7 (no gain), Bushveld correction
 
 **Asked:** make the belt and scans look right, keep training for accuracy, and show whether each prediction helps the next plant step and what it is worth, backed by evidence.

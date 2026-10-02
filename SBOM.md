@@ -30,6 +30,11 @@ from the upstream repository in this project's own records · **BLOCKED** do not
 | `opencv-python` | Apache-2.0 (library) / MIT (wheel packaging) | VERIFY | OpenCV relicensed 4.5.0→Apache-2.0. Confirm the pinned wheel. |
 | `pydantic` | MIT | VERIFY | Config and acquisition-metadata schemas. |
 
+| `cryptography` 50.0.2 | Apache-2.0 OR BSD-3-Clause | OK | Secure server: AES-256-GCM, Ed25519, X25519, HKDF. pip-audit flagged 9 CVEs in 46.0.6; upgraded 2026-10-02. |
+| `pqcrypto` 1.0.0 | Apache-2.0 (PQClean bindings) | OK | ML-DSA-65 (FIPS 204) checkpoint signatures, ML-KEM-768 (FIPS 203) export KEM, SLH-DSA available. Not a FIPS-validated module. Added 2026-10-02. |
+| Pillow 12.3.0 | MIT-CMU | OK | Upload re-encoding (EXIF/GPS stripped). Added 2026-10-02. |
+| `qrcode` 8.2 | BSD | OK | QR code for the demo URL. Added 2026-10-02. |
+
 ## Shipped — models and inference
 
 | Package | Licence | Status | Note |
