@@ -6,3 +6,5 @@ GMET-0004,GEOMET:Lime cons,0.2,kg/t,wet_mass,none,1,2026-10-01T08:00:00
 NOT-A-SAMPLE,GEOMET:WI,12,kWh/t,dry_mass,none,1,2026-10-01T08:00:00
 GMET-0004,XRD:quartz,31,wt%,dry_mass,none,1,2026-10-01T08:00:00
 GMET-0004,GEOMET:Mo rec,"=HYPERLINK(""x"")",%,dry_mass,none,1,2026-10-01T08:00:00
+GMET-0004,GEOMET:Cu rec,,%,dry_mass,none,1,2026-10-01T08:00:00
+GMET-0004,GEOMET:PH,8.1,pH,none,none,1,not-a-time

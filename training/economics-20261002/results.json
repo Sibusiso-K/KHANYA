@@ -1,399 +1,394 @@
 {
- "note": "What the levers are worth, computed with provenance attached (rule 1 as a type: reefprint.quantity).",
- "fx_zar_per_usd_implied": {
-  "value": 17.6085313174946,
-  "unit": "ZAR/oz/USD/oz",
-  "provenance": "CITED",
+ "note": "What the levers could be worth: scenario arithmetic with provenance attached (rule 1 as a type: reefprint.quantity).",
+ "basis": "contained 4E oz x ASSUMED payability x ASSUMED net 4E price; FX separate",
+ "fx": {
+  "value": 17.61,
+  "unit": "ZAR/USD",
+  "provenance": "ASSUMED",
   "sources": [
-   "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]",
-   "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]"
+   "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
   ]
  },
- "E1_one_recovery_point": {
+ "V1_net_value_per_recovery_pp_per_yr": {
   "zondereinde_scale": {
-   "oz_per_pp_per_yr": {
-    "value": 3411.1936707988866,
-    "unit": "t/yr*g/t/g/oz",
-    "provenance": "ASSUMED",
-    "sources": [
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-     "one percentage point",
-     "troy ounce definition"
-    ]
-   },
-   "value_per_pp_per_yr_valterra_basket": {
-    "zar": {
-     "value": 111242436.79842249,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-      "one percentage point",
-      "troy ounce definition",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]"
-     ]
-    },
-    "usd": {
-     "value": 6317530.678319538,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz/ZAR/oz/USD/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-      "one percentage point",
-      "troy ounce definition",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]",
-      "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]"
-     ]
-    }
-   },
-   "value_per_pp_per_yr_northam_rev_per_oz": {
-    "zar": {
-     "value": 160858248.7401923,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-      "one percentage point",
-      "troy ounce definition",
-      "indicative [N]: Investing.com summary of Northam F2026 slides, Zondereinde revenue per equivalent refined 4E oz"
-     ]
-    },
-    "usd": {
-     "value": 9135245.06046537,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz/ZAR/oz/USD/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-      "one percentage point",
-      "troy ounce definition",
-      "indicative [N]: Investing.com summary of Northam F2026 slides, Zondereinde revenue per equivalent refined 4E oz",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]",
-      "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]"
-     ]
-    }
-   }
-  },
-  "implats_group_scale": {
-   "oz_per_pp_per_yr": {
-    "value": 33809.725091569184,
-    "unit": "t/yr*g/t/g/oz",
-    "provenance": "ASSUMED",
-    "sources": [
-     "indicative [S]: Implats FY2025 tonnes milled, managed operations, via search",
-     "ASSUMED for illustration: no verified Implats group head grade was read",
-     "one percentage point",
-     "troy ounce definition"
-    ]
-   },
-   "value_per_pp_per_yr_valterra_basket": {
-    "zar": {
-     "value": 1102568944.9611626,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Implats FY2025 tonnes milled, managed operations, via search",
-      "ASSUMED for illustration: no verified Implats group head grade was read",
-      "one percentage point",
-      "troy ounce definition",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]"
-     ]
-    },
-    "usd": {
-     "value": 62615610.86958613,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz/ZAR/oz/USD/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Implats FY2025 tonnes milled, managed operations, via search",
-      "ASSUMED for illustration: no verified Implats group head grade was read",
-      "one percentage point",
-      "troy ounce definition",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]",
-      "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]"
-     ]
-    }
-   }
-  },
-  "per_1Mt_at_4.72gpt": {
-   "oz_per_pp_per_yr": {
-    "value": 1517.5152380392408,
-    "unit": "t/yr*g/t/g/oz",
-    "provenance": "ASSUMED",
-    "sources": [
-     "normalisation: one million tonnes milled per year",
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-     "one percentage point",
-     "troy ounce definition"
-    ]
-   },
-   "value_per_pp_per_yr_valterra_basket": {
-    "zar": {
-     "value": 49487689.42769768,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "normalisation: one million tonnes milled per year",
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-      "one percentage point",
-      "troy ounce definition",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]"
-     ]
-    },
-    "usd": {
-     "value": 2810438.220848674,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz/ZAR/oz/USD/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "normalisation: one million tonnes milled per year",
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-      "one percentage point",
-      "troy ounce definition",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]",
-      "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]"
-     ]
-    }
-   }
-  }
- },
- "E2_chrome_constraint_gap_zondereinde_scale": {
-  "oz_per_yr": {
-   "value": 10233.58101239666,
-   "unit": "t/yr*g/t/g/oz",
-   "provenance": "ASSUMED",
-   "sources": [
-    "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-    "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-    "one percentage point",
-    "troy ounce definition",
-    "Jones (Mintek) 2005: UG2 concentrate 87% recovery at 2.9% Cr2O3; 'more than 90 per cent' if Cr2O3 relaxed to 4-10% [P] (lower bound of the gap, in percentage points)"
-   ]
-  },
-  "value_per_yr": {
-   "zar": {
-    "value": 333727310.3952675,
+   "low": {
+    "value": 63959881.327479124,
     "unit": "t/yr*g/t/g/oz*ZAR/oz",
     "provenance": "ASSUMED",
     "sources": [
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
      "one percentage point",
      "troy ounce definition",
-     "Jones (Mintek) 2005: UG2 concentrate 87% recovery at 2.9% Cr2O3; 'more than 90 per cent' if Cr2O3 relaxed to 4-10% [P] (lower bound of the gap, in percentage points)",
-     "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]"
+     "ASSUMED payability (smelting/refining losses and charges, toll terms)",
+     "ASSUMED low net 4E price"
     ]
    },
-   "usd": {
-    "value": 18952592.034958616,
-    "unit": "t/yr*g/t/g/oz*ZAR/oz/ZAR/oz/USD/oz",
+   "base": {
+    "value": 94556071.27865912,
+    "unit": "t/yr*g/t/g/oz*ZAR/oz",
     "provenance": "ASSUMED",
     "sources": [
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
      "one percentage point",
      "troy ounce definition",
-     "Jones (Mintek) 2005: UG2 concentrate 87% recovery at 2.9% Cr2O3; 'more than 90 per cent' if Cr2O3 relaxed to 4-10% [P] (lower bound of the gap, in percentage points)",
-     "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]",
-     "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]"
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)"
+    ]
+   },
+   "high": {
+    "value": 152815336.30318266,
+    "unit": "t/yr*g/t/g/oz*ZAR/oz",
+    "provenance": "ASSUMED",
+    "sources": [
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Northam Zondereinde revenue per equivalent refined 4E oz F2026, indicative [N]"
     ]
    }
   },
-  "reading": "upper bound of what better chromite control is worth if the whole Mintek testwork gap were bought back; partial capture is the realistic case"
+  "implats_group_scale": {
+   "low": {
+    "value": 633932345.4669222,
+    "unit": "t/yr*g/t/g/oz*ZAR/oz",
+    "provenance": "ASSUMED",
+    "sources": [
+     "indicative [S]: Implats FY2025 tonnes milled, managed operations",
+     "ASSUMED for illustration: no verified Implats group head grade was read",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability (smelting/refining losses and charges, toll terms)",
+     "ASSUMED low net 4E price"
+    ]
+   },
+   "base": {
+    "value": 937183603.2169882,
+    "unit": "t/yr*g/t/g/oz*ZAR/oz",
+    "provenance": "ASSUMED",
+    "sources": [
+     "indicative [S]: Implats FY2025 tonnes milled, managed operations",
+     "ASSUMED for illustration: no verified Implats group head grade was read",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)"
+    ]
+   },
+   "high": {
+    "value": 1514614826.5971346,
+    "unit": "t/yr*g/t/g/oz*ZAR/oz",
+    "provenance": "ASSUMED",
+    "sources": [
+     "indicative [S]: Implats FY2025 tonnes milled, managed operations",
+     "ASSUMED for illustration: no verified Implats group head grade was read",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Northam Zondereinde revenue per equivalent refined 4E oz F2026, indicative [N]"
+    ]
+   }
+  }
  },
- "E3_throughput_mill_constrained_mogalakwena_scale": {
-  "point": {
-   "extra_tonnes_per_yr": {
-    "value": 295470.0,
-    "unit": "t/yr",
-    "provenance": "ASSUMED",
-    "sources": [
-     "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-     "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (training/value-chain-20261002/results.json)"
-    ]
-   },
-   "extra_oz_per_yr": {
-    "value": 18761.672650049208,
-    "unit": "t/yr*g/t/g/oz",
-    "provenance": "ASSUMED",
-    "sources": [
-     "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-     "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (training/value-chain-20261002/results.json)",
-     "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
-     "troy ounce definition",
-     "indicative [S]: Implats fact sheet via search, UG2 concentrator recovery about 79%"
-    ]
-   },
-   "value_per_yr": {
-    "zar": {
-     "value": 611836906.7907547,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-      "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (training/value-chain-20261002/results.json)",
-      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
-      "troy ounce definition",
-      "indicative [S]: Implats fact sheet via search, UG2 concentrator recovery about 79%",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]"
-     ]
-    },
-    "usd": {
-     "value": 34746617.747891136,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz/ZAR/oz/USD/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-      "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (training/value-chain-20261002/results.json)",
-      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
-      "troy ounce definition",
-      "indicative [S]: Implats fact sheet via search, UG2 concentrator recovery about 79%",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]",
-      "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]"
-     ]
-    }
-   }
-  },
-  "ci_low": {
-   "extra_tonnes_per_yr": {
-    "value": 141120.0,
-    "unit": "t/yr",
-    "provenance": "ASSUMED",
-    "sources": [
-     "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-     "lower 95% CI of the same sim_ result"
-    ]
-   },
-   "extra_oz_per_yr": {
-    "value": 8960.798877635443,
-    "unit": "t/yr*g/t/g/oz",
-    "provenance": "ASSUMED",
-    "sources": [
-     "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-     "lower 95% CI of the same sim_ result",
-     "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
-     "troy ounce definition",
-     "indicative [S]: Implats fact sheet via search, UG2 concentrator recovery about 79%"
-    ]
-   },
-   "value_per_yr": {
-    "zar": {
-     "value": 292220612.1985694,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-      "lower 95% CI of the same sim_ result",
-      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
-      "troy ounce definition",
-      "indicative [S]: Implats fact sheet via search, UG2 concentrator recovery about 79%",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]"
-     ]
-    },
-    "usd": {
-     "value": 16595399.521380842,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz/ZAR/oz/USD/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-      "lower 95% CI of the same sim_ result",
-      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
-      "troy ounce definition",
-      "indicative [S]: Implats fact sheet via search, UG2 concentrator recovery about 79%",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]",
-      "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]"
-     ]
-    }
-   }
-  },
-  "ci_high": {
-   "extra_tonnes_per_yr": {
-    "value": 442470.0,
-    "unit": "t/yr",
-    "provenance": "ASSUMED",
-    "sources": [
-     "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-     "upper 95% CI of the same sim_ result"
-    ]
-   },
-   "extra_oz_per_yr": {
-    "value": 28095.838147586124,
-    "unit": "t/yr*g/t/g/oz",
-    "provenance": "ASSUMED",
-    "sources": [
-     "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-     "upper 95% CI of the same sim_ result",
-     "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
-     "troy ounce definition",
-     "indicative [S]: Implats fact sheet via search, UG2 concentrator recovery about 79%"
-    ]
-   },
-   "value_per_yr": {
-    "zar": {
-     "value": 916233377.8309311,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-      "upper 95% CI of the same sim_ result",
-      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
-      "troy ounce definition",
-      "indicative [S]: Implats fact sheet via search, UG2 concentrator recovery about 79%",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]"
-     ]
-    },
-    "usd": {
-     "value": 52033492.24932951,
-     "unit": "t/yr*g/t/g/oz*ZAR/oz/ZAR/oz/USD/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search",
-      "upper 95% CI of the same sim_ result",
-      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
-      "troy ounce definition",
-      "indicative [S]: Implats fact sheet via search, UG2 concentrator recovery about 79%",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]",
-      "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]"
-     ]
-    }
-   }
-  },
-  "transfer_caveat": "HIDSAG is Chilean Cu-Mo; the +2.0% is a method result, not a Platreef measurement"
- },
- "E4_qemscan_every_shift": {
-  "per_stream_per_yr": {
-   "value": 1806750,
-   "unit": "CAD/sample*samples/yr",
-   "provenance": "CITED",
+ "V2_throughput_mill_constrained_only": {
+  "extra_tonnes_per_yr": {
+   "value": 295470.0,
+   "unit": "t/yr",
+   "provenance": "ASSUMED",
    "sources": [
-    "Saskatchewan Research Council QEMSCAN price list 4/2017: liberation analysis with predicted recovery [P]",
-    "SRC 4/2017: 30 mm block mount [P]",
-    "24/7 operation, three shifts a day, one composite per stream per shift"
+    "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+    "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority"
    ]
   },
-  "three_streams_feed_conc_tails": {
-   "value": 5420250,
-   "unit": "CAD/sample*samples/yr",
-   "provenance": "CITED",
+  "net_revenue_per_extra_tonne": {
+   "low": {
+    "value": 1190.5823338695052,
+    "unit": "g/t*ZAR/oz/g/oz",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+     "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+     "ASSUMED payability (smelting/refining losses and charges, toll terms)",
+     "ASSUMED low net 4E price",
+     "troy ounce definition"
+    ]
+   },
+   "base": {
+    "value": 1760.1156488717686,
+    "unit": "g/t*ZAR/oz/g/oz",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+     "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "troy ounce definition"
+    ]
+   },
+   "high": {
+    "value": 2844.583760488152,
+    "unit": "g/t*ZAR/oz/g/oz",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+     "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+     "ASSUMED payability",
+     "ASSUMED: Northam Zondereinde revenue per equivalent refined 4E oz F2026, indicative [N]",
+     "troy ounce definition"
+    ]
+   }
+  },
+  "contribution_per_yr_if_variable_cost_is_fraction_of_revenue": {
+   "25pct": {
+    "value": 390046028.0791061,
+    "unit": "t/yr*g/t*ZAR/oz/g/oz",
+    "provenance": "ASSUMED",
+    "sources": [
+     "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+     "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority",
+     "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+     "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "troy ounce definition",
+     "ASSUMED incremental variable cost = 25% of net revenue per tonne (mining/reclaim, milling, flotation, smelting/refining)"
+    ]
+   },
+   "50pct": {
+    "value": 260030685.38607073,
+    "unit": "t/yr*g/t*ZAR/oz/g/oz",
+    "provenance": "ASSUMED",
+    "sources": [
+     "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+     "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority",
+     "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+     "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "troy ounce definition",
+     "ASSUMED incremental variable cost = 50% of net revenue per tonne (mining/reclaim, milling, flotation, smelting/refining)"
+    ]
+   },
+   "75pct": {
+    "value": 130015342.69303536,
+    "unit": "t/yr*g/t*ZAR/oz/g/oz",
+    "provenance": "ASSUMED",
+    "sources": [
+     "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+     "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority",
+     "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+     "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "troy ounce definition",
+     "ASSUMED incremental variable cost = 75% of net revenue per tonne (mining/reclaim, milling, flotation, smelting/refining)"
+    ]
+   }
+  },
+  "zero_if": "the plant is ore-constrained (most underground PGM concentrators), or the extra tonnes move the bottleneck downstream",
+  "transfer_caveat": "the +2.0% is a Chilean Cu-Mo drill-core result under revision; no confidence interval is transferred to rands"
+ },
+ "V3_cr2o3_tradeoff_evidence_only": {
+  "jones_2005": "UG2 concentrate ~430 g/t at 87% recovery and 2.9% Cr2O3; >1000 g/t at >90% if Cr2O3 relaxed to 4-10% [P]",
+  "reading": "recovery and concentrate quality trade off; better chromite control moves the operating point, by an amount only a pilot can measure"
+ },
+ "V4_breakeven_recovery_pp_zondereinde_scale_base": {
+  "net_value_per_pp_usd": {
+   "value": 5369453.224228229,
+   "unit": "t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+   "provenance": "ASSUMED",
    "sources": [
-    "Saskatchewan Research Council QEMSCAN price list 4/2017: liberation analysis with predicted recovery [P]",
-    "SRC 4/2017: 30 mm block mount [P]",
-    "24/7 operation, three shifts a day, one composite per stream per shift",
-    "feed, concentrate, tails"
+    "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+    "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+    "one percentage point",
+    "troy ounce definition",
+    "ASSUMED payability",
+    "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+    "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
    ]
   },
-  "reading": "still days late: price buys truth, not speed"
+  "breakeven_pp": {
+   "capex_0.5M_opex_0.1M": {
+    "value": 0.043188520453254206,
+    "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED installed capex scenario US$500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+     "ASSUMED capital recovery factor (per year), 5 years at 10%",
+     "ASSUMED annual opex (per year) US$100,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+    ]
+   },
+   "capex_0.5M_opex_0.3M": {
+    "value": 0.08043626089311003,
+    "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED installed capex scenario US$500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+     "ASSUMED capital recovery factor (per year), 5 years at 10%",
+     "ASSUMED annual opex (per year) US$300,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+    ]
+   },
+   "capex_0.5M_opex_0.6M": {
+    "value": 0.13630787155289373,
+    "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED installed capex scenario US$500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+     "ASSUMED capital recovery factor (per year), 5 years at 10%",
+     "ASSUMED annual opex (per year) US$600,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+    ]
+   },
+   "capex_1.5M_opex_0.1M": {
+    "value": 0.0923178209199068,
+    "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED installed capex scenario US$1,500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+     "ASSUMED capital recovery factor (per year), 5 years at 10%",
+     "ASSUMED annual opex (per year) US$100,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+    ]
+   },
+   "capex_1.5M_opex_0.3M": {
+    "value": 0.1295655613597626,
+    "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED installed capex scenario US$1,500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+     "ASSUMED capital recovery factor (per year), 5 years at 10%",
+     "ASSUMED annual opex (per year) US$300,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+    ]
+   },
+   "capex_1.5M_opex_0.6M": {
+    "value": 0.18543717201954632,
+    "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED installed capex scenario US$1,500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+     "ASSUMED capital recovery factor (per year), 5 years at 10%",
+     "ASSUMED annual opex (per year) US$600,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+    ]
+   },
+   "capex_3.0M_opex_0.1M": {
+    "value": 0.1660117716198857,
+    "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED installed capex scenario US$3,000,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+     "ASSUMED capital recovery factor (per year), 5 years at 10%",
+     "ASSUMED annual opex (per year) US$100,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+    ]
+   },
+   "capex_3.0M_opex_0.3M": {
+    "value": 0.2032595120597415,
+    "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED installed capex scenario US$3,000,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+     "ASSUMED capital recovery factor (per year), 5 years at 10%",
+     "ASSUMED annual opex (per year) US$300,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+    ]
+   },
+   "capex_3.0M_opex_0.6M": {
+    "value": 0.2591311227195252,
+    "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+    "provenance": "ASSUMED",
+    "sources": [
+     "ASSUMED installed capex scenario US$3,000,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+     "ASSUMED capital recovery factor (per year), 5 years at 10%",
+     "ASSUMED annual opex (per year) US$600,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+    ]
+   }
+  },
+  "formula": "(capex x CRF + opex) / net value per recovery pp"
  },
- "E5_processed_before_assay_returns_zondereinde_scale": {
+ "V5_qemscan_every_shift": {
+  "per_stream_per_yr_cad2017": {
+   "value": 2682750,
+   "unit": "CAD/sample*samples/yr",
+   "provenance": "ASSUMED",
+   "sources": [
+    "Saskatchewan Research Council QEMSCAN price list 4/2017 (Canadian lab, CAD, 2017): liberation analysis with predicted recovery [P]",
+    "SRC 4/2017: 30 mm block mount [P]",
+    "SRC 4/2017: crush, grind and sieve test samples [P]",
+    "ASSUMED cadence: one composite per stream per shift, three shifts, every day"
+   ]
+  },
+  "reading": "a 2017 Canadian list price; a local quote is required; still days late"
+ },
+ "V6_processed_before_assay_returns_zondereinde_scale": {
   "24h": {
    "tonnes": {
     "value": 6158.57808219178,
     "unit": "t/yr/h/yr*h",
     "provenance": "ASSUMED",
     "sources": [
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
      "hours in a year",
      "indicative [S]: 4E fire assay turnaround in practice 24-72 h"
     ]
@@ -403,41 +398,12 @@
     "unit": "t/yr/h/yr*h*g/t/g/oz",
     "provenance": "ASSUMED",
     "sources": [
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
      "hours in a year",
      "indicative [S]: 4E fire assay turnaround in practice 24-72 h",
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
      "troy ounce definition"
     ]
-   },
-   "contained_value": {
-    "zar": {
-     "value": 30477379.94477328,
-     "unit": "t/yr/h/yr*h*g/t/g/oz*ZAR/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-      "hours in a year",
-      "indicative [S]: 4E fire assay turnaround in practice 24-72 h",
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-      "troy ounce definition",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]"
-     ]
-    },
-    "usd": {
-     "value": 1730830.3228272705,
-     "unit": "t/yr/h/yr*h*g/t/g/oz*ZAR/oz/ZAR/oz/USD/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-      "hours in a year",
-      "indicative [S]: 4E fire assay turnaround in practice 24-72 h",
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-      "troy ounce definition",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]",
-      "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]"
-     ]
-    }
    }
   },
   "72h": {
@@ -446,7 +412,7 @@
     "unit": "t/yr/h/yr*h",
     "provenance": "ASSUMED",
     "sources": [
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
      "hours in a year",
      "indicative [S]: 4E fire assay turnaround in practice 24-72 h"
     ]
@@ -456,56 +422,18 @@
     "unit": "t/yr/h/yr*h*g/t/g/oz",
     "provenance": "ASSUMED",
     "sources": [
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
      "hours in a year",
      "indicative [S]: 4E fire assay turnaround in practice 24-72 h",
-     "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
      "troy ounce definition"
     ]
-   },
-   "contained_value": {
-    "zar": {
-     "value": 91432139.83431983,
-     "unit": "t/yr/h/yr*h*g/t/g/oz*ZAR/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-      "hours in a year",
-      "indicative [S]: 4E fire assay turnaround in practice 24-72 h",
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-      "troy ounce definition",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]"
-     ]
-    },
-    "usd": {
-     "value": 5192490.968481811,
-     "unit": "t/yr/h/yr*h*g/t/g/oz*ZAR/oz/ZAR/oz/USD/oz",
-     "provenance": "ASSUMED",
-     "sources": [
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled",
-      "hours in a year",
-      "indicative [S]: 4E fire assay turnaround in practice 24-72 h",
-      "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade",
-      "troy ounce definition",
-      "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]",
-      "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]"
-     ]
-    }
    }
   }
  },
- "E6_stokes_equal_settling": {
-  "silicate_size_equivalent_to_1um_chromite": {
-   "value": 1.3228756555322954,
-   "unit": "um per um",
-   "provenance": "ASSUMED",
-   "sources": [
-    "textbook range 4.3-4.8 for chromite (ASSUMED midpoint)",
-    "water",
-    "textbook range 2.7-3.3 for pyroxene/plagioclase gangue (ASSUMED midpoint)",
-    "Stokes' law: v ∝ (ρs-ρw)·d²"
-   ]
-  },
-  "reading": "a 66 µm silicate settles like a 50 µm chromite, so chromite is classified as 'coarse' and returns to the mill until it is finer: over-grinding, fines, entrainment"
+ "V7_stokes_illustration": {
+  "equal_settling_size_ratio": 1.3228756555322954,
+  "provenance": "ASSUMED",
+  "caveat": "industrial cyclone partition also depends on pressure, solids, viscosity, geometry, bypass and roping; measured mineral partition curves are needed before any control claim"
  }
 }

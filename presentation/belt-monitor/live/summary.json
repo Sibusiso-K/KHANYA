@@ -10,7 +10,8 @@
   "bushveld_results": "b51cb2f5890f3e3bacc1a9c38d2fa38a4237b2b2af3ea2dfbfa23b1795cd3587",
   "bushveld_app": "879505b3bdd9cd607f2247a66e6ce9dc7e91f24d1e4a5099ae7dea155bea8226",
   "plan_review_log": "696c774f1e3021a8539d8898df6d708225c37edcec76ee42a87642683ddb845c",
-  "value_chain": "68af80430d91bd2840d49d922f1a163ac05561c887972d0b7db49723f0782794"
+  "value_chain": "e0af35f3ae07a8aaab9b4ee55da48ec60792bcfd61b307a77f5a27d9ccdee069",
+  "economics": "9dce282f0cbdcb0d8ff78376a28a84f0b1a25b0c918ed7f7ce28bc11b4d4415b"
  },
  "showcase": {
   "GEOMET": [
@@ -777,11 +778,25 @@
   "grinding": {
    "n_parcels": 146,
    "units": "samples (GEOMET has no drill-hole ids: may be optimistic)",
+   "ood_counts": {
+    "pass": 137,
+    "borderline": 5,
+    "refused": 4
+   },
    "wi_true": {
     "mean": 14.618493150684932,
     "sd": 1.8703161927631358,
     "min": 11.2,
     "max": 21.8
+   },
+   "one_sided_bound": {
+    "alpha": 0.1,
+    "method": "cross-fold residual quantile (CV+-style approximation, Barber et al. 2021); validity not claimed",
+    "empirical_exceedance": 0.0958904109589041,
+    "empirical_exceedance_ci95": [
+     0.04794520547945205,
+     0.14383561643835616
+    ]
    },
    "policies": {
     "blind_p90": {
@@ -795,7 +810,8 @@
       0.04794520547945205,
       0.136986301369863
      ],
-     "sim_energy_shortfall_when_overloaded": 0.1187334596015556
+     "sim_excess_energy_required_when_overloaded": 0.1187334596015556,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.10066623351601961
     },
     "blind_mean": {
      "sim_throughput_vs_blind_p90": 0.14024558271570298,
@@ -808,9 +824,10 @@
       0.3561643835616438,
       0.5205479452054794
      ],
-     "sim_energy_shortfall_when_overloaded": 0.11294658294626737
+     "sim_excess_energy_required_when_overloaded": 0.11294658294626737,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.09479452641643668
     },
-    "belt_hi": {
+    "belt_symmetric80_hi (old, comparator)": {
      "sim_throughput_vs_blind_p90": 0.02014792073583771,
      "sim_throughput_vs_blind_p90_ci95": [
       0.009553266678778517,
@@ -821,7 +838,36 @@
       0.0410958904109589,
       0.13013698630136986
      ],
-     "sim_energy_shortfall_when_overloaded": 0.049886286681433856
+     "sim_excess_energy_required_when_overloaded": 0.049886286681433856,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.046475574530573605
+    },
+    "belt_onesided90_all": {
+     "sim_throughput_vs_blind_p90": 0.021633621882383824,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.011291901802514232,
+      0.03181226143929697
+     ],
+     "sim_overload_share": 0.0958904109589041,
+     "sim_overload_share_ci95": [
+      0.04794520547945205,
+      0.14383561643835616
+     ],
+     "sim_excess_energy_required_when_overloaded": 0.044176766430286105,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.04081467698305486
+    },
+    "belt_deployed": {
+     "sim_throughput_vs_blind_p90": 0.018636733142509243,
+     "sim_throughput_vs_blind_p90_ci95": [
+      0.008354413254728726,
+      0.02855548393342116
+     ],
+     "sim_overload_share": 0.0958904109589041,
+     "sim_overload_share_ci95": [
+      0.04794520547945205,
+      0.14383561643835616
+     ],
+     "sim_excess_energy_required_when_overloaded": 0.044176766430286105,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.04081467698305486
     },
     "belt_point": {
      "sim_throughput_vs_blind_p90": 0.13589984063221205,
@@ -834,7 +880,8 @@
       0.3698630136986301,
       0.5342465753424658
      ],
-     "sim_energy_shortfall_when_overloaded": 0.07304467707554836
+     "sim_excess_energy_required_when_overloaded": 0.07304467707554836,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.065792065406314
     },
     "oracle": {
      "sim_throughput_vs_blind_p90": 0.14016773649440095,
@@ -847,31 +894,87 @@
       0.0,
       0.0
      ],
-     "sim_energy_shortfall_when_overloaded": 0.0
+     "sim_excess_energy_required_when_overloaded": 0.0,
+     "sim_energy_shortfall_fraction_when_overloaded": 0.0
     }
    },
-   "belt_hi_vs_blind_p90": {
-    "median_paired_diff_wi_used": -0.43813888888888997,
-    "wilcoxon_p_less": 1.2447237769506989e-07,
-    "mannwhitney_p_less": 4.1502058885487e-13,
-    "cliffs_delta": -0.4817977106398949,
+   "belt_deployed_vs_blind_p90": {
+    "median_paired_diff_wi_used": -0.45275,
+    "wilcoxon_p_less": 6.445773787365286e-07,
+    "mannwhitney_p_less": 1.4774516396180078e-09,
+    "cliffs_delta": -0.39908988553199476,
     "throughput_ci95": [
-     0.009553266678778517,
-     0.03014445047787696
+     0.008354413254728726,
+     0.02855548393342116
     ],
-    "overload_diff": -0.00684931506849315,
-    "overload_diff_ci95": [
-     -0.04794520547945205,
-     0.0410958904109589
-    ],
-    "verdict": "better",
-    "risk_matched": true
+    "overload_diff": 0.00684931506849315,
+    "noninferiority_margin": 0.03,
+    "overload_diff_onesided95_upper": 0.04794520547945205,
+    "noninferior": false,
+    "throughput_verdict": "better",
+    "claim": "no throughput claim: non-inferiority on overload risk not shown"
    },
-   "share_of_perfect_information_captured": 0.14374150028913768,
+   "ramp_limits_over_random_orders": {
+    "unlimited": {
+     "throughput_vs_blind_mean": 0.018636733142509243,
+     "throughput_p05_p95": [
+      0.018636733142509243,
+      0.018636733142509243
+     ],
+     "overload_diff_mean": 0.00684931506849315,
+     "overload_diff_p05_p95": [
+      0.00684931506849315,
+      0.00684931506849315
+     ]
+    },
+    "10pct_per_parcel": {
+     "throughput_vs_blind_mean": 0.020533415126867148,
+     "throughput_p05_p95": [
+      0.017889798312766537,
+      0.02327797355264576
+     ],
+     "overload_diff_mean": 0.022054794520547944,
+     "overload_diff_p05_p95": [
+      0.00684931506849315,
+      0.03424657534246575
+     ]
+    },
+    "5pct_per_parcel": {
+     "throughput_vs_blind_mean": 0.023438455485957133,
+     "throughput_p05_p95": [
+      0.020067965980109216,
+      0.02666713618231483
+     ],
+     "overload_diff_mean": 0.04301369863013699,
+     "overload_diff_p05_p95": [
+      0.0273972602739726,
+      0.06164383561643835
+     ]
+    },
+    "2pct_per_parcel": {
+     "throughput_vs_blind_mean": 0.024991487422765458,
+     "throughput_p05_p95": [
+      0.019361927457640548,
+      0.02934321038964798
+     ],
+     "overload_diff_mean": 0.061712328767123285,
+     "overload_diff_p05_p95": [
+      0.04075342465753425,
+      0.0821917808219178
+     ]
+    }
+   },
+   "share_of_perfect_information_captured": 0.13296022043741637,
+   "not_simulated": [
+    "an APC/feedback baseline: HIDSAG samples are not a time series, so no dynamic baseline can be simulated honestly",
+    "stale data, belt-to-mill transit and stockpile mixing (no timing exists in the data)",
+    "downstream constraints (flotation capacity, concentrate handling)"
+   ],
    "assumptions": [
-    "ASSUMED: the mill is power-limited and its feed rate can follow each parcel (no lag, no surge bin)",
+    "ASSUMED: the mill is power-limited and its feed rate can follow each parcel within the ramp limit",
     "ASSUMED: Bond's law applies (ball-mill energy); a SAG circuit also needs the A\u00d7b parameter, which HIDSAG lacks",
     "ASSUMED: HIDSAG's WI is the Bond ball-mill work index in kWh/t, as earlier runs and the registry treat it",
+    "ASSUMED: non-inferiority margin +3 pp overload share (pre-registered in PLAN-v8 D3; a site sets the real margin)",
     "Mill power, F80 and P80 cancel in every ratio: no plant parameter is needed for the relative results"
    ]
   },
@@ -957,6 +1060,445 @@
    "grinding": "training/hidsag-v6-live-20261001/output/hidsag_v6_results.json (Kaggle reefprint-hidsag-v6-live)",
    "routing": "training/bushveld-xrf-pge-20261001/app_bushveld.json (bushveld.py, GroupKFold by ProjectCode)",
    "bond": "Bond, F.C. (1961) Crushing and grinding calculations, Br. Chem. Eng. 6:378-385, 543-548 (textbook form; primary not re-read this session)"
+  }
+ },
+ "economics": {
+  "note": "What the levers could be worth: scenario arithmetic with provenance attached (rule 1 as a type: reefprint.quantity).",
+  "basis": "contained 4E oz x ASSUMED payability x ASSUMED net 4E price; FX separate",
+  "fx": {
+   "value": 17.61,
+   "unit": "ZAR/USD",
+   "provenance": "ASSUMED",
+   "sources": [
+    "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+   ]
+  },
+  "V1_net_value_per_recovery_pp_per_yr": {
+   "zondereinde_scale": {
+    "low": {
+     "value": 63959881.327479124,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability (smelting/refining losses and charges, toll terms)",
+      "ASSUMED low net 4E price"
+     ]
+    },
+    "base": {
+     "value": 94556071.27865912,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)"
+     ]
+    },
+    "high": {
+     "value": 152815336.30318266,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Northam Zondereinde revenue per equivalent refined 4E oz F2026, indicative [N]"
+     ]
+    }
+   },
+   "implats_group_scale": {
+    "low": {
+     "value": 633932345.4669222,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Implats FY2025 tonnes milled, managed operations",
+      "ASSUMED for illustration: no verified Implats group head grade was read",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability (smelting/refining losses and charges, toll terms)",
+      "ASSUMED low net 4E price"
+     ]
+    },
+    "base": {
+     "value": 937183603.2169882,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Implats FY2025 tonnes milled, managed operations",
+      "ASSUMED for illustration: no verified Implats group head grade was read",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)"
+     ]
+    },
+    "high": {
+     "value": 1514614826.5971346,
+     "unit": "t/yr*g/t/g/oz*ZAR/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Implats FY2025 tonnes milled, managed operations",
+      "ASSUMED for illustration: no verified Implats group head grade was read",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Northam Zondereinde revenue per equivalent refined 4E oz F2026, indicative [N]"
+     ]
+    }
+   }
+  },
+  "V2_throughput_mill_constrained_only": {
+   "extra_tonnes_per_yr": {
+    "value": 295470.0,
+    "unit": "t/yr",
+    "provenance": "ASSUMED",
+    "sources": [
+     "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+     "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority"
+    ]
+   },
+   "net_revenue_per_extra_tonne": {
+    "low": {
+     "value": 1190.5823338695052,
+     "unit": "g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability (smelting/refining losses and charges, toll terms)",
+      "ASSUMED low net 4E price",
+      "troy ounce definition"
+     ]
+    },
+    "base": {
+     "value": 1760.1156488717686,
+     "unit": "g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "troy ounce definition"
+     ]
+    },
+    "high": {
+     "value": 2844.583760488152,
+     "unit": "g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability",
+      "ASSUMED: Northam Zondereinde revenue per equivalent refined 4E oz F2026, indicative [N]",
+      "troy ounce definition"
+     ]
+    }
+   },
+   "contribution_per_yr_if_variable_cost_is_fraction_of_revenue": {
+    "25pct": {
+     "value": 390046028.0791061,
+     "unit": "t/yr*g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+      "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority",
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "troy ounce definition",
+      "ASSUMED incremental variable cost = 25% of net revenue per tonne (mining/reclaim, milling, flotation, smelting/refining)"
+     ]
+    },
+    "50pct": {
+     "value": 260030685.38607073,
+     "unit": "t/yr*g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+      "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority",
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "troy ounce definition",
+      "ASSUMED incremental variable cost = 50% of net revenue per tonne (mining/reclaim, milling, flotation, smelting/refining)"
+     ]
+    },
+    "75pct": {
+     "value": 130015342.69303536,
+     "unit": "t/yr*g/t*ZAR/oz/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled",
+      "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority",
+      "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source",
+      "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "troy ounce definition",
+      "ASSUMED incremental variable cost = 75% of net revenue per tonne (mining/reclaim, milling, flotation, smelting/refining)"
+     ]
+    }
+   },
+   "zero_if": "the plant is ore-constrained (most underground PGM concentrators), or the extra tonnes move the bottleneck downstream",
+   "transfer_caveat": "the +2.0% is a Chilean Cu-Mo drill-core result under revision; no confidence interval is transferred to rands"
+  },
+  "V3_cr2o3_tradeoff_evidence_only": {
+   "jones_2005": "UG2 concentrate ~430 g/t at 87% recovery and 2.9% Cr2O3; >1000 g/t at >90% if Cr2O3 relaxed to 4-10% [P]",
+   "reading": "recovery and concentrate quality trade off; better chromite control moves the operating point, by an amount only a pilot can measure"
+  },
+  "V4_breakeven_recovery_pp_zondereinde_scale_base": {
+   "net_value_per_pp_usd": {
+    "value": 5369453.224228229,
+    "unit": "t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+    "provenance": "ASSUMED",
+    "sources": [
+     "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+     "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+     "one percentage point",
+     "troy ounce definition",
+     "ASSUMED payability",
+     "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+     "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+    ]
+   },
+   "breakeven_pp": {
+    "capex_0.5M_opex_0.1M": {
+     "value": 0.043188520453254206,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$100,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_0.5M_opex_0.3M": {
+     "value": 0.08043626089311003,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$300,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_0.5M_opex_0.6M": {
+     "value": 0.13630787155289373,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$600,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_1.5M_opex_0.1M": {
+     "value": 0.0923178209199068,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$1,500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$100,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_1.5M_opex_0.3M": {
+     "value": 0.1295655613597626,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$1,500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$300,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_1.5M_opex_0.6M": {
+     "value": 0.18543717201954632,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$1,500,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$600,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_3.0M_opex_0.1M": {
+     "value": 0.1660117716198857,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$3,000,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$100,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_3.0M_opex_0.3M": {
+     "value": 0.2032595120597415,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$3,000,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$300,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    },
+    "capex_3.0M_opex_0.6M": {
+     "value": 0.2591311227195252,
+     "unit": "USD/t/yr*g/t/g/oz*ZAR/oz/ZAR/USD",
+     "provenance": "ASSUMED",
+     "sources": [
+      "ASSUMED installed capex scenario US$3,000,000: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required",
+      "ASSUMED capital recovery factor (per year), 5 years at 10%",
+      "ASSUMED annual opex (per year) US$600,000: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required",
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "one percentage point",
+      "troy ounce definition",
+      "ASSUMED payability",
+      "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)",
+      "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate"
+     ]
+    }
+   },
+   "formula": "(capex x CRF + opex) / net value per recovery pp"
+  },
+  "V5_qemscan_every_shift": {
+   "per_stream_per_yr_cad2017": {
+    "value": 2682750,
+    "unit": "CAD/sample*samples/yr",
+    "provenance": "ASSUMED",
+    "sources": [
+     "Saskatchewan Research Council QEMSCAN price list 4/2017 (Canadian lab, CAD, 2017): liberation analysis with predicted recovery [P]",
+     "SRC 4/2017: 30 mm block mount [P]",
+     "SRC 4/2017: crush, grind and sieve test samples [P]",
+     "ASSUMED cadence: one composite per stream per shift, three shifts, every day"
+    ]
+   },
+   "reading": "a 2017 Canadian list price; a local quote is required; still days late"
+  },
+  "V6_processed_before_assay_returns_zondereinde_scale": {
+   "24h": {
+    "tonnes": {
+     "value": 6158.57808219178,
+     "unit": "t/yr/h/yr*h",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "hours in a year",
+      "indicative [S]: 4E fire assay turnaround in practice 24-72 h"
+     ]
+    },
+    "contained_oz": {
+     "value": 934.5736084380509,
+     "unit": "t/yr/h/yr*h*g/t/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "hours in a year",
+      "indicative [S]: 4E fire assay turnaround in practice 24-72 h",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "troy ounce definition"
+     ]
+    }
+   },
+   "72h": {
+    "tonnes": {
+     "value": 18475.73424657534,
+     "unit": "t/yr/h/yr*h",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "hours in a year",
+      "indicative [S]: 4E fire assay turnaround in practice 24-72 h"
+     ]
+    },
+    "contained_oz": {
+     "value": 2803.7208253141525,
+     "unit": "t/yr/h/yr*h*g/t/g/oz",
+     "provenance": "ASSUMED",
+     "sources": [
+      "indicative [S]: Northam F2025, Zondereinde tonnes milled",
+      "hours in a year",
+      "indicative [S]: 4E fire assay turnaround in practice 24-72 h",
+      "indicative [S]: Northam F2025, Zondereinde 4E mill head grade",
+      "troy ounce definition"
+     ]
+    }
+   }
+  },
+  "V7_stokes_illustration": {
+   "equal_settling_size_ratio": 1.3228756555322954,
+   "provenance": "ASSUMED",
+   "caveat": "industrial cyclone partition also depends on pressure, solids, viscosity, geometry, bypass and roping; measured mineral partition curves are needed before any control claim"
   }
  },
  "v6_records": {
@@ -1470,5 +2012,87 @@
    "WI": "Review feed rate with the control room"
   },
   "ood": "pass <= calibration p95 < borderline <= p99 < refused"
+ },
+ "shipped_assets_sha256": {
+  "bushveld.json": "879505b3bdd9cd607f2247a66e6ce9dc7e91f24d1e4a5099ae7dea155bea8226",
+  "plant_h1.json": "033a574e23b7a4095e4f868129439d8c3bcde9de8427d23077f90e0255f3f974",
+  "plant_h3.json": "85e112b2e2151eac474acc14f74a2af438da7b64ad24b07deb538a37540cda39",
+  "targets.json": "574b904570563756dc24a5fe6b3917791384be0b255f53f768accd3fbd1c31c1",
+  "samples/BAD_mixed_import.csv": "c58f0bda17787a20fd76b72156309ec37bf0e12c9b4df6a75ca18cb530c6319f",
+  "samples/assay_BUSHVELD_icp.csv": "96528f88b86e19129748dd4984ab0687913684f1f5d0ff8d4cf9e4b8485234d2",
+  "samples/lab_GEOMET_showcase.csv": "fb6c2e4c14c31fa8109baaa34f871a6be48f3904ad231016cf09708f6fcac2b5",
+  "samples/xrf_BUSHVELD_belt.csv": "28d1d1e3f95e596d0f18cff93e78823d61c26856c9d3c389f78eb6bd2f0613ad",
+  "showcase/GEOMET/GMET-0004.bin.gz": "0fa32e14b2ad9e8b5650f93acb5458827259ca72c2d54a17456092c96fdbb3bb",
+  "showcase/GEOMET/GMET-0004.json": "1ad4dc458a501fb791bce3b53436e5d04c2ca864c858829ed2cf54f7984fc22d",
+  "showcase/GEOMET/GMET-0007.bin.gz": "8a44409822bac7d264fcfd19167b53c9ad6767a3f6e4533d93e73b44e951adf3",
+  "showcase/GEOMET/GMET-0007.json": "5e81aa54f1f43740cf295c073f8f9a2bb2cace7969fdf792f81709c7b0c0e0d3",
+  "showcase/GEOMET/GMET-0011.bin.gz": "3fc87de6f9ce9a7dc8f6b5294e8ca7b17bd778e20487dbeb316fb3c9f64aea88",
+  "showcase/GEOMET/GMET-0011.json": "28890a374a43cbac69102dcb1e43cb1c6ae1f0babd3d544288887eaf4fd78d77",
+  "showcase/GEOMET/GMET-0015.bin.gz": "aa30f7e8dd52d7e24680e4ef9c866a54171d41532ae9c05a3fb69f35f9b5a9ca",
+  "showcase/GEOMET/GMET-0015.json": "ca3b3f5d3795f859dc40d881014c6905ed379250097a83364ead5c9b93d19802",
+  "showcase/GEOMET/GMET-0022.bin.gz": "b1b87b090f2bad26f391ef070cf4230dc47dae2aa19f24f1bd9bbedf3e60d7d5",
+  "showcase/GEOMET/GMET-0022.json": "de1dea0d4f379a480fbd9112fcbe14c95f61b279ed503b4ecb1bd231cfe566fb",
+  "showcase/GEOMET/GMET-0035.bin.gz": "d5c5c5738e6cfa8d27535b4bced93a976b6fbd77cc9d1dcefd429c39143884aa",
+  "showcase/GEOMET/GMET-0035.json": "7cd55a66bdb3d4612a9dc2b1198f5d5e4232949a873ab30d541e8c424504246e",
+  "showcase/GEOMET/GMET-0039.bin.gz": "5482e6c77c69c83e06d0a2e18310fb85b24cdaa7ded215d1aa2fcee03ce2ae81",
+  "showcase/GEOMET/GMET-0039.json": "7ca438e9c4fc9a58514640622ed5a7354a8cb52af34d6368edbd74634e692a5e",
+  "showcase/GEOMET/GMET-0043.bin.gz": "4bc489d25979faab9a705cdec34df936f93446a0455ae342a28574d9fdd723ab",
+  "showcase/GEOMET/GMET-0043.json": "b677d9028bbffc366d346f09ad9788805b01c9b15c5fa7d9bb6a06f11e73dce7",
+  "showcase/GEOMET/GMET-0048.bin.gz": "b393b5d4501c966f79fc7c46e5234f0fda2959d0e295b192b009c9808f7a2138",
+  "showcase/GEOMET/GMET-0048.json": "a294c16e60f49a4ac54849ed7d0b1f6cddc344feece711b3a8cb4f8f11bdbe7b",
+  "showcase/GEOMET/GMET-0054.bin.gz": "d5575c71bb6c247fd70cf6b664f676149bebb39661a827a8b176a807c52a97c1",
+  "showcase/GEOMET/GMET-0054.json": "d16c46a65e06235bfe7d5a1116e3e1ace663953a819241cdde80c388d0d933d6",
+  "showcase/GEOMET/GMET-0063.bin.gz": "36db3f88377e305e1305de4fa04bd3be28b438d2b369b15b5f2c993d24d9a39d",
+  "showcase/GEOMET/GMET-0063.json": "b0e133ffbc901556d9f7009885c4b3789c5ae03775867e95c3b968b6da84a859",
+  "showcase/GEOMET/GMET-0064.bin.gz": "6f57a245153513d1b94ae9fbd23aaf7e664647c2f4199b9ad20b3fd8030e3e75",
+  "showcase/GEOMET/GMET-0064.json": "aa1ea341f5327d5b279c390b6bef99ffbae5844266a6e14cd7c1337e9453a676",
+  "showcase/GEOMET/GMET-0068.bin.gz": "5eefbff47b996f3fe9ff7d47385922592870049ccb124ee32e6cbf7bf0fb8ae5",
+  "showcase/GEOMET/GMET-0068.json": "357163b07b926071e56a870342ab03053b8e983e2cc90cd3a120cfbfce1ba31e",
+  "showcase/GEOMET/GMET-0071.bin.gz": "119ec48c346acc8a19ad58f9cdf672848bc407ab1c126693c27469ca8c86ef0a",
+  "showcase/GEOMET/GMET-0071.json": "51b256d427cfe44c4b4a9c308220b822caefbf96b3e7a97dc03552314ced117c",
+  "showcase/GEOMET/GMET-0080.bin.gz": "b1acd635550fefe974fdf817ed083dfe1ac303a323ac9b843920b2a18d451d0d",
+  "showcase/GEOMET/GMET-0080.json": "d9c0a56992a8b829c852eed699d790ecce196b93398a4c5af8125400676b5484",
+  "showcase/GEOMET/GMET-0083.bin.gz": "7a7adb175eb743422e59a84d784902df72f7a581dcd07600eaf4b0cfe1bc2c84",
+  "showcase/GEOMET/GMET-0083.json": "d6d1097dd0afb580e7de0c286a9bfc0860dde01e5e29eba58639c183780ebdab",
+  "showcase/GEOMET/GMET-0091.bin.gz": "243e09ef86582c9d3b8b7a0987e42d066522c01188d42b9fce4d3ea9d7bf493b",
+  "showcase/GEOMET/GMET-0091.json": "13d2f6a63550f804b8b6e4f29e19e267186843b5c70824d3d35da4454dc7c662",
+  "showcase/GEOMET/GMET-0098.bin.gz": "f9604ce4b58bed60054a6bcbac3498970f3337b609d667cb922fcec7420977da",
+  "showcase/GEOMET/GMET-0098.json": "f8e48e9568a73ff0de5ca614751a457ae568ca4a53b132d8c4c511a4590d2da9",
+  "showcase/GEOMET/GMET-0105.bin.gz": "b6a32c4e125fdaf59f47df672d9d6abeb5bbdf9b99f16ed51343d3f6f90e457a",
+  "showcase/GEOMET/GMET-0105.json": "9bcdce4ca833aa1c1462019f599e0c9baf82ddfd97aac00798844191334118a4",
+  "showcase/GEOMET/GMET-0112.bin.gz": "9ec9b704e00aadb073b0594518df7354948017064ae65f8af9a93025ef8cc881",
+  "showcase/GEOMET/GMET-0112.json": "cf9bff6acdca95a4e4e86c8547e9cb8f3f0f726a0eb58dd0e5b15678208afd1e",
+  "showcase/GEOMET/GMET-0113.bin.gz": "0b28b0dc5b1cb3de3644c2e97ecb1e0bd6c9d07553cd34300755a50cecaf92b9",
+  "showcase/GEOMET/GMET-0113.json": "d9e339567950ea132219b795e1ca2c539112dd747c47bebad38ef9c157be469c",
+  "showcase/GEOMET/GMET-0114.bin.gz": "4cc6f3c0cf65f23a272ec7065946eada6942facce977c3c3f7f2c5de634b887d",
+  "showcase/GEOMET/GMET-0114.json": "22eb2de8ba89516137d7518448a378eacc3598cd8f212e675e7fadcc5a64ec74",
+  "showcase/GEOMET/GMET-0116.bin.gz": "5f284a28adc7ab9456b7b2fbaf4d3a00c3a9aa3d7e8e3cc58ba6b1bafdc41e03",
+  "showcase/GEOMET/GMET-0116.json": "f96c66396bc745ff97de8d3eb8e94eada6e8998d871a11a86b2e2d43d66279be",
+  "showcase/GEOMET/GMET-0126.bin.gz": "5f96d40f001e717e69ea30a39f30923c6b10ede4c6dc6d8540be08300f41ea63",
+  "showcase/GEOMET/GMET-0126.json": "3cea530965a01610c5a9dd9953687bf7626145eae0a3b69ddb1bb09b6697578d",
+  "showcase/MINERAL1/M1-0013.bin.gz": "7563b0a86a3d6709925f240a51ad996e7215f9dc7492c282215df9914b14aedc",
+  "showcase/MINERAL1/M1-0013.json": "e2cf3c1cc98a0d10657aa871d637157d375e758b0b7d8275edb7cb08f29481a8",
+  "showcase/MINERAL1/M1-0021.bin.gz": "7706996123e0baff2ab4382d1e8481c78bdecb5b0988d999929a3c0b9d5bd89e",
+  "showcase/MINERAL1/M1-0021.json": "e9b752f90053325da73c557661567fd7ce6b5764d00e1c794de5b44114f34808",
+  "showcase/MINERAL1/M1-0030.bin.gz": "22b5ce189692a742fb133f56f030dfec0a4cb40cedf21d9375abfbac02199e81",
+  "showcase/MINERAL1/M1-0030.json": "bd9c14b043be60567a5045c69b812cd300e37d58b5e37e2fc073b0e77849a3ee",
+  "showcase/MINERAL1/M1-0041.bin.gz": "ab11949c94ae61e82f1d27b6f6c14dd814a93a9d4d4c477db8237e7b12ef6326",
+  "showcase/MINERAL1/M1-0041.json": "e649ea256402df9f9a690199c724b5804a5e4a397763dd72c51546a29519d524",
+  "showcase/MINERAL1/M1-0043.bin.gz": "1f22158874dfba558a1fa514a1833bd1b6f63f8debdc78c664472f3814e6a219",
+  "showcase/MINERAL1/M1-0043.json": "9c98e04fd8f5de8b1f850a2d47ec283dfcee56291352648346db4c43721da804",
+  "showcase/MINERAL1/M1-0053.bin.gz": "0da800971615da6434041c733bad119ec814d127ec6fb804f69fbd6de5098335",
+  "showcase/MINERAL1/M1-0053.json": "1f4350143c04435e8bf37c4aac481095bea88dff2f82933c40980c9a5c3913a1",
+  "showcase/MINERAL1/M1-0066.bin.gz": "626565dac699b5be2ffad1245fe12d520a2ede60926467a06fc119cfb3b5a4d6",
+  "showcase/MINERAL1/M1-0066.json": "f91a17c2272cb39b6e994a3714061d6e074cdf3759b96ec9e3ad708627acc6dc",
+  "showcase/MINERAL1/M1-0070.bin.gz": "43825bd057a30a255c8b5ab9301f6baed0937f439495ec0205e7513f2f76c772",
+  "showcase/MINERAL1/M1-0070.json": "bcacc701d86a2fe5402e9d4690fede286845df437ab8afba43cf3475687b3588",
+  "showcase/MINERAL1/M1-0078.bin.gz": "5aa1a2679154a051cbcad4a78e06006a4b8204d416956867c13a42101e7bbb43",
+  "showcase/MINERAL1/M1-0078.json": "18ba0c8345f60881325ef4ebfd56d99d40156b9a361a09c531e40d6f074d9e57",
+  "showcase/MINERAL1/M1-0079.bin.gz": "310e5a968d8361a2317933c0866b38f0da41c653540566017549740f8af9ae2e",
+  "showcase/MINERAL1/M1-0079.json": "21d3ab90cbd2f07c0fa7a7136243aef57cb643a37cf62da75d6a9e49fc28704a",
+  "showcase/MINERAL1/M1-0084.bin.gz": "5bb46d7a3b209ab3b1a708ead2173bac5c2726a349d4cb27c48984be2bc37b10",
+  "showcase/MINERAL1/M1-0084.json": "c42dabd9779d5e6312a88b080036f1d25a91a41c5398c87b40c023d2c6ee2b72",
+  "showcase/MINERAL1/M1-0095.bin.gz": "aec7d4f2e1de43d798d971a89b36c2ee15f33b4580b94fbf1cd6ef2544320daf",
+  "showcase/MINERAL1/M1-0095.json": "4ef457957ebd53e06a95e364f3adc4835d4b229220f4a0bc62d4bc92c1a9662a"
  }
 }

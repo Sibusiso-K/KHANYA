@@ -3,11 +3,25 @@
  "grinding": {
   "n_parcels": 146,
   "units": "samples (GEOMET has no drill-hole ids: may be optimistic)",
+  "ood_counts": {
+   "pass": 137,
+   "borderline": 5,
+   "refused": 4
+  },
   "wi_true": {
    "mean": 14.618493150684932,
    "sd": 1.8703161927631358,
    "min": 11.2,
    "max": 21.8
+  },
+  "one_sided_bound": {
+   "alpha": 0.1,
+   "method": "cross-fold residual quantile (CV+-style approximation, Barber et al. 2021); validity not claimed",
+   "empirical_exceedance": 0.0958904109589041,
+   "empirical_exceedance_ci95": [
+    0.04794520547945205,
+    0.14383561643835616
+   ]
   },
   "policies": {
    "blind_p90": {
@@ -21,7 +35,8 @@
      0.04794520547945205,
      0.136986301369863
     ],
-    "sim_energy_shortfall_when_overloaded": 0.1187334596015556
+    "sim_excess_energy_required_when_overloaded": 0.1187334596015556,
+    "sim_energy_shortfall_fraction_when_overloaded": 0.10066623351601961
    },
    "blind_mean": {
     "sim_throughput_vs_blind_p90": 0.14024558271570298,
@@ -34,9 +49,10 @@
      0.3561643835616438,
      0.5205479452054794
     ],
-    "sim_energy_shortfall_when_overloaded": 0.11294658294626737
+    "sim_excess_energy_required_when_overloaded": 0.11294658294626737,
+    "sim_energy_shortfall_fraction_when_overloaded": 0.09479452641643668
    },
-   "belt_hi": {
+   "belt_symmetric80_hi (old, comparator)": {
     "sim_throughput_vs_blind_p90": 0.02014792073583771,
     "sim_throughput_vs_blind_p90_ci95": [
      0.009553266678778517,
@@ -47,7 +63,36 @@
      0.0410958904109589,
      0.13013698630136986
     ],
-    "sim_energy_shortfall_when_overloaded": 0.049886286681433856
+    "sim_excess_energy_required_when_overloaded": 0.049886286681433856,
+    "sim_energy_shortfall_fraction_when_overloaded": 0.046475574530573605
+   },
+   "belt_onesided90_all": {
+    "sim_throughput_vs_blind_p90": 0.021633621882383824,
+    "sim_throughput_vs_blind_p90_ci95": [
+     0.011291901802514232,
+     0.03181226143929697
+    ],
+    "sim_overload_share": 0.0958904109589041,
+    "sim_overload_share_ci95": [
+     0.04794520547945205,
+     0.14383561643835616
+    ],
+    "sim_excess_energy_required_when_overloaded": 0.044176766430286105,
+    "sim_energy_shortfall_fraction_when_overloaded": 0.04081467698305486
+   },
+   "belt_deployed": {
+    "sim_throughput_vs_blind_p90": 0.018636733142509243,
+    "sim_throughput_vs_blind_p90_ci95": [
+     0.008354413254728726,
+     0.02855548393342116
+    ],
+    "sim_overload_share": 0.0958904109589041,
+    "sim_overload_share_ci95": [
+     0.04794520547945205,
+     0.14383561643835616
+    ],
+    "sim_excess_energy_required_when_overloaded": 0.044176766430286105,
+    "sim_energy_shortfall_fraction_when_overloaded": 0.04081467698305486
    },
    "belt_point": {
     "sim_throughput_vs_blind_p90": 0.13589984063221205,
@@ -60,7 +105,8 @@
      0.3698630136986301,
      0.5342465753424658
     ],
-    "sim_energy_shortfall_when_overloaded": 0.07304467707554836
+    "sim_excess_energy_required_when_overloaded": 0.07304467707554836,
+    "sim_energy_shortfall_fraction_when_overloaded": 0.065792065406314
    },
    "oracle": {
     "sim_throughput_vs_blind_p90": 0.14016773649440095,
@@ -73,31 +119,87 @@
      0.0,
      0.0
     ],
-    "sim_energy_shortfall_when_overloaded": 0.0
+    "sim_excess_energy_required_when_overloaded": 0.0,
+    "sim_energy_shortfall_fraction_when_overloaded": 0.0
    }
   },
-  "belt_hi_vs_blind_p90": {
-   "median_paired_diff_wi_used": -0.43813888888888997,
-   "wilcoxon_p_less": 1.2447237769506989e-07,
-   "mannwhitney_p_less": 4.1502058885487e-13,
-   "cliffs_delta": -0.4817977106398949,
+  "belt_deployed_vs_blind_p90": {
+   "median_paired_diff_wi_used": -0.45275,
+   "wilcoxon_p_less": 6.445773787365286e-07,
+   "mannwhitney_p_less": 1.4774516396180078e-09,
+   "cliffs_delta": -0.39908988553199476,
    "throughput_ci95": [
-    0.009553266678778517,
-    0.03014445047787696
+    0.008354413254728726,
+    0.02855548393342116
    ],
-   "overload_diff": -0.00684931506849315,
-   "overload_diff_ci95": [
-    -0.04794520547945205,
-    0.0410958904109589
-   ],
-   "verdict": "better",
-   "risk_matched": true
+   "overload_diff": 0.00684931506849315,
+   "noninferiority_margin": 0.03,
+   "overload_diff_onesided95_upper": 0.04794520547945205,
+   "noninferior": false,
+   "throughput_verdict": "better",
+   "claim": "no throughput claim: non-inferiority on overload risk not shown"
   },
-  "share_of_perfect_information_captured": 0.14374150028913768,
+  "ramp_limits_over_random_orders": {
+   "unlimited": {
+    "throughput_vs_blind_mean": 0.018636733142509243,
+    "throughput_p05_p95": [
+     0.018636733142509243,
+     0.018636733142509243
+    ],
+    "overload_diff_mean": 0.00684931506849315,
+    "overload_diff_p05_p95": [
+     0.00684931506849315,
+     0.00684931506849315
+    ]
+   },
+   "10pct_per_parcel": {
+    "throughput_vs_blind_mean": 0.020533415126867148,
+    "throughput_p05_p95": [
+     0.017889798312766537,
+     0.02327797355264576
+    ],
+    "overload_diff_mean": 0.022054794520547944,
+    "overload_diff_p05_p95": [
+     0.00684931506849315,
+     0.03424657534246575
+    ]
+   },
+   "5pct_per_parcel": {
+    "throughput_vs_blind_mean": 0.023438455485957133,
+    "throughput_p05_p95": [
+     0.020067965980109216,
+     0.02666713618231483
+    ],
+    "overload_diff_mean": 0.04301369863013699,
+    "overload_diff_p05_p95": [
+     0.0273972602739726,
+     0.06164383561643835
+    ]
+   },
+   "2pct_per_parcel": {
+    "throughput_vs_blind_mean": 0.024991487422765458,
+    "throughput_p05_p95": [
+     0.019361927457640548,
+     0.02934321038964798
+    ],
+    "overload_diff_mean": 0.061712328767123285,
+    "overload_diff_p05_p95": [
+     0.04075342465753425,
+     0.0821917808219178
+    ]
+   }
+  },
+  "share_of_perfect_information_captured": 0.13296022043741637,
+  "not_simulated": [
+   "an APC/feedback baseline: HIDSAG samples are not a time series, so no dynamic baseline can be simulated honestly",
+   "stale data, belt-to-mill transit and stockpile mixing (no timing exists in the data)",
+   "downstream constraints (flotation capacity, concentrate handling)"
+  ],
   "assumptions": [
-   "ASSUMED: the mill is power-limited and its feed rate can follow each parcel (no lag, no surge bin)",
+   "ASSUMED: the mill is power-limited and its feed rate can follow each parcel within the ramp limit",
    "ASSUMED: Bond's law applies (ball-mill energy); a SAG circuit also needs the A\u00d7b parameter, which HIDSAG lacks",
    "ASSUMED: HIDSAG's WI is the Bond ball-mill work index in kWh/t, as earlier runs and the registry treat it",
+   "ASSUMED: non-inferiority margin +3 pp overload share (pre-registered in PLAN-v8 D3; a site sets the real margin)",
    "Mill power, F80 and P80 cancel in every ratio: no plant parameter is needed for the relative results"
   ]
  },

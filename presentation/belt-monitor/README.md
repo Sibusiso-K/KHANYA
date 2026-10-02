@@ -64,7 +64,7 @@ The KHANYA workbench has its own assistant setting: `REEFPRINT_ASSISTANT_PROVIDE
 ## What is not claimed
 
 - **Not live, not one ore.** Nothing here is a live belt, a live plant connection or PGM-ore hyperspectral data. The three tracks are not paired observations of one ore.
-- **One belt target drives decisions: Bond work index.** It beats its strongest baseline under every gate, and the feed-rate policy built on its interval gives sim_ +2.0% throughput [+1.0, +3.0] at the same overload risk (`docs/16-decision-value-chain.md`).
+- **One belt target is decision-grade: Bond work index.** It beats its strongest baseline under every gate. The deployed feed-rate policy gives sim_ +1.9% throughput [+0.8, +2.9], but **non-inferiority on overload risk is not shown** (one-sided upper bound +4.8 pp against a pre-registered +3 pp margin). So there is **no throughput claim until a pilot** (`docs/16`, corrected after ClauDex round 1). "Same overload risk" is withdrawn.
 - **Bushveld chemistry is not a grade-control claim (corrected 2026-10-02).** It beats the average for Pt / Rh / 4E, but routing by the mine-plan seam is better (balanced accuracy 0.82 vs 0.79). It is useful only where provenance is lost.
 - **Destriping is display only.** It removes column-to-column detector offsets from the maps; no prediction uses it.
 - **Plant-feed mineralogy is withdrawn.** Its predictions are explained by size fraction and process line, so the earlier "camera reads mineralogy" claim is withdrawn.

@@ -24,7 +24,8 @@ SRC = {"v6_results": os.path.join(T, "hidsag-v6-live-20261001", "output", "hidsa
        "bushveld_results": os.path.join(T, "bushveld-xrf-pge-20261001", "results.json"),
        "bushveld_app": os.path.join(T, "bushveld-xrf-pge-20261001", "app_bushveld.json"),
        "plan_review_log": os.path.join(R, "PLAN-live-v6-REVIEW-LOG.md"),
-       "value_chain": os.path.join(T, "value-chain-20261002", "results.json")}
+       "value_chain": os.path.join(T, "value-chain-20261002", "results.json"),
+       "economics": os.path.join(T, "economics-20261002", "results.json")}
 
 
 def sha(p):
@@ -140,6 +141,8 @@ with open(os.path.join(sd, "BAD_mixed_import.csv"), "w", newline="") as f:
     w.writerow(["NOT-A-SAMPLE", "GEOMET:WI", 12, "kWh/t", "dry_mass", "none", 1, "2026-10-01T08:00:00"])  # unknown sample
     w.writerow([s0, "XRD:quartz", 31, "wt%", "dry_mass", "none", 1, "2026-10-01T08:00:00"])           # unknown target
     w.writerow([s0, "GEOMET:Mo rec", "=HYPERLINK(\"x\")", "%", "dry_mass", "none", 1, "2026-10-01T08:00:00"])  # formula
+    w.writerow([s0, "GEOMET:Cu rec", "", "%", "dry_mass", "none", 1, "2026-10-01T08:00:00"])                    # blank is not zero
+    w.writerow([s0, "GEOMET:PH", 8.1, "pH", "none", "none", 1, "not-a-time"])                                 # unreadable timestamp
 with open(os.path.join(sd, "xrf_BUSHVELD_belt.csv"), "w", newline="") as f:
     w = csv.writer(f)
     w.writerow(["sample_id", "target_id", "value", "unit", "basis", "size_fraction", "revision", "timestamp"])
@@ -150,7 +153,7 @@ with open(os.path.join(sd, "xrf_BUSHVELD_belt.csv"), "w", newline="") as f:
 
 # ---------------- summary
 pl = {f"delay{r['delay_h']}_h{r['horizon_h']}": {"model": r["model"], **{k: r["test"][k] for k in ("mae_model", "mae_persistence", "mae_mean", "verdict", "coverage", "coverage_ci95_block", "width", "strongest_baseline")}, "n_test": r["n"]["test"]} for r in PL["runs"]}
-summary = {"built": "2026-10-02", "hashes_sha256": hashes, "showcase": show, "evidence": evidence, "value": json.load(open(SRC["value_chain"])),
+summary = {"built": "2026-10-02", "hashes_sha256": hashes, "showcase": show, "evidence": evidence, "value": json.load(open(SRC["value_chain"])), "economics": json.load(open(SRC["economics"], encoding="utf-8")),
            "v6_records": {rec: {"n": A["records"][rec]["n"], "n_units": A["records"][rec]["n_units"], "ood": A["records"][rec]["ood"],
                                 "calibration": A["records"][rec]["calibration"], "blends": A["records"][rec]["blends"] and {k: v for k, v in A["records"][rec]["blends"].items() if k != "targets"}}
                           for rec in A["records"]},
@@ -174,6 +177,9 @@ def _clean(o):
     return o
 
 
+# Hash every file shipped in live/ (except summary.json itself), so "every source is hashed" is literally true.
+summary["shipped_assets_sha256"] = {os.path.relpath(os.path.join(dp, f), LIVE).replace(os.sep, "/"): sha(os.path.join(dp, f))
+                                    for dp, _, fs in sorted(os.walk(LIVE)) for f in sorted(fs) if f != "summary.json"}
 json.dump(_clean(summary), open(os.path.join(LIVE, "summary.json"), "w"), indent=1, allow_nan=False)
 size = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(LIVE) for f in fs)
 print("live/ built:", {k: len(v) for k, v in show.items()}, "showcase samples;", round(size / 1e6, 1), "MB total")

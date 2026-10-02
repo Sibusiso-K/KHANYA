@@ -1,5 +1,12 @@
 # 16 — From a prediction to a plant action, and what it is worth
 
+> **Corrected 2026-10-02 (morning), after the ClauDex round-1 review (`PLAN-v8-REVIEW-LOG.md`, findings 17–19).** "Same overload risk" was wrong. A symmetric 80% interval does not give a 10% upper tail, and a CI of −4.8 to +4.1 pp is not equivalence. The section below now uses:
+> - a one-sided bound;
+> - the policy as it would be deployed (OOD refusals fall back);
+> - a pre-registered non-inferiority margin of +3 pp.
+>
+> **Result: the throughput gain survives (+1.9% [+0.8, +2.9]), but non-inferiority on overload risk is not shown (upper bound +4.8 pp).** So there is no throughput claim until a pilot.
+
 *Written 2026-10-02 for the Top-5 refinement. Every number below was computed by code from real held-out predictions on public data. The file is named next to each number. Anything assumed is labelled **ASSUMED**. Anything simulated carries **sim_**. Nothing here is a site measurement.*
 
 ## 1. The problem we pitched, and the test a prediction must pass
@@ -12,7 +19,7 @@ A prediction is only worth something if **someone can act on it before the ore a
 
 | Prediction | Source | Who acts | Next step it changes | Effect on held-out data | Verdict |
 |---|---|---|---|---|---|
-| **Bond work index** (hardness) | belt hyperspectral (HIDSAG GEOMET) | control-room operator | mill feed rate, set before the ore arrives | **sim_ +2.0% throughput** (95% CI +1.0 to +3.0%) at the same overload risk (8.2% vs 8.9% of parcels) | **acts today** |
+| **Bond work index** (hardness) | belt hyperspectral (HIDSAG GEOMET) | control-room operator | mill feed rate, inside the site's envelope | **sim_ +1.9% throughput** (95% CI +0.8 to +2.9%); overload 9.6% vs 8.9%, **non-inferiority at +3 pp not shown** (upper bound +4.8 pp) | **promising, not proven safe** |
 | Cu and Mo recovery, lime, pH | belt hyperspectral | shift metallurgist | collector and lime dosing | no significant difference against the strongest baseline | not decision-grade |
 | 4E PGE grade | belt-type chemistry, Bushveld (Bachmann 2019) | grade controller | concentrator or low-grade stockpile | balanced accuracy **0.79 vs 0.82 for the mine-plan seam**: the seam routes better (difference CI −0.056 to −0.004) | **correction**: no value where the seam is known |
 | Concentrate silica, 1 h ahead | plant tags (Kaggle flotation plant) | control room | reagent and air setpoints | never beats the last lab assay | negative result |
@@ -33,29 +40,50 @@ A prediction is only worth something if **someone can act on it before the ore a
 
 Without knowing the ore, the feed must be set for hard ore, so on softer ore the mill runs below what it could. Mill power, feed size and grind target cancel in every ratio below, **so no plant parameter was assumed to get the percentages**.
 
-**Data.** 146 drill-core composites with out-of-fold predictions and 80% split-conformal intervals (v6). The policy simulation runs on the real held-out values. Every feed-rate rule is fixed before the ore arrives:
+**Data.** 146 drill-core composites with v6 out-of-fold predictions.
 
-| Feed-rate policy | sim_ throughput vs no information | Parcels harder than planned | Energy shortfall on those parcels |
+**The upper bound.** A **one-sided 90% bound**: a cross-fold residual quantile, a CV+-style approximation (Barber et al. 2021). Exact CV+ needs every fold model's prediction at each sample, which v6 did not store, so validity is not claimed. Its empirical exceedance is **9.6%** [4.8, 14.4] against the 10% target.
+
+**The deployed policy.** The feed is set for the bound. Out-of-distribution parcels fall back to the conservative setting (4 refused) or take the stricter of the two (5 borderline).
+
+| Feed-rate policy | sim_ throughput vs no information | Parcels harder than planned | Energy shortfall on those parcels (1 − used/true) |
 |---|---|---|---|
-| No ore information: set for the training-fold 90th-percentile hardness | 0 (reference) | 8.9% [4.8, 13.7] | 11.9% |
-| **Belt: set for the upper end of the 80% interval** | **+2.0% [+1.0, +3.0]** | **8.2% [4.1, 13.0]** | **5.0%** |
-| Belt: set for the point prediction | +13.6% [+12.3, +14.8] | 45.2% [37.0, 53.4] | 7.3% |
+| No ore information: set for the training-fold 90th-percentile hardness | 0 (reference) | 8.9% [4.8, 13.7] | 10.1% |
+| **Belt, as deployed (one-sided bound, OOD fallback)** | **+1.9% [+0.8, +2.9]** | **9.6% [4.8, 14.4]** | **4.1%** |
+| Old comparator: upper end of the symmetric 80% interval | +2.0% [+1.0, +3.0] | 8.2% [4.1, 13.0] | 4.6% |
+| Belt, point prediction (unsafe) | +13.6% [+12.3, +14.8] | 45.2% [37.0, 53.4] | 6.6% |
 | Perfect information (ceiling) | +14.0% [+11.7, +16.4] | 0% | 0% |
 
-**Gates (doctrine 4).** The belt-interval policy beats no information:
-- the cluster-bootstrap 95% CI of the gain excludes 0;
-- Wilcoxon on paired setpoints gives p = 1.2×10⁻⁷;
-- Mann-Whitney gives p = 4.2×10⁻¹³;
-- Cliff's δ = −0.48.
+**Gates for throughput.** The deployed policy beats no information on throughput:
+- the CI excludes 0;
+- Wilcoxon p ≈ 1×10⁻⁶;
+- Mann-Whitney p < 0.0001;
+- Cliff's δ = −0.40.
 
-The two policies carry the same risk: the difference in overload share has CI −4.8 to +4.1 percentage points. Both are nominal-10% rules, fixed before any test data was seen.
+**The pre-registered risk test fails to pass.** Overload share is +0.7 pp higher. Its one-sided 95% upper bound is **+4.8 pp**, above the +3 pp margin, so **non-inferiority is not shown**. With 146 parcels the test has little power, so this is "not shown", not "shown worse". Under the plan's rule, **no throughput claim is made**.
+
+**Ramp limits make overloads more frequent.** These are limits on how fast the feed may change per parcel, averaged over 200 random parcel orders, because HIDSAG has no time order:
+
+| Ramp limit | Extra overloads |
+|---|---|
+| ±10% per parcel | +2.2 pp |
+| ±5% per parcel | +4.3 pp |
+| ±2% per parcel | +6.2 pp |
+
+A real controller would need to cut feed fast and raise it slowly. That asymmetric design is untested here.
+
+**Not simulated:**
+- an APC/feedback baseline (HIDSAG is not a time series);
+- stale data and transit time;
+- stockpile mixing;
+- downstream constraints.
 
 **Reading.**
-- The belt captures **14% of what perfect information would give**. That is the headroom a better hardness model could still take.
-- When a parcel is harder than planned, the belt's overloads are milder (5.0% energy shortfall vs 11.9%), so the grind coarsens less.
-- Setting the feed from the point prediction looks better but overloads almost half the parcels. That is why the policy uses the interval and not the point (constitution rule 5's conservative default, made quantitative).
+- The belt captures **13% of what perfect information would give**. That is the headroom a better hardness model could still take.
+- When a parcel is harder than planned, the energy shortfall is smaller (4.1% vs 10.1% of the energy the ore needed). That is not a grind measurement.
+- The point prediction overloads almost half the parcels, which is why the policy uses a bound.
 
-**What it could be worth: arithmetic with ASSUMED inputs.** Take a mill of 100 t/h (ASSUMED) running 8,000 h a year (ASSUMED). The measured +2.0% is 16,118 t a year (95% CI 7,643 to 24,116 t). Rands = extra tonnes × the site's contribution margin per tonne; we do not assume one.
+**What it could be worth.** Nothing is claimed for throughput until a pilot shows that the overload risk is acceptable. Recovery value and break-even are in `training/economics-20261002/results.json` (revised): +1 pp of recovery is worth R64–153 M a year net at a Zondereinde-size plant (ASSUMED inputs), and the pilot breaks even at 0.04–0.26 pp. The Value tab computes both.
 
 Not counted: fewer coarse-grind events, and fixed costs spread over more tonnes. Not netted: the scanner and its integration. The **Value** tab in REEFPRINT Live does this calculation with the site's own inputs.
 

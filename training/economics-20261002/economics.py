@@ -1,13 +1,18 @@
-"""What the levers are worth, computed with provenance attached (rule 1 as a type: reefprint.quantity).
+"""What the levers could be worth: scenario arithmetic with provenance attached (rule 1 as a type: reefprint.quantity).
 
-Every input is a Quantity: CITED only when the primary document was read (docs/17 tag [P]); search-summary and news
-values ([S], [N]) enter as ASSUMED with the word "indicative" in the source, because the constitution says a value not
-read from its source is not citable. Arithmetic keeps the WEAKEST provenance, so every output says honestly what it is.
-Outputs are scenarios (formula x labelled inputs), not measured savings. The only MEASURED input is our own sim_ result.
+Revised after ClauDex round 1 (PLAN-v8-REVIEW-LOG.md, findings 20-24):
+  * one stated valuation basis per scenario: contained 4E oz x ASSUMED payability x ASSUMED net 4E price, FX dated apart;
+  * no gross "opportunity" headline: recovery value is net payable revenue; throughput is incremental CONTRIBUTION and
+    only where the mill is the bottleneck; the Cr2O3 trade-off (Jones 2005) is evidence of a trade-off, not money;
+  * break-even = (annualised installed capex + annual opex) / (net value per recovery pp), across a capex grid,
+    because capex is unquoted (every capex number here is ASSUMED, "quote required");
+  * provenance fixed: sampling cadence is ASSUMED; QEMSCAN price is CAD, 2017, a Canadian lab, excluding preparation.
+CITED only when the primary document was read ([P] in docs/17). [S]/[N] inputs enter as ASSUMED ("indicative").
+Nothing here is a measured saving. The only MEASURED input is our own sim_ result, itself under revision (PLAN-v8 step 1).
 
 Run: python training/economics-20261002/economics.py  -> results.json
 """
-import json, math, os, sys
+import json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "src"))
@@ -15,110 +20,112 @@ from reefprint.quantity import assumed, cited, measured  # noqa: E402
 
 OZ = cited(31.1034768, "g/oz", "troy ounce definition")
 PP = cited(0.01, "", "one percentage point")
+ONE = cited(1.0, "", "unity")
 
-# ---- prices and FX
-basket_zar = cited(32611, "ZAR/oz", "Valterra Platinum annual results 2025 short form: average realised rand basket R32,611 per PGM ounce [P]")
-basket_usd = cited(1852, "USD/oz", "Valterra Platinum annual results 2025 short form: average realised dollar basket $1,852 per PGM ounce [P]")
-fx = basket_zar / basket_usd                                                       # implied ZAR per USD, same document
-north_rev = assumed(47156, "ZAR/oz", "indicative [N]: Investing.com summary of Northam F2026 slides, Zondereinde revenue per equivalent refined 4E oz")
+# ---- valuation basis (one per scenario; all ASSUMED because no site's net payable terms were read)
+PRICE = {"low": assumed(25000, "ZAR/oz", "ASSUMED low net 4E price"),
+         "base": assumed(32611, "ZAR/oz", "ASSUMED: Valterra 2025 realised rand PGM basket R32,611/oz [P] used as a proxy for a net 4E price (baskets differ)"),
+         "high": assumed(47156, "ZAR/oz", "ASSUMED: Northam Zondereinde revenue per equivalent refined 4E oz F2026, indicative [N]")}
+PAY = {"low": assumed(0.75, "", "ASSUMED payability (smelting/refining losses and charges, toll terms)"),
+       "base": assumed(0.85, "", "ASSUMED payability"),
+       "high": assumed(0.95, "", "ASSUMED payability")}
+FX = assumed(17.61, "ZAR/USD", "ASSUMED: implied by Valterra 2025 rand/dollar basket ratio (R32,611 / $1,852) [P]; not an independently dated FX rate")
 
-# ---- plants (scale)
-zond_t = assumed(2247881, "t/yr", "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde tonnes milled")
-zond_g = assumed(4.72, "g/t", "indicative [S]: Northam annual integrated report F2025 via search, Zondereinde 4E mill head grade")
-imp_t = assumed(26.29e6, "t/yr", "indicative [S]: Implats FY2025 tonnes milled, managed operations, via search")
+# ---- plant scale
+zond_t = assumed(2247881, "t/yr", "indicative [S]: Northam F2025, Zondereinde tonnes milled")
+zond_g = assumed(4.72, "g/t", "indicative [S]: Northam F2025, Zondereinde 4E mill head grade")
+imp_t = assumed(26.29e6, "t/yr", "indicative [S]: Implats FY2025 tonnes milled, managed operations")
 imp_g = assumed(4.0, "g/t", "ASSUMED for illustration: no verified Implats group head grade was read")
-mog_t = assumed(14.7e6, "t/yr", "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled, via search")
+mog_t = assumed(14.7e6, "t/yr", "indicative [S]: Valterra 2025, Mogalakwena record tonnes milled")
 mog_g = assumed(2.5, "g/t", "ASSUMED for illustration: Mogalakwena built-up head grade not read from a primary source")
-rec_ug2 = assumed(0.79, "", "indicative [S]: Implats fact sheet via search, UG2 concentrator recovery about 79%")
+rec_mog = assumed(0.79, "", "ASSUMED: Implats UG2 recovery (~79%, Impala fact sheet 2018 [P]) used as a stand-in; Platreef recovery not read")
 
-# ---- our own measured result and Mintek testwork
-tput = measured(0.0201, "", "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (training/value-chain-20261002/results.json)")
-tput_lo = measured(0.0096, "", "lower 95% CI of the same sim_ result")
-tput_hi = measured(0.0301, "", "upper 95% CI of the same sim_ result")
-cr_gap = cited(3.0, "", "Jones (Mintek) 2005: UG2 concentrate 87% recovery at 2.9% Cr2O3; 'more than 90 per cent' if Cr2O3 relaxed to 4-10% [P] (lower bound of the gap, in percentage points)")
+# ---- our own result (under revision) and Mintek testwork
+tput = measured(0.0201, "", "sim_ feed-rate policy on 146 real HIDSAG out-of-fold predictions (docs/16); under revision: the 'same risk' claim is withdrawn pending CV+ and non-inferiority")
 
 # ---- lab
-qem = cited(1500, "CAD/sample", "Saskatchewan Research Council QEMSCAN price list 4/2017: liberation analysis with predicted recovery [P]")
+qem = cited(1500, "CAD/sample", "Saskatchewan Research Council QEMSCAN price list 4/2017 (Canadian lab, CAD, 2017): liberation analysis with predicted recovery [P]")
 mount = cited(150, "CAD/sample", "SRC 4/2017: 30 mm block mount [P]")
-shifts = cited(3 * 365, "samples/yr", "24/7 operation, three shifts a day, one composite per stream per shift")
-assay_lag_lo = assumed(24, "h", "indicative [S]: 4E fire assay turnaround in practice 24-72 h")
-assay_lag_hi = assumed(72, "h", "indicative [S]: 4E fire assay turnaround in practice 24-72 h")
-hours = cited(8760, "h/yr", "hours in a year")
+prep = cited(800, "CAD/sample", "SRC 4/2017: crush, grind and sieve test samples [P]")
+cadence = assumed(3 * 365, "samples/yr", "ASSUMED cadence: one composite per stream per shift, three shifts, every day")
+lag = {"24h": assumed(24, "h", "indicative [S]: 4E fire assay turnaround in practice 24-72 h"),
+       "72h": assumed(72, "h", "indicative [S]: 4E fire assay turnaround in practice 24-72 h")}
+HOURS = cited(8760, "h/yr", "hours in a year")
 
-
-def oz_per_pp(t, g):
-    """Contained 4E ounces gained by one percentage point of concentrator recovery."""
-    return t * g * PP / OZ
+# ---- ownership cost grid (no quotes exist; ASSUMED; the conclusion is tested for insensitivity across the grid)
+CAPEX_USD = [assumed(v, "USD", f"ASSUMED installed capex scenario US${v:,.0f}: cameras (SWIR class US$50k-300k [S]), optics, enclosure, lighting, encoder, edge PC, integration, commissioning; quote required")
+             for v in (0.5e6, 1.5e6, 3.0e6)]
+OPEX_USD = [assumed(v, "USD", f"ASSUMED annual opex (per year) US${v:,.0f}: sampling, assays, Bond tests, maintenance, spares, purge air, lamps, software support; quote required")
+            for v in (0.1e6, 0.3e6, 0.6e6)]
+YEARS, RATE = 5, 0.10
+CRF = assumed(RATE * (1 + RATE) ** YEARS / ((1 + RATE) ** YEARS - 1), "", f"ASSUMED capital recovery factor (per year), {YEARS} years at {RATE:.0%}")
 
 
 def q(x):
     return {"value": x.value, "unit": x.unit, "provenance": x.provenance.name, "sources": list(x.all_sources)}
 
 
-def money(x_zar):
-    usd = x_zar / fx
-    return {"zar": q(x_zar), "usd": q(usd)}
+def net_value_per_pp(t, g, sc):
+    """Net payable value of one percentage point of concentrator recovery, per year, in ZAR."""
+    return t * g * PP / OZ * PAY[sc] * PRICE[sc]
 
 
-R = {"note": __doc__.split("\n\n")[0], "fx_zar_per_usd_implied": q(fx)}
+R = {"note": __doc__.split("\n\n")[0], "basis": "contained 4E oz x ASSUMED payability x ASSUMED net 4E price; FX separate", "fx": q(FX)}
 
-# E1  one percentage point of recovery
-e1 = {}
-for name, t, g in (("zondereinde_scale", zond_t, zond_g), ("implats_group_scale", imp_t, imp_g), ("per_1Mt_at_4.72gpt", assumed(1e6, "t/yr", "normalisation: one million tonnes milled per year"), zond_g)):
-    oz = oz_per_pp(t, g)
-    e1[name] = {"oz_per_pp_per_yr": q(oz), "value_per_pp_per_yr_valterra_basket": money(oz * basket_zar)}
-e1["zondereinde_scale"]["value_per_pp_per_yr_northam_rev_per_oz"] = money(oz_per_pp(zond_t, zond_g) * north_rev)
-R["E1_one_recovery_point"] = e1
+# V1 one percentage point of recovery, net payable, three valuation scenarios
+R["V1_net_value_per_recovery_pp_per_yr"] = {name: {sc: q(net_value_per_pp(t, g, sc)) for sc in PRICE}
+                                            for name, t, g in (("zondereinde_scale", zond_t, zond_g), ("implats_group_scale", imp_t, imp_g))}
 
-# E2  the chrome-constraint recovery gap (>= 3 pp) on a UG2 plant the size of Zondereinde
-e2_oz = oz_per_pp(zond_t, zond_g) * cr_gap
-R["E2_chrome_constraint_gap_zondereinde_scale"] = {"oz_per_yr": q(e2_oz), "value_per_yr": money(e2_oz * basket_zar),
-    "reading": "upper bound of what better chromite control is worth if the whole Mintek testwork gap were bought back; partial capture is the realistic case"}
+# V2 throughput, ONLY for a mill-constrained plant: extra tonnes and revenue per tonne; contribution needs the site's variable cost
+extra_t = mog_t * tput
+rev_per_t = {sc: mog_g * rec_mog * PAY[sc] * PRICE[sc] / OZ for sc in PRICE}
+R["V2_throughput_mill_constrained_only"] = {
+    "extra_tonnes_per_yr": q(extra_t),
+    "net_revenue_per_extra_tonne": {sc: q(v) for sc, v in rev_per_t.items()},
+    "contribution_per_yr_if_variable_cost_is_fraction_of_revenue": {
+        f"{int(f * 100)}pct": q(extra_t * rev_per_t["base"] * assumed(1 - f, "", f"ASSUMED incremental variable cost = {int(f * 100)}% of net revenue per tonne (mining/reclaim, milling, flotation, smelting/refining)"))
+        for f in (0.25, 0.5, 0.75)},
+    "zero_if": "the plant is ore-constrained (most underground PGM concentrators), or the extra tonnes move the bottleneck downstream",
+    "transfer_caveat": "the +2.0% is a Chilean Cu-Mo drill-core result under revision; no confidence interval is transferred to rands"}
 
-# E3  measured sim_ throughput gain at a mill-constrained plant (Mogalakwena scale)
-e3 = {}
-for lab, f in (("point", tput), ("ci_low", tput_lo), ("ci_high", tput_hi)):
-    extra_t = mog_t * f
-    oz = extra_t * mog_g / OZ * rec_ug2  # recovery assumption is labelled; Platreef recovery not read
-    e3[lab] = {"extra_tonnes_per_yr": q(extra_t), "extra_oz_per_yr": q(oz), "value_per_yr": money(oz * basket_zar)}
-R["E3_throughput_mill_constrained_mogalakwena_scale"] = {**e3, "transfer_caveat": "HIDSAG is Chilean Cu-Mo; the +2.0% is a method result, not a Platreef measurement"}
+# V3 the Cr2O3 trade-off is evidence, not money
+R["V3_cr2o3_tradeoff_evidence_only"] = {"jones_2005": "UG2 concentrate ~430 g/t at 87% recovery and 2.9% Cr2O3; >1000 g/t at >90% if Cr2O3 relaxed to 4-10% [P]",
+                                        "reading": "recovery and concentrate quality trade off; better chromite control moves the operating point, by an amount only a pilot can measure"}
 
-# E4  what shift-speed QEMSCAN would cost (why prediction, not more QEMSCAN)
-per_stream = (qem + mount) * shifts
-R["E4_qemscan_every_shift"] = {"per_stream_per_yr": q(per_stream), "three_streams_feed_conc_tails": q(per_stream * cited(3, "", "feed, concentrate, tails")),
-                               "reading": "still days late: price buys truth, not speed"}
+# V4 break-even recovery improvement across the capex/opex grid (Zondereinde scale, base valuation)
+per_pp_usd = net_value_per_pp(zond_t, zond_g, "base") / FX
+be = {}
+for c in CAPEX_USD:
+    for o in OPEX_USD:
+        cost = c * CRF + o
+        be[f"capex_{c.value / 1e6:.1f}M_opex_{o.value / 1e6:.1f}M"] = q(cost / per_pp_usd)
+R["V4_breakeven_recovery_pp_zondereinde_scale_base"] = {"net_value_per_pp_usd": q(per_pp_usd), "breakeven_pp": be,
+                                                        "formula": "(capex x CRF + opex) / net value per recovery pp"}
 
-# E5  ore processed blind before the assay returns (exposure, not a loss)
-tph = zond_t / hours
-for lab, lag in (("24h", assay_lag_lo), ("72h", assay_lag_hi)):
-    tonnes = tph * lag
-    oz = tonnes * zond_g / OZ
-    R.setdefault("E5_processed_before_assay_returns_zondereinde_scale", {})[lab] = {"tonnes": q(tonnes), "contained_oz": q(oz), "contained_value": money(oz * basket_zar)}
+# V5 shift-speed QEMSCAN (why prediction, not more QEMSCAN)
+per_stream = (qem + mount + prep) * cadence
+R["V5_qemscan_every_shift"] = {"per_stream_per_yr_cad2017": q(per_stream), "reading": "a 2017 Canadian list price; a local quote is required; still days late"}
 
-# E6  Stokes equal-settling: chromite settles like a coarser silicate, so cyclones send it back to the mill
+# V6 ore processed before the assay returns: exposure, not a loss
+tph = zond_t / HOURS
+R["V6_processed_before_assay_returns_zondereinde_scale"] = {k: {"tonnes": q(tph * v), "contained_oz": q(tph * v * zond_g / OZ)} for k, v in lag.items()}
+
+# V7 Stokes equal-settling: a qualitative density-classification illustration, NOT a cyclone model
 rho_c = assumed(4.5, "g/cm3", "textbook range 4.3-4.8 for chromite (ASSUMED midpoint)")
-rho_s = assumed(3.0, "g/cm3", "textbook range 2.7-3.3 for pyroxene/plagioclase gangue (ASSUMED midpoint)")
-rho_w = cited(1.0, "g/cm3", "water")
-ratio = math.sqrt(((rho_c - rho_w) / (rho_s - rho_w)).value)
-R["E6_stokes_equal_settling"] = {"silicate_size_equivalent_to_1um_chromite": {"value": ratio, "unit": "um per um", "provenance": "ASSUMED",
-                                 "sources": list(((rho_c - rho_w) / (rho_s - rho_w)).all_sources) + ["Stokes' law: v ∝ (ρs-ρw)·d²"]},
-                                 "reading": f"a {round(50 * ratio)} µm silicate settles like a 50 µm chromite, so chromite is classified as 'coarse' and returns to the mill until it is finer: over-grinding, fines, entrainment"}
+rho_s = assumed(3.0, "g/cm3", "textbook range 2.7-3.3 for silicate gangue (ASSUMED midpoint)")
+ratio = ((rho_c - cited(1.0, "g/cm3", "water")) / (rho_s - cited(1.0, "g/cm3", "water"))).value ** 0.5
+R["V7_stokes_illustration"] = {"equal_settling_size_ratio": ratio, "provenance": "ASSUMED",
+                               "caveat": "industrial cyclone partition also depends on pressure, solids, viscosity, geometry, bypass and roping; measured mineral partition curves are needed before any control claim"}
 
 json.dump(R, open(os.path.join(HERE, "results.json"), "w", encoding="utf-8"), indent=1, ensure_ascii=False)
 
-
-def show(label, m):
-    print(f"{label:62s} R{m['zar']['value']:>16,.0f}   US${m['usd']['value']:>14,.0f}   [{m['zar']['provenance']}]")
-
-
-print(f"implied FX {fx.value:.2f} ZAR/USD [{fx.provenance.name}]")
-for k, v in e1.items():
-    show(f"E1 +1 pp recovery, {k} ({v['oz_per_pp_per_yr']['value']:,.0f} oz/yr)", v["value_per_pp_per_yr_valterra_basket"])
-show("E1 +1 pp, zondereinde, at Northam revenue per oz", e1["zondereinde_scale"]["value_per_pp_per_yr_northam_rev_per_oz"])
-show(f"E2 chrome-constraint gap >=3 pp, zondereinde scale ({e2_oz.value:,.0f} oz)", R["E2_chrome_constraint_gap_zondereinde_scale"]["value_per_yr"])
-for lab, v in e3.items():
-    show(f"E3 throughput {lab} ({v['extra_tonnes_per_yr']['value']:,.0f} t/yr)", v["value_per_yr"])
-print(f"E4 QEMSCAN every shift per stream: CAD {per_stream.value:,.0f}/yr; three streams CAD {per_stream.value * 3:,.0f}/yr [{per_stream.provenance.name}]")
-for lab, v in R["E5_processed_before_assay_returns_zondereinde_scale"].items():
-    show(f"E5 processed blind before assay ({lab}): {v['tonnes']['value']:,.0f} t", v["contained_value"])
-print(f"E6 Stokes: 50 µm chromite settles like {50 * ratio:.0f} µm silicate (ratio {ratio:.2f}) [ASSUMED densities]")
+print(f"FX {FX.value} ZAR/USD [{FX.provenance.name}]  basis: {R['basis']}")
+for name, d in R["V1_net_value_per_recovery_pp_per_yr"].items():
+    print(f"V1 net value of +1 pp recovery, {name:22s} " + "  ".join(f"{sc}: R{v['value'] / 1e6:,.0f}M" for sc, v in d.items()) + "  [ASSUMED]")
+print(f"V2 extra tonnes (mill-constrained only): {extra_t.value:,.0f} t/yr; net revenue/extra t base R{rev_per_t['base'].value:,.0f}; contribution base: " +
+      ", ".join(f"{k} cost -> R{v['value'] / 1e6:,.0f}M" for k, v in R["V2_throughput_mill_constrained_only"]["contribution_per_yr_if_variable_cost_is_fraction_of_revenue"].items()))
+print(f"V4 net value per pp (Zondereinde, base) US${per_pp_usd.value / 1e6:.2f}M; break-even pp across grid: " +
+      f"{min(v['value'] for v in be.values()):.3f} to {max(v['value'] for v in be.values()):.3f} pp")
+print(f"V5 QEMSCAN (incl. prep and mount) every shift per stream: CAD {per_stream.value:,.0f}/yr (2017 list) [{per_stream.provenance.name}]")
+print("V6 " + "; ".join(f"{k}: {v['tonnes']['value']:,.0f} t processed before the assay returns" for k, v in R["V6_processed_before_assay_returns_zondereinde_scale"].items()))
+print(f"V7 Stokes illustration: equal-settling ratio {ratio:.2f}")

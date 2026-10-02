@@ -47,7 +47,7 @@ The product is the layer that **predicts, every few seconds, what the lab will s
 
 | Principle | Products (by name) | Where it sits | What it measures | What it cannot give the shift | Edge cases |
 |---|---|---|---|---|---|
-| **PGNAA / PFTNA cross-belt** | Thermo Scientific CB Omni Agile; Scantech GEOSCAN; RTI AllScan | Conveyor, through the full burden | Bulk elements, minute by minute | Minerals, liberation, PGM at g/t | Uses a **Cf-252 neutron source**: licensing with South Africa's National Nuclear Regulator **[S]**, source replacement (Cf-252 at $60/µg from US DOE **[S]**). Analyser prices quoted from US$50k–200k up to >$500k installed **[S, market report: low confidence]** |
+| **PGNAA / PFTNA cross-belt** | Thermo Scientific CB Omni Agile; Scantech GEOSCAN; RTI AllScan | Conveyor, through the full burden | Bulk elements, minute by minute | Minerals, liberation, PGM at g/t | Isotope-source versions use **Cf-252** (licensing with South Africa's National Nuclear Regulator **[S]**; Cf-252 at $60/µg from US DOE **[S]**). Neutron-generator versions also exist (e.g. RTI AllScan) **[S]**. Analyser prices quoted from US$50k–200k up to >$500k installed **[S, market report: low confidence]** |
 | **LIBS on belt** | SECOPTA MineralLIBS; Laser Distance Spectrometry | Conveyor surface | Elements, seconds | Surface only; minerals | Dust on optics, laser safety **[S]** |
 | **On-stream XRF (slurry)** | Courier-type analysers | Flotation feed, concentrate, tails pipes | Cu, Ni, Fe, Cr and similar | **PGM at a few g/t is a trace-level problem for XRF**; reported precious-metal OSA precisions are 35–70 ppb in purpose-built designs **[S]** | Sample lines block; matrix effects **[S]** |
 | **Diffuse-reflectance slurry spectroscopy** | **Blue Cube MQi** (Stellenbosch; now Draslovka) | In the process pipe | PGM g/t and Cr₂O₃ % at Northam's flash flotation; updates every 15 s; R² 0.84 (PGM), 0.92 (Cr₂O₃) **[S]**; >100 analysers installed **[S]** | The mineralogical cause (liberation, association) | **The closest South African prior art to an optical approach. Integrate with it, never pitch against it** |
@@ -57,9 +57,9 @@ The product is the layer that **predicts, every few seconds, what the lab will s
 | **Shovel XRF** | MineSense ShovelSense **[V]** | Shovel bucket | Grade per bucket | Mineralogy, plant response | Vibration, impact |
 | **Sensor-based ore sorting** | TOMRA (XRT, optical, NIR) | Before the mill | Accept or reject per particle | Plant-wide decisions | Particle size window |
 | **Automated mineralogy (the truth)** | QEMSCAN, MLA, TIMA, Mineralogic | Lab | Phases, liberation, association | Shift speed | $500–1,500 per sample **[P SRC]**; market about US$59 M (2024) **[S, market report]** |
-| **APC (the actuator)** | Mintek MillStar, FloatStar, StarCS | DCS | Stabilises levels, flows, mill load | A mineralogy input | **Our output becomes one of its inputs** |
+| **APC (the actuator)** | Mintek MillStar, FloatStar, StarCS | DCS | Stabilises levels, flows and mill load. FloatStar's published work also uses **feed chemistry** to suggest mass-pull setpoints within operator limits **[P]** (Knights et al. 2012) | An uncertainty-aware **mineralogical** input with a refusal path | **Our output would be one more input, inside its limits** |
 
-**Where REEFPRINT fits, said narrowly.** Each tool measures one thing in one place. The plant's actuators (APC) react to the process, not to the ore. Its truth (QEMSCAN, fire assay) arrives days late.
+**Where REEFPRINT fits, said narrowly** (corrected after ClauDex round 1). Each tool measures one thing in one place. APC already uses process and, in FloatStar's case, feed-chemistry inputs. Its mineralogical truth (QEMSCAN, fire assay) arrives days late. The claim is **incremental, uncertainty-aware ore information** over existing analyser and APC workflows. It is not an empty niche, and the increment has to be demonstrated against those workflows in a pilot.
 
 REEFPRINT is the **fusion, prediction and decision layer**:
 - It takes the signals that already run 24/7: belt hyperspectral, cross-belt elements, slurry analysers, froth and size cameras.
@@ -82,7 +82,7 @@ We found no published system that joins these. **We did not search exhaustively*
 - Conventional flotation works best at about 20–150 µm. Fines lose bubble collisions; coarse particles detach **[S]**.
 - Spiral gravity concentrators work best at **75 µm–3 mm**, and chromite below 53 µm tends to report to the tails **[P]** (Molefe & Baloyi 2022, citing Falconer 2003).
 
-**Density and inertia: why chromite is over-ground.** Hydrocyclones classify by settling velocity, which grows with density × size² (Stokes). Chromite (SG about 4.5) settles like a coarser silicate (SG about 3), so it returns to the mill more often and is ground finer than it needs to be. Fine chromite is then *entrained* into the flotation concentrate with the water, and that is exactly the smelter's Cr₂O₃ problem. The equal-settling ratio is computed in `economics.py` from Stokes' law. The SG values are textbook and are flagged.
+**Density and inertia: why chromite is over-ground.** Hydrocyclones classify by settling velocity, which grows with density × size² (Stokes). Chromite (SG about 4.5) settles like a coarser silicate (SG about 3), so it returns to the mill more often and is ground finer than it needs to be. Fine chromite is then *entrained* into the flotation concentrate with the water, and that is exactly the smelter's Cr₂O₃ problem. The equal-settling ratio is computed in `economics.py` from Stokes' law, as a **qualitative illustration only**. Industrial cyclone partition also depends on pressure, solids concentration, viscosity, geometry, bypass and roping. How much chromite is over-ground at a plant needs **measured mineral-specific partition curves**. The SG values are textbook and are flagged.
 
 **Grindability.**
 - Sources conflict on chromite against silicate work index in UG2: 12.3 vs 13.9 kWh/t (AG pilot), or 15 vs 32 kWh/t (another study) **[S, unresolved]**.
@@ -104,7 +104,7 @@ So **the chrome limit costs recovery**. Every unit of chromite kept out of the c
 
 ## 5. Production scale, and what the levers are worth
 
-These are inputs to `economics.py`; the outputs are there, not here.
+These are inputs to `economics.py` (revised after ClauDex round 1: net payable value, contribution only where the mill is the bottleneck, break-even, no gross headlines); the outputs are there, not here.
 
 | Operation | Fact | Tag |
 |---|---|---|
@@ -120,18 +120,21 @@ These are inputs to `economics.py`; the outputs are there, not here.
 
 ---
 
-## 6. Physical vs chemical routes, by liberation and size: what to advise
+## 6. Physical vs chemical routes, by liberation and size: diagnostic prompts, not rules
 
-| Observation | Physical route | Chemical / reagent route | Why |
-|---|---|---|---|
-| Valuable minerals **locked** in coarse composites | Regrind (finer P80), or re-classify | — | Liberation first; no reagent fixes a locked grain |
-| Liberated but **fine (< ~20 µm)** valuable minerals | Avoid overgrinding; consider fine-particle flotation cells | Collector / frother adjustment for fines kinetics | Collision probability falls with size **[S]** |
-| **Chromite fines** entrained into concentrate | Reduce water recovery and froth depth; recover chromite by spirals (75 µm–3 mm **[P]**) | Depressant does not stop entrainment (it is hydraulic) | Entrainment follows water, not surface chemistry |
-| **Talc / NFG** rising (SWIR Mg-OH) | — | Raise CMC/guar depressant within limits | NFG floats naturally **[S]** |
-| **Pyrrhotite vs pentlandite** shift | — | Depressant and collector balance; pH | Pyrrhotite carries little PGM; pentlandite carries Pd |
-| **Harder ore** (WI up) | Lower feed rate or coarser grind target, then recover the grind | — | Bond energy (doc 16) |
+*Revised after ClauDex round 1 (findings 2–5). These are **prompts for the metallurgist**, conditional on site deportment, size-by-size recovery and reagent-response evidence. They are not automatic rules.*
 
-The app's advice engine encodes this table as rules with sources. A model chooses *which* row applies (with an interval); a person approves the action.
+Each row names the **validated measurement it needs**. In the app, a row with no validated input is **shown disabled**, with that requirement as its reason.
+
+| Observation (the prerequisite measurement) | What to examine | Why, and the caveat |
+|---|---|---|
+| Valuable minerals **locked** (needs liberation by QEMSCAN/MLA, or validated KHANYA liberation on *this* stream) | Whether a finer grind or regrind would release them; existing regrind capacity; overgrinding risk | Partial surface exposure can still float, so "locked → regrind" is not automatic |
+| Liberated but **fine** valuable minerals (needs size-by-size liberation and recovery) | Fine-particle kinetics, residence time, reagent and frother response | Collision probability falls with size **[S]**. PGM *grain* size is not the flotation *particle* size |
+| **Chromite entrained** into the concentrate (needs Cr₂O₃ in the concentrate and water recovery: an assay or an analyser such as Blue Cube MQi) | **Reduce entrainment through site-tested water-recovery, air and froth-depth adjustments, subject to PGM-recovery limits** | Entrainment is hydraulic, so a depressant does not stop it. Froth depth, air, frother and solids interact (a shallower froth often *raises* entrainment) |
+| Recovering **chromite** as a by-product (needs a size-characterised stream) | Spirals only on a stream in their working range (about 75 µm–3 mm **[P]**), with a PGM-loss balance first | Spirals lose the ultrafine (< 53 µm) chromite **[P]**, so they do not fix fine entrainment |
+| **Talc / naturally floatable gangue** rising (needs a validated talc or Mg-OH association; **not yet validated**) | Depressant dose within the site's tested band | Over-dosing depresses valuables **[S]** |
+| **Pyrrhotite / pentlandite** balance shifting (needs phase evidence on this ore: microscope or QEMSCAN) | Depressant and collector balance; pH | Site deportment decides whether pyrrhotite carries PGM. "Pyrrhotite carries little PGM" is not universal |
+| **Harder ore** (Bond WI; **validated on HIDSAG**, docs/16) | The feed-rate proposal inside the site's approved envelope | The only row with a validated input in this build |
 
 ---
 
