@@ -79,6 +79,10 @@ licence here before any weight is used in a graded artefact.
 | `dvc` | Apache-2.0 | DEV |
 | `napari` | BSD-3-Clause | DEV — dev-time visual inspection. The demo UI must not depend on it. |
 | `h5py` | BSD-3-Clause | DEV — Kaggle-only, reads the HIDSAG hyperspectral cubes in `training/hidsag-hyperspectral-20261001/run.py` (installed in the kernel if absent). Not a runtime dependency. Added 2026-10-01. |
+| `python-pptx` | MIT | DEV — builds the pitch deck (`presentation/deck-src/build_deck_v8.py`). Not shipped. Listed 2026-10-02. |
+| `playwright` (Python) | Apache-2.0 | DEV — screenshots and the screen recording of the real app for the deck and video; end-to-end checks. Uses the installed Microsoft Edge. Not shipped. Listed 2026-10-02. |
+| `edge-tts` | copyleft (GPL/LGPL-3.0 family) — VERIFY | DEV — synthesises the video narration (Microsoft neural voice, online service). Run from `.workbench/media-tools`, never imported by shipped code; the audio it produces is our script. Listed 2026-10-02. |
+| FFmpeg (via `imageio-ffmpeg` binary, v7.1) | `imageio-ffmpeg` BSD-2-Clause; bundled FFmpeg build GPL — VERIFY | DEV — encodes the demo video. Invoked as a separate executable, never linked or shipped. Listed 2026-10-02. |
 
 ## Flagged — resolve before it becomes load-bearing
 
@@ -107,6 +111,7 @@ Licence of *data* is separate from licence of *code*, and it constrains what may
 | CGS National Core Library specimens | Sampling policy — open question 2 | VERIFY — phone call |
 | Craig & Vaughan, *Ore Microscopy and Ore Petrography* 2nd ed. | Open access, MSA | Reference only; do not reproduce figures without checking |
 | Mine-sourced specimens | Possible MTA restrictions | Blind spot 3 — an MTA can make the open benchmark unreleasable |
+| Mixkit stock video (pitch video and deck backgrounds only) | Mixkit Stock Video Free License (checked per clip, 2026-10-01): use in a project without attribution; **no standalone redistribution**. | **CONDITION** — illustrative only, labelled on screen; raw clips and stills stay out of git (`presentation/deck-src/stock_v8/` is gitignored). Clip IDs in `presentation/video/STORYBOARD-v8.md`. |
 
 ---
 

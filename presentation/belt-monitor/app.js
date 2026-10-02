@@ -665,22 +665,41 @@ async function act(kind) {
   const j = await api("POST", "/api/ledger/event", { type: kind, ref: a.seq, body });
   if (j.ok && ["approve", "modify", "reject"].includes(kind)) a.state = kind;
   if (j.ok && kind === "acknowledge" && a.state === "open") a.state = "acknowledged";
-  $("decNote").value = ""; renderDecisions(); if (!j.ok) $("decMsg").textContent = j.error;
+  if (j.ok) $("decNote").value = "";
+  await renderDecisions(); if (!j.ok) $("decMsg").textContent = j.error;
+}
+function decStatus(a, E, left) {
+  return !a ? (S.secure ? "not recorded (sign in)" : "offline demo: run app_server.py for the decision record") : a.state === "open" ? `awaiting approval · ore reaches the mill in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}` : a.state === "fallback" ? `conservative setting applied (${E.conservative}%)` : a.state;
+}
+const decLeft = (a, E) => a && E ? Math.max(0, E.arrival_deadline_s - Math.floor((Date.now() - a.t0) / 1000)) : null;
+/* The countdown ticks without rebuilding the view, so a note being typed, the escalation choice and focus survive. */
+async function decTick() {
+  if (!$("v-decisions").classList.contains("on")) return;
+  const key = S.rec + "|" + S.cur, a = S.adv[key], E = S.env;
+  if (key !== S.decKey || !a || !$("decState")) { renderDecisions(); return; }
+  const left = decLeft(a, E);
+  if (a.state === "open" && left === 0) { renderDecisions(); return; }
+  const st = decStatus(a, E, left);
+  $("decState").innerHTML = `<b>${esc(st.split(" · ")[0])}</b><small>${esc(st.split(" · ")[1] || "")}</small>`;
+  clearTimeout(decTimer);
+  if (a.state === "open") decTimer = setTimeout(decTick, 1000);
 }
 async function renderDecisions() {
   const el = $("decisions"); if (!S.summary || !S.cur || !S.headers[S.rec][S.cur]) { el.innerHTML = `<div class="panel"><div class="copy">Waiting for the first parcel on the belt…</div></div>`; return; }
   const rec = S.rec, s = S.cur, h = S.headers[rec][s], E = S.env, pr = proposal(rec, h), key = rec + "|" + s;
   await recordAdvice(key, rec, s, h, pr);
-  const a = S.adv[key], left = a && E ? Math.max(0, E.arrival_deadline_s - Math.floor((Date.now() - a.t0) / 1000)) : null;
+  const a = S.adv[key], left = decLeft(a, E);
   if (a && a.state === "open" && left === 0 && S.secure && S.auth) {
     a.state = "fallback";
     if (can("acknowledge") || S.auth.role === "guest") await api("POST", "/api/ledger/event", { type: "fallback_applied", ref: a.seq, body: { value_pct: E.conservative, reason: "parcel reached the mill without an approval", envelope_version: E.version } });
   }
-  const stTxt = !a ? (S.secure ? "not recorded (sign in)" : "offline demo: run app_server.py for the decision record") : a.state === "open" ? `awaiting approval · ore reaches the mill in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}` : a.state === "fallback" ? `conservative setting applied (${E.conservative}%)` : a.state;
+  const stTxt = decStatus(a, E, left);
+  const keep = S.decKey === key && $("decNote") ? { note: $("decNote").value, focus: document.activeElement && document.activeElement.id === "decNote", esc: $("decEsc") ? $("decEsc").value : null } : null;
+  S.decKey = key;
   const btn = (k, label) => `<button class="btn small" data-act="${k}" ${can(k) && a && a.seq ? "" : "disabled"}>${label}</button>`;
   el.innerHTML = `
   <div class="g2"><div class="panel"><div class="sh"><div><h2>Parcel ${esc(s)} · feed-rate proposal</h2><p>${rec === "GEOMET" ? "HIDSAG GEOMET drill core (Chile), replayed as a belt parcel" : "Plant-feed fraction: no validated decision target"}</p></div><span class="badge ${pr.fallback ? "warn" : "ok"}">${pr.fallback ? "fallback" : "proposal"}</span></div>
-    <div class="bignums" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><b>${pr.value == null ? "—" : pr.value + "%"}</b><small>of design feed</small></div><div><b>${esc(stTxt.split(" · ")[0])}</b><small>${esc(stTxt.split(" · ")[1] || "")}</small></div><div><b>${h.ood}</b><small>domain check</small></div></div>
+    <div class="bignums" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><b>${pr.value == null ? "—" : pr.value + "%"}</b><small>of design feed</small></div><div id="decState"><b>${esc(stTxt.split(" · ")[0])}</b><small>${esc(stTxt.split(" · ")[1] || "")}</small></div><div><b>${h.ood}</b><small>domain check</small></div></div>
     <div class="copy"><p>${esc(pr.why)}</p><p class="muted">Ramp limits (−${E ? E.ramp_per_parcel_pct.down : "?"}% / +${E ? E.ramp_per_parcel_pct.up : "?"}% per parcel) apply in the controller; feed is cut fast and raised slowly.</p></div>
     <div class="toolbar" style="padding:0 16px 8px;flex-wrap:wrap">${btn("acknowledge", "Acknowledge")}${btn("approve", "Approve proposal")}${btn("modify", "Modify within envelope")}${btn("reject", "Reject → conservative")}<select id="decEsc" class="btn small"><option value="L2">Escalate to metallurgist (L2)</option><option value="L3">Lab rush sample (L3)</option></select>${btn("escalate", "Escalate")}${btn("note", "Add note")}</div>
     <div class="calc" style="padding-top:0"><label style="flex:1">Reason or note (no names or personal information; 500 characters)<input id="decNote" maxlength="500" style="width:100%"></label></div>
@@ -692,6 +711,7 @@ async function renderDecisions() {
     <div class="copy" id="ledState">${S.secure ? (S.auth ? "" : "Sign in or continue as guest to see the record.") : "Offline demo mode: start <code>app_server.py</code> for sign-in, roles and the signed decision record."}</div>
     <div id="ledList" style="max-height:320px;overflow:auto"></div></div>`;
   el.querySelectorAll("[data-act]").forEach(b => b.onclick = () => act(b.dataset.act));
+  if (keep) { $("decNote").value = keep.note; if (keep.esc) $("decEsc").value = keep.esc; if (keep.focus) { const n = $("decNote"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); } }
   if (S.auth) {
     $("ledVerify").onclick = async () => { const j = await api("GET", "/api/ledger/verify"); $("ledState").innerHTML = j.ok ? `Chain ${j.data.chain.ok ? "<b>intact</b>" : "<b class='bad'>BROKEN at seq " + j.data.chain.first_bad_seq + "</b>"}: ${j.data.chain.n} events${j.data.last_checkpoint ? `; last signed checkpoint at seq ${j.data.last_checkpoint.seq}` : ""}.` : esc(j.error); };
     $("ledCheck").onclick = async () => { const j = await api("POST", "/api/ledger/checkpoint", {}); if (j.ok) { download(`reefprint_checkpoint_seq${j.data.checkpoint.seq}.json`, JSON.stringify(j.data.checkpoint, null, 1), "application/json"); $("ledState").textContent = `Signed checkpoint at seq ${j.data.checkpoint.seq} downloaded (Ed25519 + ML-DSA-65). ${j.data.keep_this}`; } else $("ledState").textContent = j.error; };
@@ -699,7 +719,7 @@ async function renderDecisions() {
     if (L.ok) $("ledList").innerHTML = `<table><thead><tr><th class="num">Seq</th><th>Time</th><th>Event</th><th>Ref</th><th>Role</th><th>Detail</th><th>Hash</th></tr></thead><tbody>${L.data.events.slice().reverse().slice(0, 60).map(e => `<tr><td class="num">${e.seq}</td><td>${new Date(e.ts * 1000).toLocaleTimeString()}</td><td>${esc(e.type)}</td><td>${e.ref ?? ""}</td><td>${esc(e.actor_role)}</td><td>${esc(Object.entries(e.body).map(([k, v]) => k + "=" + v).join(", ").slice(0, 140))}</td><td><code>${esc(e.hash.slice(0, 10))}</code></td></tr>`).join("")}</tbody></table>`;
   }
   clearTimeout(decTimer);
-  if (a && a.state === "open" && $("v-decisions").classList.contains("on")) decTimer = setTimeout(renderDecisions, 1000);
+  if (a && a.state === "open" && $("v-decisions").classList.contains("on")) decTimer = setTimeout(decTick, 1000);
 }
 
 function proofPanel() {

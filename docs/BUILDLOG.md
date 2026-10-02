@@ -22,6 +22,34 @@ it is a press release.
 
 ---
 
+## 2026-10-02 (12:05–12:50) — pitch v8 (12 slides), presenter script, 2:25 demo video, a notes bug fixed
+
+**Attempted.** A 12-slide pitch and a keynote script aligned with the v8 build, plus a 2:00–2:30 storytelling demo video, with every number traceable.
+
+**Worked:**
+- **Deck v8:** `presentation/deck-src/build_deck_v8.py` produces `presentation/output/REEFPRINT-KHANYA-Team-Sonar-pitch-v8.pptx`.
+  - **Order:** problem → solution → deliverables 1–3 → innovation ("the brain") → demo → feasibility → value → pathway → close.
+  - **Numbers:** every figure is loaded from the committed result JSONs (economics, value chain, v9, physics), never typed. Each carries a tag: LIVE APP / RECORDED / SOURCE / ASSUMPTION / SIMULATOR / HYPOTHESIS.
+  - **Screenshots:** recaptured from the current secure app. The stored ones predated v9 and still showed the withdrawn "same overload risk".
+  - **Render:** rendered with PowerPoint for QA. Fixed: a stat that wrapped, tag/caption overlaps, a chart title, and a chevron past the margin.
+- **Script:** `presentation/PRESENTER-SCRIPT-v8.md` is generated from the same table as the speaker notes, so the two cannot drift. It has an opening joke (geologist, mineralogist, chemist, mining engineer, metallurgist, policy maker), timings to 10:00, and eight likely judge questions with answers.
+- **Video:** `presentation/video/REEFPRINT-v8-demo.mp4`, about 2:25, built by `presentation/video/src_v8/`. The arc is pit → wait → real app → money → Mintek values → inclusive close.
+  - Stock scenes are labelled ILLUSTRATIVE (Mixkit). App screens are a real Playwright recording of the guest sandbox, paced to the narration.
+  - Provenance is in `presentation/video/STORYBOARD-v8.md`.
+
+**Did not work, then fixed (a real app bug, found by recording the demo).** The Decisions view rebuilt itself every second for the arrival countdown. That **wiped a note while it was being typed**: the approval reached the ledger as `note=`, which is visible at seq 5 in the sandbox. It also reset the escalation choice and re-fetched the ledger every tick.
+- **Fix:** the tick now updates only the countdown cell. A full render keeps the note, the escalation level and focus. The note box clears only after a successful write.
+- **Verified with Playwright:** a note typed slowly across ticks survives, and the escalation stays at L3. Approve writes `note=…` into the signed ledger (seq 11 in the recording). 17/17 security tests still pass.
+
+**Did not work.** The first full render stalled at frame 0, because the stock-clip reader seeked on every frame. Fixed with sequential reads and bounding-box overlay blending.
+
+**Learned.** Recording the product for a video is a test. It exercised typing at human speed, which the scripted e2e (`fill`, then click immediately) never did.
+
+**Left open:**
+- Official Mintek, TIA and team logo files: not supplied; text wordmarks are used.
+- The QR slide is a placeholder until the public deployment is approved (host and account are the team's decision).
+- ClauDex round 2 (Codex limit until 13:54).
+
 ## 2026-10-02 (10:55–11:25) — secure UI, physics checks, robustness on unseen captures, resilience and compliance
 
 **Codex.** Round 2 was killed at the 33-minute background limit with no output. A ping showed the usage limit again (reset 13:54), so round 2 has not run. All work below is disclosed for it.
