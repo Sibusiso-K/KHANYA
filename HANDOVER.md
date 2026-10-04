@@ -1,3 +1,18 @@
+## 2026-10-04 — Sibusiso (Claude review) — technical report audit for Mintek (12 pages)
+
+**Did:** Pulled every branch and audited the build against the template Mintek supplied (Moodley et al. 2026, *Results in Engineering* 32, 112959). Every figure for the report was checked against its source file, and both economic calculations were recomputed. The full blueprint is a private Claude doc, which Sibusiso will share.
+
+**Five decisions before anyone writes:**
+1. **Model under report = `de7135a9`** (pooled mIoU 0.5725, per-section 0.4671). `fb78727` (0.4543) is the non-reproducing re-run, not "deployed". `42646cfa` (0.632) stays quarantined: it loses pyrrhotite (0.818 vs 0.870) and pentlandite (0.446 vs 0.547). Pitch v8 slide 5 and deck v6 slides 8/10 say otherwise and must not be copied.
+2. **Scan time:** the latency table with hardware and n. Not "about 80 s" (one run on Lethabo's laptop). Plugged-in i7-1265U: 16.7–21.2 s server-side over 5 runs; 30.8 s on battery.
+3. **"Live online":** the QR link is a static HF Space with an unsigned sandbox record. The secure server (17/17 security tests) was tested locally and not published; Azure is blocked by MFA.
+4. **Negative results stay in:** MINERAL1 withdrawn, the Bushveld seam beats chemistry (0.82 vs 0.79), the plant soft sensor never beats the last assay, and v7/v8/seed-43 brought no gain.
+5. **Cite only [P] figures** from docs/17. Read the primary source for fire-assay 24–72 h, Zondereinde tonnage and grade, Sibanye ransomware and Blue Cube, or drop them. Present R64.0/94.6/152.8 M per pp (recomputed) and the 6,159–18,476 t as worked examples with stated assumptions.
+
+**Also:** a "proposed vs delivered" table against the accepted abstract (docs/archive/submitted-application.md). Bushveld phases, QEMSCAN distillation, DINOv3, Hailo edge and AAS/MLflow were not built. The abstention rule was deliberately reversed, from "hold last value" to "apply the conservative setting".
+
+---
+
 ## 2026-10-01 — Sibusiso (Claude review) — prompt-6 fixes checked live
 
 **Checked c9fb323 on 127.0.0.1:8510 (de7135a9):**
