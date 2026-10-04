@@ -1,3 +1,25 @@
+## 2026-10-04 — Sibusiso (Claude) — report rebuilt belt-first (pitch v8), Mintek/SA framing, fact-checked, pilot investment case
+
+**Did (Sibusiso's direction):**
+- **Structure:** follows Lethabo's pitch v8 ("three speeds, one decision"). The belt hyperspectral layer is the site system; the microscope is the truth layer delivering the brief's three phases; the decision layer sits between them.
+- **New Figure 2:** HIDSAG parcel GMET-0004, rendered from the showcase data (VNIR colour, Al-OH and Mg-OH depth maps, mean spectrum).
+- **New Figure 3:** the Decisions view (from the v8 deck). The test_11 micrograph mosaic figure was dropped.
+- **New Section 5.2:** why Mintek needs this, from Mintek's 2025 Impact Report: footprint, Molycop/Mercantil, the HZL benefit-sharing model, the 0.5% AI throughput result.
+- **New Section 6:** the ask and roadmap to a pilot — partner table, go/no-go gates G1–G3, investment case, risk table.
+- Now 11 pages, compiled and checked page by page.
+
+**Verified by recomputation:** belt work index from the stored v6 out-of-fold predictions: R² 0.479 (RGB only 0.210, fold mean −0.027), MAE 1.052, 80% coverage 0.795.
+
+**Fact-check corrections (recent primary sources):**
+- **Platinum share:** the deck's "71% in 2024 (120/170 t)" is actually the 2025 figure (USGS MCS 2026). 2024 was 126/179 t.
+- **Zondereinde tonnage:** "2.25 Mt milled" could not be confirmed; ROM milled is reported as 1.07 Mt (F2025) and 1.39 Mt (F2026). The value example now uses Northam's primary 333,050 oz 4E (F2026, SENS 13 Jul 2026) × Valterra basket prices R32,611 (2025) / R45,993 (H1 2026). That gives R108.6–153.2 M per +1% recovered metal; break-even 0.03–0.23%.
+- **Comminution:** "~50% of a mine's energy" is wrong; it is 52% of site electricity and 36% of total energy (Ballantyne, Powell & Tiang 2012).
+- **Dropped:** dated or [S] figures — Impala 2018 recoveries, SRC 2017 QEMSCAN price, fire-assay 24–72 h, Knights 2012.
+
+**Open:** 11 red VERIFY markers (citation details, the Merensky hyperspectral paper, CRediT confirmation, mentor names, code access, the CI URL).
+
+---
+
 ## 2026-10-04 — Sibusiso (Claude) — report: grain inspector figure; Ipeleng removed
 
 **Did:**
