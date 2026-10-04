@@ -49,8 +49,8 @@
 
 \title{\vspace{-1.2em}\textbf{KHANYA: real-time mineral-phase identification from reflected-light micrographs, with a gated, human-approved path to plant parameters}\\[4pt]
 \large Technical report \textperiodcentered{} Mintek--SCi Grad Hackathon 2026, Problem 3}
-\author{Team Sonar: Lethabo Hoaeane\textsuperscript{a}, Sibusiso Khumalo\textsuperscript{b}, Ipeleng Modise\textsuperscript{c}\\[2pt]
-\small \textsuperscript{a}University of South Africa \quad \textsuperscript{b}University of the Witwatersrand \quad \textsuperscript{c}Tshwane University of Technology}
+\author{Team Sonar: Lethabo Hoaeane\textsuperscript{a}, Sibusiso Khumalo\textsuperscript{b}\\[2pt]
+\small \textsuperscript{a}University of South Africa \quad \textsuperscript{b}University of the Witwatersrand}
 \date{\small October 2026}
 
 \begin{document}
@@ -343,6 +343,22 @@ Raw particles & 7/12 & 2 & 0 & 5 \\
 
 \emph{Sampling.} A single centre field matches the whole-section advice on 0 of 12 sections; the six-field scan matches on 9 of 12. \emph{Lighting.} A synthetic exposure shift of $-35$ RGB levels, the magnitude measured in real re-imaging, changed the advice on 8 of 12 S2 sections. Real re-imaged S1 pairs changed it on 5 of 10. No illumination gate exists yet; the fragility is disclosed, not corrected.
 
+\emph{Grain-level evidence.} The advice can be audited grain by grain in the inspector (Fig.~\ref{fig:inspector}). Selecting a grain highlights its pixels and shows its area, equivalent diameter, valuable-mineral share, liberation state and composition. On test\_11, grain 30 is 76.5\% pyrrhotite and 23.5\% pentlandite, so it is \emph{locked}. The adjacent grain 31 is pure pentlandite and \emph{free}. The inspector also exposes a limit of Quick mode. Each field is classified without context beyond its edge, so grains are cut at field borders and thin artefact strips can form along them. On test\_11, 19 of the 24 grains, including 8 of the 10 carrying valuable mineral, come within 6\,px of a field edge. Grain statistics from Quick mode are therefore indicative. Full-section inference, which has no internal field borders, is the reference.
+
+\begin{figure*}[t]
+\centering
+\begin{subfigure}[c]{0.655\textwidth}
+\includegraphics[width=\linewidth]{figures/grain_inspector_test11_g30.jpg}
+\caption{Grain inspector with grain 30 selected from the grain catalogue.}
+\end{subfigure}\hfill
+\begin{subfigure}[c]{0.325\textwidth}
+\includegraphics[width=\linewidth]{figures/grain_inspector_test11_g30_zoom.png}
+\caption{The same render magnified: grain 30 highlighted (white); the violet region to its right contains grain 31.}
+\end{subfigure}
+\caption{Grain inspector on held-out section test\_11 (Quick scan, checkpoint \sha{de7135a9}). Grain 30 covers 302\,px$^2$ (equivalent diameter 19.6\,px): 76.5\% pyrrhotite and 23.5\% pentlandite, so it is locked under the 50\% rule. Grain 31 beside it is 100\% pentlandite and free. Pixel size is uncalibrated, so sizes are in pixels. Screenshot of the running application.}
+\label{fig:inspector}
+\end{figure*}
+
 \subsection{Latency}
 
 Table~\ref{tab:latency} gives the measured times. A six-field scan meets a shift's needs on a laptop CPU, and the whole-section mode does not yet meet a 30\,s target. Power state matters: the same scan took 30.8\,s on battery, because Windows throttles the CPU.
@@ -425,7 +441,7 @@ Two design choices carry most of the safety argument. First, topology refinement
 \item The advice is sensitive to illumination (8 of 12 sections changed under a realistic exposure shift).
 \item The checkpoint reproduces bit-for-bit, but the training recipe does not.
 \item Decision-level results measure consistency with a rule set whose thresholds are partly unsourced.
-\item Liberation is measured in 2D and is an upper bound on volumetric liberation.
+\item Liberation is measured in 2D and is an upper bound on volumetric liberation. In Quick mode most grains are cut by field borders (19 of 24 on test\_11), and pixel sizes are uncalibrated.
 \item Latency is CPU-only with small $n$ and excludes section preparation.
 \item The plant interaction is a simulation. No claim is made about reagent use, recovery or turnaround at a plant.
 \end{enumerate}
@@ -514,7 +530,7 @@ A model trained on public reflected-light micrographs identifies three sulphide 
 % ---------------------------------------------------------------------
 \small
 \backsec{CRediT authorship contribution statement}
-\textbf{Lethabo Hoaeane:} Conceptualisation, domain lead, belt hyperspectral modelling, workbench application, economics, visualisation. \textbf{Sibusiso Khumalo:} Segmentation model, accuracy and decision-level evaluation, advisor and safety gates, OPC~UA simulation, review and verification. \textbf{Ipeleng Modise:} \verify{each member to confirm their own roles}.
+\textbf{Lethabo Hoaeane:} Conceptualisation, domain lead, belt hyperspectral modelling, workbench application, economics, visualisation. \textbf{Sibusiso Khumalo:} Segmentation model, accuracy and decision-level evaluation, advisor and safety gates, OPC~UA simulation, review and verification. \verify{Lethabo to confirm these roles}
 
 \backsec{Declaration of competing interest}
 The authors declare no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.

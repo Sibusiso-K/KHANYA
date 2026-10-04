@@ -1,3 +1,20 @@
+## 2026-10-04 — Sibusiso (Claude) — report: grain inspector figure; Ipeleng removed
+
+**Did:**
+- **Author list (Sibusiso's request):** Ipeleng Modise removed from the author line, affiliations and CRediT. The report now lists Lethabo Hoaeane (UNISA) and Sibusiso Khumalo (Wits).
+- **New Figure 4 in Section 4.3:** the grain inspector on test_11, captured headless with the system Edge via playwright-core. Grain 30 is selected: 76.5% pyrrhotite, 23.5% pentlandite, LOCKED. Panel (b) magnifies the same render, showing grain 31 (free pentlandite) beside it.
+
+**Found while choosing the grain:**
+- Quick-mode fields are classified without context beyond their edge, so grains are cut at field borders.
+- On test_11, 19 of 24 grains (8 of 10 payload-bearing) come within 6 px of a field edge.
+- Grain 21 is a thin L-shaped strip along a field border, i.e. an artefact.
+- This is disclosed in Section 4.3 and limitation 7. Full-section mode has no internal field borders.
+- Product follow-up for the workbench: flag or exclude edge-truncated grains in Quick mode.
+
+**Report:** still 9 pages; 17 VERIFY markers (Ipeleng's replaced by "Lethabo to confirm these roles").
+
+---
+
 ## 2026-10-04 — Sibusiso (Claude) — technical report compiled: 9 pages
 
 **Did:** Installed Tectonic 0.17.0 (`C:\Users\lovilocal.adm\tools\tectonic`) and compiled `report/main.tex` to `report/main.pdf`: **9 A4 pages**, under the 12-page cap, no unresolved references. Rendered every page and fixed the layout:
