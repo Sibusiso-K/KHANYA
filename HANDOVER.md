@@ -1,3 +1,16 @@
+## 2026-10-04 — Sibusiso (Claude) — technical report compiled: 9 pages
+
+**Did:** Installed Tectonic 0.17.0 (`C:\Users\lovilocal.adm\tools\tectonic`) and compiled `report/main.tex` to `report/main.pdf`: **9 A4 pages**, under the 12-page cap, no unresolved references. Rendered every page and fixed the layout:
+- column stretching (`\raggedbottom`) and float limits;
+- ragged-right table columns (Tables 1, 2, 7, 10, App. C) and the Fig. 2 legend;
+- compact back-matter headings and the Appendix B file list.
+
+One 1.85 pt overfull line remains (invisible). The Overleaf zip is rebuilt.
+
+**Still open:** the 17 red VERIFY markers listed in the previous entry. Rebuild with `tectonic -X compile main.tex` from `report/`.
+
+---
+
 ## 2026-10-04 — Sibusiso (Claude) — technical report first draft (LaTeX)
 
 **Did:** Wrote the Mintek technical report from the blueprint: `report/main.tex` (two-column, about 4,500 words; estimated 9–10 pages, under the 12-page cap). It follows the Mintek paper's structure: abstract; introduction; methods; architecture; results; discussion with scope, limitations and proposed-vs-delivered; roadmap; conclusions; back matter; 22 references; appendices A–C. Figures: architecture and roadmap (TikZ), per-section mIoU (pgfplots), and the real test_11 Quick scan from de7135a9 (`report/figures/`). Overleaf bundle: `report/Team-Sonar-Mintek-Technical-Report-overleaf.zip`.

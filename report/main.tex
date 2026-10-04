@@ -28,8 +28,16 @@
 
 \setlist{nosep,leftmargin=*}
 \setlength{\parskip}{0pt}
+\raggedbottom
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\dbltopfraction}{0.9}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.8}
+\renewcommand{\dblfloatpagefraction}{0.8}
 \renewcommand{\arraystretch}{1.12}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\backsec}[1]{\par\medskip\noindent\textbf{#1}\par\smallskip\noindent\ignorespaces}
 
 \newcommand{\verify}[1]{\textcolor{red}{\textbf{[VERIFY: #1]}}}
 \newcommand{\cro}{Cr\textsubscript{2}O\textsubscript{3}}
@@ -78,7 +86,7 @@ Plants already run many on-line sensors (Table~\ref{tab:instruments}). Each meas
 \centering\footnotesize
 \caption{Plant instruments and what each cannot give the shift. Summarised from vendor and published descriptions; no performance figures are implied.}
 \label{tab:instruments}
-\begin{tabularx}{\columnwidth}{@{}p{2.15cm}YY@{}}
+\begin{tabularx}{\columnwidth}{@{}L{2.35cm}YY@{}}
 \toprule
 Instrument & Measures & Cannot give the shift \\
 \midrule
@@ -113,7 +121,7 @@ Table~\ref{tab:data} lists the datasets. No labelled Bushveld micrographs were a
 \centering\footnotesize
 \caption{Datasets. All are public; none was supplied by Mintek. Splits are the publisher's where one exists.}
 \label{tab:data}
-\begin{tabularx}{\textwidth}{@{}p{3.1cm}p{3.5cm}YYp{2.7cm}@{}}
+\begin{tabularx}{\textwidth}{@{}L{3.1cm}L{3.3cm}YYL{2.6cm}@{}}
 \toprule
 Dataset & Ore and locality & Size and split & Used for & Licence \\
 \midrule
@@ -127,7 +135,7 @@ Bushveld assays \cite{bachmann2019} & Bushveld Complex chromitites & 1,112 inter
 
 \subsection{Segmentation model}
 
-The model is torchvision's DeepLabV3 with a ResNet-50 backbone \cite{chen2017,he2016}, initialised from \texttt{COCO\_WITH\_VOC\_LABELS\_V1} weights and trained for five classes. Training used 8 epochs of 64 native-resolution 512\,px patches each, batch size 2, AdamW at $2\times10^{-4}$ and cross-entropy loss. Patch centres were sampled class-uniformly, so magnetite centres about 20\% of patches against its 1.84\% area share. The best validation patch mean IoU was 0.5384. The checkpoint under report has SHA-256 \sha{de7135a9\ldots} (168,313,587 bytes). The software refuses to command the simulator with any other checkpoint (Section~\ref{sec:gates}).
+The model is torchvision's DeepLabV3 with a ResNet-50 backbone \cite{chen2017,he2016}, initialised from the \texttt{COCO\_\allowbreak WITH\_\allowbreak VOC\_\allowbreak LABELS\_\allowbreak V1} weights and trained for five classes. Training used 8 epochs of 64 native-resolution 512\,px patches each, batch size 2, AdamW at $2\times10^{-4}$ and cross-entropy loss. Patch centres were sampled class-uniformly, so magnetite centres about 20\% of patches against its 1.84\% area share. The best validation patch mean IoU was 0.5384. The checkpoint under report has SHA-256 \sha{de7135a9\ldots} (168,313,587 bytes). The software refuses to command the simulator with any other checkpoint (Section~\ref{sec:gates}).
 
 Inference has two modes. \emph{Full section} uses a sliding window of 512\,px tiles with 64\,px overlap, averaging logits. \emph{Quick} classifies six non-overlapping 512\,px fields on a fixed grid, covering 18.2\% of an S2 section. The six-field grid was fixed by the latency budget before its agreement with whole-section advice was measured.
 
@@ -234,23 +242,23 @@ The pooled mean IoU is 0.5725 (95\% CI 0.494--0.624). Averaged per section it is
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-  width=\columnwidth, height=4.6cm,
+  width=\columnwidth, height=4.9cm,
   ymin=0, ymax=0.8, ytick={0,0.2,0.4,0.6,0.8},
   xmin=0.4, xmax=12.6,
   xtick={1,...,12}, xticklabels={01,02,03,04,05,06,07,08,09,10,11,12},
   xlabel={Held-out section (test\_)}, ylabel={Mean IoU},
   tick label style={font=\scriptsize}, label style={font=\footnotesize},
   ymajorgrids, grid style={gray!20}, axis lines*=left,
-  legend style={at={(0.99,0.99)}, anchor=north east, font=\scriptsize, draw=none, fill=white, fill opacity=0.9, text opacity=1},
+  legend style={at={(0.5,1.03)}, anchor=south, font=\scriptsize, draw=none, legend columns=3, /tikz/every even column/.append style={column sep=6pt}},
   legend cell align=left]
-\addplot[ybar, bar width=9pt, fill=accent!55, draw=accent] coordinates {
+\addplot[ybar, bar width=9pt, fill=accent!55, draw=accent, area legend] coordinates {
 (1,0.4127) (2,0.7275) (3,0.6588) (4,0.4662) (5,0.4716) (6,0.3400)
 (7,0.4534) (8,0.5038) (9,0.3749) (10,0.3775) (11,0.3769) (12,0.4425)};
-\addlegendentry{section mean IoU}
+\addlegendentry{per section}
 \addplot[black, dashed, thick, domain=0.4:12.6, samples=2] {0.5725};
-\addlegendentry{pooled, 0.5725}
+\addlegendentry{pooled 0.5725}
 \addplot[black, dotted, thick, domain=0.4:12.6, samples=2] {0.4671};
-\addlegendentry{per-section mean, 0.4671}
+\addlegendentry{mean of sections 0.4671}
 \end{axis}
 \end{tikzpicture}
 \caption{Mean IoU of each held-out section (classes present in its ground truth or prediction). Ten of 12 sections fall below the pooled figure; the range is 0.340--0.728. Source: \texttt{reports/s2\_section\_stats.json}.}
@@ -341,17 +349,17 @@ Table~\ref{tab:latency} gives the measured times. A six-field scan meets a shift
 
 \begin{table}[t]
 \centering\footnotesize
-\caption{Measured latency. CPU only; no GPU or edge timing exists yet.}
+\caption{Measured latency. CPU only; no GPU or edge timing exists yet. The whole-section row is six repeats on one image.}
 \label{tab:latency}
-\begin{tabularx}{\columnwidth}{@{}Yp{1.55cm}cp{1.75cm}@{}}
+\begin{tabularx}{\columnwidth}{@{}YL{1.6cm}cL{1.85cm}@{}}
 \toprule
 Measurement & Hardware & $n$ & Result \\
 \midrule
-Forward pass, one 512\,px field & Laptop, Win.\ 11 & 60 & mean 2.64\,s; p95 3.60\,s \\
+Forward pass, one 512\,px field & Windows laptop & 60 & mean 2.64\,s, p95 3.60\,s \\
 Six-field scan, end to end (server side) & i7-1265U, mains & 5 & 16.7--21.2\,s \\
 Six-field scan, end to end & i7-1265U, battery & 1 & 30.8\,s \\
-Whole section, sliding window & Laptop, Win.\ 11 & 6 (1 image) & mean 162.3\,s; p95 195.7\,s \\
-Belt hardness model & Kaggle CPU & -- & 92\,ms per parcel \\
+Whole section, sliding window & Windows laptop & 6 & mean 162.3\,s, p95 195.7\,s \\
+Belt hardness model & Kaggle CPU & -- & 92\,ms/parcel \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -428,7 +436,7 @@ Table~\ref{tab:proposal} compares the build with the abstract Mintek accepted. M
 \centering\footnotesize
 \caption{Proposed in the accepted abstract versus delivered.}
 \label{tab:proposal}
-\begin{tabularx}{\textwidth}{@{}p{4.6cm}Yp{2.1cm}@{}}
+\begin{tabularx}{\textwidth}{@{}L{4.9cm}YL{3.1cm}@{}}
 \toprule
 Proposed & Delivered & Status \\
 \midrule
@@ -454,7 +462,7 @@ No plant benefit has been measured, so value is shown as a worked example with l
 per year, where $T$ is tonnes milled, $g$ the 4E head grade in g/t, $p$ the payability and $P$ the net price per ounce. At a Zondereinde-sized plant ($T$ = 2,247,881\,t/yr, $g$ = 4.72\,g/t \verify{read both from Northam's F2025 annual report}), with $p$ = 0.75/0.85/0.95 and $P$ = R25,000/R32,611/R47,156 per ounce, this gives R64.0\,M, R94.6\,M and R152.8\,M per year. The base price is Valterra's 2025 realised basket \cite{valterra2025}, used as a proxy. The middle case is about US\$5.4\,M per point. Against an assumed belt installation of US\$0.5--3.0\,M with US\$0.1--0.6\,M a year in running costs (five years, 10\%), the break-even recovery gain is 0.043--0.259\,pp. These are scenarios, not forecasts; the pilot exists to measure the real number.
 
 % ---------------------------------------------------------------------
-\section{Future work, the ask and the roadmap}
+\section{Future work, ask and roadmap}
 
 The next step is a three-month laboratory shadow pilot with Mintek's QEMSCAN as ground truth (Fig.~\ref{fig:roadmap}). It addresses the largest limitation, no South African ore, at the lowest cost. Each later phase starts only when the gate before it is passed. The technical work, each item tied to a limitation above, is:
 \begin{enumerate}
@@ -504,21 +512,21 @@ The next step is a three-month laboratory shadow pilot with Mintek's QEMSCAN as 
 A model trained on public reflected-light micrographs identifies three sulphide phases with IoU 0.5468--0.8695 on held-out sections. That meets the brief's three-phase requirement, with magnetite as a stated failure. Built into an end-to-end system with explicit gates, its recommendations reached a simulated plant parameter only after human approval. On 12 held-out sections it made no unsafe recommendation, although 12 sections bound the unsafe rate only to below 22.1\%. The same decision logic applied to a belt hardness bound gave a provisional simulated throughput gain of +1.9\%. These results hold for public analogue ores and a simulated plant. Whether they transfer to South African ore is the question a QEMSCAN-labelled laboratory pilot is designed to answer.
 
 % ---------------------------------------------------------------------
-\section*{CRediT authorship contribution statement}
 \small
+\backsec{CRediT authorship contribution statement}
 \textbf{Lethabo Hoaeane:} Conceptualisation, domain lead, belt hyperspectral modelling, workbench application, economics, visualisation. \textbf{Sibusiso Khumalo:} Segmentation model, accuracy and decision-level evaluation, advisor and safety gates, OPC~UA simulation, review and verification. \textbf{Ipeleng Modise:} \verify{each member to confirm their own roles}.
 
-\section*{Declaration of competing interest}
+\backsec{Declaration of competing interest}
 The authors declare no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
 
-\section*{Acknowledgements}
+\backsec{Acknowledgements}
 We thank the Mintek mentors (a chemist, a mineralogist and a metallurgist) for a review session that reshaped the build \verify{names, with their permission}, and the authors of LumenStone, HIDSAG and the Bushveld assay dataset for releasing their data.
 
-\section*{Use of AI tools}
+\backsec{Use of AI tools}
 Code and drafting were assisted by AI coding assistants. Every reported number was computed by code in the project repository from the files named in Appendix~\ref{app:repro}, and was checked by the authors.
 
-\section*{Data and code availability}
-LumenStone is available from its publishers under research-use terms \cite{korshunov2025}; HIDSAG under CC0 (doi:10.6084/m9.figshare.c.5983921) \cite{ehrenfeld2023}; the Bushveld assays under CC BY 4.0 (doi:10.17632/dc8jcnbcvk.1) \cite{bachmann2019}. Code, checkpoints' SHA-256 values and evaluation outputs are in the team repository (\texttt{Sibusiso-K/KHANYA}); access is available to Mintek on request under the hackathon's IP terms \verify{confirm with the team}.
+\backsec{Data and code availability}
+{\raggedright LumenStone is available from its publishers under research-use terms \cite{korshunov2025}; HIDSAG under CC0 (doi:10.6084/m9.figshare.c.5983921) \cite{ehrenfeld2023}; the Bushveld assays under CC BY 4.0 (doi:10.17632/dc8jcnbcvk.1) \cite{bachmann2019}. Code, checkpoints' SHA-256 values and evaluation outputs are in the team repository (\texttt{Sibusiso-K/KHANYA}); access is available to Mintek on request under the hackathon's IP terms \verify{confirm with the team}.\par}
 
 \normalsize
 % ---------------------------------------------------------------------
@@ -574,7 +582,14 @@ Mean & 0.7224 & 0.8506 & $-$0.1282 \\
 
 \section{Verification and reproduction}\label{app:repro}
 
-\noindent\textbf{Sources of every result.} Repository \texttt{Sibusiso-K/KHANYA}. Microscope results: branch \texttt{codex/launch-live-demo}, files \texttt{reports/ACCURACY-REPORT.md}, \texttt{reports/lumenstone\_s2\_patches\_test\_metrics.json}, \texttt{reports/s2\_section\_stats.json}, \texttt{reports/magnetite\_confusion\_patches.json}, \texttt{reports/lumenstone\_s2\_trivial\_baselines.json}, \texttt{reports/decision\_gap\_patches.json}, \texttt{reports/decision\_gap\_patches\_refined.json}, \texttt{reports/field\_sampling\_s2.json}, \texttt{reports/segmentation\_latency.json}, \texttt{reports/benchmark\_s1\_v1\_protocol.json}. Candidate model: branch \texttt{codex/themes-launch}, \texttt{reports/NATIVE-SELECTED-TEST-RESULT-2026-10-01.md}. Belt and economics: branch \texttt{codex/pwa-phase-roadmap}, \texttt{docs/16-decision-value-chain.md}, \texttt{training/value-chain-20261002/results.json}, \texttt{training/economics-20261002/results.json}.
+\noindent\textbf{Sources of every result} (repository \texttt{Sibusiso-K/KHANYA}):
+{\raggedright
+\begin{itemize}
+\item \emph{Microscope}, branch \texttt{codex/launch-live-demo}: \texttt{reports/ACCURACY-REPORT.md}, \texttt{lumenstone\_s2\_patches\_test\_metrics.json}, \texttt{s2\_section\_stats.json}, \texttt{magnetite\_confusion\_patches.json}, \texttt{lumenstone\_s2\_trivial\_baselines.json}, \texttt{decision\_gap\_patches.json}, \texttt{decision\_gap\_patches\_refined.json}, \texttt{field\_sampling\_s2.json}, \texttt{segmentation\_latency.json}, \texttt{benchmark\_s1\_v1\_protocol.json} (all under \texttt{reports/}).
+\item \emph{Candidate model}, branch \texttt{codex/themes-launch}: \texttt{reports/NATIVE-SELECTED-TEST-RESULT-2026-10-01.md}.
+\item \emph{Belt and economics}, branch \texttt{codex/pwa-phase-roadmap}: \texttt{docs/16-decision-value-chain.md}, \texttt{training/value-chain-20261002/results.json}, \texttt{training/economics-20261002/results.json}.
+\end{itemize}
+\par}
 
 \smallskip
 \noindent\textbf{Reproduction commands} (microscope):
@@ -588,13 +603,13 @@ python -m src.decision_gap --model patches --refine   # Table 6
 python -m src.exposure_control                        # lighting sensitivity
 \end{verbatim}
 
-\noindent\textbf{Continuous integration.} Four checks on the workbench branch (unit and API tests, offline-bundle match, local workbench API tests, secret scanning) \verify{add the CI run URL for the final commit}.
+\noindent\textbf{Continuous integration.} Four checks on the workbench branch (unit tests, offline-bundle match, local API tests and secret scanning) \verify{add the CI run URL for the final commit}.
 
 \section{Assumptions register for Section 5.3}\label{app:assumptions}
 
 \begin{table}[h]
 \centering\footnotesize
-\begin{tabularx}{\textwidth}{@{}lp{3.6cm}Y@{}}
+\begin{tabularx}{\textwidth}{@{}L{3.2cm}L{4.2cm}Y@{}}
 \toprule
 Input & Value & Provenance \\
 \midrule
