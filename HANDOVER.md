@@ -1,3 +1,15 @@
+## 2026-10-04 — Sibusiso (Claude) — technical report first draft (LaTeX)
+
+**Did:** Wrote the Mintek technical report from the blueprint: `report/main.tex` (two-column, about 4,500 words; estimated 9–10 pages, under the 12-page cap). It follows the Mintek paper's structure: abstract; introduction; methods; architecture; results; discussion with scope, limitations and proposed-vs-delivered; roadmap; conclusions; back matter; 22 references; appendices A–C. Figures: architecture and roadmap (TikZ), per-section mIoU (pgfplots), and the real test_11 Quick scan from de7135a9 (`report/figures/`). Overleaf bundle: `report/Team-Sonar-Mintek-Technical-Report-overleaf.zip`.
+
+**Decisions applied (from the blueprint):** de7135a9 is the model under report; fb78727 is the recipe re-run; 42646cfa is a quarantined candidate. Latency is a table with hardware and n. Withdrawn results are in a negative-results table. Economics are a worked example with an assumptions register.
+
+**Not verified:** not compiled here (no TeX engine). Structure, refs, citations and bibliography order were checked by script.
+
+**Before submitting (17 red VERIFY markers in the PDF):** complete 9 citations (Jones 2005, Molefe & Baloyi 2022, Eksteen 2011, Knights 2012, Korshunov 2025, Ehrenfeld 2023, Bachmann 2019, 911 Metallurgist, the ResUNet benchmark); the fire-assay turnaround source; Northam F2025 tonnage and grade; the Napier-Munn journal source; CRediT roles (Ipeleng especially); mentor names; the funder; code-access wording; the CI run URL.
+
+---
+
 ## 2026-10-04 — Sibusiso (Claude review) — technical report audit for Mintek (12 pages)
 
 **Did:** Pulled every branch and audited the build against the template Mintek supplied (Moodley et al. 2026, *Results in Engineering* 32, 112959). Every figure for the report was checked against its source file, and both economic calculations were recomputed. The full blueprint is a private Claude doc, which Sibusiso will share.

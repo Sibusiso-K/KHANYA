@@ -1,0 +1,613 @@
+% =====================================================================
+%  Team Sonar -- Technical report to Mintek (Mintek-SCi Grad Hackathon 2026, Problem 3)
+%  Built from "Team Sonar -- Mintek Technical Report Blueprint" (4 Oct 2026).
+%  Every number traces to a file named in Appendix B.
+%
+%  BEFORE SUBMITTING: search for "VERIFY". Each one prints in red in the PDF.
+%  Compile: pdflatex main.tex (twice), or upload the report/ folder to Overleaf.
+%  Figures needed: figures/test11_quick_raw.jpg, figures/test11_quick_overlay.jpg
+% =====================================================================
+\documentclass[10pt,a4paper,twocolumn]{article}
+
+\usepackage[a4paper,margin=1.8cm,columnsep=0.6cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs,tabularx,array}
+% amsmath is loaded by newtxmath
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf,skip=4pt]{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[hidelinks]{hyperref}
+
+\setlist{nosep,leftmargin=*}
+\setlength{\parskip}{0pt}
+\renewcommand{\arraystretch}{1.12}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\newcommand{\verify}[1]{\textcolor{red}{\textbf{[VERIFY: #1]}}}
+\newcommand{\cro}{Cr\textsubscript{2}O\textsubscript{3}}
+\newcommand{\sha}[1]{\texttt{#1}}
+\newcommand{\um}{\,$\mu$m}
+
+\definecolor{accent}{RGB}{31,111,178}
+\definecolor{soft}{RGB}{110,110,110}
+
+\title{\vspace{-1.2em}\textbf{KHANYA: real-time mineral-phase identification from reflected-light micrographs, with a gated, human-approved path to plant parameters}\\[4pt]
+\large Technical report \textperiodcentered{} Mintek--SCi Grad Hackathon 2026, Problem 3}
+\author{Team Sonar: Lethabo Hoaeane\textsuperscript{a}, Sibusiso Khumalo\textsuperscript{b}, Ipeleng Modise\textsuperscript{c}\\[2pt]
+\small \textsuperscript{a}University of South Africa \quad \textsuperscript{b}University of the Witwatersrand \quad \textsuperscript{c}Tshwane University of Technology}
+\date{\small October 2026}
+
+\begin{document}
+
+\twocolumn[
+\begin{@twocolumnfalse}
+\maketitle
+\vspace{-1.5em}
+\begin{abstract}
+\noindent Concentrators set grind, reagents and feed rate every shift, but the mineralogical evidence behind those settings, from automated mineralogy and fire assay, returns after the ore has been processed. This report describes KHANYA, a software system that identifies mineral phases in reflected-light micrographs of polished sections. It converts the segmentation into grain-level liberation measures and passes a gated recommendation to a simulated plant parameter over OPC~UA, with a person approving every change. A DeepLabV3--ResNet50 model trained on the public LumenStone~S2 dataset identifies pyrrhotite, chalcopyrite and pentlandite with intersection-over-union (IoU) of 0.8695, 0.5755 and 0.5468 on 12 held-out sections. The five-class mean IoU is 0.5725 (95\% CI 0.494--0.624) pooled over pixels and 0.4671 averaged per section; magnetite is never predicted. At the decision level, the shipped pipeline made no unsafe recommendation in 12 sections (one-sided 95\% upper bound 22.1\%), and all eight disagreements with expert-mask advice were requests for verification. A six-field scan takes 16.7--21.2\,s on a laptop CPU. An extension applies the same decision logic to a belt hyperspectral hardness prediction. On 146 public drill-core composites, a feed-rate policy built on a one-sided conformal bound gave a simulated throughput gain of +1.9\% (95\% CI +0.9 to +2.9\%), with overload frequency non-inferior within a pre-registered margin. All results are on public analogue ores, not South African ore, and the plant interaction is simulated. The proposed next step is a three-month laboratory shadow pilot with Mintek QEMSCAN data as ground truth.
+
+\smallskip
+\noindent\textbf{Keywords:} process mineralogy; reflected-light microscopy; semantic segmentation; liberation; advisory control; conformal prediction
+\end{abstract}
+\vspace{1em}
+\end{@twocolumnfalse}
+]
+
+% ---------------------------------------------------------------------
+\section{Introduction}
+
+\subsection{Background and motivation}
+
+South Africa produced about 71\% of the world's mined platinum in 2024 (120,000 of 170,000\,kg) \cite{usgs2025}. Its two main reefs recover very differently: Impala reported PGM recoveries of about 89\% on Merensky ore and about 79\% on UG2 \cite{impala2018}. UG2 carries about 30\% \cro{} against about 0.1\% for Merensky \cite{jones2005}, and its PGM grains are mostly finer than 10\um{} \cite{molefe2022}. The concentrate's chromite content is capped by the smelter, because \cro{} solubility in slag is only about 1.8\% \cite{eksteen2011}. That cap costs recovery. In Mintek testwork, UG2 concentrate reached about 430\,g/t at 87\% recovery with 2.9\% \cro{}, and higher grades and recoveries were possible if the \cro{} limit was relaxed \cite{jones2005}. Recovery changes of one or two percentage points are material: Valterra reported concentrator recovery gains of +1\,pp at Mototolo and +2\,pp at Amandelbult in 2025 \cite{valterra2025}. Comminution, which sets liberation, accounts for about half of a mine site's energy use \cite{napiermunn}.
+
+The information needed to steer these trade-offs arrives late. Automated mineralogy (QEMSCAN, MLA, TIMA) measures phases, liberation and association, but it is a laboratory service: one Canadian list price was CAD\,1,500 per liberation analysis, plus CAD\,950 for preparation and mounting \cite{src2017}. Shift composites for fire assay are reported after the shift in which the ore was milled \verify{cite a primary source for typical 4E fire-assay turnaround, or delete this sentence}. The plant runs three shifts a day, so the shift decides without the mineralogy of the ore it is processing.
+
+\subsection{Rationale: what existing instruments cannot tell the shift}
+
+Plants already run many on-line sensors (Table~\ref{tab:instruments}). Each measures one property in one place, and none reports liberation on the shift's timescale. Advanced process control such as Mintek's MillStar and FloatStar stabilises the circuit, and FloatStar has been reported to raise recovery by up to 2.7\% over 400 days of on/off testing \cite{knights2012}. What is missing is an \emph{uncertainty-aware mineralogical input} to that layer: one that can be checked against the laboratory, and that refuses to advise when its evidence is thin. Recent Mintek work shows the value of mineralogy-constrained interpretation of flotation response \cite{moodley2026}. Our aim is to supply the mineralogical side of such interpretations faster and more cheaply, not to replace QEMSCAN.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Plant instruments and what each cannot give the shift. Summarised from vendor and published descriptions; no performance figures are implied.}
+\label{tab:instruments}
+\begin{tabularx}{\columnwidth}{@{}p{2.15cm}YY@{}}
+\toprule
+Instrument & Measures & Cannot give the shift \\
+\midrule
+Cross-belt PGNAA/PFTNA & Bulk elements, minute by minute & Minerals, liberation, PGM at g/t \\
+On-stream XRF (slurry) & Cu, Ni, Fe, Cr in process streams & Trace PGM; mineralogical cause \\
+Slurry reflectance analyser (e.g.\ Blue Cube MQi) & Grade indicators in the pipe & Liberation and association \\
+Froth and size cameras & Froth state; rock size & The ore's mineralogy \\
+Automated mineralogy (QEMSCAN, MLA) & Phases, liberation, association & Results on the shift's timescale \\
+APC (MillStar, FloatStar) & Stabilises levels, flows, mill load & A mineralogical feed-forward input \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Contribution and scope}
+
+The brief asks for a model that identifies at least three distinct mineral phases from provided image datasets, an accuracy report, and a demonstration of how the model's output can adjust plant parameters, in real time and integrated with existing controls. This report contributes:
+\begin{enumerate}
+\item a segmentation model meeting the three-phase requirement, with per-class, per-section and decision-level accuracy, baselines and a like-for-like published comparison (Section~\ref{sec:results});
+\item an end-to-end system that turns a micrograph into grain-level liberation measures, gates the recommendation, and drives a simulated plant parameter over OPC~UA after human approval (Sections~\ref{sec:methods}--\ref{sec:arch});
+\item an extension of the same decision logic to a belt hyperspectral hardness prediction and a mill feed rate (Section~\ref{sec:belt}).
+\end{enumerate}
+Not claimed: performance on South African ore, any measured plant benefit, identification of chromite or silicates, or robustness to illumination change.
+
+% ---------------------------------------------------------------------
+\section{Materials and methods}\label{sec:methods}
+
+\subsection{Data}
+
+Table~\ref{tab:data} lists the datasets. No labelled Bushveld micrographs were available, so LumenStone~S2, a Norilsk Ni--Cu sulphide ore, serves as an \emph{assemblage} analogue for the base-metal sulphides that carry PGM. It is not an abundance analogue: base-metal sulphides cover 62.8\% of S2 by area, against under 1\,vol\% in UG2. In the S2 test set, pyrrhotite covers 58.3\% of pixels, background resin 25.0\%, pentlandite 10.8\%, chalcopyrite 5.1\% and magnetite 0.79\%.
+
+\begin{table*}[t]
+\centering\footnotesize
+\caption{Datasets. All are public; none was supplied by Mintek. Splits are the publisher's where one exists.}
+\label{tab:data}
+\begin{tabularx}{\textwidth}{@{}p{3.1cm}p{3.5cm}YYp{2.7cm}@{}}
+\toprule
+Dataset & Ore and locality & Size and split & Used for & Licence \\
+\midrule
+LumenStone S2 \cite{korshunov2025} & Ni--Cu sulphide, Norilsk & 49 reflected-light images, 3396$\times$2547\,px; 37 train (31 + 6 validation), 12 held-out test; 5 classes & Phase segmentation; all accuracy results & Research use with citation \\
+LumenStone S1 \cite{korshunov2025} & Hydrothermal, Berezovskoe & 7 classes; the 16 test images of the published benchmark & Like-for-like published comparison (App.~\ref{app:s1}) & Research use with citation \\
+HIDSAG GEOMET \cite{ehrenfeld2023} & Porphyry Cu--Mo, Chile & 146 drill-core composites, VNIR--SWIR, with Bond work index & Belt hardness model and feed-rate replay & CC0 \\
+Bushveld assays \cite{bachmann2019} & Bushveld Complex chromitites & 1,112 intervals; 123 projects held out by project & Negative-result check on PGE routing & CC BY 4.0 \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection{Segmentation model}
+
+The model is torchvision's DeepLabV3 with a ResNet-50 backbone \cite{chen2017,he2016}, initialised from \texttt{COCO\_WITH\_VOC\_LABELS\_V1} weights and trained for five classes. Training used 8 epochs of 64 native-resolution 512\,px patches each, batch size 2, AdamW at $2\times10^{-4}$ and cross-entropy loss. Patch centres were sampled class-uniformly, so magnetite centres about 20\% of patches against its 1.84\% area share. The best validation patch mean IoU was 0.5384. The checkpoint under report has SHA-256 \sha{de7135a9\ldots} (168,313,587 bytes). The software refuses to command the simulator with any other checkpoint (Section~\ref{sec:gates}).
+
+Inference has two modes. \emph{Full section} uses a sliding window of 512\,px tiles with 64\,px overlap, averaging logits. \emph{Quick} classifies six non-overlapping 512\,px fields on a fixed grid, covering 18.2\% of an S2 section. The six-field grid was fixed by the latency budget before its agreement with whole-section advice was measured.
+
+\subsection{From mask to grains to advice}
+
+Connected regions of the predicted mask are split into particles, with a boundary-topology refinement that separates touching grains. For S2, chalcopyrite and pentlandite are \emph{payload}, pyrrhotite is \emph{reject} and magnetite is \emph{oxide}. Each grain's payload fraction is its payload area divided by its classified area, giving three states: \emph{no valuable mineral} (fraction 0), \emph{locked} (between 0 and 0.5) and \emph{free} ($\geq 0.5$). The 50\% floor follows the steep fall in composite-particle flotation recovery below about half surface exposure \cite{liberation911}. The system also reports an area-weighted 2D association index, mineral contacts, composition and liberation by grain size. Liberation measured on 2D sections is biased high against volumetric liberation, so the advice treats it as an upper bound.
+
+The rule-based advisor maps these measures to one of: \emph{grind finer}, \emph{continue at current setpoint}, or \emph{marginal: verify before acting}. Its liberation floor is sourced. Its other three thresholds (payload floor 0.003, reject ceiling 0.60, deleterious ceiling 0.05) are placeholders awaiting values from site metallurgists.
+
+\subsection{Safety gates and the plant-parameter path}\label{sec:gates}
+
+A recommendation reaches the plant simulator only if it passes every gate:
+\begin{enumerate}
+\item the running checkpoint is the approved one, identified by SHA-256;
+\item the image is byte-identical to a validated held-out section (uploads are advisory only), and passes a colour-cast check that refuses greyscale and cool-cast images;
+\item at least 9 payload-bearing particles were found (a provisional, conservative floor);
+\item mean model confidence is at least 0.85 (uncalibrated softmax; a provisional floor).
+\end{enumerate}
+A person then triggers the change. The application programming interface (FastAPI) calls an OPC~UA server and client built on \texttt{asyncua} \cite{iec62541}, which set a simulated \texttt{regrind\_enabled} parameter. \emph{Grind finer} switches it on; \emph{continue} leaves it unchanged; any refusal holds the current setting and logs the reason. Each simulator session has its own plant state, and every event is tied to the result that produced it.
+
+\subsection{Belt extension: hardness to feed rate}\label{sec:beltmethod}
+
+A ball mill is usually limited by motor power. Bond's law gives the specific energy \cite{bond1961}
+\begin{equation}
+W = 10\,W_i\left(\frac{1}{\sqrt{P_{80}}}-\frac{1}{\sqrt{F_{80}}}\right)\ \text{kWh/t},
+\end{equation}
+so at a fixed grind target the achievable feed rate is proportional to $1/W_i$. Power, feed size and grind target cancel in every ratio below, so no plant parameter is assumed. A model predicts $W_i$ from each parcel's VNIR--SWIR spectrum. The feed rate is set from a one-sided 90\% split-conformal upper bound on $W_i$ \cite{lei2018}, not from the point prediction. Parcels flagged as out of distribution fall back to the conservative setting. An approximate CV+ bound \cite{barber2021} was tried first and failed its gate. The exact split-conformal bound, the plan's stated fallback, was then used, so the result is provisional (Section~\ref{sec:belt}).
+
+\subsection{Evaluation protocol}
+
+All segmentation metrics use the publisher's 12 held-out S2 sections, never used for training or checkpoint selection. Per-class IoU is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FP}+\mathrm{FN})$. We report two conventions: \emph{pooled} (one confusion matrix over all 103,795,344 test pixels) and \emph{per section} (the mean of each section's mean IoU). Confidence intervals are percentile bootstraps over sections (2,000 resamples, seed 42), because a section, not a pixel, is the independent unit. Baselines are majority class and colour-only nearest centroid. The published comparison uses the void-border protocol, which excludes pixels within 5\,px of a labelled boundary.
+
+Decision-level agreement runs the advisor twice per section, once on the model's mask and once on the expert mask. A disagreement is \emph{unsafe} if the model says \emph{continue} where the expert-mask advice does not, or gives any non-hedged advice where the expert mask says \emph{grind finer}. It is \emph{conservative} if the model acts where it need not, and \emph{flagged} if it hedges to verification. This measures consistency with the same rules applied to expert labels, not metallurgical correctness.
+
+The belt model is evaluated out of fold, grouped, against its strongest baseline, with gates fixed in a pre-registration committed before each run.
+
+% ---------------------------------------------------------------------
+\section{System architecture}\label{sec:arch}
+
+Figure~\ref{fig:arch} shows the system. The user interface is React with TypeScript; the production bundle is committed, so it runs offline. The FastAPI service runs PyTorch inference on the CPU, loads and warms the model at start-up, and disables analysis until the model is ready. During a scan it publishes provisional phase fractions computed only over fields already classified. A grain inspector decodes a 24-bit grain-identity image in the browser, so a tap on a grain shows its composition, size and liberation state. Reports are bound to the checkpoint's SHA-256 and show that checkpoint's own accuracy. In local mode the service accepts only loopback connections and makes no external network requests. An optional assistant may route questions, but no language model computes any measured or control value.
+
+The belt layer (REEFPRINT Live) has a secure server mode with role-based access, scrypt password hashing, server-side sessions, CSRF protection and rate limits. It keeps an append-only decision ledger with Ed25519 and ML-DSA-65 signed checkpoints \cite{fips204}, and passed 17 of 17 security tests locally; it has not been deployed publicly. The public demonstration is a static site whose decision record is an unsigned browser sandbox.
+
+\textbf{Software verification.} The workbench has 180 pytest functions in 27 files and 7 browser tests (Playwright) in 5 specifications. Its four continuous-integration checks (unit tests, offline-bundle match, local API tests and secret scanning) passed on the reported revision. The belt branch has 328 pytest functions; static analysis (Bandit) reported 0 issues, and a dependency audit found 9 known vulnerabilities, all fixed by upgrading \texttt{cryptography}.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=soft, rounded corners=3pt, align=left, text width=7.4cm, font=\footnotesize, inner sep=5pt, minimum height=1.05cm},
+  wide/.style={draw=soft, rounded corners=3pt, align=left, text width=16.0cm, font=\footnotesize, inner sep=5pt},
+  hot/.style={draw=accent, very thick, fill=accent!8, rounded corners=3pt, align=left, text width=16.0cm, font=\footnotesize, inner sep=5pt},
+  arr/.style={-{Stealth[length=2mm]}, soft, thick}]
+\node[box] (in1) at (-4.3,0) {\textbf{Polished-section micrograph}\\ Reflected light, 3396$\times$2547\,px (LumenStone S2)};
+\node[box] (in2) at (4.3,0) {\textbf{Belt hyperspectral parcel}\\ VNIR--SWIR spectrum (HIDSAG, Chilean Cu--Mo core)};
+\node[box, below=0.45cm of in1] (seg) {\textbf{Phase segmentation (KHANYA)}\\ DeepLabV3--ResNet50, checkpoint \sha{de7135a9}; six 512\,px fields, about 3\,s per field on a laptop CPU};
+\node[box, below=0.45cm of in2] (hard) {\textbf{Hardness model}\\ Bond work index with a one-sided 90\% conformal bound; out-of-distribution gate; 92\,ms per parcel};
+\node[box, below=0.45cm of seg] (meas) {\textbf{Mineral measurement}\\ Phase areas, grains, liberation states, contacts, liberation by size (2D)};
+\node[box, below=0.45cm of hard] (feed) {\textbf{Feed-rate proposal}\\ Bond's law turns the bound into a feed rate inside the site's envelope and ramp limits};
+\node[wide, below=0.45cm of meas.south west, anchor=north west] (gates) {\textbf{Safety gates}\quad approved checkpoint \textperiodcentered{} validated sample and colour-cast check \textperiodcentered{} $\geq$\,9 payload particles \textperiodcentered{} confidence $\geq$\,0.85 \textperiodcentered{} out-of-distribution fallback. Anything that fails a gate is advisory only.};
+\node[hot, below=0.45cm of gates] (person) {\textbf{A person decides}\quad approve, modify, reject or escalate. With no response the conservative setting applies, never the last value.};
+\node[box, below=0.45cm of person.south west, anchor=north west] (plant) {\textbf{Plant interface}\\ OPC~UA advisory (\texttt{asyncua}) to a simulated plant parameter: regrind on/off or feed rate};
+\node[box, anchor=north east] (rec) at (person.south east |- plant.north) {\textbf{Decision record}\\ Hash-chained log; Ed25519 + ML-DSA-65 signed checkpoints (secure server, tested locally)};
+\draw[arr] (in1) -- (seg); \draw[arr] (in2) -- (hard);
+\draw[arr] (seg) -- (meas); \draw[arr] (hard) -- (feed);
+\draw[arr] (meas.south) -- (meas.south |- gates.north);
+\draw[arr] (feed.south) -- (feed.south |- gates.north);
+\draw[arr] (gates) -- (person);
+\draw[arr] (plant.north |- person.south) -- (plant.north);
+\draw[arr] (rec.north |- person.south) -- (rec.north);
+\end{tikzpicture}
+\caption{System architecture. The microscope layer (left) answers the brief; the belt layer (right) applies the same gates and human decision to a throughput lever. Both run offline on one laptop CPU. The plant is a simulator: no plant data or plant connection exists.}
+\label{fig:arch}
+\end{figure*}
+
+% ---------------------------------------------------------------------
+\section{Results}\label{sec:results}
+
+\subsection{Phase identification}
+
+Table~\ref{tab:perclass} gives the held-out results. Three phases are identified with non-zero IoU, meeting the brief: pyrrhotite 0.8695, chalcopyrite 0.5755 and pentlandite 0.5468. Magnetite, a fourth class the brief does not require, is never predicted. Pixel accuracy is 0.8914, but background and pyrrhotite dominate it, so it must not be read as 89\% mineral identification.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Held-out results for checkpoint \sha{de7135a9}, 12 LumenStone S2 sections, full-section inference. Void-border IoU excludes pixels within 5\,px of a labelled boundary.}
+\label{tab:perclass}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Class & IoU & IoU (void-border) & Recall & Precision \\
+\midrule
+Background (resin) & 0.8709 & 0.9290 & 0.9198 & 0.9425 \\
+\textbf{Pyrrhotite} & \textbf{0.8695} & 0.8929 & 0.9343 & 0.9261 \\
+\textbf{Chalcopyrite} & \textbf{0.5755} & 0.6151 & 0.7161 & 0.7456 \\
+\textbf{Pentlandite} & \textbf{0.5468} & 0.5801 & 0.7420 & 0.6752 \\
+Magnetite & 0.0000 & 0.0000 & 0.0000 & -- \\
+\midrule
+Mean (5 classes) & 0.5725 & 0.6034 & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The pooled mean IoU is 0.5725 (95\% CI 0.494--0.624). Averaged per section it is 0.4671 (95\% CI 0.412--0.534), and 10 of the 12 sections score below the pooled figure (Fig.~\ref{fig:sections}). Both conventions are valid. The pooled figure weights large, easy sections more, so both are reported. The 12 sections are the publisher's test split, reused throughout development, so they are a benchmark rather than a prospective validation. LumenStone ships no locality metadata, so they may not be 12 independent specimens.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth, height=4.6cm,
+  ymin=0, ymax=0.8, ytick={0,0.2,0.4,0.6,0.8},
+  xmin=0.4, xmax=12.6,
+  xtick={1,...,12}, xticklabels={01,02,03,04,05,06,07,08,09,10,11,12},
+  xlabel={Held-out section (test\_)}, ylabel={Mean IoU},
+  tick label style={font=\scriptsize}, label style={font=\footnotesize},
+  ymajorgrids, grid style={gray!20}, axis lines*=left,
+  legend style={at={(0.99,0.99)}, anchor=north east, font=\scriptsize, draw=none, fill=white, fill opacity=0.9, text opacity=1},
+  legend cell align=left]
+\addplot[ybar, bar width=9pt, fill=accent!55, draw=accent] coordinates {
+(1,0.4127) (2,0.7275) (3,0.6588) (4,0.4662) (5,0.4716) (6,0.3400)
+(7,0.4534) (8,0.5038) (9,0.3749) (10,0.3775) (11,0.3769) (12,0.4425)};
+\addlegendentry{section mean IoU}
+\addplot[black, dashed, thick, domain=0.4:12.6, samples=2] {0.5725};
+\addlegendentry{pooled, 0.5725}
+\addplot[black, dotted, thick, domain=0.4:12.6, samples=2] {0.4671};
+\addlegendentry{per-section mean, 0.4671}
+\end{axis}
+\end{tikzpicture}
+\caption{Mean IoU of each held-out section (classes present in its ground truth or prediction). Ten of 12 sections fall below the pooled figure; the range is 0.340--0.728. Source: \texttt{reports/s2\_section\_stats.json}.}
+\label{fig:sections}
+\end{figure}
+
+Table~\ref{tab:confusion} shows where the errors fall. The main confusions are among the three sulphides: 23.7\% of chalcopyrite pixels are predicted as pentlandite, and 24.3\% of pentlandite as pyrrhotite. These phases have nearly identical mean colour, so the network must separate them by texture and context. Of the true magnetite, 78.3\% is predicted as the dark mounting resin.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Row-normalised confusion matrix (\% of each true class), all 103,795,344 test pixels. Rows: truth; columns: prediction.}
+\label{tab:confusion}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Truth $\backslash$ pred. & Bkg & Ccp & Mag & Po & Pn \\
+\midrule
+Background & \cellcolor{accent!45}92.0 & 0.8 & 0.0 & 5.7 & 1.5 \\
+Chalcopyrite & 1.6 & \cellcolor{accent!35}71.6 & 0.0 & 3.1 & \cellcolor{red!15}23.7 \\
+Magnetite & \cellcolor{red!30}78.3 & 0.1 & 0.0 & 16.8 & 4.8 \\
+Pyrrhotite & 1.1 & 1.6 & 0.0 & \cellcolor{accent!45}93.4 & 3.9 \\
+Pentlandite & 0.7 & 0.8 & 0.0 & \cellcolor{red!15}24.3 & \cellcolor{accent!35}74.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:test11} shows a Quick scan of section test\_11 by the running system. It predicts 93.6\% pyrrhotite, 0.8\% pentlandite and 5.6\% background over the six fields, with mean confidence 0.9066 (uncalibrated). It finds 24 grains, 10 of them carrying valuable mineral. The advisor recommends \emph{grind finer}, because the apparent 2D association of the payload is 1\%, far below the 50\% floor.
+
+\begin{figure*}[t]
+\centering
+\begin{subfigure}{0.495\textwidth}
+\includegraphics[width=\linewidth]{figures/test11_quick_raw.jpg}
+\caption{Six 512\,px fields sampled from section test\_11.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.495\textwidth}
+\includegraphics[width=\linewidth]{figures/test11_quick_overlay.jpg}
+\caption{Predicted phases over the same fields.}
+\end{subfigure}
+\caption{Quick scan of held-out section test\_11 by the running system (checkpoint \sha{de7135a9}): 93.6\% pyrrhotite, 0.8\% pentlandite, 5.6\% background; 24 grains, 10 carrying valuable mineral; advice \emph{grind finer}. The six fields cover 18.2\% of the section. Phase colours follow the application's legend (pyrrhotite teal, pentlandite violet, chalcopyrite orange).}
+\label{fig:test11}
+\end{figure*}
+
+\subsection{Against baselines and published work}
+
+Table~\ref{tab:compare} places the model against trivial baselines and against two other checkpoints from the same project. Colour alone reaches 0.3948, so the network adds most where colour fails, between the sulphides. A second run of the identical training recipe (\sha{fb78727}) scored 0.4543, because the patch sampler is unseeded. The figures in this report therefore describe this checkpoint, not the method. A retrained candidate (\sha{42646cfa}) scores 0.6320 and detects magnetite (IoU 0.2477; recall 0.893, precision 0.255). But it loses pyrrhotite (0.8183) and pentlandite (0.4460), the phases that matter most for PGM deportment, so it is not deployed.
+
+On LumenStone~S1, using the exact 16 test images of the published ResUNet benchmark, our separate S1 checkpoint scores 0.7224 against a published 0.8506 (void-border), a gap of $-0.1282$ \cite{resunet}. Tennantite and galena, grey phases close in reflectance to their neighbours, account for 75.7\% of the gap (Appendix~\ref{app:s1}). Published work detects magnetite on this modality (IoU 0.650) \cite{korshunov2025}, so our zero is a limit of this model's training budget, not of reflected light.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Baselines and checkpoints on the same 12 sections (pooled, five classes).}
+\label{tab:compare}
+\begin{tabularx}{\columnwidth}{@{}Ycc@{}}
+\toprule
+Method or checkpoint & Mean IoU & Pixel acc. \\
+\midrule
+Majority class everywhere & 0.1167 & 0.5833 \\
+Colour-only nearest centroid & 0.3948 & 0.5413 \\
+Same recipe, re-run (\sha{fb78727}) & 0.4543 & 0.7716 \\
+\textbf{KHANYA, under report (\sha{de7135a9})} & \textbf{0.5725} & \textbf{0.8914} \\
+Candidate, not deployed (\sha{42646cfa}) & 0.6320 & 0.8551 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Decision-level results}
+
+IoU does not decide what the plant is told. Table~\ref{tab:gap} compares the advice from the model's masks with the advice from expert masks. The shipped (refined) pipeline disagrees on 8 of 12 sections, and every disagreement is a request for verification: no unsafe and no conservative errors. The raw pipeline made two unsafe errors (test\_03, test\_04), where its broken particle identity put the association near 100\% against under 11\% on the expert mask. Zero unsafe in 12 is an observation, not a rate. The exact one-sided 95\% upper bound on the unsafe rate is 22.1\%. The thresholds were not locked before this evaluation.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Decision-level agreement with expert-mask advice, 12 sections, with the evidence gate of $\geq$\,9 payload particles.}
+\label{tab:gap}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Pipeline & Disagree & Unsafe & Conservative & Flagged \\
+\midrule
+Raw particles & 7/12 & 2 & 0 & 5 \\
+\textbf{Refined (shipped)} & \textbf{8/12} & \textbf{0} & \textbf{0} & \textbf{8} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Sampling.} A single centre field matches the whole-section advice on 0 of 12 sections; the six-field scan matches on 9 of 12. \emph{Lighting.} A synthetic exposure shift of $-35$ RGB levels, the magnitude measured in real re-imaging, changed the advice on 8 of 12 S2 sections. Real re-imaged S1 pairs changed it on 5 of 10. No illumination gate exists yet; the fragility is disclosed, not corrected.
+
+\subsection{Latency}
+
+Table~\ref{tab:latency} gives the measured times. A six-field scan meets a shift's needs on a laptop CPU, and the whole-section mode does not yet meet a 30\,s target. Power state matters: the same scan took 30.8\,s on battery, because Windows throttles the CPU.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Measured latency. CPU only; no GPU or edge timing exists yet.}
+\label{tab:latency}
+\begin{tabularx}{\columnwidth}{@{}Yp{1.55cm}cp{1.75cm}@{}}
+\toprule
+Measurement & Hardware & $n$ & Result \\
+\midrule
+Forward pass, one 512\,px field & Laptop, Win.\ 11 & 60 & mean 2.64\,s; p95 3.60\,s \\
+Six-field scan, end to end (server side) & i7-1265U, mains & 5 & 16.7--21.2\,s \\
+Six-field scan, end to end & i7-1265U, battery & 1 & 30.8\,s \\
+Whole section, sliding window & Laptop, Win.\ 11 & 6 (1 image) & mean 162.3\,s; p95 195.7\,s \\
+Belt hardness model & Kaggle CPU & -- & 92\,ms per parcel \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Belt extension: hardness and feed rate}\label{sec:belt}
+
+Of the belt targets tested, only the Bond work index beats its strongest baseline under every pre-registered gate. Table~\ref{tab:belt} replays four feed-rate policies over the 146 composites. Setting the feed from the one-sided bound, with out-of-distribution fallback, gave a simulated throughput gain of +1.9\% (95\% CI +0.9 to +2.9\%). Overloads fell from 8.9\% to 6.8\% of parcels; the one-sided 95\% upper bound on the difference is +1.4\,pp, inside the pre-registered +3\,pp non-inferiority margin. Using the point prediction instead would overload almost half the parcels, which is why the policy uses a bound. The policy captures 13\% of the gain that perfect information would give.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Simulated feed-rate policies on 146 HIDSAG composites (Chilean porphyry Cu--Mo; not PGM ore, not a time series). Throughput is relative to no ore information.}
+\label{tab:belt}
+\begin{tabularx}{\columnwidth}{@{}Ycc@{}}
+\toprule
+Policy & Throughput (95\% CI) & Overloaded \\
+\midrule
+No ore information (90th-percentile hardness) & 0 (reference) & 8.9\% \\
+\textbf{Belt, one-sided bound + OOD fallback} & \textbf{+1.9\% [+0.9, +2.9]} & \textbf{6.8\%} \\
+Belt, point prediction & +13.6\% [+12.3, +14.8] & 45.2\% \\
+Perfect information (ceiling) & +14.0\% [+11.7, +16.4] & 0\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+This result is provisional for three reasons. The exact bound was adopted after the approximate bound failed. HIDSAG has no time order, so stale data, transit time, stockpile mixing and ramp limits are not simulated. And the ore is Chilean Cu--Mo, not Bushveld. A pre-registered robustness test found that a new capture of the same ore keeps its error (mean absolute error $\times$1.00, 95\% CI 0.99--1.01), and that $\pm$15\% illumination change is tolerated. A $\times$1.25 wavelength drift went mostly unflagged, so a hardware wavelength-calibration gate was added to the design.
+
+\subsection{Negative results}
+
+Table~\ref{tab:negative} lists results the team tested and withdrew or could not confirm. They define where the method stops.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Negative and withdrawn results.}
+\label{tab:negative}
+\begin{tabularx}{\columnwidth}{@{}YY@{}}
+\toprule
+Test & Result \\
+\midrule
+Belt spectra predict QEMSCAN mineralogy & Withdrawn: size fraction and process line explain it; spectra add skill on 0 of 33 minerals \\
+Belt chemistry routes Bushveld PGE ore & The mine-plan seam routes better: balanced accuracy 0.82 vs 0.79 \\
+Plant tags forecast concentrate silica 1\,h ahead & Never beats the last laboratory assay \\
+Wider belt model menus; belt spectral associations & No hypothesis passed its pre-registered gate \\
+Second-seed segmentation ensemble & +0.005 validation IoU, within noise at $n=6$; calibration worse \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ---------------------------------------------------------------------
+\section{Discussion}
+
+\subsection{Engineering significance}
+
+A segmentation score answers how well pixels are labelled. The system is built to answer a different question: what the shift should do with this ore, and how sure it can be. Two levers are covered. The microscope layer gives the metallurgist liberation evidence for a grind or regrind decision. The belt layer gives the control room a hardness bound for the mill feed rate. In both, the system is an advisory input that sits beside existing control, such as Mintek's MillStar and FloatStar, inside limits the site sets. It is not a controller.
+
+Two design choices carry most of the safety argument. First, topology refinement did not reduce disagreement with expert-mask advice, but it turned every confident error into a request for verification. Second, when the system abstains or the operator does not respond, the site's conservative setting applies, never the last value, because the last value may itself be wrong. The original proposal said the opposite; we reversed it after review.
+
+\subsection{Scope and limitations}
+
+\begin{enumerate}
+\item \textbf{No South African ore has been evaluated.} S2 is Norilsk ore, an analogue for the sulphide assemblage only, and the belt data are Chilean Cu--Mo.
+\item The 12 held-out sections were reused throughout development and may not be independent specimens.
+\item Magnetite is never detected; chromite and the silicates were never trained on.
+\item The advice is sensitive to illumination (8 of 12 sections changed under a realistic exposure shift).
+\item The checkpoint reproduces bit-for-bit, but the training recipe does not.
+\item Decision-level results measure consistency with a rule set whose thresholds are partly unsourced.
+\item Liberation is measured in 2D and is an upper bound on volumetric liberation.
+\item Latency is CPU-only with small $n$ and excludes section preparation.
+\item The plant interaction is a simulation. No claim is made about reagent use, recovery or turnaround at a plant.
+\end{enumerate}
+
+Table~\ref{tab:proposal} compares the build with the abstract Mintek accepted. Most gaps follow from two facts: no Bushveld image or QEMSCAN data was available, and the team built software only.
+
+\begin{table*}[t]
+\centering\footnotesize
+\caption{Proposed in the accepted abstract versus delivered.}
+\label{tab:proposal}
+\begin{tabularx}{\textwidth}{@{}p{4.6cm}Yp{2.1cm}@{}}
+\toprule
+Proposed & Delivered & Status \\
+\midrule
+Five Bushveld phases (chromite, orthopyroxene, plagioclase, base-metal sulphide, talc) & Pyrrhotite, chalcopyrite, pentlandite on a Norilsk analogue; magnetite fails & Changed: no labelled Bushveld data \\
+QEMSCAN maps as ``teacher'' for an optical ``student'' & Not built; becomes pilot Phase~1 & Deferred \\
+Self-supervised backbone, weak supervision, physics-based augmentation & DeepLabV3--ResNet50 trained on native-resolution patches (licence-clear, CPU-runnable) & Simplified \\
+Liberation and texture & 2D grains, liberation states, contacts, liberation by size & Delivered (2D) \\
+Grindability via Bond work index & From belt hyperspectral data, not from the microscope & Delivered differently \\
+Ensembles, conformal intervals, out-of-distribution gate & Conformal bound and OOD gate on the belt; checkpoint, confidence, sample and colour gates on the microscope & Partial \\
+Abstain by holding the last-known-good setpoint & Abstain by applying the site's conservative setting & Deliberately reversed \\
+OPC~UA feed-forward, advisory namespace outside the safety system & \texttt{asyncua} server and client; simulated parameter; human-triggered & Delivered \\
+Edge inference (Raspberry Pi 5 + Hailo-8L) & Laptop CPU only & Not done \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection{Indicative value}
+
+No plant benefit has been measured, so value is shown as a worked example with labelled assumptions (Appendix~\ref{app:assumptions}). One percentage point of recovery is worth
+\begin{equation}
+\Delta V = \frac{T\,g}{31.1035}\times 0.01 \times p \times P
+\end{equation}
+per year, where $T$ is tonnes milled, $g$ the 4E head grade in g/t, $p$ the payability and $P$ the net price per ounce. At a Zondereinde-sized plant ($T$ = 2,247,881\,t/yr, $g$ = 4.72\,g/t \verify{read both from Northam's F2025 annual report}), with $p$ = 0.75/0.85/0.95 and $P$ = R25,000/R32,611/R47,156 per ounce, this gives R64.0\,M, R94.6\,M and R152.8\,M per year. The base price is Valterra's 2025 realised basket \cite{valterra2025}, used as a proxy. The middle case is about US\$5.4\,M per point. Against an assumed belt installation of US\$0.5--3.0\,M with US\$0.1--0.6\,M a year in running costs (five years, 10\%), the break-even recovery gain is 0.043--0.259\,pp. These are scenarios, not forecasts; the pilot exists to measure the real number.
+
+% ---------------------------------------------------------------------
+\section{Future work, the ask and the roadmap}
+
+The next step is a three-month laboratory shadow pilot with Mintek's QEMSCAN as ground truth (Fig.~\ref{fig:roadmap}). It addresses the largest limitation, no South African ore, at the lowest cost. Each later phase starts only when the gate before it is passed. The technical work, each item tied to a limitation above, is:
+\begin{enumerate}
+\item retrain and validate on QEMSCAN-labelled UG2 and Merensky sections, with locality-disjoint test sets, adding chromite and the silicates;
+\item promote a magnetite-capable model only if it keeps the current pyrrhotite and pentlandite IoU;
+\item seed the patch sampler and report a multi-seed mean with its spread;
+\item add colour normalisation and an exposure gate before inference;
+\item set the three placeholder advisor thresholds with Mintek metallurgists;
+\item use the liberation classes of Moodley et al.\ \cite{moodley2026} to suggest the next timed-concentrate test, the paper's own stated future work;
+\item test the belt layer on Bushveld core, with the wavelength-calibration gate in hardware;
+\item measure GPU and edge latency, reporting p95 over at least 30 runs.
+\end{enumerate}
+
+\textbf{The ask.} Three partners are needed: a producer with a laboratory and a belt; Mintek as the truth laboratory and the route into its process-control products; and development funding \verify{confirm the named funder before citing}.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  ph/.style={draw=soft, rounded corners=3pt, align=left, text width=16.2cm, font=\footnotesize, inner sep=5pt},
+  hot/.style={draw=accent, very thick, fill=accent!8, rounded corners=3pt, align=left, text width=16.2cm, font=\footnotesize, inner sep=5pt},
+  gate/.style={draw=soft, fill=gray!12, diamond, aspect=1, inner sep=1.5pt, minimum size=0.55cm},
+  arr/.style={-{Stealth[length=2mm]}, soft, thick}]
+\node[ph] (p0) {\textbf{Today \textperiodcentered{} TRL 4 (self-assessed).} End to end on held-out public data (LumenStone S2 sections, HIDSAG core); the plant is a simulator.};
+\node[gate, below=0.35cm of p0.south west, anchor=north, xshift=0.5cm] (g1) {};
+\node[font=\footnotesize, anchor=west, text width=15.2cm] at ($(g1.east)+(0.2,0)$) {\textbf{Gate 1:} a partner laboratory supplies QEMSCAN-labelled UG2/Merensky sections; data and IP terms agreed under Mintek's technology-transfer process.};
+\node[hot, below=0.35cm of g1.south, anchor=north west, xshift=-0.5cm] (p1) {\textbf{Phase 1 \textperiodcentered{} Laboratory shadow pilot (KHANYA) \textperiodcentered{} 0--3 months \textperiodcentered{} about R210k (hypothesis) \textperiodcentered{} TRL 5.} Retrain on QEMSCAN labels; add chromite and silicates; seed training; add a lighting gate. Measure agreement with QEMSCAN, and turnaround, on sections from localities never used in training.};
+\node[gate, below=0.35cm of p1.south west, anchor=north, xshift=0.5cm] (g2) {};
+\node[font=\footnotesize, anchor=west, text width=15.2cm] at ($(g2.east)+(0.2,0)$) {\textbf{Gate 2:} beats the current model on held-out South African localities; decision agreement with QEMSCAN reported.};
+\node[ph, below=0.35cm of g2.south, anchor=north west, xshift=-0.5cm] (p2) {\textbf{Phase 2 \textperiodcentered{} One belt, shadow then advisory \textperiodcentered{} 3 + 3 months \textperiodcentered{} US\$0.5--3\,M installed (assumed) \textperiodcentered{} TRL 6--7.} Shadow: results logged, not shown. Advisory: the shift approves proposals. On/off blocks measure throughput, overloads and recovery against current practice.};
+\node[gate, below=0.35cm of p2.south west, anchor=north, xshift=0.5cm] (g3) {};
+\node[font=\footnotesize, anchor=west, text width=15.2cm] at ($(g3.east)+(0.2,0)$) {\textbf{Gate 3:} measured gain above break-even (modelled at 0.043--0.259\,pp of recovery on assumed inputs).};
+\node[ph, below=0.35cm of g3.south, anchor=north west, xshift=-0.5cm] (p3) {\textbf{Phase 3 \textperiodcentered{} Subscription priced as a share of measured value \textperiodcentered{} TRL 8.} A feed-forward input to MillStar and FloatStar inside the site's limits; licence hypothesis R12k per site per month.};
+\draw[arr] (p0.south -| g1) -- (g1.north);
+\draw[arr] (g1.south) -- (g1 |- p1.north);
+\draw[arr] (p1.south -| g2) -- (g2.north);
+\draw[arr] (g2.south) -- (g2 |- p2.north);
+\draw[arr] (p2.south -| g3) -- (g3.north);
+\draw[arr] (g3.south) -- (g3 |- p3.north);
+\end{tikzpicture}
+\caption{Roadmap. Each phase starts only when the gate before it is passed. TRL levels are the team's self-assessment; all costs are hypotheses or assumptions until quoted.}
+\label{fig:roadmap}
+\end{figure*}
+
+% ---------------------------------------------------------------------
+\section{Conclusions}
+
+A model trained on public reflected-light micrographs identifies three sulphide phases with IoU 0.5468--0.8695 on held-out sections. That meets the brief's three-phase requirement, with magnetite as a stated failure. Built into an end-to-end system with explicit gates, its recommendations reached a simulated plant parameter only after human approval. On 12 held-out sections it made no unsafe recommendation, although 12 sections bound the unsafe rate only to below 22.1\%. The same decision logic applied to a belt hardness bound gave a provisional simulated throughput gain of +1.9\%. These results hold for public analogue ores and a simulated plant. Whether they transfer to South African ore is the question a QEMSCAN-labelled laboratory pilot is designed to answer.
+
+% ---------------------------------------------------------------------
+\section*{CRediT authorship contribution statement}
+\small
+\textbf{Lethabo Hoaeane:} Conceptualisation, domain lead, belt hyperspectral modelling, workbench application, economics, visualisation. \textbf{Sibusiso Khumalo:} Segmentation model, accuracy and decision-level evaluation, advisor and safety gates, OPC~UA simulation, review and verification. \textbf{Ipeleng Modise:} \verify{each member to confirm their own roles}.
+
+\section*{Declaration of competing interest}
+The authors declare no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+
+\section*{Acknowledgements}
+We thank the Mintek mentors (a chemist, a mineralogist and a metallurgist) for a review session that reshaped the build \verify{names, with their permission}, and the authors of LumenStone, HIDSAG and the Bushveld assay dataset for releasing their data.
+
+\section*{Use of AI tools}
+Code and drafting were assisted by AI coding assistants. Every reported number was computed by code in the project repository from the files named in Appendix~\ref{app:repro}, and was checked by the authors.
+
+\section*{Data and code availability}
+LumenStone is available from its publishers under research-use terms \cite{korshunov2025}; HIDSAG under CC0 (doi:10.6084/m9.figshare.c.5983921) \cite{ehrenfeld2023}; the Bushveld assays under CC BY 4.0 (doi:10.17632/dc8jcnbcvk.1) \cite{bachmann2019}. Code, checkpoints' SHA-256 values and evaluation outputs are in the team repository (\texttt{Sibusiso-K/KHANYA}); access is available to Mintek on request under the hackathon's IP terms \verify{confirm with the team}.
+
+\normalsize
+% ---------------------------------------------------------------------
+\begin{thebibliography}{99}\small\setlength{\itemsep}{1pt}
+\bibitem{usgs2025} U.S. Geological Survey, Mineral Commodity Summaries 2025: Platinum-group metals, Reston, VA, 2025.
+\bibitem{impala2018} Impala Platinum, Company fact sheet, December 2018.
+\bibitem{jones2005} R.T. Jones, An overview of Southern African PGM smelting, Mintek, 2005 \verify{complete the conference proceedings details}.
+\bibitem{molefe2022} Molefe, Baloyi, UG2 PGM mineralogy and chromite recovery, in: 8th International PGM Conference, SAIMM, 2022 \verify{complete authors' initials, title and pages}.
+\bibitem{eksteen2011} J.J. Eksteen et al., PGM concentrate blending and smelter constraints, J. S. Afr. Inst. Min. Metall., 2011 \verify{complete title, volume, pages}.
+\bibitem{valterra2025} Valterra Platinum, Annual results 2025, Johannesburg, 2026.
+\bibitem{napiermunn} T.J. Napier-Munn, Comminution energy and its reduction, JKMRC/CEEC presentation \verify{replace with the journal source for the 50\% figure}.
+\bibitem{src2017} Saskatchewan Research Council, Advanced Microanalysis Centre price list (QEMSCAN), April 2017.
+\bibitem{knights2012} B. Knights et al., FloatStar performance at Vale Cau\^{e}, J. S. Afr. Inst. Min. Metall., 2012 \verify{complete authors, title, volume, pages}.
+\bibitem{moodley2026} T.L. Moodley, I. Govender, S. Nkwanyana, V. Govender, J. Tshilongo, Mineralogy-constrained interpretation of rougher flotation kinetics in a copper sulphide ore, Results Eng. 32 (2026) 112959. doi:10.1016/j.rineng.2026.112959.
+\bibitem{korshunov2025} Korshunov et al., LumenStone: reflected-light ore microscopy dataset and benchmark, 2025. doi:10.17073/2500-0632-2025-05-416 \verify{complete authors, title and journal from the DOI}.
+\bibitem{ehrenfeld2023} Ehrenfeld et al., HIDSAG: hyperspectral image database for supervised analysis in geometallurgy, Sci. Data, 2023 \verify{complete authors, volume, article number}.
+\bibitem{bachmann2019} Bachmann et al., Bushveld chromitite assay dataset, Mendeley Data, 2019. doi:10.17632/dc8jcnbcvk.1 \verify{add the companion J. African Earth Sci. paper}.
+\bibitem{chen2017} L.-C. Chen, G. Papandreou, F. Schroff, H. Adam, Rethinking atrous convolution for semantic image segmentation, arXiv:1706.05587, 2017.
+\bibitem{he2016} K. He, X. Zhang, S. Ren, J. Sun, Deep residual learning for image recognition, in: Proc. IEEE CVPR, 2016, pp. 770--778.
+\bibitem{liberation911} 911 Metallurgist, Grinding for liberation and flotation, online technical article \verify{add URL and access date, or replace with a peer-reviewed source}.
+\bibitem{iec62541} IEC 62541, OPC Unified Architecture, International Electrotechnical Commission.
+\bibitem{bond1961} F.C. Bond, Crushing and grinding calculations, Br. Chem. Eng. 6 (1961) 378--385, 543--548.
+\bibitem{lei2018} J. Lei, M. G'Sell, A. Rinaldo, R.J. Tibshirani, L. Wasserman, Distribution-free predictive inference for regression, J. Am. Stat. Assoc. 113 (2018) 1094--1111.
+\bibitem{barber2021} R.F. Barber, E.J. Cand\`{e}s, A. Ramdas, R.J. Tibshirani, Predictive inference with the jackknife+, Ann. Stat. 49 (2021) 486--507.
+\bibitem{fips204} NIST, FIPS 204: Module-Lattice-Based Digital Signature Standard (ML-DSA), 2024.
+\bibitem{resunet} Published ResUNet benchmark on LumenStone S1 v1 (mean IoU 0.8373; 0.8506 void-border) \verify{cite the primary paper, not the petroscope README}.
+\end{thebibliography}
+
+% ---------------------------------------------------------------------
+\appendix
+\onecolumn
+\section{Like-for-like comparison on LumenStone S1}\label{app:s1}
+
+\begin{table}[h]
+\centering\footnotesize
+\caption{Void-border IoU on the exact 16 test images of the published S1 benchmark (byte-identical, zero overlap with our training data). The published figures are read from the authors' table, not reproduced.}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Class & KHANYA (S1 checkpoint) & Published ResUNet & Gap \\
+\midrule
+Bornite & 0.8975 & 0.8955 & +0.0020 \\
+Background & 0.8490 & 0.8505 & $-$0.0015 \\
+Pyrite & 0.9286 & 0.9732 & $-$0.0446 \\
+Chalcopyrite & 0.8916 & 0.9363 & $-$0.0447 \\
+Sphalerite & 0.6355 & 0.7653 & $-$0.1298 \\
+Galena & 0.5068 & 0.7630 & $-$0.2562 \\
+Tennantite & 0.3479 & 0.7706 & $-$0.4227 \\
+\midrule
+Mean & 0.7224 & 0.8506 & $-$0.1282 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Verification and reproduction}\label{app:repro}
+
+\noindent\textbf{Sources of every result.} Repository \texttt{Sibusiso-K/KHANYA}. Microscope results: branch \texttt{codex/launch-live-demo}, files \texttt{reports/ACCURACY-REPORT.md}, \texttt{reports/lumenstone\_s2\_patches\_test\_metrics.json}, \texttt{reports/s2\_section\_stats.json}, \texttt{reports/magnetite\_confusion\_patches.json}, \texttt{reports/lumenstone\_s2\_trivial\_baselines.json}, \texttt{reports/decision\_gap\_patches.json}, \texttt{reports/decision\_gap\_patches\_refined.json}, \texttt{reports/field\_sampling\_s2.json}, \texttt{reports/segmentation\_latency.json}, \texttt{reports/benchmark\_s1\_v1\_protocol.json}. Candidate model: branch \texttt{codex/themes-launch}, \texttt{reports/NATIVE-SELECTED-TEST-RESULT-2026-10-01.md}. Belt and economics: branch \texttt{codex/pwa-phase-roadmap}, \texttt{docs/16-decision-value-chain.md}, \texttt{training/value-chain-20261002/results.json}, \texttt{training/economics-20261002/results.json}.
+
+\smallskip
+\noindent\textbf{Reproduction commands} (microscope):
+\begin{verbatim}
+python -m src.preflight                               # checkpoint hash, data, model, OPC UA
+python -m src.segmentation.train_patches --eval       # Table 3, full-section inference
+python -m src.s2_section_stats                        # Fig. 2 and bootstrap intervals
+python -m src.benchmark                               # void-border protocol
+KHANYA_SUBSET=S1 python -m src.benchmark              # Appendix A
+python -m src.decision_gap --model patches --refine   # Table 6
+python -m src.exposure_control                        # lighting sensitivity
+\end{verbatim}
+
+\noindent\textbf{Continuous integration.} Four checks on the workbench branch (unit and API tests, offline-bundle match, local workbench API tests, secret scanning) \verify{add the CI run URL for the final commit}.
+
+\section{Assumptions register for Section 5.3}\label{app:assumptions}
+
+\begin{table}[h]
+\centering\footnotesize
+\begin{tabularx}{\textwidth}{@{}lp{3.6cm}Y@{}}
+\toprule
+Input & Value & Provenance \\
+\midrule
+Tonnes milled, $T$ & 2,247,881\,t/yr & Northam F2025, Zondereinde, via secondary summary \verify{read from the annual report} \\
+4E head grade, $g$ & 4.72\,g/t & As above \\
+Net 4E price, $P$ & R25,000 / R32,611 / R47,156 per oz & Low: assumed. Base: Valterra 2025 realised basket \cite{valterra2025}, used as a proxy. High: Northam F2026 revenue per 4E oz (secondary summary) \\
+Payability, $p$ & 0.75 / 0.85 / 0.95 & Assumed: smelting and refining losses and charges \\
+Exchange rate & R17.61 per US\$ & Implied by Valterra's 2025 rand and dollar baskets; not an independently dated rate \\
+Installed cost & US\$0.5 / 1.5 / 3.0\,M & Assumed; vendor quotes required \\
+Running cost & US\$0.1 / 0.3 / 0.6\,M per year & Assumed; quotes required \\
+Life and discount rate & 5 years, 10\% & Assumed \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\end{document}
