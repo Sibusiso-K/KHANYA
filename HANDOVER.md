@@ -1,3 +1,52 @@
+## 2026-10-05 — Sibusiso (Claude) — report rebuilt as a technical, business and pilot report (12 pages, rand, references verified)
+
+**Sibusiso's answers to the verify questions:**
+- "Product report principles" = the judging criteria (Innovation, Feasibility, Impact, Technical Execution, Presentation Clarity; Mintek hackathon FAQ). Table 1 now maps each one, and the brief's requirements, to a section.
+- Model: `de7135a9` (mIoU 0.5725). The deck's 0.454 is explained as the unseeded re-run.
+- Pricing hypotheses kept, labelled as estimates: lab pilot about R210k; licence about R12k per site per month; at most 20% of measured net value; belt pilot R8.2–49.2 M installed plus R1.6–9.8 M a year.
+- Funder split: TIA bridge-funds the lab pilot; the host mine pays the belt pilot; Mintek's lab work is billed to the pilot.
+- Mentors thanked by role, not named. CRediT roles kept as written.
+- Code: a public GitHub link (see Open). Judges unknown, so the report is written for a Mintek/TIA panel.
+
+**Did:**
+- All money in rand at R16.4/US$ (FRED EXSFUS, Jan–Sep 2026 mean 16.37). Break-even recomputed: 0.02–0.21% more recovered metal (0.23% with a 20% contingency).
+- New sections:
+  - business model and justification: Fig. 9 money and value flows, four revenue streams, why Mintek, why now, alternatives table;
+  - pricing by stage and what it pays for (Table 5);
+  - financial methodology: CRF, annualised cost, break-even, sensitivities (Fig. 10);
+  - risks with contingency and fallbacks: risk matrix (Fig. 11) and register R1–R10 (Table 6);
+  - support needed (Table 7) and maintenance (Table 8);
+  - compliance, committees and outsourced fact-checkers (Table 9);
+  - training (Table 10: MHSA s.10, MQA);
+  - roadmap after funding: Gantt to month 36 (Fig. 12) and gates L1, G1–G4 (Table 11).
+- New charts and figures: world PGM production (USGS 2026), hardness R², feed-policy trade-off, IoU by class, and a grain-inspector crop (field plus evidence panel). The HSI figure was re-rendered in Times.
+- Cut: the S1/confusion appendix, the reproduction commands and the CI flag. The negative-results table and the proposed-vs-delivered table are now short paragraphs. The 911 Metallurgist reference was replaced by Moodley 2026's liberation classes.
+- Written in Sibusiso's report voice: role framing, a problem statement, lettered assumptions, cost equations followed by "which is equivalent to", "Figure X illustrates…, highlighting…", validation against literature, and limitations.
+- Exactly 12 pages including references; no appendix. About half a column is spare on page 12.
+
+**Fact-check corrections this round:**
+- **Valterra recoveries:** "1.2–1.7 percentage points at Mototolo and Amandelbult", not "+1/+2 pp".
+- **Mining Charter 2018:** the High Court ([2021] ZAGPPHC 623, 21 Sep 2021) set aside all of clause 2.2, including the R&D 70% and the 100% sample-analysis clauses. They are not cited. Clause 2.3.1 (5% of the leviable amount on skills development, including R&D in processing) still stands and is cited.
+- **Radiation licensing:** isotope sources are licensed by SAHPRA Radiation Control (Hazardous Substances Act 15 of 1973, Group IV), not by the National Nuclear Regulator as docs/18 and docs/21 say.
+- **PFMA:** Mintek is Schedule 3B and TIA is Schedule 3A (Treasury list, 1 Dec 2024).
+- **MHSA:** s.10 requires training before significant changes to plant or equipment, a training record, and a workplace skills plan to the MQA; s.11 covers risk assessment; s.34 covers committees.
+- **New source:** Notole et al. 2025, *Minerals Engineering* 234, 109682. It validates HSI on Merensky core scanned at the Council for Geoscience. Only the indexed abstract was read; ScienceDirect asked for a CAPTCHA.
+- **Jones 2005:** Merensky ore has up to 3% base-metal sulphides, and UG2's are mainly pentlandite, chalcopyrite, pyrrhotite and pyrite. This supports the three phases the microscope identifies.
+
+**References:** 36, in IEEE style with URLs and access dates. Every URL was opened on 5 Oct 2026. FRED, SAFLII, gov.za and the Taylor & Francis DOI block curl but load in a browser.
+
+**Open (1 red VERIFY):** `Sibusiso-K/KHANYA` is **private**, but the report gives the public GitHub link (Sibusiso's choice), which returns 404 for anyone else. Before submitting, make the repo public or change that line. Check the hackathon IP agreement with MOTT first: public disclosure before MOTT's IP assessment could affect patentability, and LumenStone is under research-use terms.
+
+**Files:**
+- `report/main.tex` and `main.pdf`;
+- `report/figures/grain_inspector_test11_g30_pair.png` (new);
+- `report/figures/hsi_parcel_gmet0004.*` (re-rendered);
+- the Overleaf zip (4 files).
+
+Build with `tectonic -X compile main.tex` from `report/`.
+
+---
+
 ## 2026-10-04 — Sibusiso (Claude) — report rebuilt belt-first (pitch v8), Mintek/SA framing, fact-checked, pilot investment case
 
 **Did (Sibusiso's direction):**
