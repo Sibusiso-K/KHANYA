@@ -1,3 +1,75 @@
+## 2026-10-06 — Sibusiso (Claude) — report revised from Lethabo's detailed revision handover
+
+Lethabo's handover (simulated Mintek/TIA panel, 70/100) was read in full. Most of it was adopted; it asks for **no invented evidence**, and every change below is editorial or a recalculation from committed numbers. Still 12 pages, no VERIFY markers.
+
+**Change log by issue ID** (status: E = editorially resolved, R = verified by recalculation, U = still unresolved):
+
+- **A01/A02 (title and abstract), E.** New title: "ore-hardness prediction on the belt and sulphide characterisation in the laboratory: an analogue-data proof of concept and staged validation plan". The abstract now:
+  - separates the belt-hardness result from the laboratory phase classification;
+  - states that the microscope sections were reused during development;
+  - reports 4 definite and 8 abstaining outputs;
+  - asks for local validation before any belt.
+- **A03, E.** The problem statement acknowledges that operators, APC and the mine plan already carry ore information, and the decision being improved is now named.
+- **Table 1, E.** Now has a status column (demonstrated / partial / proposed / scenario). Real-time mineralogy on the belt is explicitly not claimed.
+- **M01, E.** The microscope sections are now called "development-influenced evaluation sections". Sections, not pixels, are the independent units.
+- **M02, E.** "Pyrrhotite = reject" is now a demonstration assumption for this ore; PGM deportment decides in reality.
+- **M03, E.** "Free/locked" is now "payload-dominant" on a 2D payload-area proxy. The 50% line is a declared choice, and the Moodley boundary is no longer claimed to define "free". "Grind finer" and the other outputs are hypotheses for a metallurgist.
+- **M04, E.** The approved checkpoint was "retained on a precautionary rationale"; comparative decision safety is untested.
+- **Safety claim, E.** Replaced with a rule-agreement result:
+  - action coverage 4/12 (33%);
+  - the 22.1% bound covers all sections, not risk conditional on acting;
+  - it does not validate the rules or plant safety.
+- **B01/B02, E.**
+  - The search over 5 targets is exploratory selection.
+  - With no drill-hole IDs, grouped independence cannot be verified.
+  - "Pre-registered" is now "evaluation plan committed before the run".
+- **B03, E.** The bound is a marginal coverage target under an exchangeability assumption; its CI (88.4–96.6%) is compatible with 90% but does not establish it.
+- **B04, E.** The Bond-ratio sentence is qualified: the terms cancel only if power, size and efficiency are held constant.
+- **C01, E.** The universal 100% "conservative setting" is gone from the pilot design (it remains as the demo fallback). At a site, advice is withdrawn and the host's own controls keep authority. The glossary entry is now "Fallback".
+- **C02, E.** The 90 s window is defined from the end of the scan. The operator-facing rate is measured in the shadow phase.
+- **C03, E.** Figure 3 separates built, simulated and designed parts. The feed-rate path is designed, not built. The signed record supports traceability, not correctness.
+- **Replay overloads, E.** Defined as a model quantity, compared against a fixed design-feed policy. The envelope result is labelled as a later analysis.
+- **Recovery loss, E.** The 0.25 pp is the largest loss among the modelled scenarios, not a bound.
+- **F02, R.** Exact formula now used: ΔM/M = (1+ΔT)(1+ΔG)(1+ΔR) − 1. 1.75% throughput with −0.287% recovery gives 1.458%, which matches.
+- **F01, E/R.** Affected-output fraction f added to V = u·f·Q·m. New Table 6 of sensitivities, recomputed with our inputs (R1.64/9.84 M running):
+  - 0.045% (low cost, all output);
+  - 0.52% / 0.58% (high cost, all output; with contingency);
+  - 0.65% (20% fee charged before system costs);
+  - 1.04% (half of output affected);
+  - 2.09% (a quarter of output affected);
+  - 2.05% (30% lower basket price).
+  - The Valterra margin is flagged as a cross-company proxy, and "average cost is conservative" is softened.
+- **F03, E.** Funding resequenced as evidence before capital:
+  - Stage A1: laboratory study, about R210k (hypothesis);
+  - Stage A2: hardness feasibility on host samples, cost to be quoted;
+  - no belt purchase before gate H1;
+  - Stage B: shadow sensing; Stage C: advisory trial.
+  - Exposure is reported by stage. The fee basis (before or after system costs) is left to agree.
+- **Gates, E.** New gates G0 / L1 / H1 / S1 / A1 / V1, each with its evidence and decision owner. Thresholds are to be agreed before data collection. The new Gantt chart covers about 30 months, labelled as a planning estimate, with TRL no longer tied to dates.
+- **G01, E.** Partner roles are proposals, with no agreements implied. LumenStone is research-use only, so commercial rights must be clarified (new risk R10). TIA is described as a "possible funder, subject to programme criteria".
+- **G02, E.** Team Sonar has two roles filled and one to recruit or source in kind (also new risk R9).
+- **G03, E.** The compliance table is now "planned controls", not achieved compliance.
+- **Literature section, E.** Renamed "Comparison with literature"; each source is framed as plausibility, with the transfer gap stated alongside.
+- **Limitations, E.** Items (a), (b) and (e) are now marked as decision blockers. Surface-versus-mass representativeness and attribution have been added.
+- **G04, E.** Appendix D separates inference reproducibility (archived weights) from retraining reproducibility (not regenerable).
+- **Removed for space:** the Decisions-view screenshot (it carried no evidence beyond the architecture figure), the risk-matrix figure (the risk table remains) and the scenario table (folded into the text).
+
+**Not adopted, or only partly:**
+- The full claim-to-evidence register. The status column in Table 1 covers its core; a full register would not fit in 12 pages.
+- A separate sampling/turnaround timing table. Only the cadence wording was fixed.
+
+**Unresolved (U), needs people rather than editing:**
+- The official 2026 brief and rubric. The criteria are cited from the published FAQ, which is labelled 2025.
+- The hackathon IP agreement text.
+- LumenStone commercial permission.
+- Vendor and laboratory quotes, including A2.
+- A named host stream and its circuit boundary (f).
+- Stage A thresholds, agreed with a host.
+- Staffing for the third role.
+- An end-to-end seeded retraining run.
+
+---
+
 ## 2026-10-06 (final) — Sibusiso (Claude) — reviewer sign-off
 
 - The reviewer accepted that the earlier typo list came from a garbled extraction; the PDF is authoritative.

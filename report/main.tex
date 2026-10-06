@@ -58,7 +58,7 @@
 \definecolor{soft}{RGB}{110,110,110}
 \definecolor{okgreen}{RGB}{46,125,50}
 
-\title{\vspace{-1.6em}\textbf{REEFPRINT/KHANYA: reading the ore before the mill.\\ Belt hyperspectral hardness, microscope mineralogy and human-approved plant decisions for South African concentrators}\\[3pt]
+\title{\vspace{-1.6em}\textbf{REEFPRINT/KHANYA: ore-hardness prediction on the belt and sulphide characterisation in the laboratory.\\ An analogue-data proof of concept and staged validation plan for South African concentrators}\\[3pt]
 \large Mintek--SCi Grad Hackathon 2026 \textperiodcentered{} Problem 3: Computer vision for real-time mineralogical characterisation}
 \author{Team Sonar: Lethabo Hoaeane\textsuperscript{a}, Sibusiso Khumalo\textsuperscript{b}\\[1pt]
 \small \textsuperscript{a}University of South Africa \quad \textsuperscript{b}University of the Witwatersrand}
@@ -71,7 +71,7 @@
 \maketitle
 \vspace{-1.8em}
 \begin{abstract}
-\noindent South African concentrators set mill feed, grind and reagents before the laboratory can say what was in the ore. REEFPRINT/KHANYA reads the ore at three speeds and turns the readings into one decision that a person approves. On the belt, a hyperspectral camera feeds a model that predicts grinding hardness (the Bond work index) with a one-sided 90\% upper bound. On 146 public drill-core samples the model explained 48\% of the variance in hardness (colour alone: 21\%), and the bound held for 93\% of samples. Replayed as a mill feed-rate policy, it raised simulated throughput by 1.7--1.9\% without more overloads. In the laboratory, a microscope model identifies pyrrhotite, chalcopyrite and pentlandite (intersection over union 0.87, 0.58 and 0.55 on 12 held-out sections) and gave no unsafe advice, although those sections also guided development. All results come from public analogue ores and a simulated plant. At Northam's Zondereinde output, a one-belt pilot costing R8--49\,million to install breaks even at 0.05--0.52\% more recovered metal after cash costs. We ask TIA, Mintek and one producer for a nine-month pilot; after it, fees are charged only on independently measured value.
+\noindent South African concentrators set mill feed, grind and reagents before the laboratory can say what was in the ore. REEFPRINT/KHANYA combines hyperspectral prediction of grinding hardness on the belt with microscope classification of sulphide minerals in the laboratory, and passes both to an operator who reviews every proposed change. On 146 public porphyry-ore composites the hardness model reached an out-of-fold $R^2$ of 0.479 (mean absolute error 1.05\,kWh/t, against $R^2$ 0.210 for colour alone), and a nominal one-sided 90\% upper bound covered 93.2\% of samples. A simplified feed-rate replay estimated a 1.7--1.9\% throughput gain over a fixed design-feed policy; this is a simulation without a plant time series. On 12 public microscope sections that were reused during development, class IoU was 0.870 for pyrrhotite, 0.576 for chalcopyrite and 0.547 for pentlandite. The advisor gave definite advice on 4 sections, consistent with the same rules applied to expert masks, and abstained on 8; this is not independent evidence of decision accuracy or plant safety. Neither subsystem has been tested on South African ore. We therefore propose local, independently evaluated mineralogy and hardness studies first, and a belt shadow trial only if they pass. The financial scenarios show that small effects could repay a belt, but they need the host's own production boundary, costs and measured process response before investment.
 \end{abstract}
 \vspace{0.6em}
 \vspace{0.3em}
@@ -81,7 +81,7 @@
 % =====================================================================
 \section{Introduction}
 
-As Team Sonar, working on Mintek's Problem 3, our responsibility is to give a concentrator's shift team a reliable reading of its ore before that ore reaches the mill, and to turn the reading into a plant setting that a person can approve. This report sets out what we built, how we tested it, what it would cost and earn, and how a funded pilot would prove it on South African ore. It is written for metallurgists, mineralogists, process engineers and the people who fund their technology. Technical terms are defined in the glossary (Appendix~\ref{app:glossary}).
+As Team Sonar, working on Mintek's Problem 3, our responsibility is to give a concentrator's shift team a reliable reading of its ore before that ore reaches the mill, and to turn the reading into a plant setting that a person can approve. This report sets out what we built, how we tested it, what it would cost and earn, and how staged local validation would test it on South African ore. It describes a research prototype: the results are on public analogue data and a simulated plant. It is written for metallurgists, mineralogists, process engineers and the people who fund their technology. Technical terms are defined in the glossary (Appendix~\ref{app:glossary}).
 
 \subsection{Problem statement}
 
@@ -111,36 +111,36 @@ The brief states the problem plainly: ``without real-time feedback, processing p
 
 The cost of deciding blind falls most heavily on South Africa. Figure~\ref{fig:world} illustrates world platinum-group metal (PGM) mine production in 2025, highlighting that South Africa mined an estimated 120 of the world's 170 tonnes of platinum (about 71\%) and 70 of 190 tonnes of palladium. It also holds 63,000 of the world's more than 76,000 tonnes of PGM reserves, mostly in the Bushveld Complex \cite{usgs2026}. The same source attributes the 9\% fall in South African PGM output in 2025 to lower palladium prices, higher deep-level mining costs and disruptions to the electricity supply.
 
-Recovery is where the money is. UG2 ore carries about 30\% \cro{} against about 0.1\% for Merensky ore, and the smelter caps the chromite in concentrate. Mintek testwork made UG2 concentrate at 87\% recovery with 2.9\% \cro{}, and recoveries above 90\% were possible only if the \cro{} limit was relaxed \cite{jones2005}. Producers report recovery moves of this size to investors: Valterra raised concentrator recoveries by 1.2--1.7 percentage points at Mototolo and Amandelbult in 2025 \cite{valterra2025}. Comminution, which sets both liberation and mill throughput, used 52\% of site electricity in a benchmark of mines \cite{ballantyne2012}. Thus, the problem is to read the ore before the mill, state how uncertain the reading is, and turn it into a safe, approved setting at a cost a producer can recover.
+Recovery is where the money is. UG2 ore carries about 30\% \cro{} against about 0.1\% for Merensky ore, and the smelter caps the chromite in concentrate. Mintek testwork made UG2 concentrate at 87\% recovery with 2.9\% \cro{}, and recoveries above 90\% were possible only if the \cro{} limit was relaxed \cite{jones2005}. Producers report recovery moves of this size to investors: Valterra raised concentrator recoveries by 1.2--1.7 percentage points at Mototolo and Amandelbult in 2025 \cite{valterra2025}. Comminution, which sets both liberation and mill throughput, used 52\% of site electricity in a benchmark of mines \cite{ballantyne2012}. Plants do not decide entirely blind: operators, advanced process control (APC) and the mine plan already carry information about the ore. Thus, the decision we aim to improve is narrower: setting mill feed for each parcel of ore before it arrives, with a stated uncertainty, at a cost a producer can recover.
 
 \subsection{Our solution: three speeds, one decision}
 
-REEFPRINT/KHANYA reads the ore at three speeds and turns all three into one decision (Section~\ref{sec:arch}):
+REEFPRINT/KHANYA reads the ore at three speeds (Section~\ref{sec:arch}):
 \begin{enumerate}
-\item \textbf{the belt} (REEFPRINT), every 30 seconds: a short-wave infrared (SWIR) camera above the mill-feed conveyor feeds a model that predicts each parcel's grinding hardness with an upper bound, and Bond's law turns the bound into a mill feed-rate proposal;
-\item \textbf{the laboratory} (KHANYA), once a shift: a microscope model identifies the sulphide minerals and how well they are liberated, which is the brief's three-phase deliverable;
-\item \textbf{the decision}, within the ore's transit time: an operator approves each change before the ore reaches the mill, or the site's conservative setting applies, and every step is signed and recorded.
+\item \textbf{the belt} (REEFPRINT), every 30 seconds: a short-wave infrared (SWIR) camera above the mill-feed conveyor feeds a model that predicts each parcel's grinding hardness with an upper bound, and Bond's law turns the bound into a mill feed-rate proposal. The belt layer estimates hardness, not mineral identity;
+\item \textbf{the laboratory} (KHANYA), once a shift: a microscope model classifies sulphide minerals in polished sections, which addresses the brief's three-phase requirement on slower, prepared samples;
+\item \textbf{the decision}: an operator reviews each proposed change before the ore reaches the mill; the site's existing control system keeps authority, and every step is signed and recorded.
 \end{enumerate}
-It is important to note what is not claimed: performance on South African ore, a measured plant benefit, mineral identification by the belt camera, or identification of chromite and the silicates by the microscope. Table~\ref{tab:map} maps the brief's requirements and the five judging criteria \cite{faq} to the evidence.
+It is important to note what is not claimed: real-time mineralogy on the belt, performance on South African ore, a measured plant benefit, or identification of chromite and the silicates. Table~\ref{tab:map} maps the brief and the judging criteria published in the hackathon FAQ \cite{faq} to the evidence, with the status of each.
 
 \begin{table}[t]
 \centering\footnotesize
-\caption{The brief's requirements and the judging criteria, and where this report evidences each.}
+\caption{The brief and the judging criteria: evidence and status. Demonstrated = shown on public analogue data; partial = part shown; proposed = future work.}
 \label{tab:map}
-\begin{tabularx}{\columnwidth}{@{}L{2.1cm}Y@{}}
+\begin{tabularx}{\columnwidth}{@{}L{1.85cm}YL{1.15cm}@{}}
 \toprule
-Requirement & Evidence (section) \\
+Requirement & Evidence (section) & Status \\
 \midrule
-$\geq$\,3 mineral phases & Pyrrhotite, chalcopyrite, pentlandite (\ref{sec:micro}) \\
-Accuracy report & Belt $R^2$, bound coverage and baselines; microscope per-class, per-section and decision-level results (\ref{sec:belt}--\ref{sec:grains}, App.~\ref{app:micro}) \\
-Adjust a plant parameter & Mill feed rate from the hardness bound; regrind advice over OPC~UA to a simulator (\ref{sec:decision}) \\
-Real time & 92\,ms per parcel; a parcel every 30\,s (\ref{sec:decision}) \\
+$\geq$\,3 mineral phases & Pyrrhotite, chalcopyrite, pentlandite on analogue micrographs (\ref{sec:micro}) & Demonstrated \\
+Accuracy report & Belt $R^2$, bound coverage, baselines; microscope per-class and decision-level results (\ref{sec:belt}--\ref{sec:grains}) & Demonstrated \\
+Adjust a plant parameter & Feed-rate proposal (designed); regrind advice to a simulator over OPC~UA (\ref{sec:decision}) & Partial \\
+Real time & Hardness: 92\,ms per parcel. Mineralogy: laboratory cadence, not on the belt & Partial \\
+Local validation & South African ore, independent test sets (\ref{sec:roadmap}) & Proposed \\
 \midrule
-Innovation & A feed-forward ore input that refuses when unsure, with human approval and a signed record (\ref{sec:methods}) \\
-Feasibility & Pricing, support, upkeep, compliance, training, risks (\ref{sec:business}, \ref{sec:implementation}) \\
-Impact & R44--84\,million a year per 1\% more metal after cash costs (\ref{sec:value}) \\
-Technical execution & Out-of-fold tests, pass marks set in advance, physics checks (\ref{sec:results}); 516 automated tests (App.~\ref{app:repro}) \\
-Presentation clarity & Glossary; a figure or table per step \\
+Innovation & Bounded hardness input that abstains, with operator review (\ref{sec:methods}) & Demonstrated \\
+Feasibility & Staged plan, costs, support, compliance, risks (\ref{sec:business}--\ref{sec:roadmap}) & Proposed \\
+Impact & Scenario value per 1\% more metal (\ref{sec:finance}) & Scenario \\
+Technical execution & Out-of-fold tests, baselines, failed ideas reported; 516 software tests (\ref{sec:results}) & Demonstrated \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -171,9 +171,9 @@ Bushveld assays \cite{bachmann2019} & Bushveld chromitites & 1,112 intervals. Ch
 
 \emph{Sensor (design).} The design uses a SWIR line scanner such as the Specim SX25 (960--2500\,nm, 640 pixels across, up to 162 lines a second) with a visible--near-infrared (VNIR) companion camera \cite{specim}. On a 1.2\,m belt moving at 2\,m/s it records a line every 12.3\,mm with 1.88\,mm pixels. It therefore measures parcels of ore, not individual particles. In the pilot design a \emph{parcel} is 30\,s of belt (about 60\,m, or 4,860 scan lines averaged into one spectrum); in the replay reported here, a parcel is one HIDSAG composite scan of 80$\times$117 pixels.
 
-\emph{Model.} Each parcel's spectrum is reduced to features from the infrared absorption regions of clay, mica, chlorite and carbonate minerals (Fig.~\ref{fig:hsi}), and a model predicts the Bond work index (\Wi{}, kWh/t). Results are reported only for samples the model never saw (out of fold), and a result counted only if it beat simple baselines under pass marks written down before each run.
+\emph{Model.} Each parcel's spectrum is reduced to features from the infrared absorption regions of clay, mica, chlorite and carbonate minerals (Fig.~\ref{fig:hsi}), and a model predicts the Bond work index (\Wi{}, kWh/t). Results are reported only for samples the model never saw (out of fold), and a result counted only if it beat simple baselines under pass marks committed to the repository before each run. Five targets and several model variants were examined and only the work index survived, so the result is exploratory selection, not a confirmatory test; HIDSAG has no drill-hole identifiers, so grouped independence of the folds cannot be verified.
 
-\emph{Bound and gate.} The plant setting uses an upper bound that the true hardness should stay below 9 times out of 10 (a one-sided 90\% split-conformal bound \cite{lei2018}), not the best guess. A more data-efficient bound \cite{barber2021} was tried first and failed its pass mark, so the exact bound that the plan named as its fallback is used, and the result is provisional. An out-of-distribution (OOD) check flags parcels unlike anything in training: refused parcels receive the conservative setting, and borderline ones the stricter of the bound and the conservative setting.
+\emph{Bound and gate.} The plant setting uses an upper bound that the true hardness should stay below 9 times out of 10 (a one-sided 90\% split-conformal bound \cite{lei2018}), not the best guess. A more data-efficient bound \cite{barber2021} was tried first and failed its pass mark, so the exact bound that the plan named as its fallback is used, and the result is provisional. The 90\% is a marginal coverage target that assumes new parcels resemble the calibration data; it is not a per-parcel guarantee and does not certify protection against overload. An out-of-distribution (OOD) check flags parcels unlike anything in training, and their advice is withdrawn.
 
 \subsection{The decision layer and its cadence}\label{sec:decision}
 
@@ -185,7 +185,7 @@ where $F_{80}$ and $P_{80}$ are the feed and product sizes (\textmu m) passed by
 \begin{equation}
 F_{\text{proposed}} = F_{\text{design}} \times \frac{W_{i,\text{design}}}{W_{i,\text{bound}}}.
 \end{equation}
-Power, feed size and grind target cancel, so no plant parameter has to be assumed. For example, a design hardness of 16.6\,kWh/t and a bound of 16.9\,kWh/t give 98.2\% of design feed. The proposal must sit inside an operating envelope set by the site's metallurgist; the demonstration envelope is 85--110\% of design feed, with 100\% as the conservative setting.
+The ratio removes explicit power and size terms only when power, feed size, product target and circuit efficiency are held constant; the pilot must test that approximation for the selected circuit. For example, a design hardness of 16.6\,kWh/t and a bound of 16.9\,kWh/t give 98.2\% of design feed. The proposal must sit inside an operating envelope set by the site's metallurgist; the demonstration envelope is 85--110\% of design feed. The demonstration falls back to 100\% of design feed; at a site, the fallback is the host's own operating policy under its existing controls.
 
 \begin{figure}[t]
 \centering
@@ -202,21 +202,21 @@ Power, feed size and grind target cancel, so no plant parameter has to be assume
 \draw[bar] (90,-3.28) rectangle (120,-2.72); \node[font=\tiny] at (105,-3) {milled};
 \draw[-{Stealth[length=1.6mm]}, accent, thick] (90,-2.28) -- (90,-2.72);
 \end{tikzpicture}
-\caption{Proposed decision cadence for the pilot, to be agreed with the site. A parcel is scored as soon as it is scanned; the operator then has the rest of the assumed 90\,s belt-to-mill transit to approve a change. Once a shift, the metallurgist approves the envelope, ramp limits and deadband. No approval in time, or a flagged parcel, means the conservative setting.}
+\caption{Proposed decision cadence for the pilot, to be agreed with the site. A parcel is scored as soon as it is scanned; the operator then has the rest of the assumed 90\,s belt-to-mill transit to approve a change. Once a shift, the metallurgist approves the envelope, ramp limits and deadband. No approval in time, or a flagged parcel, means the advice is withdrawn and the site's control system continues.}
 \label{fig:cadence}
 \end{figure}
 
-Figure~\ref{fig:cadence} illustrates the proposed cadence, highlighting that a person approves changes, not every computation. A new proposal is computed every 30\,s, but the operator sees it only when it differs from the running setpoint by more than a deadband (for example 2\% of design feed) set by the metallurgist; smaller changes are not made. The operator may approve, modify within the envelope, reject or escalate. If nobody approves before the parcel reaches the mill (an assumed 90\,s), or the parcel is flagged, or the data are stale, the conservative setting applies. The system never holds the last value, because the last value may itself be wrong. Feed may be cut by up to 10\% but raised by only 3\% per parcel. At most 120 proposals an hour are computed, but only changes larger than the deadband reach the operator, so far fewer are expected. The replay data have no time order, so the shadow phase measures the actual operator-facing rate before anyone acts on it. Every event is written to a tamper-evident, hash-chained record with conventional (Ed25519) and post-quantum (ML-DSA-65 \cite{fips204}) signatures. The microscope's advice reaches a simulated regrind setting over OPC~UA, the industrial data-exchange standard \cite{opcua}; the same interface is designed for the feed rate.
+Figure~\ref{fig:cadence} illustrates the proposed cadence, highlighting that a person approves changes, not every computation. A new proposal is computed every 30\,s, but the operator sees it only when it differs from the running setpoint by more than a deadband (for example 2\% of design feed) set by the metallurgist; smaller changes are not made. The operator may approve, modify within the envelope, reject or escalate. If nobody approves before the parcel reaches the mill (an assumed 90\,s from the end of the scan), or the parcel is flagged, or the data are stale, the advice is withdrawn and the site's own control policy continues; the research system never raises feed on its own. Feed may be cut by up to 10\% but raised by only 3\% per parcel. At most 120 proposals an hour are computed, but only changes larger than the deadband reach the operator, so far fewer are expected. The replay data have no time order, so the shadow phase measures the actual operator-facing rate before anyone acts on it. Every event is written to a hash-chained record with conventional (Ed25519) and post-quantum (ML-DSA-65 \cite{fips204}) signatures; this supports traceability, not the correctness of the measurement. The microscope's advice reaches a simulated regrind setting over OPC~UA \cite{opcua} (simulated); the feed-rate path is designed, not built.
 
 \subsection{The laboratory layer: minerals under the microscope}\label{sec:micromethod}
 
 The microscope model is a standard image-segmentation network (DeepLabV3 with a ResNet-50 backbone \cite{chen2017,he2016}) that labels every pixel of a reflected-light image as resin, pyrrhotite, chalcopyrite, pentlandite or magnetite. Only the approved checkpoint (SHA-256 \sha{de7135a9}, full hash in Appendix~\ref{app:repro}) may send advice to the simulator. A \emph{Quick} scan classifies six 512-pixel fields of a section; a \emph{full} scan covers the whole section.
 
-Connected regions of the mask are split into grains. Chalcopyrite and pentlandite are the valuable (payload) phases, and pyrrhotite is rejected. A grain is \emph{free} if at least half its area is payload and \emph{locked} otherwise; the 50\% line is the boundary between low and high middlings in the liberation classes used by Mintek's characterisation group \cite{moodley2026}. A rule-based advisor turns these measures into \emph{grind finer}, \emph{continue}, \emph{verify before acting} or, when the rejected phase dominates, \emph{adjust reagent}. It answers \emph{verify} when the liberation estimate lies within $\pm$0.335 of the 50\% line, and it gives no recommendation with fewer than 9 payload-bearing grains or mean confidence below 0.85. The 50\% line is sourced; the $\pm$0.335 band was calibrated on the 12 test sections (Section~\ref{sec:grains}); the other thresholds are placeholders for site metallurgists to set.
+Connected regions of the mask are split into grains. For this demonstration, chalcopyrite and pentlandite are treated as payload and pyrrhotite as reject; that assignment is a demonstration assumption for this ore, because pyrrhotite's value depends on PGM deportment and the host's treatment objectives. A grain whose area is at least half payload is \emph{payload-dominant} (shown as ``free'' in the application), otherwise \emph{reject-dominant} (``locked''). This is a 2D payload-area proxy, not a measure of liberation or recoverability; the 50\% line is a declared demonstration choice. A rule-based advisor turns these measures into \emph{grind finer}, \emph{continue}, \emph{verify before acting} or, when the rejected phase dominates, \emph{adjust reagent}. Each is a hypothesis for a metallurgist to test, not an instruction. It answers \emph{verify} when the payload-area estimate lies within $\pm$0.335 of the 50\% line, and gives no recommendation with fewer than 9 payload-bearing grains or mean confidence below 0.85. The $\pm$0.335 band was calibrated on the 12 evaluation sections (Section~\ref{sec:grains}); the other thresholds are placeholders for site metallurgists to set.
 
 \subsection{How we tested it}\label{sec:testing}
 
-Belt models were scored out of fold against the strongest simple baseline (the fold mean, the fold median and a colour-only model), with pass marks committed to the repository before each run. The microscope was scored on the publisher's 12 held-out S2 sections. These sections were never used to train the network, but they were evaluated many times during development: to compare pipelines, to choose the approved checkpoint over a retrained candidate, and to calibrate the advisor's uncertainty band. Microscope results are therefore optimistic, and an independent, locality-disjoint test set is the first deliverable of the laboratory pilot. Accuracy is the intersection over union (IoU: the overlap between predicted and expert-labelled areas, from 0 to 1), pooled over 103.8 million pixels and averaged per section, with bootstrap confidence intervals over sections. Decision-level agreement runs the advisor on the model's mask and on the expert's mask; a disagreement is \emph{unsafe} if the model gives a confident instruction that the expert mask does not support, for example \emph{continue} where the expert mask says \emph{grind finer}.
+Belt models were scored out of fold against the strongest simple baseline (the fold mean, the fold median and a colour-only model), with pass marks committed to the repository before each run. The microscope was scored on the publisher's 12 S2 test sections. They were excluded from network training but reused during development, to compare pipelines, select the checkpoint and calibrate the advisor band, so we report them as \emph{development-influenced evaluation sections}, not an independent test. An independent, source-disjoint local test set is the first deliverable of the laboratory study. Accuracy is the intersection over union (IoU: the overlap between predicted and expert-labelled areas, from 0 to 1), pooled over 103.8 million pixels and averaged per section, with bootstrap confidence intervals over sections. Pixels are correlated within a section, so sections, not pixels, are the independent units. Decision-level agreement runs the same advisor on the model's mask and on the expert's mask; a disagreement is \emph{unsafe} if the model gives a confident instruction that the expert mask does not support. This measures sensitivity to segmentation error, not whether the rules themselves are metallurgically right.
 
 % =====================================================================
 \section{System architecture}\label{sec:arch}
@@ -234,8 +234,8 @@ Belt models were scored out of fold against the strongest simple baseline (the f
 \node[box, below=0.26cm of in2] (seg) {\textbf{Phase model (KHANYA).} Minerals, grains and liberation; checkpoint \sha{de7135a9}; 17--21\,s per six-field scan};
 \node[box, below=0.26cm of hard] (feed) {\textbf{Feed-rate proposal.} Bond's law turns the bound into a feed rate inside the site's envelope and ramp limits};
 \node[box, below=0.26cm of seg] (meas) {\textbf{Mineral advice.} Grind finer, continue, or verify before acting, with grain-by-grain evidence};
-\node[wide, below=0.26cm of feed.south west, anchor=north west] (gates) {\textbf{Safety gates:} out-of-distribution fallback \textperiodcentered{} approved checkpoint only \textperiodcentered{} colour check \textperiodcentered{} $\geq$\,9 payload grains \textperiodcentered{} confidence $\geq$\,0.85. Anything that fails a gate is advisory only.};
-\node[hot, below=0.26cm of gates] (person) {\textbf{A person decides before the ore reaches the mill:} approve, modify within the envelope, reject or escalate. With no response the site's conservative setting applies, never the last value.};
+\node[wide, below=0.26cm of feed.south west, anchor=north west] (gates) {\textbf{Gates:} out-of-distribution fallback \textperiodcentered{} approved checkpoint only \textperiodcentered{} colour check \textperiodcentered{} $\geq$\,9 payload grains \textperiodcentered{} confidence $\geq$\,0.85. Anything that fails a gate is advisory only.};
+\node[hot, below=0.26cm of gates] (person) {\textbf{An operator reviews before the ore reaches the mill:} approve, modify within the envelope, reject or escalate. With no response the advice is withdrawn; the site's existing control system keeps authority.};
 \node[box, below=0.26cm of person.south west, anchor=north west] (plant) {\textbf{Plant interface.} OPC~UA advisory tags to a simulated feed rate or regrind setting; designed to feed APC such as MillStar and FloatStar};
 \node[box, anchor=north east] (rec) at (person.south east |- plant.north) {\textbf{Decision record.} Hash-chained log with Ed25519 and ML-DSA-65 signed checkpoints};
 \draw[arr] (in1) -- (hard); \draw[arr] (in2) -- (seg);
@@ -246,11 +246,11 @@ Belt models were scored out of fold against the strongest simple baseline (the f
 \draw[arr] (plant.north |- person.south) -- (plant.north);
 \draw[arr] (rec.north |- person.south) -- (rec.north);
 \end{tikzpicture}
-\caption{System architecture: three speeds, one decision. The belt layer (left) is the site system; the microscope layer (right) is the laboratory truth layer and delivers the brief's three phases. Both pass the same gates and the same human decision. Everything runs offline on one laptop processor; the plant is a simulator.}
+\caption{System architecture: three speeds, one decision. The belt layer (left) is the site system; the microscope layer (right) is the laboratory truth layer and delivers the brief's three phases. Both pass the same gates and the same operator review. Built: the models, applications and signed record (on replayed public data). Simulated: the plant and regrind path. Designed: the belt sensor and feed-rate path.}
 \label{fig:arch}
 \end{figure*}
 
-Figure~\ref{fig:arch} illustrates the system, highlighting that both layers pass the same safety gates and the same human decision. The belt monitor (REEFPRINT Live) runs the hardness model, the decision view and the signed record. The microscope workbench (KHANYA) is a web application (React) on a Python service (FastAPI and PyTorch) that runs on an ordinary laptop processor. In local mode it accepts connections only from the same machine and makes no external requests, so a network outage at the plant does not stop the advice. No language model computes a measured value or a control value.
+Figure~\ref{fig:arch} illustrates the system, highlighting that both layers pass the same gates and the same operator review. The belt and laboratory layers run on different time scales: laboratory results give slower context and audit evidence, not a check on each 30\,s parcel. The belt monitor (REEFPRINT Live) runs the hardness model, the decision view and the signed record. The microscope workbench (KHANYA) is a web application (React) on a Python service (FastAPI and PyTorch) that runs on an ordinary laptop processor. In local mode it accepts connections only from the same machine and makes no external requests, so a network outage at the plant does not stop the advice. No language model computes a measured value or a control value.
 
 Speeds were measured on a four-core laptop processor: 92\,ms per parcel (median); 16.7--21.2\,s per six-field microscope scan on mains power (5 runs) and 30.8\,s on battery. A static public demonstration runs the belt monitor on precomputed data; a secure server passed 17 of 17 security tests locally and is not deployed. Software verification is in Appendix~\ref{app:repro}.
 
@@ -309,22 +309,17 @@ Of the five HIDSAG targets tested (copper and molybdenum recovery, lime consumpt
 \addplot[black, dashed, domain=11:22.5, samples=2] {x};
 \end{axis}
 \end{tikzpicture}
-\caption{Calibration of the hardness bound, out of fold. Points below the dashed line are parcels the bound covered: 93.2\% (95\% CI 88.4--96.6\%) against the 90\% target. The bound sits on average 1.64\,kWh/t (range 1.04--2.14) above the prediction.}
+\caption{Calibration of the hardness bound, out of fold, 146 composites (no drill-hole grouping available). Points below the dashed line are samples the bound covered: 93.2\% (95\% CI 88.4--96.6\%) against the 90\% target. The bound sits on average 1.64\,kWh/t (range 1.04--2.14) above the prediction.}
 \label{fig:calibration}
 \end{figure}
 
-Figure~\ref{fig:calibration} illustrates how the safety bound behaves, highlighting that it was exceeded on 10 of 146 samples (6.8\%), within its 10\% design rate. The price of that safety is width: the bound sits on average 1.64\,kWh/t, about 11\% of the mean hardness, above the best guess. The OOD check passed 137 parcels, marked 5 borderline and refused 4. Figure~\ref{fig:hsi} shows one parcel as the model sees it. For parcel GMET-0004 the predicted \Wi{} is 15.9\,kWh/t and the bound 16.9\,kWh/t, against a design hardness of 16.6\,kWh/t (the training data's 90th percentile), so the proposal is 98.2\% of design feed. The laboratory value was 12.1\,kWh/t: the bound was conservative, which is the direction a safety bound should err.
+Figure~\ref{fig:calibration} illustrates how the bound behaves, highlighting that it was exceeded on 10 of 146 samples (6.8\%). The 95\% interval for coverage (88.4--96.6\%) spans the 90\% target, so the result is compatible with it but does not establish future coverage, particularly on new ore. The price of the bound is width: the bound sits on average 1.64\,kWh/t, about 11\% of the mean hardness, above the best guess. The OOD check passed 137 parcels, marked 5 borderline and refused 4. Figure~\ref{fig:hsi} shows one parcel as the model sees it. For parcel GMET-0004 the predicted \Wi{} is 15.9\,kWh/t and the bound 16.9\,kWh/t, against a design hardness of 16.6\,kWh/t (the training data's 90th percentile), so the proposal is 98.2\% of design feed. The laboratory value was 12.1\,kWh/t, so the bound was conservative here.
 
 \subsection{Belt: from hardness to a plant decision}\label{sec:beltdecision}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=0.86\textwidth]{figures/decisions_view_gmet0004.png}
-\caption{The Decisions view of REEFPRINT Live for parcel GMET-0004: a feed-rate proposal of 98.2\% of design inside a demonstration envelope, the operator's actions, and the hash-chained decision record with a guest approval (demonstration sandbox). Screenshot of the application.}
-\label{fig:decision}
-\end{figure*}
 
-Figure~\ref{fig:decision} shows the decision for the same parcel as the operator sees it. Figure~\ref{fig:policies} illustrates four feed-rate policies replayed over all 146 composites, highlighting the trade-off between throughput and overloads. Setting the feed from the bound, with the OOD fallback, gave a simulated throughput gain of +1.9\% (95\% CI +0.9 to +2.9\%), and overloaded parcels fell from 8.9\% to 6.8\%. The one-sided 95\% upper bound on that change (+1.4 points) is inside the +3-point margin set before the test. Held inside the 85--110\% envelope, which the pre-registered replay did not apply, the gain is +1.7\% (+0.7 to +2.7\%) with the same overload share. Feeding from the best guess instead would add 13.6\% but overload 45.2\% of parcels, which is why the policy uses a bound. Perfect knowledge would add 14.0\%, so the bound captures about one-seventh of what is available: its width (1.64\,kWh/t) is where the rest is lost, and a tighter bound from site data is the main route to a larger gain.
+
+Figure~\ref{fig:policies} illustrates four feed-rate policies replayed over all 146 composites against a fixed design-feed policy (the 90th-percentile hardness), highlighting the trade-off between throughput and overloads. In the replay a parcel is \emph{overloaded} when its true hardness exceeds the hardness the feed was set for; this is a model quantity, not a plant trip. Setting the feed from the bound, with OOD parcels withdrawn, gave a simulated throughput gain of +1.9\% (95\% CI +0.9 to +2.9\%), and the overload share was 6.8\% against 8.9\%; the one-sided 95\% upper bound on the difference (+1.4 points) is inside the +3-point margin in the evaluation plan. The original replay did not apply the 85--110\% envelope; a later analysis with it gives +1.7\% (+0.7 to +2.7\%) and the same overload share. Feeding from the best guess instead would add 13.6\% but overload 45.2\% of parcels, which is why the policy uses a bound. Perfect knowledge would add 14.0\%, so the bound captures about one-seventh of what is available: its width (1.64\,kWh/t) is where the rest is lost, and a tighter bound from site data is the main route to a larger gain.
 
 \begin{figure}[t]
 \centering
@@ -345,15 +340,15 @@ Figure~\ref{fig:decision} shows the decision for the same parcel as the operator
 \node[font=\scriptsize, anchor=west, text=gray!60!black] at (axis cs:1.5,16.6) {Perfect information: +14.0\%};
 \end{axis}
 \end{tikzpicture}
-\caption{Feed-rate policies replayed over 146 composites (simulated; not PGM ore and not a time series), with 95\% confidence intervals. Up is more throughput; left is fewer overloads.}
+\caption{Feed-rate policies replayed over 146 composites against a fixed design-feed policy (simulated; not PGM ore, not a time series, original replay without the envelope), with 95\% confidence intervals. Up is more throughput; left is fewer replay overloads.}
 \label{fig:policies}
 \end{figure}
 
-The result is provisional for three reasons: the exact bound was adopted after the more efficient one failed, HIDSAG has no time order (so transit time, stockpile mixing and the asymmetric ramp limit are not simulated), and the ore is not Bushveld ore. Symmetric ramp limits were tested over 200 random parcel orders: $\pm$10\% per parcel left overloads unchanged ($-0.3$ points), but $\pm$5\% added 2.1 points and $\pm$2\% added 4.7, so feed must be cut fast. A pre-registered robustness test found that a new capture of the same ore keeps its error ($\times$1.00), as do half the field of view, added noise and $\pm$15\% illumination; a wavelength drift raised the error by a factor of 1.25 unflagged, so a wavelength-calibration check was added to the design.
+The result is provisional for three reasons: the exact bound was adopted after the more efficient one failed, HIDSAG has no time order (so transit time, stockpile mixing and the asymmetric ramp limit are not simulated), and the ore is not Bushveld ore. Symmetric ramp limits were tested over 200 random parcel orders: $\pm$10\% per parcel left overloads unchanged ($-0.3$ points), but $\pm$5\% added 2.1 points and $\pm$2\% added 4.7, so feed must be cut fast. A robustness test defined before it was run found that a new capture of the same ore keeps its error ($\times$1.00), as do half the field of view, added noise and $\pm$15\% illumination; a wavelength drift raised the error by a factor of 1.25 unflagged, so a wavelength-calibration check was added to the design.
 
 \subsection{Is it physically possible?}\label{sec:physics}
 
-Every claim was tested against its physics, and the failures stay in the report. Bond's law gives the throughput gain above (provisional). Grinding faster costs at most 0.25 percentage points of flotation recovery on the steep part of the recovery curve and none on the plateau (modelled), so residence time must be checked first. Re-ordering ore during load-shedding cannot create tonnes, because energy per tonne is conserved over a cycle: it gave $-3.8\%$ in simulation, and even perfect knowledge gave $-3.0\%$, so that claim was rejected. The camera's 12.3\,mm lines and 1.88\,mm pixels resolve parcels, not particles; no test showed that the belt camera can identify minerals, so the microscope carries the phases; and the system is optical only, with no radioactive source and no radiation sensing.
+Every claim was tested against its physics, and the failures stay in the report. Bond's law gives the throughput gain above under its stated assumptions (provisional). In the evaluated flotation scenarios, grinding faster cost up to 0.25 percentage points of recovery on the steep part of the recovery curve and none on the plateau; this is the largest loss among the scenarios modelled, not a physical bound, and the site's recovery curve must be measured. Re-ordering ore during load-shedding cannot create tonnes, because energy per tonne is conserved over a cycle: it gave $-3.8\%$ in simulation, and even perfect knowledge gave $-3.0\%$, so that claim was rejected. The camera's 12.3\,mm lines and 1.88\,mm pixels resolve parcels, not particles; no test showed that the belt camera can identify minerals, so the microscope carries the phases; and the system is optical only, with no radioactive source and no radiation sensing.
 
 \subsection{Laboratory: phase identification}\label{sec:micro}
 
@@ -383,15 +378,15 @@ Every claim was tested against its physics, and the failures stay in the report.
 \label{fig:iou}
 \end{figure}
 
-The microscope meets the brief's three-phase requirement. Figure~\ref{fig:iou} illustrates its accuracy by class, highlighting IoU values of 0.87 for pyrrhotite, 0.58 for chalcopyrite and 0.55 for pentlandite (precision and recall in Appendix~\ref{app:micro}). The pooled mean IoU is 0.5725 (95\% CI 0.494--0.624); averaged per section it is 0.4671 (0.412--0.534). The model clearly beats trivial baselines (majority class 0.117; colour-only 0.395).
+The microscope addresses the brief's three-phase requirement on analogue ore. Figure~\ref{fig:iou} illustrates its accuracy by class, highlighting IoU values of 0.87 for pyrrhotite, 0.58 for chalcopyrite and 0.55 for pentlandite (precision and recall in Appendix~\ref{app:micro}). The pooled mean IoU is 0.5725 (95\% CI 0.494--0.624); averaged per section it is 0.4671 (0.412--0.534). The model clearly beats trivial baselines (majority class 0.117; colour-only 0.395).
 
 Magnetite, a fourth class the brief does not require, is never predicted. It is only 0.8\% of the test pixels: 78\% of it is labelled as resin, 17\% as pyrrhotite and 5\% as pentlandite. The last share is about 0.3\% of all pixels predicted as pentlandite, so magnetite barely moves the payload measures; where it is intergrown with a sulphide grain, dropping it slightly overstates that grain's payload share.
 
-A retrained candidate (\sha{42646cfa}) scores 0.632 overall and does detect magnetite (IoU 0.25), mainly because chalcopyrite improves (0.800 against 0.576). However, it loses pyrrhotite (0.818 against 0.870) and pentlandite (0.446 against 0.547), and only half of the pixels it calls pentlandite are pentlandite (precision 0.50 against 0.68). Pentlandite is the main nickel and PGM carrier, and false pentlandite inflates the payload share, pushing advice toward \emph{continue}, the unsafe direction. The approved checkpoint is therefore the safer one. The candidate has not been evaluated at decision level, and a second training run of the approved recipe scored 0.454 because the patch sampler was not seeded; the sampler is now seeded (Appendix~\ref{app:repro}).
+A retrained candidate (\sha{42646cfa}) scores 0.632 overall and does detect magnetite (IoU 0.25), mainly because chalcopyrite improves (0.800 against 0.576). However, it loses pyrrhotite (0.818 against 0.870) and pentlandite (0.446 against 0.547), and only half of the pixels it calls pentlandite are pentlandite (precision 0.50 against 0.68). Pentlandite is the main nickel and PGM carrier, and false pentlandite would inflate the payload share. The approved checkpoint was therefore retained on a precautionary rationale; the comparative decision safety of the two models has not been tested, and a second training run of the approved recipe scored 0.454 because the patch sampler was not seeded; the sampler is now seeded (Appendix~\ref{app:repro}).
 
 \subsection{Laboratory: decisions and grain evidence}\label{sec:grains}
 
-Table~\ref{tab:decisions} compares the advice from the model's masks with the advice from the expert masks. The model gave a definite instruction on 4 of 12 sections, all correct, and hedged on the other 8: verify on 6, and no recommendation on 2 sections with too few payload grains. None was unsafe; with 0 of 12 the one-sided 95\% upper bound on the unsafe rate is 22.1\%. On the expert masks the advisor always gives a definite answer, so the hedges come from model error. The advisor is therefore safe but often non-committal.
+Table~\ref{tab:decisions} compares the advice from the model's masks with the advice from the expert masks. The model produced 4 definite recommendations, 6 \emph{verify} outputs and 2 \emph{too few grains} outputs on the 12 sections, so its action coverage was 4 of 12 (33\%). No definite recommendation disagreed in the unsafe direction with the same advisor applied to expert masks. This is a small, development-influenced rule-agreement result: it does not validate the rules themselves, establish an independent unsafe-action rate or demonstrate plant safety. The one-sided 95\% upper bound of 22.1\% on 0 of 12 refers to all sections, not to risk when the system acts. Both the rules and the abstention thresholds need independent evaluation on the host stream.
 
 \begin{table}[t]
 \centering\footnotesize
@@ -410,29 +405,29 @@ Total & 3 & 1 & 6 & 2 & 12 \\
 \end{tabular}
 \end{table}
 
-It is important to note that the $\pm$0.335 verify band was calibrated on these same sections, so the safety result is partly in-sample. Replaying the liberation rule on the stored section measurements shows how much it depends on the band: on the 9 sections it governs, the result stays at 0 wrong for bands of $\pm$0.25 or wider (7 correct at $\pm$0.25), but one section (test\_04) becomes unsafe below that, and two with no band at all. The band must therefore be re-set on independent sections in the laboratory pilot. A realistic exposure shift ($-35$ levels on each colour channel) changed the advice on 8 of 12 sections, so illumination control is also a pilot requirement.
+It is important to note that the $\pm$0.335 verify band was calibrated on these same sections, so the agreement result is partly in-sample. Replaying the liberation rule on the stored section measurements shows how much it depends on the band: on the 9 sections it governs, the result stays at 0 wrong for bands of $\pm$0.25 or wider (7 correct at $\pm$0.25), but one section (test\_04) becomes unsafe below that, and two with no band at all. The band must therefore be re-set on independent sections in the laboratory pilot. A realistic exposure shift ($-35$ levels on each colour channel) changed the advice on 8 of 12 sections, so illumination control is also a pilot requirement.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/grain_inspector_test11_g30_pair.png}
-\caption{The grain inspector on section test\_11 (Quick scan): one analysed field with the phase overlay (left; teal pyrrhotite, violet pentlandite) and the selected grain's evidence (right). Grain 30 (circled) is 76.5\% pyrrhotite and 23.5\% pentlandite, so it is locked; grain 31, the violet grain to its right, is pure pentlandite and free. Cropped from a screenshot of the application.}
+\caption{The grain inspector on section test\_11 (Quick scan): one analysed field with the phase overlay (left; teal pyrrhotite, violet pentlandite) and the selected grain's evidence (right). Grain 30 (circled) is 76.5\% pyrrhotite and 23.5\% pentlandite, so the application labels it locked (reject-dominant on the 2D proxy); grain 31, to its right, is pure pentlandite. Cropped from a screenshot of the application.}
 \label{fig:inspector}
 \end{figure}
 
-Figure~\ref{fig:inspector} illustrates the grain inspector, highlighting how a mineralogist can audit the advice grain by grain. In Quick mode each field is classified without context beyond its edge, and on test\_11, 19 of 24 grains come within 6 pixels of a field edge. Thus, Quick-mode grain statistics are indicative, and the full scan is the reference.
+Figure~\ref{fig:inspector} illustrates the grain inspector, highlighting how a mineralogist can audit the advice grain by grain. In Quick mode each field is classified without context beyond its edge; on this one example, test\_11, 19 of 24 grains come within 6 pixels of a field edge, which shows a potential measurement problem rather than a dataset-wide error rate. Thus, Quick-mode grain statistics are indicative; a border policy (excluding or reconciling edge grains) must be set and checked against a reference analysis.
 
 % =====================================================================
-\section{Validation against literature and limitations}
+\section{Comparison with literature and limitations}
 
-\subsection{Validation against literature}
+\subsection{Comparison with literature}
 
-The results align with published work and with what producers report. Notole et al.\ \cite{notole2025} validated hyperspectral imaging and portable XRF against reference methods on Merensky Reef drill core scanned at the Council for Geoscience in Pretoria, so the sensing layer has been shown to work on Bushveld material, although not yet for hardness. Our 50\% free/locked line sits on the boundary between low and high middlings in Mintek's liberation classes \cite{moodley2026}, and the three sulphides the microscope identifies are the main base-metal sulphides of UG2 ore \cite{jones2005}. On the plant side, Mintek's AI optimisation raised a lead--zinc concentrator's throughput by 0.5\%, worth over US\$2 million (about R33\,million) a year \cite{mintek2025}, so throughput moves of this order are both achievable and valued.
+Published work supports the plausibility of the approach, not its validity here. Notole et al.\ \cite{notole2025} validated hyperspectral imaging and portable XRF against reference methods on Merensky Reef drill core scanned at the Council for Geoscience in Pretoria; that shows the sensing works on Bushveld material, not that our hardness model does. The three sulphides the microscope classifies are the main base-metal sulphides of UG2 ore \cite{jones2005}, and our 50\% proxy line coincides with a boundary between middling classes in Mintek's liberation scheme \cite{moodley2026}, although that boundary does not by itself define free material. Mintek's AI optimisation raised a lead--zinc concentrator's throughput by 0.5\%, worth over US\$2 million (about R33\,million) a year \cite{mintek2025}, which shows that moves of this order are valued, not that this system would deliver them.
 
 Four ideas were tested and withdrawn, and they mark where the method stops. The belt spectra did not predict QEMSCAN mineralogy once size fraction and process line were accounted for. Belt chemistry routed Bushveld PGE ore worse than the mine plan's seam label (balanced accuracy 0.79 against 0.82). The belt did not predict recovery, lime or pH better than a baseline. Plant tags never forecast concentrate silica an hour ahead better than the last laboratory assay.
 
 \subsection{Limitations}
 
-The following limitations apply: (a) no South African ore has been evaluated, and a model trained on Chilean porphyry core may not transfer, because hardness also depends on silicification, grain size and fracturing; (b) the belt result is simulated on 146 composites without time order, and without drill-hole identifiers the split is by sample, so it may be optimistic; (c) the belt camera predicts hardness and does not identify minerals, while the microscope has not been trained on chromite or the silicates; (d) the 12 microscope test sections guided development, and the approved checkpoint cannot be regenerated exactly; (e) the advisor's band was set on the test sections, its other thresholds are placeholders, and liberation is measured in 2D, which overstates it; and (f) latency is measured on one laptop, and the plant is a simulator. Compared with the abstract Mintek accepted, three things changed: the five Bushveld phases became three sulphides on an analogue ore, because no labelled Bushveld images existed; the QEMSCAN ``teacher'' became the pilot's truth-laboratory stream; and the fallback was reversed from holding the last setpoint to applying the conservative setting.
+The following limitations apply, and (a), (b) and (e) block any investment decision until tested: (a) no South African ore has been evaluated, and a model trained on Chilean porphyry core may not transfer, because hardness also depends on silicification, grain size and fracturing; (b) the belt result is a replay of 146 composites without time order or drill-hole grouping, against a fixed design-feed policy rather than the plant's existing control, and a camera sees the belt surface, which may not represent the mass entering the mill; (c) the belt camera predicts hardness and does not identify minerals, and the microscope has not been trained on chromite or the silicates; (d) the 12 microscope sections guided development, and the approved checkpoint cannot be regenerated exactly; (e) the advisor's rules (including the pyrrhotite-reject and 50\% assumptions) are unvalidated for any host ore, its band was set on the evaluation sections, and liberation is a 2D proxy; and (f) latency is measured on one laptop, the plant is a simulator, and economic benefit has not been attributed at any site. Compared with the abstract Mintek accepted, three things changed: the five Bushveld phases became three sulphides on an analogue ore, because no labelled Bushveld images existed; the QEMSCAN ``teacher'' became the pilot's truth-laboratory stream; and the fallback was reversed from holding the last setpoint to applying the conservative setting.
 
 % =====================================================================
 \section{Business model and financial case}\label{sec:business}
@@ -450,25 +445,25 @@ The following limitations apply: (a) no South African ore has been evaluated, an
 \node[party] (prod) at (6.9,0) {\textbf{Host producer}\\ concentrator, GM metallurgy};
 \node[party] (mintek) at (-6.9,-2.6) {\textbf{Mintek}\\ truth laboratory, APC, MOTT};
 \node[party] (mv) at (6.9,-2.6) {\textbf{Independent auditor}\\ measured value (IPMVP)};
-\draw[money] (tia.east) -- node[lab, above] {bridge funding} node[lab, below] {(laboratory pilot)} (team.west);
+\draw[money] (tia.east) -- node[lab, above] {bridge funding} node[lab, below] {(local validation)} (team.west);
 \draw[value] ([yshift=0.25cm]team.east) -- node[lab, above, text width=3.9cm] {hardness bounds, liberation,\\ signed record} ([yshift=0.25cm]prod.west);
-\draw[money] ([yshift=-0.25cm]prod.west) -- node[lab, below] {pilot at cost; then $\leq$\,20\% of measured value} ([yshift=-0.25cm]team.east);
+\draw[money] ([yshift=-0.25cm]prod.west) -- node[lab, below] {stages at cost; then $\leq$\,20\% of measured value} ([yshift=-0.25cm]team.east);
 \draw[value] (mintek.east) -| node[lab, pos=0.25, below] {truth data, IP licence, APC route} ([xshift=-0.9cm]team.south);
 \draw[value] (mv.west) -| node[lab, pos=0.25, below] {verified value sets the fee} ([xshift=0.9cm]team.south);
 \draw[value] (mv.north) -- node[lab, right, text width=1.5cm] {verifies} (prod.south);
 \node[font=\scriptsize, anchor=west] at (-8.3,-3.7) {\textcolor{copper}{\rule[0.5ex]{0.5cm}{1.2pt}} money \quad \textcolor{accent}{\rule[0.5ex]{0.5cm}{1.2pt}} product, data and assurance \quad Mintek's laboratory work is billed to the pilot budget};
 \end{tikzpicture}
-\caption{The business model. The producer pays for the pilot at cost, as an at-risk development investment; after the pilot it pays a capped share of value that an independent party has measured, so no measured value means no fee. Mintek earns from the laboratory work the models need and licenses the IP through its Office of Technology Transfer (MOTT); TIA's bridge funding de-risks the laboratory pilot.}
+\caption{The proposed business model; partner roles are proposals, not agreements. The producer would pay for development stages at cost; after a successful trial it would pay a capped share of independently measured value, so no measured value means no fee. Mintek would earn from the laboratory work the models need; licensing follows the hackathon IP agreement with its Office of Technology Transfer (MOTT).}
 \label{fig:business}
 \end{figure*}
 
 \subsection{Value proposition and business model}
 
-Our value proposition is simple: the plant gets a reading of its ore before the mill, with a stated bound, and after the pilot it pays only for value that an independent party has measured. The buyer is the concentrator manager or general manager for metallurgy at a South African PGM producer, who owns recovery, concentrate quality and mill throughput; producers such as Valterra, Implats, Sibanye-Stillwater, Northam and Tharisa are market segments, not customers. Figure~\ref{fig:business} illustrates how money and value flow, highlighting the two kinds of payment: the pilot is paid at cost, and only the later fee depends on measured value. The Technology Innovation Agency (TIA), the national agency that funds technology development \cite{tia}, is the proposed bridge funder.
+Our value proposition is simple: the plant gets a reading of its ore before the mill, with a stated bound, and after the trial it pays only for value that an independent party has measured. No producer, Mintek or TIA has agreed to fund, host or license the work; the roles below are proposals. The buyer is the concentrator manager or general manager for metallurgy at a South African PGM producer, who owns recovery, concentrate quality and mill throughput; producers such as Valterra, Implats, Sibanye-Stillwater, Northam and Tharisa are market segments, not customers. Figure~\ref{fig:business} illustrates how money and value flow, highlighting the two kinds of payment: the pilot is paid at cost, and only the later fee depends on measured value. The Technology Innovation Agency (TIA), the national agency that funds technology development towards commercialisation \cite{tia}, is a possible funder of the local validation stage, subject to its programme criteria.
 
-The revenue model has four streams: a paid laboratory pilot; a monthly licence for the laboratory software; recovery of the belt pilot's cost; and, after a successful pilot, at most 20\% of the measured net value per concentrator per year. The model suits Mintek for four reasons, each drawn from its own published work \cite{mintek2025}: (i) it creates more truth-laboratory work, because the models need QEMSCAN composites and Bond tests to retrain and audit them; (ii) it is a feed-forward input that Mintek's process control can use, as its AI optimisation already does with process data; (iii) Mintek has already proven value-linked pricing, since its benefit-sharing model with Hindustan Zinc in India has generated over R35\,million since 2021; and (iv) it has a route beyond South Africa, because Mintek's products and services are used in over 60 countries, its instruments group operates in 42, and it works through distributors including Molycop and Mercantil. The timing also favours a pilot now: South African PGM output fell 9\% in 2025 \cite{usgs2026}, while Valterra's realised basket price rose from R32,611 per ounce in 2025 to R45,993 in the first half of 2026 \cite{valterra2025,valterra2026}.
+The revenue model has four streams: a paid laboratory study; a monthly licence for the laboratory software; recovery of shadow-sensing costs; and, after a successful trial, at most 20\% of measured value per concentrator per year. The model fits Mintek's published work \cite{mintek2025}: the models need QEMSCAN composites and Bond tests, which is laboratory work; a hardness input could add ore-side information to process control that today works from process data; Mintek's benefit-sharing model with Hindustan Zinc has generated over R35\,million since 2021; and its products reach over 60 countries through distributors such as Molycop and Mercantil. South African PGM output also fell 9\% in 2025 \cite{usgs2026}, while Valterra's realised basket price rose from R32,611 per ounce in 2025 to R45,993 in the first half of 2026 \cite{valterra2025,valterra2026}.
 
-Table~\ref{tab:alternatives} compares the options a plant can buy today. The system replaces none of them; it adds an ore-side input before the mill and uses their results as its truth.
+Table~\ref{tab:alternatives} compares the options a plant already has. The system replaces none of them; whether it adds information beyond existing APC, operator practice and mine-plan blending is what the local trial must show.
 
 \begin{table}[t]
 \centering\footnotesize
@@ -488,60 +483,47 @@ APC (e.g.\ MillStar, FloatStar) & Stable, optimised circuits from process data &
 
 \subsection{Pricing, and what the money pays for}\label{sec:pricing}
 
-Table~\ref{tab:pricing} sets out the price of each stage and, more importantly, what it pays for beyond equipment and software: sampling, laboratory truth, maintenance, training, security review and independent verification. TIA bridge-funds the laboratory pilot; the host producer pays the belt pilot at cost; and Mintek's laboratory work is billed to the pilot budget.
+Table~\ref{tab:pricing} sets out a staged plan in which the cheapest experiment that can settle the largest uncertainty comes first, and what each stage pays for beyond equipment and software. Stage A tests the microscope and the spectral-hardness relationship on the host's own ore before any belt equipment is bought. Separate quotes are needed for each work package.
 
 \begin{table*}[t]
 \centering\footnotesize
-\caption{Pricing by stage. Prices are the team's hypotheses (H) or planning assumptions (A) until vendors and laboratories quote. Ranges first set in US\$ are converted at R16.4 per US\$, the January--September 2026 average \cite{fred}.}
+\caption{Staged costs. Prices are the team's hypotheses (H) or planning assumptions (A) until vendors and laboratories quote; ranges first set in US\$ are converted at R16.4 per US\$, the January--September 2026 average \cite{fred}. Each stage starts only if the previous gate passes.}
 \label{tab:pricing}
-\begin{tabularx}{\textwidth}{@{}L{2.75cm}L{3.3cm}YL{2.45cm}L{0.6cm}@{}}
+\begin{tabularx}{\textwidth}{@{}L{3.0cm}L{3.2cm}YL{2.3cm}L{0.5cm}@{}}
 \toprule
-Stage & Price & What it pays for & Who pays & Basis \\
+Stage & Price & What it pays for & Who could pay & Basis \\
 \midrule
-1. Laboratory pilot (KHANYA), 3 months & About R210,000 & Team time to retrain the microscope on QEMSCAN-labelled sections of the host's ore; an independent test set; a validation report against QEMSCAN; workbench installation; training of laboratory staff & TIA bridge funding & H \\
-2. Laboratory licence & About R12,000 per site per month, plus a deployment fee & Software updates, model audits, support and security patches & Host laboratory & H \\
-3. Belt pilot, one concentrator, 9 months & R8.2--49.2\,million installed; R1.6--9.8\,million a year to run & \emph{Installed:} infrared and visible cameras, enclosure and window, lighting, calibration references, belt-speed encoder, edge computer with UPS, structural and electrical work, OPC~UA and historian integration, an OT security assessment, commissioning. \emph{Running:} sampling, assays, Bond tests, QEMSCAN composites, maintenance and spares, support, training, independent measurement and verification & Host producer, at cost and at risk; Mintek's laboratory work billed to the pilot & A \\
-4. Contingency & 20\% of installed cost (R1.6--9.8\,million) & Released only against quotes at gate G1 & Funder of each stage & A \\
-5. After the pilot & At most 20\% of measured net value per concentrator per year & Models, audits, support and upgrades; zero if no value is measured & Producer & H \\
+A1. Laboratory study (KHANYA), about 3 months & About R210,000 & Team time to retrain and freeze the microscope on QEMSCAN-labelled sections of a named host stream; an independent test set; a validation report; laboratory training & Development funder (e.g.\ TIA) & H \\
+A2. Hardness feasibility, about 4 months & To be quoted & Paired host samples: Bond tests at an accredited laboratory and hyperspectral scans on an existing or shared scanner; a frozen local model evaluated on held-out samples & Development funder; host in kind & A \\
+B. Shadow sensing, one belt & R8.2--49.2\,million installed; R1.6--9.8\,million a year to run & \emph{Installed:} cameras, enclosure, lighting, references, encoder, edge computer, structural and electrical work, historian integration, OT security assessment. A leased or temporary system is an option to quote. \emph{Running:} sampling, assays, Bond tests, QEMSCAN composites, maintenance, support, training & Host producer, at cost and at risk & A \\
+C. Advisory trial & Running costs of B, plus independent measurement and verification & Operator protocol, on/off operating blocks, metal accounting & Host producer & A \\
+Contingency & 20\% of installed cost (R1.6--9.8\,million) & Released only against quotes & Funder of each stage & A \\
+After a successful trial & At most 20\% of measured value (fee basis to agree) & Models, audits, support; zero if no value is measured & Producer & H \\
 \bottomrule
 \end{tabularx}
 \end{table*}
 
 \subsection{From throughput to recovered metal}\label{sec:value}
 
-The belt result is a throughput gain, and revenue comes from recovered metal, so the two must be bridged. For a plant whose mill limits production, with unchanged head grade, the extra metal recovered is approximately
+The belt result is a throughput gain, and revenue comes from recovered metal, so the two must be bridged. For a consistent stream, metal output is proportional to dry tonnes $\times$ head grade $\times$ recovery, so
 \begin{equation}
-\frac{\Delta M}{M} \approx \frac{\Delta T}{T} + \frac{\Delta R}{R},
+\frac{\Delta M}{M} = \Big(1+\frac{\Delta T}{T}\Big)\Big(1+\frac{\Delta G}{G}\Big)\Big(1+\frac{\Delta R}{R}\Big) - 1 ,
 \end{equation}
-where $T$ is throughput and $R$ is recovery. Grinding faster can cost recovery: the modelled flotation cost is up to 0.25 percentage points on the steep part of the recovery curve and none on the plateau (Section~\ref{sec:physics}), which at an 87\% recovery \cite{jones2005} is $\Delta R/R = -0.29\%$. Where the plant is limited by ore supply instead, extra throughput is worth nothing. Table~\ref{tab:scenarios} turns these cases into value at Zondereinde's output.
+where $T$ is throughput, $G$ head grade and $R$ recovery. With unchanged grade, a 1.75\% throughput gain and a recovery loss of 0.25 percentage points from 87\% (a relative change of $-0.29\%$) give 1.46\% more metal. Where the plant is limited by ore supply, extra throughput is worth nothing. If all of Zondereinde's output passed the instrumented circuit (an upper bound), 1.46\% more metal would be worth R64--123\,million a year in margin, and a quarter of that gain R16--31\,million; these are simulated gains, not measurements.
 
-\begin{table}[t]
-\centering\footnotesize
-\caption{From throughput to value at Zondereinde's output. Net value deducts Valterra's cash operating cost per ounce (2025 and H1 2026 prices). Simulated gains, not measurements.}
-\label{tab:scenarios}
-\begin{tabularx}{\columnwidth}{@{}YL{0.9cm}L{1.35cm}L{1.35cm}@{}}
-\toprule
-Case & More metal & Net value (R\,M/yr) & Fee cap 20\% (R\,M/yr) \\
-\midrule
-Simulated gain held in envelope; recovery on plateau & 1.75\% & 77--148 & 15--30 \\
-Same, on the steep part of the recovery curve & 1.46\% & 64--123 & 13--25 \\
-A quarter of the simulated gain & 0.44\% & 19--37 & 4--7 \\
-Plant limited by ore supply & 0 & 0 & 0 \\
-\bottomrule
-\end{tabularx}
-\end{table}
+
 
 \subsection{Financial methodology}\label{sec:finance}
 
-The following assumptions apply: (a) annual output is that of Northam's Zondereinde mine, 333,050 equivalent refined 4E ounces in F2026 \cite{northam2026}; (b) prices are Valterra's realised basket prices of R32,611 per ounce (2025) and R45,993 (first half of 2026), with cash operating costs of R19,488 and R20,677 per ounce \cite{valterra2025,valterra2026}, used as proxies; (c) costs are the ranges in Table~\ref{tab:pricing}; and (d) the pilot equipment has a 5-year life at a 10\% discount rate. The annual value of an uplift $u$ in recovered metal is
+The following assumptions apply: (a) annual output is that of Northam's Zondereinde mine, 333,050 equivalent refined 4E ounces in F2026 \cite{northam2026}; (b) prices are Valterra's realised basket prices of R32,611 per ounce (2025) and R45,993 (first half of 2026), with cash operating costs of R19,488 and R20,677 per ounce \cite{valterra2025,valterra2026}, used as proxies for another company's mine, with different baskets, payability and cost structure; (c) costs are the ranges in Table~\ref{tab:pricing}; and (d) the equipment has a 5-year life at a 10\% discount rate; and (e) an affected-output fraction $f$ of the mine's output passes the instrumented circuit, taken as 1 unless stated. The annual value of an uplift $u$ in recovered metal is
 \begin{equation}
-V = u \times Q \times m ,
+V = u \times f \times Q \times m ,
 \end{equation}
 where $Q$ is annual output in ounces and $m$ the margin per ounce. For $u$ = 1\% and $m$ = price less cash cost,
 \begin{equation}
 V = 0.01 \times 333{,}050 \times (\text{R}13{,}123 \text{ to } \text{R}25{,}316),
 \end{equation}
-which is equivalent to R43.7--84.3\,million a year (R108.6--153.2\,million in revenue before costs). Deducting the full average cash cost is conservative, because extra ounces from an existing mill cost less than the average ounce. The installed cost is spread over the equipment's life with the capital recovery factor
+which is equivalent to R43.7--84.3\,million a year (R108.6--153.2\,million in revenue before costs). Deducting the full average cash cost may be conservative where the mill has spare capacity, but extra mining, handling or bottleneck costs could change that, so a host-approved incremental cash-flow model is needed before investment. The installed cost is spread over the equipment's life with the capital recovery factor
 \begin{equation}
 \text{CRF} = \frac{r(1+r)^n}{(1+r)^n-1} = 0.2638 \quad (r = 10\%,\ n = 5),
 \end{equation}
@@ -549,7 +531,26 @@ so the annualised cost is
 \begin{equation}
 C = \text{CRF} \times C_{\text{installed}} + C_{\text{running}},
 \end{equation}
-which is equivalent to R3.8\,million a year (low), R11.4\,million (middle) and R22.8\,million (high), or R25.4\,million for the high case with contingency. The break-even uplift is then $u_{\text{BE}} = C/(Q \times m)$: 0.05\% in the best case (low cost, 2026 margin) and 0.52\% in the worst (high cost, 2025 margin), or 0.58\% with contingency. Figure~\ref{fig:breakeven} illustrates the break-even, highlighting that even the worst case needs less than a third of the simulated gain.
+which is equivalent to R3.8\,million a year (low), R11.4\,million (middle) and R22.8\,million (high), or R25.4\,million for the high case with contingency. The break-even uplift is then $u_{\text{BE}} = C/(f \times Q \times m)$. Table~\ref{tab:sens} shows how it moves with cost, margin, affected fraction and the fee basis. If the 20\% fee is charged on the margin before system costs, the producer breaks even only when $0.8\,V = C$. Figure~\ref{fig:breakeven} illustrates the all-output case.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Break-even sensitivities (recalculated under the stated assumptions; illustrative, not a site funding threshold).}
+\label{tab:sens}
+\begin{tabularx}{\columnwidth}{@{}YL{1.35cm}@{}}
+\toprule
+Scenario & More metal needed \\
+\midrule
+Low cost, 2026 margin, all output affected & 0.045\% \\
+High cost, 2025 margin, all output & 0.52\% \\
+High cost + contingency, 2025 margin, all output & 0.58\% \\
+High cost, 2025 margin, 20\% fee before system costs & 0.65\% \\
+High cost, 2025 margin, half of output affected & 1.04\% \\
+High cost, 2025 margin, a quarter of output affected & 2.09\% \\
+High cost, 30\% lower basket price (2025 costs) & 2.05\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \begin{figure}[t]
 \centering
@@ -565,9 +566,9 @@ which is equivalent to R3.8\,million a year (low), R11.4\,million (middle) and R
   legend style={at={(0.5,-0.3)}, anchor=north, font=\tiny, draw=none, legend columns=2, /tikz/every even column/.append style={column sep=4pt}},
   legend cell align=left]
 \addplot[accent, very thick, domain=0:0.7, samples=2] {84.31*x};
-\addlegendentry{Net value, H1 2026 margin (R25,316/oz)}
+\addlegendentry{Margin, H1 2026 (R25,316/oz)}
 \addplot[accent, thick, dashed, domain=0:0.7, samples=2] {43.71*x};
-\addlegendentry{Net value, 2025 margin (R13,123/oz)}
+\addlegendentry{Margin, 2025 (R13,123/oz)}
 \addplot[okgreen, thick, domain=0:0.7, samples=2] {3.80};
 \addlegendentry{Annual cost, low (R8.2\,M installed)}
 \addplot[orange!85!black, thick, domain=0:0.7, samples=2] {11.41};
@@ -577,43 +578,22 @@ which is equivalent to R3.8\,million a year (low), R11.4\,million (middle) and R
 \addplot[red!70!black, thick, densely dotted, domain=0:0.7, samples=2] {25.42};
 \addlegendentry{high + 20\% contingency}
 \addplot[only marks, mark=*, mark size=1.8pt, black] coordinates {(0.0451,3.80) (0.5220,22.82) (0.5815,25.42)};
-\node[font=\tiny, anchor=west] at (axis cs:0.055,2.2) {0.05\%};
+\node[font=\tiny, anchor=west] at (axis cs:0.055,2.2) {0.045\%};
 \node[font=\tiny, anchor=north west] at (axis cs:0.522,22.0) {0.52\%};
 \node[font=\tiny, anchor=south east] at (axis cs:0.578,26.2) {0.58\%};
 \end{axis}
 \end{tikzpicture}
-\caption{Break-even for one belt at Zondereinde's output: annual net value of extra recovered metal (blue) against the annualised pilot cost (horizontal lines). Dots mark the best case, the worst case and the worst case with contingency.}
+\caption{Break-even if all of Zondereinde's output were affected ($f=1$): annual margin on extra recovered metal (blue) against the annualised system cost (horizontal lines), before any fee.}
 \label{fig:breakeven}
 \end{figure}
 
-Annualising over five years describes a pilot that succeeds. If it fails, the producer's loss is what it has spent: R8.5--50.8\,million if it stops at G1 (month 2), R8.9--53.3\,million at G2 (month 5), and R9.4--56.6\,million at G3 (month 9), or up to R66.4\,million if the whole contingency is used. No salvage value is assumed. A 30\% lower basket price would remove most of the 2025 margin, which is why the fee is a share of measured net value rather than a fixed charge.
+Annualising over five years describes continued successful use; pilot-stage cash exposure is separate. In the staged plan, a failure at the laboratory or hardness gates costs only Stage A (about R210,000 plus the quoted hardness work), because no belt equipment is bought before the hardness gate. Once Stage B starts, the producer's committed exposure is the installed cost plus running costs to date: R8.5--50.8\,million two months after installation and R9.4--56.6\,million after nine, or up to R66.4\,million with the full contingency, before any recoverable equipment value. The fee basis (before or after system costs) must be agreed, so that no support cost is charged twice through the licence, running budget and fee. Measured value requires an agreed metallurgical accounting boundary and attribution method under IPMVP \cite{ipmvp}.
 
 \subsection{Risks, contingency and fallbacks}\label{sec:risks}
 
-Figure~\ref{fig:riskmatrix} and Table~\ref{tab:risks} set out the main risks of using the product, as the team assesses them. Each has a mitigation that acts before it happens and a fallback that limits the damage if it does. Three fallbacks run through all of them: the plant always has its conservative setting and its existing workflow; each pilot phase ends at a gate where spending can stop; and the fee is zero if no value is measured.
+Table~\ref{tab:risks} sets out the main risks of using the product, as the team assesses them. Each has a mitigation that acts before it happens and a fallback that limits the damage if it does. Three fallbacks run through all of them: the plant's existing controls keep authority; each stage ends at a gate where spending can stop; and the fee is zero if no value is measured. Fallbacks reduce exposure to detected failures; they do not guarantee safety against undetected ones.
 
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[x=2.15cm, y=0.8cm]
-\foreach \i/\j/\c in {0/0/okgreen!22, 1/0/okgreen!22, 2/0/yellow!40, 0/1/okgreen!22, 1/1/yellow!40, 2/1/red!22, 0/2/yellow!40, 1/2/red!22, 2/2/red!35}
-  { \fill[\c] (\i,\j) rectangle ++(1,1); }
-\foreach \k in {0,1,2,3} { \draw[gray!60] (\k,0) -- (\k,3); \draw[gray!60] (0,\k) -- (3,\k); }
-\foreach \x/\t in {0/Low, 1/Medium, 2/High} { \node[font=\scriptsize] at (\x+0.5,-0.25) {\t}; }
-\foreach \y/\t in {0/Low, 1/Medium, 2/High} { \node[font=\scriptsize, anchor=east] at (-0.04,\y+0.5) {\t}; }
-\node[font=\footnotesize] at (1.5,-0.78) {Likelihood};
-\node[font=\footnotesize, rotate=90] at (-0.72,1.5) {Impact};
-\tikzset{rk/.style={draw=black, fill=white, circle, inner sep=0.8pt, font=\tiny\bfseries}}
-\node[rk] at (0.5,2.5) {R4};
-\node[rk] at (1.32,2.5) {R1}; \node[rk] at (1.68,2.5) {R6};
-\node[rk] at (2.5,1.5) {R2};
-\node[rk] at (2.5,0.5) {R3};
-\node[rk] at (1.22,1.5) {R5}; \node[rk] at (1.5,1.5) {R7}; \node[rk] at (1.78,1.5) {R9};
-\node[rk] at (1.5,0.5) {R8};
-\node[rk] at (0.5,1.5) {R10};
-\end{tikzpicture}
-\caption{Risk matrix (team's assessment before mitigation). Risks R1--R10 are described in Table~\ref{tab:risks}.}
-\label{fig:riskmatrix}
-\end{figure}
+
 
 \begin{table*}[t]
 \centering\footnotesize
@@ -623,16 +603,16 @@ Figure~\ref{fig:riskmatrix} and Table~\ref{tab:risks} set out the main risks of 
 \toprule
 \# & Risk & Mitigation (before) & Contingency or fallback (if it happens) \\
 \midrule
-R1 & The hardness model does not transfer to Bushveld ore & Laboratory pilot on the host's ore first; shadow phase compares bounds with site Bond tests (G2) & Retrain on site data, or stop at month 5 \\
-R2 & Belt conditions: dust, moisture, vibration, lamp ageing, wavelength drift & Purge air, calibration references and a calibration gate at commissioning (G1) & Flagged parcels get the conservative setting; the plant runs as it does today \\
-R3 & Power outages and load-shedding & Runs offline on an edge computer with a UPS & After a restart, the conservative setting holds until checks pass \\
+R1 & The hardness model does not transfer to Bushveld ore & Hardness feasibility on host samples (H1) before any belt purchase & Stop after Stage A; no belt spend \\
+R2 & Belt conditions: dust, moisture, vibration, lamp ageing, wavelength drift & Purge air, calibration references and a calibration gate at commissioning (S1) & Detected faults withdraw advice; undetected drift remains a risk, checked by monthly audits \\
+R3 & Power outages and load-shedding & Runs offline on an edge computer with a UPS & After a restart, advice is blocked until checks pass \\
 R4 & Cyber attack or an unsafe write to the plant & Read-only advisory tags; no write path to safety systems; IEC 62443 zones; signed records & Disconnect; the plant continues on its existing control system \\
-R5 & Operators ignore, over-trust or cannot keep up with the advice & Deadband and shift-level approvals; training before the advisory phase; named roles & Escalation; the conservative setting applies when nobody responds \\
-R6 & No measurable gain & On/off operating blocks with confidence intervals; independent measurement and verification & Stop at G3; no fee is due \\
-R7 & Cost overrun or a weaker rand & Quotes before G1; 20\% contingency; funding in tranches at gates & Defer the belt pilot and continue the laboratory pilot \\
+R5 & Operators ignore, over-trust or cannot keep up with the advice & Deadband and shift-level approvals; training before the advisory phase; named roles & Advice expires; site control continues \\
+R6 & No measurable gain & On/off operating blocks with confidence intervals; independent measurement and verification & Stop at V1; no fee is due \\
+R7 & Cost overrun or a weaker rand & Quotes before Stage B; 20\% contingency; funding by gate & Defer Stage B; continue the laboratory work \\
 R8 & A fall in PGM prices & The fee is a share of measured net value & The fee falls with value automatically \\
-R9 & Funding delay & The laboratory pilot is small (about R210,000) and can start first & Laboratory pilot only; the belt pilot starts when funded \\
-R10 & Privacy or labour objections to the decision record & POPIA purpose, retention and non-disciplinary use agreed first & Record approval roles instead of names \\
+R9 & Funding delay, or staff not available (two of three team roles are filled) & Stage A is small and can start first; third role recruited or sourced in kind & Laboratory work only until funded and staffed \\
+R10 & Wrong advisor rules, or rights to use the training data commercially & Rules validated by a mineralogist on host samples; LumenStone is licensed for research use, so commercial rights are clarified with the rights holder & Display measurements without prescriptive advice; retrain on host-owned data \\
 \bottomrule
 \end{tabularx}
 \end{table*}
@@ -642,60 +622,55 @@ R10 & Privacy or labour objections to the decision record & POPIA purpose, reten
 
 The pilot depends on people more than on hardware. Appendix~\ref{app:impl} gives the detailed plans; this section summarises them.
 
-\emph{Support (Table~\ref{tab:support}).} The host site provides a sponsor, a process metallurgist, an analytical chemist, a process control engineer, an instrumentation technician and an OT security officer; Mintek provides a mineralogist and MOTT; Team Sonar provides three full-time roles.
+\emph{Support (Table~\ref{tab:support}).} A host site would provide a sponsor, a process metallurgist, an analytical chemist, a process control engineer, an instrumentation technician and an OT security officer; Mintek a mineralogist and the IP route; Team Sonar three roles, two filled by the authors and one (software, security and deployment) to be recruited or sourced in kind.
 
-\emph{Maintenance (Table~\ref{tab:maintenance}).} Most checks are automatic, and the system refuses rather than guesses when a check fails, so poor maintenance shows up as more conservative settings, not as wrong advice.
+\emph{Maintenance (Table~\ref{tab:maintenance}).} Calibration and data-quality checks withdraw advice when a specified failure is detected. They reduce exposure to known failure modes but cannot detect every harmful change; undetected drift, sampling mismatch and wrong rules remain trial risks.
 
-\emph{Compliance (Table~\ref{tab:compliance}).} The Mine Health and Safety Act requires a risk assessment with the health and safety committee and training before significant changes to plant or equipment \cite{mhsa}; POPIA governs approvers' names in the record \cite{popia}; Mining Charter clause 2.3.1 counts skills and R\&D spend \cite{charter2018}; IP from public funding falls under the IPR Act \cite{ipract}; Mintek and TIA spend under the PFMA \cite{pfma}; and the camera needs no radiation licence. Before installation, the health and safety committee, the management-of-change review, the IT/OT change board and the capital committee sign off.
+\emph{Compliance (Table~\ref{tab:compliance}).} These are planned controls, not achieved compliance. The Mine Health and Safety Act requires a risk assessment with the health and safety committee and training before significant changes to plant or equipment \cite{mhsa}; POPIA governs approvers' names in the record \cite{popia}; Mining Charter clause 2.3.1 counts skills and R\&D spend \cite{charter2018}; IP from public funding falls under the IPR Act \cite{ipract}; Mintek and TIA spend under the PFMA \cite{pfma}; and the camera needs no radiation licence. Before installation, the health and safety committee, the management-of-change review, the IT/OT change board and the capital committee sign off.
 
 \emph{Independent fact-checkers to outsource:} (a) a SANAS-accredited laboratory for Bond tests and assays \cite{sanas}; (b) Mintek's QEMSCAN for mineralogy; (c) an independent auditor for the value on which fees are charged, using IPMVP \cite{ipmvp}; (d) an IEC 62443 assessor for operational-technology security \cite{iec62443}; (e) an IP attorney through MOTT; and (f) a university reviewer for the model audit.
 
 \emph{Training (Table~\ref{tab:training}).} Each group receives a short module before its phase starts, aligned with the site's workplace skills plan, which mines report to the Mining Qualifications Authority \cite{mqa}.
 
 % =====================================================================
-\section{Roadmap after funding approval}\label{sec:roadmap}
+\section{Roadmap: evidence before capital}\label{sec:roadmap}
 
 \begin{figure*}[t]
 \centering
-\begin{tikzpicture}[x=0.39cm, y=0.39cm,
-  bar/.style={draw=soft, fill=gray!14, rounded corners=1.5pt, minimum height=0.32cm},
+\begin{tikzpicture}[x=0.47cm, y=0.39cm,
+  bar/.style={draw=soft, fill=gray!14, rounded corners=1.5pt},
   hot/.style={draw=accent, fill=accent!18, rounded corners=1.5pt},
-  gate/.style={draw=accent, fill=white, diamond, aspect=1, inner sep=1.1pt, minimum size=0.36cm, font=\tiny\bfseries}]
-\foreach \m in {0,3,6,9,12,18,24,30,36} { \draw[gray!30] (\m,0.6) -- (\m,-11.6); \node[font=\scriptsize, soft] at (\m,0.95) {M\m}; }
-\foreach \r/\t in {0/Agreements and approvals, 1/Laboratory pilot (KHANYA), 2/Install and commission, 3/Shadow: predict; nobody acts, 4/Advisory: people act, 5/Decide on measured value, 6/Couple to APC at the pilot site, 7/Product hardening, 8/Second site (another reef), 9/South African fleet rollout, 10/Regional sites via Mintek}
+  scen/.style={draw=soft, dashed, fill=white, rounded corners=1.5pt},
+  gate/.style={draw=accent, fill=white, diamond, aspect=1, inner sep=0.8pt, minimum size=0.34cm, font=\tiny\bfseries}]
+\foreach \m in {0,3,6,9,12,15,18,21,24,27,30} { \draw[gray!30] (\m,0.6) -- (\m,-9.6); \node[font=\scriptsize, soft] at (\m,0.95) {M\m}; }
+\foreach \r/\t in {0/{Scope, access and agreements}, 1/A1 Laboratory study (KHANYA), 2/A2 Hardness feasibility on host samples, 3/B Install and commission (if H1 passes), 4/B Shadow: predict; nobody acts, 5/C Advisory trial (if A1 authorised), 6/Verify value; decide, 7/{Couple to APC; second site}, 8/Wider rollout (scenario)}
   { \node[font=\scriptsize, anchor=east] at (-0.25,-\r) {\t}; }
-\foreach \r/\a/\b/\s in {0/0/1/bar, 1/0/3/hot, 2/1/2/bar, 3/2/5/hot, 4/5/8/hot, 5/8/9/bar, 6/9/12/bar, 7/6/18/bar, 8/12/18/bar, 9/18/36/bar, 10/24/36/bar}
+\foreach \r/\a/\b/\s in {0/0/1/bar, 1/1/4/hot, 2/1/5/hot, 3/5/7/bar, 4/7/11/bar, 5/11/14/bar, 6/14/15/bar, 7/15/24/scen, 8/24/30/scen}
   { \draw[\s] (\a,-\r-0.32) rectangle (\b,-\r+0.32); }
-\node[font=\tiny, anchor=west] at (7.15,-1) {gate L1: beats the current model on an independent test set $\rightarrow$ licence};
-\node[font=\tiny, anchor=west] at (18.2,-7) {enclosure, seeded training, visible + infrared fusion, security review};
-\node[font=\tiny, anchor=west] at (18.2,-8) {Merensky, UG2 or Platreef};
-\node[font=\tiny, anchor=west, fill=white, inner sep=1pt] at (24.3,-9) {producer by producer};
-\node[font=\tiny, anchor=west, fill=white, inner sep=1pt] at (24.3,-10) {Great Dyke, Copperbelt};
-\foreach \x/\g in {2/G1, 5/G2, 9/G3, 18/G4} { \node[gate] at (\x,-11.0) {\g}; }
-\node[font=\scriptsize, anchor=east] at (-0.25,-11.0) {Gates};
-\node[font=\scriptsize, anchor=east] at (-0.25,-11.85) {Readiness};
-\foreach \x/\t in {0/TRL 4, 2/TRL 5, 5/TRL 6, 9/TRL 7, 18/TRL 8} { \node[font=\tiny, soft, anchor=west] at (\x,-11.85) {\t}; }
+\node[font=\tiny, anchor=west] at (5.2,-2) {no belt purchase before H1};
+\foreach \x/\g in {1/G0, 4/L1, 5/H1, 11/S1, 11.9/A1, 15/V1} { \node[gate] at (\x,-9.0) {\g}; }
+\node[font=\scriptsize, anchor=east] at (-0.25,-9.0) {Gates};
 \end{tikzpicture}
-\caption{Roadmap from funding approval (M0) to month 36. Shaded bars are the nine-month pilot's core phases; diamonds are go/no-go gates (Table~\ref{tab:milestones}). Technology readiness levels (TRL) are the team's self-assessment. Months beyond M9 depend on G3.}
+\caption{Proposed staged roadmap (planning estimate; dates depend on samples, test turnaround, procurement and site approvals). Shaded bars are the evidence-first stages; dashed bars are scenarios. Diamonds are go/no-go gates (Table~\ref{tab:milestones}). Readiness levels are awarded from demonstrated evidence, not elapsed time.}
 \label{fig:roadmap}
 \end{figure*}
 
-Figure~\ref{fig:roadmap} illustrates the plan from the day funding is approved, highlighting that each phase ends at a gate the partners agree in advance. If a gate fails, the pilot stops, and the spending to that point is the maximum exposure (Section~\ref{sec:finance}). Table~\ref{tab:milestones} lists the evidence each gate must show. After G3 the system is coupled to the pilot site's process control within its limits, a second site on another reef tests transfer by month 18, and the South African rollout then proceeds producer by producer, with Mintek's network offering a route to Zimbabwe's Great Dyke and the Copperbelt from month 24.
+Figure~\ref{fig:roadmap} illustrates the plan, highlighting that the transfer question is answered before any belt equipment is bought. The laboratory and hardness studies have separate gates: passing one is not evidence that the other has passed. Table~\ref{tab:milestones} lists what each gate must show and who decides; the numerical thresholds are to be agreed with the host before data are collected, so that the study can return a clear negative result.
 
 \begin{table}[t]
 \centering\footnotesize
-\caption{Milestones and go/no-go tests after funding approval.}
+\caption{Proposed gates. Thresholds marked ``agreed'' are set with the host before evaluation data are collected.}
 \label{tab:milestones}
-\begin{tabularx}{\columnwidth}{@{}L{0.55cm}L{0.6cm}YL{1.55cm}@{}}
+\begin{tabularx}{\columnwidth}{@{}L{0.55cm}YL{1.75cm}@{}}
 \toprule
-Gate & Month & Evidence to pass & If it fails \\
+Gate & Evidence to pass & Decides \\
 \midrule
--- & 1 & Agreements signed (data, POPIA, OT access, IP); envelope approved & Do not install \\
-G1 & 2 & References and calibration pass; no write path to any safety system & Fix before shadow \\
-L1 & 3 & Microscope retrained on host ore beats the current model on an independent test set; verify band re-set & Stay at research level \\
-G2 & 5 & Bound coverage holds against site Bond tests; OOD rate and proposal rate acceptable & Retrain or stop \\
-G3 & 9 & Measured gain above break-even, with a confidence interval, verified independently; site recovery curve measured & Stop; no fee \\
-G4 & 18 & A second site passes G2 within budget & Stay single-site \\
+G0 & Named host stream and bottleneck; sampling and data/IP access; quoted Stage A budget & Sponsor, funder \\
+L1 & Frozen microscope on an independent host test set meets agreed accuracy and bias; border policy checked & Mineralogist \\
+H1 & Frozen local hardness model beats baselines on held-out host samples, with agreed coverage \emph{and} bound width & Process lead; no belt purchase before this \\
+S1 & Sensor availability, calibration, material timing, operator-facing proposal rate within agreed limits & Site operations \\
+A1 & Change and risk process passed; interface rights, expiry and fallback defined; measurement plan & Host \\
+V1 & Pre-specified trial: margin above break-even with uncertainty; site recovery curve and metal accounting reconciled & Pre-agreed investment rule \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -703,7 +678,7 @@ G4 & 18 & A second site passes G2 within budget & Stay single-site \\
 % =====================================================================
 \section{Conclusions and recommendation}
 
-The technical verdict is promising but unproven on South African ore. On public data, a belt hyperspectral model predicted grinding hardness well enough to steer a mill (simulated +1.7--1.9\% throughput, no more overloads), and a microscope model identified the three main base-metal sulphides of UG2 ore without unsafe advice, although its test sections also guided development. The financial verdict does not depend on large effects: even after cash costs and in the worst cost case, one belt breaks even at about half a per cent more recovered metal. We therefore recommend that TIA, Mintek and one PGM producer approve a nine-month pilot, one belt and one truth laboratory, with gates at months 2, 5 and 9. The single most important uncertainty, whether the hardness model transfers to Bushveld ore, is answered by month 5.
+The current work demonstrates an integrated research prototype with promising results on public analogue data. The hardness model improves on simple baselines, and the microscope classifies three relevant sulphide phases with uneven class performance. The feed-rate benefit remains a simulation, and the microscope decision result is development-influenced. The most consequential open questions are transfer to the host ore, the validity of the metallurgical rules, sampling and sensing representativeness, and attributable benefit. We therefore recommend a scoped local validation programme, a laboratory study and a hardness feasibility study on the host's ore, followed only conditionally by shadow sensing and a controlled advisory trial. Larger investment should depend on independently assessed evidence and a host-specific economic case.
 
 % =====================================================================
 \small
@@ -752,13 +727,13 @@ Code and drafting were assisted by AI coding assistants. Every reported number w
 \bibitem{sahpra} SAHPRA, ``Radiation control.'' [Online]. Available: \url{https://www.sahpra.org.za/radiation-control/}
 \bibitem{fred} Board of Governors of the Federal Reserve System, ``South African rand to U.S. dollar spot exchange rate (EXSFUS),'' FRED, Federal Reserve Bank of St. Louis. [Online]. Available: \url{https://fred.stlouisfed.org/series/EXSFUS}
 \bibitem{northam2026} Northam Platinum Holdings, ``Voluntary production update for the year ended 30 June 2026,'' JSE SENS, 13 Jul. 2026. [Online]. Available: \url{https://sharedata.co.za/sens.asp?id=553800}
+\bibitem{ipmvp} Efficiency Valuation Organization, ``International Performance Measurement and Verification Protocol (IPMVP).'' [Online]. Available: \url{https://evo-world.org/en/products-services-mainmenu-en/protocols/ipmvp}
 \bibitem{mhsa} Republic of South Africa, \emph{Mine Health and Safety Act 29 of 1996}. [Online]. Available: \url{https://www.gov.za/documents/mine-health-and-safety-act}
 \bibitem{popia} Republic of South Africa, \emph{Protection of Personal Information Act 4 of 2013}. [Online]. Available: \url{https://www.gov.za/documents/protection-personal-information-act}
 \bibitem{charter2018} Department of Mineral Resources, ``Broad-Based Socio-Economic Empowerment Charter for the Mining and Minerals Industry, 2018,'' Government Gazette No.~41934, 27 Sep. 2018. [Online]. Available: \url{https://cer.org.za/wp-content/uploads/2018/09/Mining-Charter-2018.pdf}
 \bibitem{ipract} National Intellectual Property Management Office, ``Legislation: Intellectual Property Rights from Publicly Financed Research and Development Act 51 of 2008.'' [Online]. Available: \url{https://www.nipmo.org.za/resources/legislation}
 \bibitem{pfma} National Treasury, ``Public entities listed in the PFMA schedules,'' 1 Dec. 2024. [Online]. Available: \url{https://www.treasury.gov.za/legislation/pfma/public%20entities/2024-12-01%20Nat%20depts%20and%20ents.pdf}
 \bibitem{sanas} South African National Accreditation System (SANAS). [Online]. Available: \url{https://www.sanas.co.za/}
-\bibitem{ipmvp} Efficiency Valuation Organization, ``International Performance Measurement and Verification Protocol (IPMVP).'' [Online]. Available: \url{https://evo-world.org/en/products-services-mainmenu-en/protocols/ipmvp}
 \bibitem{iec62443} ISA, ``ISA/IEC 62443 series of standards.'' [Online]. Available: \url{https://www.isa.org/standards-and-publications/isa-standards/isa-iec-62443-series-of-standards}
 \bibitem{mqa} Mining Qualifications Authority. [Online]. Available: \url{https://www.mqa.org.za/}
 \bibitem{charter2021} \emph{Minerals Council of South Africa v Minister of Mineral Resources and Energy and Others} (20341/19) [2021] ZAGPPHC 623, 21 Sep. 2021. [Online]. Available: \url{https://www.saflii.org/za/cases/ZAGPPHC/2021/623.html}
@@ -777,10 +752,10 @@ Code and drafting were assisted by AI coding assistants. Every reported number w
 APC & Advanced process control, e.g.\ Mintek's MillStar and FloatStar \\
 Bond work index (\Wi{}) & Energy needed to grind ore, in kWh/t; harder ore has a higher \Wi{} \\
 Bound & Here, a hardness the true value should stay below 9 times in 10 (one-sided 90\% conformal bound) \\
-Conservative setting & The feed rate set for hard ore (the training data's 90th-percentile hardness); used whenever the system is unsure \\
+Fallback & In the demonstration, 100\% of design feed; at a site, the host's own operating policy under its existing controls \\
 Deadband & The smallest change worth showing the operator \\
 Envelope & The range of feed rates the site's metallurgist allows (demonstration: 85--110\% of design) \\
-Free / locked & A grain at least / less than half payload by area \\
+Payload-dominant & A grain at least half payload by 2D area (``free'' in the app); a proxy, not liberation \\
 IoU & Intersection over union: overlap of predicted and expert areas, 0 to 1 \\
 IPMVP & International Performance Measurement and Verification Protocol \\
 MOTT & Mintek's Office of Technology Transfer \\
@@ -812,7 +787,7 @@ TRL & Technology readiness level, 1 to 9 \\
 
 \noindent\emph{Checkpoints (SHA-256).} Approved: {\scriptsize\sha{de7135a96541a46dc0981a991cb954186c7cd669ea1c1b33914d1929ae9b1357}}. Candidate: {\scriptsize\sha{42646cfafbeac5398386dba17f7ad3531ffcea572e6342cc4fcba42ed0b44b3b}}.
 
-\noindent\emph{Reproducibility.} The training patch sampler was unseeded, so a second run of the approved recipe scored 0.454; it is now seeded by seed, epoch and index, with a test that two runs draw identical patches (commit \sha{adeb1ee}). The approved checkpoint itself cannot be regenerated exactly. The image-analysis runtime is pinned (\texttt{requirements-lock.txt}); pinning the training environment and a seeded re-run are pilot tasks.\par}
+\noindent\emph{Reproducibility.} The training patch sampler was unseeded, so a second run of the approved recipe scored 0.454; it is now seeded by seed, epoch and index, with a test that two runs draw identical patches (commit \sha{adeb1ee}). Inference is reproducible from the archived approved weights; retraining is not: the approved checkpoint itself cannot be regenerated exactly, and seeded patch selection alone does not prove the full pipeline now reproduces it. The image-analysis runtime is pinned (\texttt{requirements-lock.txt}); pinning the training environment and a seeded re-run are pilot tasks.\par}
 
 \twocolumn[\begin{@twocolumnfalse}
 \vspace*{-1.6em}
@@ -858,33 +833,33 @@ Pentlandite & 0.7 & 0.8 & 0.0 & 24.3 & \cellcolor{accent!30}74.2 \\
 \label{tab:support}
 \begin{tabularx}{\textwidth}{@{}L{3.6cm}YL{2.0cm}L{2.5cm}@{}}
 \toprule
-Role & Why the pilot needs them & When (month) & Commitment \\
+Role & Why the pilot needs them & When (stage) & Commitment \\
 \midrule
-Plant manager or GM metallurgy & Sponsor; owns the budget, approves the envelope, decides at each gate & 0--9 & Gate meetings \\
-Process metallurgist & Sets the envelope, deadband and conservative setting; reviews the record & 0--9 & 0.3 full-time \\
-Mineralogist (Mintek) & QEMSCAN truth; labels sections for retraining and the independent test set & 0--9 & 0.2 full-time \\
-Analytical chemist & Assays and \cro{}; quality control with blanks, duplicates and reference materials & 2--9 & Per sampling plan \\
-Process control engineer & OPC~UA tags, historian access, later coupling to APC & 1--2, then 9+ & As needed \\
-Instrumentation engineer and technician & Installation, enclosure, references, lamps & 1--9 & 0.3 full-time \\
-OT and IT security officer & Network zone, read-only interface, backups & 0--2 & 0.1 full-time \\
-Health and safety representatives; information officer & Risk assessment before installation (MHSA); POPIA and the record policy & 0--1 & Consultation \\
-Mintek MOTT; TIA portfolio manager & IP agreement; funding tranches at gates & 0, gates & As needed \\
-Team Sonar & Models, software, integration, analysis and reporting & 0--9 & Three full-time roles \\
+Plant manager or GM metallurgy & Sponsor; owns the budget, approves the envelope, decides at each gate & All & Gate meetings \\
+Process metallurgist & Sets the envelope, deadband and fallback policy; reviews the record & A2--C & 0.3 full-time \\
+Mineralogist (Mintek) & QEMSCAN truth; labels sections for retraining and the independent test set & A1--C & 0.2 full-time \\
+Analytical chemist & Assays and \cro{}; quality control with blanks, duplicates and reference materials & A2--C & Per sampling plan \\
+Process control engineer & OPC~UA tags, historian access, later coupling to APC & B--C & As needed \\
+Instrumentation engineer and technician & Installation, enclosure, references, lamps & B--C & 0.3 full-time \\
+OT and IT security officer & Network zone, read-only interface, backups & B & 0.1 full-time \\
+Health and safety representatives; information officer & Risk assessment before installation (MHSA); POPIA and the record policy & Before B & Consultation \\
+Mintek MOTT; TIA portfolio manager & IP agreement; funding tranches at gates & G0, gates & As needed \\
+Team Sonar & Models, software, integration, analysis and reporting & All & Two filled; one to recruit \\
 \bottomrule
 \end{tabularx}\par}
 \par\vspace{3pt}
 {\centering\fontsize{7}{8.3}\selectfont\renewcommand{\arraystretch}{0.92}\setlength{\extrarowheight}{0pt}\captionsetup{font=footnotesize,skip=2pt}
-\captionof{table}{Laws, policies and standards that apply to the pilot, and how the design complies.}
+\captionof{table}{Laws, policies and standards that apply, and the planned controls (not achieved compliance).}
 \label{tab:compliance}
 \begin{tabularx}{\textwidth}{@{}L{3.75cm}YY@{}}
 \toprule
-Law, policy or standard & What it asks of this project & How the design complies \\
+Law, policy or standard & What it asks of this project & Planned control (evidence required) \\
 \midrule
 Mine Health and Safety Act 29 of 1996 \cite{mhsa} & Assess risks of new equipment, consulting the health and safety committee (s.~11, s.~34); train employees before significant changes to plant or equipment, and keep records (s.~10) & Installed under the site's risk assessment and lockout; advisory only; operators trained before the advisory phase \\
 Protection of Personal Information Act 4 of 2013 \cite{popia} & Lawful, limited processing of personal information, such as approvers' names & Purpose, access, retention and non-disciplinary use agreed with the information officer before the shadow phase \\
 Mining Charter 2018, clause 2.3.1 \cite{charter2018} & Invest 5\% of the leviable amount in essential skills development, including R\&D in processing and technology efficiency & Pilot training and R\&D may count toward it; clause 2.3 was not among the clauses set aside by the High Court in 2021 \cite{charter2021} \\
 IPR from Publicly Financed R\&D Act 51 of 2008 \cite{ipract} & IP from publicly financed R\&D is identified, protected and commercialised for South Africa (NIPMO) & IP managed by MOTT under the hackathon agreement, with invention credits \cite{faq} \\
-Public Finance Management Act 1 of 1999 \cite{pfma} & Mintek (Schedule 3B) and TIA (Schedule 3A) spend public money under PFMA controls & Funding released in tranches tied to gates G1--G3, with auditable deliverables \\
+Public Finance Management Act 1 of 1999 \cite{pfma} & Mintek (Schedule 3B) and TIA (Schedule 3A) spend public money under PFMA controls & Funding released in tranches tied to gates G0--V1, with auditable deliverables \\
 Hazardous Substances Act 15 of 1973 (SAHPRA) \cite{sahpra} & Licences for radioactive sources (Group IV) & Not applicable: optical sensing only \\
 IEC 62443 \cite{iec62443}; OPC UA \cite{opcua} & Zones and conduits for industrial cyber security; secure data exchange & Read-only advisory tags; no write path to safety systems; IT/OT sign-off \\
 ISO/IEC 17025, accredited by SANAS \cite{sanas} & Demonstrated competence of testing laboratories & Bond tests and assays used as truth come from accredited laboratories \\
@@ -918,10 +893,10 @@ Security patches; backup restore test & Monthly; quarterly & Team Sonar, IT/OT \
 \toprule
 Who & What they learn & Format; when \\
 \midrule
-Control-room operators, supervisors & Reading a proposal; approve, modify, reject or escalate; the deadband; what the fallback does & Half a day plus supervised shifts; before month 5 \\
-Metallurgists & Setting the envelope and deadband; reading bounds and liberation; reviewing the record & One day; month 1 \\
-Laboratory staff & Workbench, colour calibration, grain audit, comparison with QEMSCAN & One day; months 0--3 \\
-Instrument technicians & Camera, enclosure, references, lamps, lockout & One day with the vendor; commissioning \\
+Control-room operators, supervisors & Reading a proposal; approve, modify, reject or escalate; the deadband; what the fallback does & Half a day plus supervised shifts; before C \\
+Metallurgists & Setting the envelope and deadband; reading bounds and liberation; reviewing the record & One day; start of A2 \\
+Laboratory staff & Workbench, colour calibration, grain audit, comparison with QEMSCAN & One day; during A1 \\
+Instrument technicians & Camera, enclosure, references, lamps, lockout & One day with the vendor; start of B \\
 IT and OT staff & Network zones, backups, patching, incident response & Half a day; before installation \\
 Managers and funders & Reading the measured-value report and the gates & One hour; each gate \\
 \bottomrule
