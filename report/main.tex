@@ -206,7 +206,7 @@ Power, feed size and grind target cancel, so no plant parameter has to be assume
 \label{fig:cadence}
 \end{figure}
 
-Figure~\ref{fig:cadence} illustrates the proposed cadence, highlighting that a person approves changes, not every computation. A new proposal is computed every 30\,s, but the operator sees it only when it differs from the running setpoint by more than a deadband (for example 2\% of design feed) set by the metallurgist; smaller changes are not made. The operator may approve, modify within the envelope, reject or escalate. If nobody approves before the parcel reaches the mill (an assumed 90\,s), or the parcel is flagged, or the data are stale, the conservative setting applies. The system never holds the last value, because the last value may itself be wrong. Feed may be cut by up to 10\% but raised by only 3\% per parcel. The shadow phase of the pilot measures how many proposals per hour this produces, and the advisory phase tests whether operators can keep up. Every event is written to a tamper-evident, hash-chained record with conventional (Ed25519) and post-quantum (ML-DSA-65 \cite{fips204}) signatures. The microscope's advice reaches a simulated regrind setting over OPC~UA, the industrial data-exchange standard \cite{opcua}; the same interface is designed for the feed rate.
+Figure~\ref{fig:cadence} illustrates the proposed cadence, highlighting that a person approves changes, not every computation. A new proposal is computed every 30\,s, but the operator sees it only when it differs from the running setpoint by more than a deadband (for example 2\% of design feed) set by the metallurgist; smaller changes are not made. The operator may approve, modify within the envelope, reject or escalate. If nobody approves before the parcel reaches the mill (an assumed 90\,s), or the parcel is flagged, or the data are stale, the conservative setting applies. The system never holds the last value, because the last value may itself be wrong. Feed may be cut by up to 10\% but raised by only 3\% per parcel. At most 120 proposals an hour are computed; the replay data have no time order, so how many clear the deadband is unknown, and the shadow phase measures it before operators are asked to keep up. Every event is written to a tamper-evident, hash-chained record with conventional (Ed25519) and post-quantum (ML-DSA-65 \cite{fips204}) signatures. The microscope's advice reaches a simulated regrind setting over OPC~UA, the industrial data-exchange standard \cite{opcua}; the same interface is designed for the feed rate.
 
 \subsection{The laboratory layer: minerals under the microscope}\label{sec:micromethod}
 
@@ -324,7 +324,7 @@ Figure~\ref{fig:calibration} illustrates how the safety bound behaves, highlight
 \label{fig:decision}
 \end{figure*}
 
-Figure~\ref{fig:decision} shows the decision for the same parcel as the operator sees it. Figure~\ref{fig:policies} illustrates four feed-rate policies replayed over all 146 composites, highlighting the trade-off between throughput and overloads. Setting the feed from the bound, with the OOD fallback, gave a simulated throughput gain of +1.9\% (95\% CI +0.9 to +2.9\%), and overloaded parcels fell from 8.9\% to 6.8\%. The one-sided 95\% upper bound on that change (+1.4 points) is inside the +3-point margin set before the test. Held inside the 85--110\% envelope, which the pre-registered replay did not apply, the gain is +1.7\% (+0.7 to +2.7\%) with the same overload share. Feeding from the best guess instead would add 13.6\% but overload 45.2\% of parcels, which is why the policy uses a bound. Perfect knowledge would add 14.0\%, so the bound captures about one-seventh of what is available.
+Figure~\ref{fig:decision} shows the decision for the same parcel as the operator sees it. Figure~\ref{fig:policies} illustrates four feed-rate policies replayed over all 146 composites, highlighting the trade-off between throughput and overloads. Setting the feed from the bound, with the OOD fallback, gave a simulated throughput gain of +1.9\% (95\% CI +0.9 to +2.9\%), and overloaded parcels fell from 8.9\% to 6.8\%. The one-sided 95\% upper bound on that change (+1.4 points) is inside the +3-point margin set before the test. Held inside the 85--110\% envelope, which the pre-registered replay did not apply, the gain is +1.7\% (+0.7 to +2.7\%) with the same overload share. Feeding from the best guess instead would add 13.6\% but overload 45.2\% of parcels, which is why the policy uses a bound. Perfect knowledge would add 14.0\%, so the bound captures about one-seventh of what is available: its width (1.64\,kWh/t) is where the rest is lost, and a tighter bound from site data is the main route to a larger gain.
 
 \begin{figure}[t]
 \centering
@@ -395,7 +395,7 @@ Table~\ref{tab:decisions} compares the advice from the model's masks with the ad
 
 \begin{table}[t]
 \centering\footnotesize
-\caption{Decision-level confusion on the 12 held-out sections: advice from the expert mask (rows) against advice from the model's mask (columns).}
+\caption{Decision-level confusion on the 12 held-out sections: advice from the expert mask (rows) against advice from the model's mask (columns). The advisor can also flag a reagent issue when the reject phase dominates; this happened once, on the expert mask only.}
 \label{tab:decisions}
 \begin{tabular}{@{}lccccc@{}}
 \toprule
@@ -694,7 +694,7 @@ Gate & Month & Evidence to pass & If it fails \\
 G1 & 2 & References and calibration pass; no write path to any safety system & Fix before shadow \\
 L1 & 3 & Microscope retrained on host ore beats the current model on an independent test set; verify band re-set & Stay at research level \\
 G2 & 5 & Bound coverage holds against site Bond tests; OOD rate and proposal rate acceptable & Retrain or stop \\
-G3 & 9 & Measured gain above break-even, with a confidence interval, verified independently & Stop; no fee \\
+G3 & 9 & Measured gain above break-even, with a confidence interval, verified independently; site recovery curve measured & Stop; no fee \\
 G4 & 18 & A second site passes G2 within budget & Stay single-site \\
 \bottomrule
 \end{tabularx}

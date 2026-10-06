@@ -1,3 +1,11 @@
+## 2026-10-06 (evening) — Sibusiso (Claude) — second review checked
+
+- The second review's typo list was checked against main.tex and the compiled PDF. None of these exist in either: pyrrhite, Communication, Amandelbut, Hoaenea/Hoaieane, REEFPRIIT, the duplicated Fig. 7 caption, mi croscoe, Fees involved, R16.9, the Bond F80/P80 error, the Table 5 row merge, the missing parenthesis. The reviewer's copy is a garbled text extraction. Send them the PDF itself.
+- Real points addressed: proposal rate (at most 120 an hour computed; the share past the deadband is measured in shadow); bound width is where the gain is lost; Table 3 caption explains the expert-only 'adjust reagent' case; G3 now also requires the site recovery curve to be measured.
+- Still 12 pages, no VERIFY markers.
+
+---
+
 ## 2026-10-06 (later) — Sibusiso (Claude) — report edits on request
 
 - Removed the executive summary box and the 'Technical, business and pilot report' subtitle prefix.
