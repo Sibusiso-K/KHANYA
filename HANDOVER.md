@@ -1,3 +1,12 @@
+## 2026-10-06 (final) — Sibusiso (Claude) — reviewer sign-off
+
+- The reviewer accepted that the earlier typo list came from a garbled extraction; the PDF is authoritative.
+- Section 2.4 now lists four advisor outputs, including 'adjust reagent', matching Table 3.
+- The proposal-rate sentence now separates the computed rate (at most 120 an hour) from the operator-facing rate (only changes past the deadband; measured in shadow).
+- This commit is the version for review and submission: 12 pages, no VERIFY markers.
+
+---
+
 ## 2026-10-06 (evening) — Sibusiso (Claude) — second review checked
 
 - The second review's typo list was checked against main.tex and the compiled PDF. None of these exist in either: pyrrhite, Communication, Amandelbut, Hoaenea/Hoaieane, REEFPRIIT, the duplicated Fig. 7 caption, mi croscoe, Fees involved, R16.9, the Bond F80/P80 error, the Table 5 row merge, the missing parenthesis. The reviewer's copy is a garbled text extraction. Send them the PDF itself.
