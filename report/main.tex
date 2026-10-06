@@ -59,7 +59,7 @@
 \definecolor{okgreen}{RGB}{46,125,50}
 
 \title{\vspace{-1.6em}\textbf{REEFPRINT/KHANYA: reading the ore before the mill.\\ Belt hyperspectral hardness, microscope mineralogy and human-approved plant decisions for South African concentrators}\\[3pt]
-\large Technical, business and pilot report \textperiodcentered{} Mintek--SCi Grad Hackathon 2026 \textperiodcentered{} Problem 3: Computer vision for real-time mineralogical characterisation}
+\large Mintek--SCi Grad Hackathon 2026 \textperiodcentered{} Problem 3: Computer vision for real-time mineralogical characterisation}
 \author{Team Sonar: Lethabo Hoaeane\textsuperscript{a}, Sibusiso Khumalo\textsuperscript{b}\\[1pt]
 \small \textsuperscript{a}University of South Africa \quad \textsuperscript{b}University of the Witwatersrand}
 \date{\small October 2026}
@@ -73,22 +73,7 @@
 \begin{abstract}
 \noindent South African concentrators set mill feed, grind and reagents before the laboratory can say what was in the ore. REEFPRINT/KHANYA reads the ore at three speeds and turns the readings into one decision that a person approves. On the belt, a hyperspectral camera feeds a model that predicts grinding hardness (the Bond work index) with a one-sided 90\% upper bound. On 146 public drill-core samples the model explained 48\% of the variance in hardness (colour alone: 21\%), and the bound held for 93\% of samples. Replayed as a mill feed-rate policy, it raised simulated throughput by 1.7--1.9\% without more overloads. In the laboratory, a microscope model identifies pyrrhotite, chalcopyrite and pentlandite (intersection over union 0.87, 0.58 and 0.55 on 12 held-out sections) and gave no unsafe advice, although those sections also guided development. All results come from public analogue ores and a simulated plant. At Northam's Zondereinde output, a one-belt pilot costing R8--49\,million to install breaks even at 0.05--0.52\% more recovered metal after cash costs. We ask TIA, Mintek and one producer for a nine-month pilot; after it, fees are charged only on independently measured value.
 \end{abstract}
-\vspace{-0.4em}
-\begin{center}\small
-\setlength{\fboxsep}{5pt}\fcolorbox{accent}{accent!4}{\begin{minipage}{0.975\textwidth}
-\textbf{Executive summary}\par\smallskip
-\renewcommand{\arraystretch}{1.08}
-\begin{tabularx}{\textwidth}{@{}L{2.75cm}Y@{}}
-\textbf{The problem} & Plants set feed, grind and reagents before laboratory results arrive. South Africa mines about 71\% of the world's platinum, its PGM output fell 9\% in 2025, and recovery and mill throughput set revenue. \\
-\textbf{What we built} & A belt hyperspectral hardness model with a safety bound (REEFPRINT), a microscope model for minerals and liberation (KHANYA), and a decision layer in which a person approves every plant change and a signed record keeps it. It runs offline on a laptop. \\
-\textbf{Evidence so far} & Hardness $R^2$ 0.48; bound held for 93\% of samples; simulated throughput +1.7--1.9\% with no more overloads; microscope IoU 0.87/0.58/0.55 on the three required phases; no unsafe advice on 12 sections (optimistic: the sections guided development). Public data and a simulated plant only: no South African ore has been tested. \\
-\textbf{What it is worth} & At Zondereinde's output, 1\% more recovered metal is worth R44--84\,million a year after cash costs (R109--153\,million in revenue). \\
-\textbf{Cost and break-even} & Laboratory pilot about R210,000 (TIA). Belt pilot R8.2--49.2\,million installed plus R1.6--9.8\,million a year, paid at cost by the producer. Break-even: 0.05--0.52\% more recovered metal. If the pilot stops at month 9, the most the producer has spent is R9.4--56.6\,million. \\
-\textbf{The ask and the fee} & One belt, one truth laboratory, nine months, with go/no-go gates at months 2, 5 and 9. After the pilot the fee is at most 20\% of independently measured net value, and nothing if no value is measured. \\
-\textbf{Main risks} & The hardness model may not transfer to Bushveld ore (tested by month 5); the gain may be too small to measure (stop at month 9, no fee). \\
-\end{tabularx}
-\end{minipage}}
-\end{center}
+\vspace{0.6em}
 \vspace{0.3em}
 \end{@twocolumnfalse}
 ]
@@ -96,7 +81,7 @@
 % =====================================================================
 \section{Introduction}
 
-As graduate engineers working on Mintek's Problem 3, our responsibility is to give a concentrator's shift team a reliable reading of its ore before that ore reaches the mill, and to turn the reading into a plant setting that a person can approve. This report sets out what we built, how we tested it, what it would cost and earn, and how a funded pilot would prove it on South African ore. It is written for metallurgists, mineralogists, process engineers and the people who fund their technology. Technical terms are defined in the glossary (Appendix~\ref{app:glossary}).
+As Team Sonar, working on Mintek's Problem 3, our responsibility is to give a concentrator's shift team a reliable reading of its ore before that ore reaches the mill, and to turn the reading into a plant setting that a person can approve. This report sets out what we built, how we tested it, what it would cost and earn, and how a funded pilot would prove it on South African ore. It is written for metallurgists, mineralogists, process engineers and the people who fund their technology. Technical terms are defined in the glossary (Appendix~\ref{app:glossary}).
 
 \subsection{Problem statement}
 
@@ -155,7 +140,7 @@ Innovation & A feed-forward ore input that refuses when unsure, with human appro
 Feasibility & Pricing, support, upkeep, compliance, training, risks (\ref{sec:business}, \ref{sec:implementation}) \\
 Impact & R44--84\,million a year per 1\% more metal after cash costs (\ref{sec:value}) \\
 Technical execution & Out-of-fold tests, pass marks set in advance, physics checks (\ref{sec:results}); 516 automated tests (App.~\ref{app:repro}) \\
-Presentation clarity & Executive summary, glossary, a figure or table per step \\
+Presentation clarity & Glossary; a figure or table per step \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -455,24 +440,23 @@ The following limitations apply: (a) no South African ore has been evaluated, an
 \begin{figure*}[t]
 \centering
 \begin{tikzpicture}[
-  party/.style={draw=soft, rounded corners=3pt, align=center, text width=2.75cm, font=\footnotesize, inner sep=4pt, minimum height=1.2cm, fill=white},
-  core/.style={draw=accent, very thick, rounded corners=3pt, align=center, text width=3.5cm, font=\footnotesize, inner sep=4pt, minimum height=1.2cm, fill=accent!8},
-  money/.style={-{Stealth[length=2mm]}, thick, copper},
-  value/.style={-{Stealth[length=2mm]}, thick, accent},
-  lab/.style={font=\scriptsize, align=center, text width=3.3cm}]
-\node[party] (tia) at (-7.1,0) {\textbf{TIA}\\ development funder; gains an SA-owned technology at TRL\,7};
-\node[core] (team) at (0,0) {\textbf{REEFPRINT/KHANYA}\\ Team Sonar: software, models, integration};
-\node[party] (prod) at (7.1,0) {\textbf{Host producer}\\ concentrator; GM metallurgy};
-\node[party] (mintek) at (-3.6,-2.6) {\textbf{Mintek}\\ truth laboratory, APC, Office of Technology Transfer};
-\node[party] (mv) at (3.6,-2.6) {\textbf{Independent auditor}\\ verifies measured value (IPMVP) for both sides};
-\draw[money] (tia.east) -- node[lab, above] {bridge funding for the laboratory pilot} (team.west);
-\draw[value] ([yshift=0.22cm]team.east) -- node[lab, above] {hardness bounds, liberation evidence, signed record} ([yshift=0.22cm]prod.west);
-\draw[money] ([yshift=-0.22cm]prod.west) -- node[lab, below] {pilot at cost; then $\leq$\,20\% of measured net value} ([yshift=-0.22cm]team.east);
-\draw[value] (mintek.north east) -- node[lab, left, text width=3.3cm, xshift=-2pt] {truth data, IP licence,\\ route to MillStar and FloatStar} (team.south west);
-\draw[value] (mv.north west) -- (team.south east);
-\draw[value] (mv.north east) -- (prod.south west);
-\draw[money] (prod.south) -- ++(0,-2.95) -| node[lab, pos=0.25, below, text width=6cm] {laboratory work billed to the pilot budget} (mintek.south);
-\node[font=\scriptsize, anchor=west] at (-8.5,-3.8) {\textcolor{copper}{\rule[0.5ex]{0.5cm}{1.2pt}} money \quad \textcolor{accent}{\rule[0.5ex]{0.5cm}{1.2pt}} product, data and assurance};
+  party/.style={draw=soft, rounded corners=3pt, align=center, text width=2.7cm, font=\footnotesize, inner sep=4pt, minimum height=1.25cm, fill=white},
+  core/.style={draw=accent, very thick, rounded corners=3pt, align=center, text width=2.8cm, font=\footnotesize, inner sep=4pt, minimum height=1.25cm, fill=accent!8},
+  money/.style={-{Stealth[length=2mm]}, thick, copper, rounded corners=4pt},
+  value/.style={-{Stealth[length=2mm]}, thick, accent, rounded corners=4pt},
+  lab/.style={font=\scriptsize, align=center, text width=3.4cm}]
+\node[party] (tia) at (-6.9,0) {\textbf{TIA}\\ development funder};
+\node[core] (team) at (0,0) {\textbf{REEFPRINT/KHANYA}\\ Team Sonar};
+\node[party] (prod) at (6.9,0) {\textbf{Host producer}\\ concentrator, GM metallurgy};
+\node[party] (mintek) at (-6.9,-2.6) {\textbf{Mintek}\\ truth laboratory, APC, MOTT};
+\node[party] (mv) at (6.9,-2.6) {\textbf{Independent auditor}\\ measured value (IPMVP)};
+\draw[money] (tia.east) -- node[lab, above] {bridge funding} node[lab, below] {(laboratory pilot)} (team.west);
+\draw[value] ([yshift=0.25cm]team.east) -- node[lab, above, text width=3.9cm] {hardness bounds, liberation,\\ signed record} ([yshift=0.25cm]prod.west);
+\draw[money] ([yshift=-0.25cm]prod.west) -- node[lab, below] {pilot at cost; then $\leq$\,20\% of measured value} ([yshift=-0.25cm]team.east);
+\draw[value] (mintek.east) -| node[lab, pos=0.25, below] {truth data, IP licence, APC route} ([xshift=-0.9cm]team.south);
+\draw[value] (mv.west) -| node[lab, pos=0.25, below] {verified value sets the fee} ([xshift=0.9cm]team.south);
+\draw[value] (mv.north) -- node[lab, right, text width=1.5cm] {verifies} (prod.south);
+\node[font=\scriptsize, anchor=west] at (-8.3,-3.7) {\textcolor{copper}{\rule[0.5ex]{0.5cm}{1.2pt}} money \quad \textcolor{accent}{\rule[0.5ex]{0.5cm}{1.2pt}} product, data and assurance \quad Mintek's laboratory work is billed to the pilot budget};
 \end{tikzpicture}
 \caption{The business model. The producer pays for the pilot at cost, as an at-risk development investment; after the pilot it pays a capped share of value that an independent party has measured, so no measured value means no fee. Mintek earns from the laboratory work the models need and licenses the IP through its Office of Technology Transfer (MOTT); TIA's bridge funding de-risks the laboratory pilot.}
 \label{fig:business}
@@ -730,7 +714,7 @@ The technical verdict is promising but unproven on South African ore. On public 
 The authors declare no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
 
 \backsec{Acknowledgements.}
-We thank the Mintek mentors, a chemist, a mineralogist and a metallurgist, for a review session that reshaped the build, and the authors of HIDSAG, LumenStone and the Bushveld assay dataset for releasing their data.
+We thank the Mintek mentors for a review session that reshaped the build.
 
 \backsec{Use of AI tools.}
 Code and drafting were assisted by AI coding assistants. Every reported number was computed by code in the project repository and checked by the authors.

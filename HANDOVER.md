@@ -1,3 +1,13 @@
+## 2026-10-06 (later) — Sibusiso (Claude) — report edits on request
+
+- Removed the executive summary box and the 'Technical, business and pilot report' subtitle prefix.
+- Intro now opens 'As Team Sonar' (no 'graduate engineers').
+- Acknowledgements shortened to: 'We thank the Mintek mentors for a review session that reshaped the build.'
+- Business-model figure redrawn on a clean grid: TIA and Mintek on the left, the producer and the auditor on the right, Team Sonar in the centre, right-angle connectors. The auditor-to-Team arrow is now assurance (blue). Mintek's lab billing is a legend note instead of a long wrap-around arrow.
+- Still 12 pages; no VERIFY markers.
+
+---
+
 ## 2026-10-06 — Sibusiso (Claude) — report revised after an external review (industry-par pass); training sampler seeded
 
 **Context:** Sibusiso got outside feedback on the 12-page report and agreed with most of it. Several "typos" the reviewer quoted (REEFPRIIN, Hoaenea, Amandelbut, "reprint setting", "Bond W1", a duplicated paragraph) are **not in the source or the PDF**; they came from the reviewer's text extraction. Everything substantive was acted on.
