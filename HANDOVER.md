@@ -1,3 +1,49 @@
+## 2026-10-06 — Sibusiso (Claude) — report revised after an external review (industry-par pass); training sampler seeded
+
+**Context:** Sibusiso got outside feedback on the 12-page report and agreed with most of it. Several "typos" the reviewer quoted (REEFPRIIN, Hoaenea, Amandelbut, "reprint setting", "Bond W1", a duplicated paragraph) are **not in the source or the PDF**; they came from the reviewer's text extraction. Everything substantive was acted on.
+
+**New analysis (numbers computed from committed results, nothing invented):**
+- **Bound calibration** (from v6 + v8 per-sample results): the one-sided 90% bound held for 136/146 samples (93.2%, CI 88.4–96.6%). It sits on average 1.64 kWh/t above the prediction (range 1.04–2.14). OOD: 137 pass, 5 borderline, 4 refused. New Fig. 6 plots the bound against measured Wi.
+- **Envelope-clipped replay:** the pre-registered +1.9% did not clip to the 85–110% envelope. Clipped, it is +1.7% [+0.7, +2.7] with the same overload share (6.8%). The report now quotes 1.7–1.9%.
+- **Ramp limits** (value_chain results): ±10%/parcel −0.3 pp overloads, ±5% +2.1, ±2% +4.7.
+- **Decision confusion** (decision_gap_patches_refined.json):
+  - expert grind → model grind 3, verify 3, too-few 2;
+  - continue → continue 1, verify 2;
+  - reagent → verify 1.
+  - So 4 definite answers, all correct; 8 hedges; 0 unsafe.
+- **Verify-band sensitivity** (replayed on stored section liberation values): 0 wrong for bands ≥ ±0.25 (7 correct at ±0.25). Below that, test_04 becomes unsafe; with no band, 2 are unsafe. **The ±0.335 band was calibrated on the test sections**, so the safety result is partly in-sample; this is now stated.
+- **Candidate 42646cfa** (codex/themes-launch metrics):
+  - IoU 0.632 overall; chalcopyrite 0.800; magnetite 0.248;
+  - pyrrhotite 0.818 and pentlandite 0.446, with pentlandite precision 0.50 against 0.68.
+  - False pentlandite pushes advice toward "continue", so de7135a9 stays.
+- **Magnetite:** 0.8% of test pixels. 78% is predicted as resin, 17% as pyrrhotite and 5% as pentlandite, which is about 0.3% of predicted pentlandite.
+- **Net value:** uses Valterra cash unit costs of R19,488 (2025) and R20,677 (H1 2026) per PGM oz. 1% more metal = R43.7–84.3 M/yr net. **Break-even on net value: 0.05–0.52%** (0.58% with contingency). Revenue basis was 0.02–0.21%.
+- **Producer exposure if the pilot stops:** R8.5–50.8 M at G1, R8.9–53.3 M at G2, R9.4–56.6 M at G3, up to R66.4 M with full contingency.
+- **Throughput→metal bridge:** ΔM/M ≈ ΔT/T + ΔR/R, with ΔR/R = −0.29% on the steep curve. Table 6 gives four scenarios (1.75%, 1.46%, 0.44%, and 0 when the plant is ore-limited).
+
+**Report changes (`report/main.tex`, still exactly 12 pages):**
+- New front-page executive summary.
+- Shorter, structured abstract and conclusion.
+- New: decision-cadence figure (30 s parcel, deadband, 90 s window, shift-level approvals).
+- "Parcel" is now defined.
+- Clarified that the pilot is paid at cost and at risk; only the post-pilot fee is value-linked.
+- New appendix glossary.
+- The held-out sections are disclosed as "never trained on, but evaluated many times during development".
+- Advisor thresholds are spelled out.
+- The full checkpoint hashes are in Appendix D.
+- Detailed tables moved to Appendices B–D (implementation, compliance, maintenance and training on the final page). The physics table became prose.
+
+**Code fix (adeb1ee, pushed):**
+- `src/segmentation/patches.py`: training patches were drawn from `random.Random(None)`, i.e. unseeded. That is why the recipe re-ran at 0.4543. Draws are now seeded by (seed, epoch, index).
+- `train_patches.py` calls `set_epoch()`.
+- New test `test_training_patches_are_reproducible_from_seed_and_epoch`.
+- Full suite: 263 passed, 1 skipped. One test errored only on a long Windows temp path and passes with a short `--basetemp`.
+- de7135a9 itself still cannot be regenerated; a seeded re-run is a lab-pilot task.
+
+**Open:** 1 red VERIFY. `Sibusiso-K/KHANYA` is still **private** (checked 6 Oct), and the report links it. See the MOTT IP caution in the 5 Oct entry before making it public.
+
+---
+
 ## 2026-10-05 — Sibusiso (Claude) — report rebuilt as a technical, business and pilot report (12 pages, rand, references verified)
 
 **Sibusiso's answers to the verify questions:**
