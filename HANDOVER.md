@@ -40,7 +40,7 @@
 - Full suite: 263 passed, 1 skipped. One test errored only on a long Windows temp path and passes with a short `--basetemp`.
 - de7135a9 itself still cannot be regenerated; a seeded re-run is a lab-pilot task.
 
-**Open:** 1 red VERIFY. `Sibusiso-K/KHANYA` is still **private** (checked 6 Oct), and the report links it. See the MOTT IP caution in the 5 Oct entry before making it public.
+**Resolved (6 Oct):** Sibusiso made `Sibusiso-K/KHANYA` public; the link returns 200, and the last red VERIFY is removed. The report has no VERIFY markers left.
 
 ---
 
