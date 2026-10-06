@@ -1,3 +1,61 @@
+## 2026-10-06 — Sibusiso (Claude) — report refined from the pilot audit handover (structure, pilot, funding, governance, limitations, business)
+
+**Split of work (Sibusiso's instruction):** Lethabo handles model accuracy, independent testing and app features. This pass covered structure, pilot plan, funding, governance, limitations and the business case only.
+- The audit's test findings are the current baseline.
+- ≤10% error is kept as a **validation target**, not a result.
+- No improved results were invented, and no planned feature is described as implemented.
+- **5 orange "[TECH NUMBERS PENDING]" flags** in the PDF mark where Lethabo's final numbers go: abstract, §2.6 protocol, model registry, §4.5 decision results, conclusion.
+
+**Adopted from the audit:**
+- **Abstract:** says "working microscope workflow + separate hardness research track". The active app checkpoint differs from the evaluated one and showed large errors on one section. ≤10% and independent QEMSCAN agreement are labelled targets. The ask is now the capped R210k tranche plus belt capital only after G1B.
+- **Table 1:** new row "≤10% error = Target"; accuracy is now "Partial".
+- **New §2.6** "Validation targets and independent protocol (proposed)":
+  - absolute vs relative error, and 2D area vs QEMSCAN wt%;
+  - a signed acceptance contract;
+  - custodian blind test;
+  - 30 development / 10 calibration / ≥30 locked evaluation specimens;
+  - 0/30 failures bounds the failure rate at about 9.5%;
+  - new cohort after any failure.
+- **New Table 3, model registry:**
+  - de7135a9: historical evaluated;
+  - fb78727d: active in the audited build, not approved. Audit on test_11: pixel accuracy 64.1%, pyrrhotite 61.1% vs 90.7%, pentlandite 34.8% vs 2.0%. Described as one development section, not QEMSCAN;
+  - 42646cfa: candidate, quarantined.
+- **§5.1:** the MINERAL1 grouped re-analysis was added. All records fell within 10 absolute points, but only 23–91% were within 10% relative error, and the baseline beat the spectral model on chalcopyrite and pyrite. The belt claim stays hardness-only.
+- **Limitations:** new item (g) covers no fresh paired PGM validation, the active/evaluated checkpoint mismatch, missing chromite and silicate classes, and unquantified reference uncertainty.
+- **One budget (Table 6)** replaces the R8.2–49.2 M grid, which survives only as a "superseded" row in Table 7:
+  - first tranche R210,000 in capped lines (15/25/20/65/35/15k plus a 35k reserve);
+  - v9 one-belt allowance US$250–400k (about R4.10–6.56 M) including 25% contingency; with the tranche, R4.31–6.77 M;
+  - exclusions stated;
+  - annual support US$30–60k is not double counted.
+- **Finance:** recomputed for the commercial-life case (installed excluding support; running = post-trial support). Annual cost R1.25–2.20 M (R2.50 M with contingency). Break-even in relative metal:
+  - 0.015% low cost;
+  - 0.050% high cost;
+  - 0.057% high cost with contingency;
+  - 0.063% with the fee charged before costs;
+  - 0.10% at half the output;
+  - 0.20% at a quarter of the output;
+  - 0.20% with a 30% lower price;
+  - 0.52% on the superseded grid.
+  - The break-even figure has been rescaled.
+  - Pilot cash view: at most R210k if G1A or G1B fails; up to R4.31–6.77 M if the belt stage stops; zero resale assumed.
+- **Commercial structure:** a capped validation contract, a service fee after acceptance, and an optional fee capped at 20% of verified net value with defined terms. Willingness to pay is untested, and laboratory savings are not claimed.
+- **Risks:**
+  - R7 has numbers: a 25% sensor overrun uses half the reserve; a 10% weaker rand adds R0.41–0.66 M.
+  - R9 now covers host withdrawal.
+  - Contingency is not a scope-expansion fund.
+- **Governance:** host metallurgist, reference lab, independent custodian and team roles are set out, with read-only start. Appendix Table 12 is now a 7-row accountability table (functions, not appointments).
+- **Gates G0, G1A, G1B and G2–G5** replace the old L1/H1/S1/A1/V1. G1A and G1B are separate, and microscope success never releases belt spend. The roadmap now runs 0–18 months from a readiness event. "Stopping an unjustified purchase" is framed as a valid outcome.
+- **Appendix C:** audited release 85061d4; a release manifest is proposed; inference and retraining reproducibility are separated; hashes are shown as prefixes.
+- **Removed for space:** the hardness R² chart (numbers moved into the text) and the grain-inspector figure (now a sentence; "free/locked" relabelling is planned, not done).
+
+**Not done here (needs Lethabo or partners):**
+- frozen model, independent results, sample counts, metric definitions;
+- v9 deck, narration and video alignment (the deck file was not found locally; the audit's numbers were used);
+- the third team member roster question raised by the audit (the decks list three people; the report lists two by Sibusiso's earlier decision);
+- release manifest, supplier and lab quotes, host agreement.
+
+---
+
 ## 2026-10-06 — Sibusiso (Claude) — report revised from Lethabo's detailed revision handover
 
 Lethabo's handover (simulated Mintek/TIA panel, 70/100) was read in full. Most of it was adopted; it asks for **no invented evidence**, and every change below is editorial or a recalculation from committed numbers. Still 12 pages, no VERIFY markers.
