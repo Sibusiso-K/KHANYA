@@ -1,3 +1,67 @@
+## 2026-10-07 — Sibusiso (Claude) — v7: six-month pilot section, realistic pilot budget, TIA route, TRL milestones, pilot risks
+
+**Inputs:** Sibusiso's brief (emphasise a 6-month pilot, explain why 6 months is feasible, show on-site work, data collection, team and daily routine, target <10% error and 90% accuracy; make the pilot price realistic; structure around TIA; add TRL milestones and pilot risks), plus `REEFPRINT_KHANYA_Report_v6_Agent_Handover.md` and its PDF (v6 review, 76/100).
+Still 12 pages. `chk.py` is clean. No VERIFY markers. **All 5 orange TECH NUMBERS PENDING flags are gone:** each became a dated status sentence ("as of 7 October 2026, no frozen model / protocol drafted, not signed"). No new model numbers went in.
+
+**New Section 7, "The six-month pilot":**
+- 7.1 Why six months is feasible, as lettered assumptions (a)–(e):
+  - G0 contracting is done before month 0;
+  - no belt hardware is bought: the microscope runs on a laptop, and belt spectra come from a rented or vendor-lab scanner;
+  - collection needs about 5 microscope specimens and 3 Bond composites a week over 14 weeks;
+  - reference results return in batches within 3 weeks;
+  - the software already exists.
+  - If supply slips, the pilot is extended; the cohort is never cut.
+- 7.2 Targets (Table 7). "90% accuracy" is defined as ≥90% of locked specimens meeting the ≤10% contract for every decision-critical phase.
+  - **Statistical honesty:** 27/30 only shows a pass rate >76% (one-sided 95% Clopper–Pearson).
+  - Proving 90% needs 29/29, or 45/46. Enlarging the locked set to 46 costs about R0.56 M more.
+- 7.3 A 26-week Gantt (Fig. 7) and a five-step daily routine on site.
+- 7.4 Team table (Table 8): the two authors, a software/OT-security engineer to recruit, an independent mineralogist (35 days), a statistician/custodian (18 days), and host roles in kind.
+- 7.5 Why R210k was too low, with a bottom-up budget of **R5,273,000** (Table 5, left half).
+  - Public anchors: CAMP (Montana Tech) TIMA list price US$1,500–2,000 per sample; Bond test "typically under US$1,200" (911 Metallurgist).
+  - Development specimens use expert annotation, so only 44 specimens go to automated mineralogy.
+  - Staff rates (R40k and R60k a month, R8k a day) are **team planning rates, not benchmarks**. Every line must be replaced by a quote at G0.
+  - Release schedule: A R1.00 M at G0; B R3.08 M at the week-8 review; C R0.50 M after the model freeze; R0.69 M contingency.
+- 7.6 TIA (Table 9), from TIA's funding-instruments page and the TIA Seed Fund framework (Nov 2025 annexure on the SAMRC site):
+  - TDF covers TRL 4–7 and funds pilot plants, so it is the pilot instrument;
+  - Seed covers TRL 5–6, up to R1.5 M over 12–24 months, and excludes TRL 3–4, so it suits later microscope productisation;
+  - Commercialisation Support Fund covers TRL 8–9.
+  - Proposed split: TIA R4.28 M; host pays Bond tests (about R1.00 M with contingency) plus in-kind support. Nothing is applied for or agreed.
+- 7.7 Pilot risk register P1–P12 (Table 10), replacing the old product risk table. Product-stage risks now get one sentence.
+- 7.8 Governance, compliance and training, compressed. The training table became a sentence.
+
+**New Section 8, "TRL milestones and gates":**
+- TRL table (EU H2020 definitions):
+  - microscope 4 → 5 (G1A) → 6 (shadow run);
+  - belt 3 → 4 (G1B) → 5 (G1C, new moving-bed gate) → 6/7 in the belt stage.
+- The gates table now has a **decision owner** column, and G1C was added.
+
+**v6 review fixes applied:**
+- Fig. 3: no "truth layer" and no "liberation"; shared controls are split from branch-specific checks; benchmark and audited checkpoints are both shown; 81 s audited-scan timing added.
+- "Held-out" replaced by "publisher test (reused in development)"; "approved" replaced by "historical".
+- LumenStone "right teacher" claim softened; Notole qualified; 0/4 → 52.7% bound added.
+- Fallback wording now consistent; one fee policy: fixed support fee plus a success fee that is zero when value ≤0.
+- The scanner pre-purchase route is funded inside the pilot.
+- FAQ labelled as the 2025 edition; SX25 line rate flagged; full SHA-256 hashes; test counts reworded.
+
+**Cut for space:**
+- Fig. 1 (world PGM chart) became a sentence;
+- the cadence and break-even figures removed (their text and table remain);
+- the alternatives table became a sentence;
+- the accountability, maintenance and training tables removed;
+- the glossary moved to the appendix float;
+- bibliography set in scriptsize; `\linespread{0.97}`.
+- `tools/bibsort.py` reorders the bibliography.
+
+**For Lethabo:**
+- The abundance audit and the rejected sampling experiment (v6 handover §10–11A) are **not** in the report: branch `build/accuracy-contract-20261006` is not on the remote. Push it and the numbers can be cited.
+- Please check the R40k/R60k staff rates and the 35/18-day allowances.
+
+**Still open:**
+- Quotes (lab, scanner rental), a host letter, the TIA application, the IP/data schedule, LumenStone commercial rights;
+- the 2026 brief and rubric; v9 deck and narration alignment; the team roster (two people vs three).
+
+---
+
 ## 2026-10-06 — Sibusiso (Claude) — report refined from the pilot audit handover (structure, pilot, funding, governance, limitations, business)
 
 **Split of work (Sibusiso's instruction):** Lethabo handles model accuracy, independent testing and app features. This pass covered structure, pilot plan, funding, governance, limitations and the business case only.
