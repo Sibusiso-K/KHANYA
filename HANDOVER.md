@@ -1,3 +1,46 @@
+## 2026-10-07 (later) — Sibusiso (Claude) — v8: the six-month pilot now includes the belt on site
+
+**Sibusiso's decision:** the pilot must include the belt on site, not leave it for a later stage.
+Still 12 pages. `chk.py` is clean.
+
+**How the belt fits six months without buying hardware ahead of evidence:**
+- **Lease first:** a leased or demonstration sensor, with a purchase option, arrives at G0.
+- **Bench test:** weeks 1–8, it scans 20 host composites with Bond tests on a bench. **G1B (week 8):** if hardness does not transfer, the sensor is returned before installation and only tranche A is spent.
+- **Install:** weeks 8–10, mounted in a planned plant stop booked at G0. It is non-contact over an existing conveyor, read-only. G2 is site acceptance.
+- **Shadow:** weeks 10–20, every parcel is scored and paired with 24 belt-cut Bond composites; nobody acts on the output. G3 is in week 20.
+- **Advisory window:** weeks 21–25, supervised, operator-approved only, after G4. The report states plainly that four weeks cannot measure a gain of about 2% precisely, so independently measured value (G5) needs an extended on/off trial after the pilot.
+- The old G1C (moving-bed gate) was removed; shadow operation on the real belt tests that directly.
+
+**Money:**
+- Laboratory and team track: R4,928,000. This is the v7 lines minus the R300k scanner-rental line, with 15% contingency.
+- Belt track: the v9 allowance of US$250–400k (R4.10–6.56 M, including 25% contingency).
+- **Pilot total: R9.03–11.49 M.**
+- Tranches:
+  - A, about R1.1–1.5 M at G0;
+  - B, about R5.9–7.6 M at G1B;
+  - C, about R0.5 M at G4;
+  - contingencies R1.46–1.95 M.
+- TIA (proposal): TDF R3.93 M for the lab and team track; the belt split 50:50 with the host through the TDF plus the Industry Matching Fund (R2.05–3.28 M each). The host also pays the Bond tests (R1.00 M). Equipment ownership is not agreed.
+- Rand risk: a 10% weaker rand adds R0.64–0.89 M on US$-priced lines.
+
+**TRL at the end of the pilot, if the gates pass:**
+- microscope 5–6;
+- belt model 4 (bench), then 6 (shadow on the host belt);
+- decision layer 6, with evidence for 7 begun in the advisory window.
+- A commercial decision is about 12 months from the readiness event.
+
+**Other changes:**
+- The risk register was rewritten: sensor delivery, a missed plant stop, a failed bench test, belt dust and drift, scan-to-sample timing, operator over-trust, OT/cyber, and safety at the belt.
+- The team now includes a vendor commissioning engineer and host instrument technicians and operators.
+- The daily routine now includes sensor checks and time-stamped belt cuts.
+- Gates table rows are in week order with owners.
+
+**Cut for space:** detail on the abstract-change log, load-shedding and the MINERAL1 re-analysis; two glossary rows; the appendix heading shortened.
+
+**Open:** a sensor vendor and lease quote; a host plant stop; Lethabo to check the 20/24 bench and shadow split of the 44 Bond composites; plus everything from the v7 entry below.
+
+---
+
 ## 2026-10-07 — Sibusiso (Claude) — v7: six-month pilot section, realistic pilot budget, TIA route, TRL milestones, pilot risks
 
 **Inputs:** Sibusiso's brief (emphasise a 6-month pilot, explain why 6 months is feasible, show on-site work, data collection, team and daily routine, target <10% error and 90% accuracy; make the pilot price realistic; structure around TIA; add TRL milestones and pilot risks), plus `REEFPRINT_KHANYA_Report_v6_Agent_Handover.md` and its PDF (v6 review, 76/100).

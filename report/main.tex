@@ -75,7 +75,7 @@
 \maketitle
 \vspace{-1.8em}
 \begin{abstract}
-\noindent South African concentrators set mill feed, grind and reagents before the laboratory can say what was in the ore. REEFPRINT/KHANYA combines a working microscope-image workflow with a separate hyperspectral hardness research track, and passes both to an operator who reviews every proposed change. All results so far come from public analogue datasets and a plant simulator. On 146 public porphyry-ore composites the hardness model reached an out-of-fold $R^2$ of 0.479 (colour alone 0.210), its nominal 90\% upper bound covered 93.2\% of samples, and a simulated feed-rate replay estimated a 1.7--1.9\% throughput gain over a fixed design-feed policy. The historically evaluated microscope checkpoint reached IoU 0.870, 0.576 and 0.547 for pyrrhotite, chalcopyrite and pentlandite on 12 sections reused during development; the checkpoint in the audited application build differs, and an independent audit run on one section found large phase-abundance errors. Independent QEMSCAN agreement on unseen South African specimens, and a $\leq$10\% phase-abundance error, are validation targets, not results. We propose a six-month pilot at one host concentrator, costed from the bottom up at R5.27\,million (team, site, reference laboratory and sensor access, with 15\% contingency) and funded mainly through the Technology Innovation Agency (TIA). Its targets are a phase-abundance error of $\leq$10\% on at least 90\% of 30 locked host specimens, and a hardness bound that transfers to host ore. If its gates pass, it takes the microscope from technology readiness level (TRL) 4 to 5--6 and the belt model from TRL~3 to 4--5. Belt capital (US\$250,000--400,000, about R4.1--6.6\,million) follows only after separate transfer gates. As of 7 October 2026, no frozen model has been tested on independent host specimens.
+\noindent South African concentrators set mill feed, grind and reagents before the laboratory can say what was in the ore. REEFPRINT/KHANYA combines a working microscope-image workflow with a separate hyperspectral hardness research track, and passes both to an operator who reviews every proposed change. All results so far come from public analogue datasets and a plant simulator. On 146 public porphyry-ore composites the hardness model reached an out-of-fold $R^2$ of 0.479 (colour alone 0.210), its nominal 90\% upper bound covered 93.2\% of samples, and a simulated feed-rate replay estimated a 1.7--1.9\% throughput gain over a fixed design-feed policy. The historically evaluated microscope checkpoint reached IoU 0.870, 0.576 and 0.547 for pyrrhotite, chalcopyrite and pentlandite on 12 sections reused during development; the checkpoint in the audited application build differs, and an independent audit run on one section found large phase-abundance errors. Independent QEMSCAN agreement on unseen South African specimens, and a $\leq$10\% phase-abundance error, are validation targets, not results. We propose a six-month pilot at one host concentrator with both layers on site: the microscope in the shift laboratory, and a leased sensor that, after a bench test on host ore, is mounted over the mill-feed belt for shadow operation and a short supervised advisory window. Costed from the bottom up at R9.03--11.49\,million with contingency, it would be shared between the Technology Innovation Agency (TIA) and the host. Its targets are a phase-abundance error of $\leq$10\% on at least 90\% of 30 locked host specimens, and a hardness bound that holds on the host's own belt. If its gates pass, it takes the microscope from technology readiness level (TRL) 4 to 5--6 and the belt system from TRL~3 to 6. As of 7 October 2026, no frozen model has been tested on independent host specimens.
 \end{abstract}
 \vspace{0.6em}
 \vspace{0.3em}
@@ -188,7 +188,7 @@ Belt models were scored out of fold against the strongest simple baseline (the f
 
 The $\leq$10\% error target must be defined before samples are collected, because absolute and relative errors differ: a reference of 2\,wt\% predicted as 3\,wt\% is a 1-point absolute error but a 50\% relative error. We propose that the mineralogist and a statistician sign an acceptance contract naming the decision-critical phases, an absolute tolerance below an agreed quantification limit and a $\leq$10\% relative target above it, and whether the target applies per specimen or as a phase-wise mean. Microscope image fractions are 2D areas, whereas QEMSCAN modal results are usually mass fractions, and a density conversion alone does not make a polished surface represent bulk mass. The comparison unit, resin exclusion, field selection, section-to-specimen aggregation and density assumptions are therefore fixed in advance; a registered same-surface area-to-area comparison comes first, and bulk mass estimates are validated separately.
 
-A blind test needs more than hiding answers: a separate custodian holds specimen identities and laboratory results; the frozen model receives only acquisition inputs and permitted metadata; predictions are hashed before the reference is revealed; splits are grouped by specimen and collection event; and every refusal stays in the denominator. As a starting envelope we propose 30 development, 10 calibration and at least 30 locked evaluation specimens, subject to a power calculation and laboratory quotes. Zero failures in 30 independent specimens bounds the failure rate at about 9.5\% (one-sided 95\%), which is a statement about pass/fail, not a guarantee of 10\% numerical error. If a model fails, it is fixed on development material and must face a new untouched cohort. As of 7 October 2026 this protocol is drafted, not signed; Section~\ref{sec:goals} gives the pilot's proposed targets.
+A blind test needs more than hiding answers: a separate custodian holds specimen identities and laboratory results; the frozen model receives only acquisition inputs and permitted metadata; predictions are hashed before the reference is revealed; splits are grouped by specimen and collection event; and every refusal stays in the denominator. We propose 30 development, 10 calibration and at least 30 locked specimens, subject to a power calculation and quotes; if a model fails, it is fixed on development material and must face a new untouched cohort. As of 7 October 2026 this protocol is drafted, not signed; Section~\ref{sec:goals} gives the pilot's proposed targets.
 
 % =====================================================================
 \section{System architecture}\label{sec:arch}
@@ -299,7 +299,7 @@ The result is provisional for three reasons: the exact bound was adopted after t
 
 \subsection{Is it physically possible?}\label{sec:physics}
 
-Every claim was tested against its physics, and the failures stay in the report. In the evaluated flotation scenarios, grinding faster cost up to 0.25 percentage points of recovery on the steep part of the recovery curve and none on the plateau; this is the largest loss among the scenarios modelled, not a physical bound, and the site's recovery curve must be measured. Re-ordering ore during load-shedding cannot create tonnes, because energy per tonne is conserved over a cycle: it gave $-3.8\%$ in simulation, and even perfect knowledge gave $-3.0\%$, so that claim was rejected. The camera resolves parcels, not particles, and no test showed that it can identify minerals, so the microscope carries the phases.
+Every claim was tested against its physics, and the failures stay in the report. In the evaluated flotation scenarios, grinding faster cost up to 0.25 percentage points of recovery on the steep part of the recovery curve and none on the plateau; this is the largest loss among the scenarios modelled, not a physical bound, and the site's recovery curve must be measured. Re-ordering ore during load-shedding cannot create tonnes (it gave $-3.8\%$ in simulation), so that claim was rejected. The camera resolves parcels, not particles, and no test showed that it can identify minerals, so the microscope carries the phases.
 
 \subsection{Laboratory: phase identification}\label{sec:micro}
 
@@ -384,11 +384,11 @@ The application's grain inspector lets a mineralogist audit the advice grain by 
 
 Published work supports the plausibility of the approach, not its validity here. Notole et al.\ \cite{notole2025} validated hyperspectral imaging and portable XRF against reference methods on Merensky Reef drill core scanned at the Council for Geoscience in Pretoria, with long-wave infrared as well as VNIR/SWIR sensing; that shows the sensing works on Bushveld material, not that our VNIR/SWIR hardness model does, and it is not a public paired conveyor dataset. The three sulphides the microscope classifies are the main base-metal sulphides of UG2 ore \cite{jones2005}, and our 50\% proxy line coincides with a boundary between middling classes in Mintek's liberation scheme \cite{moodley2026}, although that boundary does not by itself define free material. Mintek's AI optimisation raised a lead--zinc concentrator's throughput by 0.5\%, worth over US\$2 million (about R33\,million) a year \cite{mintek2025}, which shows that moves of this order are valued, not that this system would deliver them.
 
-Four ideas were tested and withdrawn, and they mark where the method stops. The belt spectra did not predict QEMSCAN mineralogy once size fraction and process line were accounted for; a later grouped re-analysis of the same HIDSAG MINERAL1 data (99 records, 36 composites, already used in development) confirmed this: all records were within 10 absolute points, yet only 23--91\% of eligible records were within 10\% relative error depending on the phase, and a simple process-line baseline beat the spectral model for chalcopyrite and pyrite. The belt claim is therefore limited to hardness. Belt chemistry routed Bushveld PGE ore worse than the mine plan's seam label (balanced accuracy 0.79 against 0.82). The belt did not predict recovery, lime or pH better than a baseline. Plant tags never forecast concentrate silica an hour ahead better than the last laboratory assay.
+Four ideas were tested and withdrawn, and they mark where the method stops. The belt spectra did not predict QEMSCAN mineralogy once size fraction and process line were accounted for; a grouped re-analysis (99 records, 36 composites) found only 23--91\% of eligible records within 10\% relative error, and a process-line baseline beat the spectral model for chalcopyrite and pyrite, so the belt claim is limited to hardness. Belt chemistry routed Bushveld PGE ore worse than the mine plan's seam label (balanced accuracy 0.79 against 0.82); the belt did not predict recovery, lime or pH; and plant tags never beat the last assay at forecasting concentrate silica.
 
 \subsection{Limitations}
 
-The following limitations apply, and (a), (b) and (e) block any investment decision until tested: (a) no South African ore has been evaluated, and a model trained on Chilean porphyry core may not transfer, because hardness also depends on silicification, grain size and fracturing; (b) the belt result is a replay of 146 composites without time order or drill-hole grouping, against a fixed design-feed policy rather than the plant's existing control, and a camera sees the belt surface, which may not represent the mass entering the mill; (c) the belt camera predicts hardness and does not identify minerals, and the microscope has not been trained on chromite or the silicates; (d) the 12 microscope sections guided development, and the historical checkpoint cannot be regenerated exactly; (e) the advisor's rules (including the pyrrhotite-reject and 50\% assumptions) are unvalidated for any host ore, its band was set on the evaluation sections, and payload-dominance is a 2D proxy, not liberation; (f) latency is measured on one laptop, the plant is a simulator, and economic benefit has not been attributed at any site; and (g) there is no fresh paired PGM validation, the active application checkpoint differs from the evaluated one, chromite and silicate classes are missing, and reference-laboratory uncertainty is not yet quantified. Compared with the abstract Mintek accepted, three things changed: the five Bushveld phases became three sulphides on an analogue ore, because no labelled Bushveld images existed; the QEMSCAN ``teacher'' became the pilot's reference-laboratory stream; and the fallback became the host's own operating procedure (the demonstration's 100\% design feed is not universally conservative, because it can raise feed from a lower running value).
+The following limitations apply, and (a), (b) and (e) block any investment decision until tested: (a) no South African ore has been evaluated, and a model trained on Chilean porphyry core may not transfer, because hardness also depends on silicification, grain size and fracturing; (b) the belt result is a replay of 146 composites without time order or drill-hole grouping, against a fixed design-feed policy rather than the plant's existing control, and a camera sees the belt surface, which may not represent the mass entering the mill; (c) the belt camera predicts hardness and does not identify minerals, and the microscope has not been trained on chromite or the silicates; (d) the 12 microscope sections guided development, and the historical checkpoint cannot be regenerated exactly; (e) the advisor's rules (including the pyrrhotite-reject and 50\% assumptions) are unvalidated for any host ore, its band was set on the evaluation sections, and payload-dominance is a 2D proxy, not liberation; (f) latency is measured on one laptop, the plant is a simulator, and economic benefit has not been attributed at any site; and (g) there is no fresh paired PGM validation, the active application checkpoint differs from the evaluated one, chromite and silicate classes are missing, and reference-laboratory uncertainty is not yet quantified. Since the accepted abstract, the five Bushveld phases became three sulphides on an analogue ore, and the fallback became the host's own procedure (the demonstration's 100\% design feed can raise feed, so it is not universally conservative).
 
 % =====================================================================
 \section{Business model and financial case}\label{sec:business}
@@ -420,38 +420,37 @@ The following limitations apply, and (a), (b) and (e) block any investment decis
 
 \subsection{Value proposition and business model}
 
-Our value proposition is simple: the plant gets a reading of its ore before the mill, with a stated bound, and beyond a fixed support fee it pays a success fee only on value that an independent party has measured. No producer, Mintek or TIA has agreed to fund, host or license the work; the roles below are proposals. The buyer is the concentrator manager or general manager for metallurgy at a South African PGM producer, who owns recovery, concentrate quality and mill throughput; producers such as Valterra, Implats, Sibanye-Stillwater, Northam and Tharisa are market segments, not customers. Figure~\ref{fig:business} illustrates how money and value flow, highlighting that the pilot is paid at cost and only the success fee depends on measured value. The Technology Innovation Agency (TIA), the national agency that funds technology development towards commercialisation \cite{tia}, is the proposed main funder of the pilot, subject to its criteria (Section~\ref{sec:tia}).
+Our value proposition is simple: the plant gets a reading of its ore before the mill, with a stated bound, and beyond a fixed support fee it pays a success fee only on value that an independent party has measured. No producer, Mintek or TIA has agreed to fund, host or license the work; the roles below are proposals. The buyer is the concentrator manager or general manager for metallurgy at a South African PGM producer, who owns recovery, concentrate quality and mill throughput; producers such as Valterra, Implats, Sibanye-Stillwater, Northam and Tharisa are market segments, not customers. Figure~\ref{fig:business} illustrates how money and value flow, highlighting that the pilot is paid at cost and only the success fee depends on measured value. TIA, the national agency that funds technology towards commercialisation \cite{tia}, is the proposed main funder (Section~\ref{sec:tia}).
 
-The proposed commercial structure has three parts: a fixed, capped validation contract for the research work; a separately agreed service fee after acceptance; and an optional variable fee capped at 20\% of independently verified net value, with the baseline, measurement period, adjustments, negative-value treatment and audit rights defined in advance. The success fee is zero when verified net value is zero or negative; validation charges and the support fee are separate, so no blanket zero-fee promise is made. Willingness to pay must still be tested through buyer interviews; laboratory savings are not claimed, because 4 definite decisions in 12 sections do not show that any paid analyses can be dropped. The model fits Mintek's published work \cite{mintek2025}: the models need QEMSCAN composites and Bond tests, which is laboratory work; Mintek's benefit-sharing model with Hindustan Zinc has generated over R35\,million since 2021; and its products reach over 60 countries through distributors. Valterra's realised basket price rose from R32,611 per ounce in 2025 to R45,993 in the first half of 2026 \cite{valterra2025,valterra2026}.
+The proposed commercial structure has three parts: a fixed, capped validation contract for the research work; a separately agreed service fee after acceptance; and an optional variable fee capped at 20\% of independently verified net value, with the baseline, measurement period, adjustments, negative-value treatment and audit rights defined in advance. The success fee is zero when verified net value is zero or negative; validation charges and the support fee are separate, so no blanket zero-fee promise is made. Willingness to pay must still be tested through buyer interviews; laboratory savings are not claimed, because 4 definite decisions in 12 sections do not show that any paid analyses can be dropped. The model fits Mintek's published work \cite{mintek2025}: the models need laboratory work, and Mintek's benefit-sharing model with Hindustan Zinc has generated over R35\,million since 2021. Valterra's realised basket price rose from R32,611 per ounce in 2025 to R45,993 in the first half of 2026 \cite{valterra2025,valterra2026}.
 
 Plants already have cross-belt neutron analysers (bulk elements, with isotope sources that need a licence \cite{sahpra}), slurry analysers (grade after milling), automated mineralogy (phases, in days) and APC such as MillStar and FloatStar. The system replaces none of them; whether it adds ore-side information beyond APC, operator practice and mine-plan blending is what the pilot must show.
 
 \subsection{What the money pays for}\label{sec:pricing}
 
-Table~\ref{tab:pricing} sets out one scoped budget. The six-month pilot (Section~\ref{sec:pilotcost}) replaces the earlier R210,000 first tranche, and the earlier R8.2--49.2\,million installation grid survives only as a superseded sensitivity in Table~\ref{tab:sens}. Belt capital is a separate team allowance for one belt over about six months, released only after the belt-transfer gates (G1B and G1C); a pre-purchase scanner route is funded inside the pilot, so that G1B can be reached without buying the system it is meant to approve. VAT, duties, major civil work, conveyors or sorters, shutdown costs and closed-loop control are excluded and would be funded separately, so the totals are scoped budgets, not worst-case losses. After a trial, annual support is assumed at US\$30,000--60,000 (R0.49--0.98\,million), not added again to the six-month support line.
+Table~\ref{tab:pricing} sets out one scoped budget for the six-month pilot (Section~\ref{sec:pilotcost}), in two tracks: the laboratory and team track, and the one-belt track. It replaces both the earlier R210,000 first tranche and the separate belt stage; the earlier R8.2--49.2\,million installation grid survives only as a superseded sensitivity in Table~\ref{tab:sens}. The sensor is leased or borrowed with a purchase option where possible, so that a failed bench gate (G1B) returns it before installation; the belt allowance is a purchase-equivalent ceiling. VAT, duties, major civil work, conveyors or sorters, shutdown costs and closed-loop control are excluded, so the totals are scoped budgets, not worst-case losses. After the pilot, annual support is assumed at US\$30,000--60,000 (R0.49--0.98\,million).
 
 \begin{table*}[t]
 \centering\footnotesize
-\caption{One scoped budget: team planning allowances, not quotations. US\$ list prices are public anchors from one university facility and one industry guide, converted at R16.4 per US\$ (January--September 2026 average \cite{fred}); every line is replaced by a quote at G0.}
+\caption{One scoped budget for the six-month pilot: team planning allowances, not quotations. US\$ list prices are public anchors from one university facility and one industry guide; rand at R16.4 per US\$ (January--September 2026 average \cite{fred}). Every line is replaced by a quote at G0.}
 \label{tab:pricing}
-\begin{tabularx}{\textwidth}{@{}L{4.15cm}L{1.25cm}Y|L{3.6cm}L{2.55cm}@{}}
+\begin{tabularx}{\textwidth}{@{}L{4.15cm}L{1.25cm}Y|L{3.75cm}L{2.45cm}@{}}
 \toprule
-\multicolumn{3}{@{}l|}{\textbf{Six-month pilot (Section~\ref{sec:pilot})}} & \multicolumn{2}{l@{}}{\textbf{One belt, about six months (after G1B, G1C)}} \\
+\multicolumn{3}{@{}l|}{\textbf{Laboratory and team track}} & \multicolumn{2}{l@{}}{\textbf{Belt track: one belt on site}} \\
 Item & Rand & Basis & Item & US\$ (rand) \\
 \midrule
-Two pilot engineers (the authors) & 480,000 & 2 $\times$ 6 months $\times$ R40,000 & Sensors, optics, references & 100--160k (R1.64--2.62\,M) \\
+Two pilot engineers (the authors) & 480,000 & 2 $\times$ 6 months $\times$ R40,000 & Sensor, optics, references (lease or purchase-equivalent) & 100--160k (R1.64--2.62\,M) \\
 Software and OT-security engineer & 360,000 & To recruit; 6 months $\times$ R60,000 & Lighting, enclosure, mounting & 25--40k (R0.41--0.66\,M) \\
 Independent mineralogist & 280,000 & 35 days $\times$ R8,000; annotates development specimens & Edge computer, UPS, network & 10--15k (R0.16--0.25\,M) \\
 Statistician and data custodian & 144,000 & 18 days $\times$ R8,000 & Installation, integration, commissioning & 40--65k (R0.66--1.07\,M) \\
-Site living, travel, medicals, inductions & 318,000 & 3 people $\times$ 6 months; PPE & Sampling, reference, support & 25--40k (R0.41--0.66\,M) \\
+Site living, travel, medicals, inductions & 318,000 & 3 people $\times$ 6 months; PPE & Belt sampling crew, references, vendor support & 25--40k (R0.41--0.66\,M) \\
 Polished-section preparation & 154,000 & 77 sections $\times$ R2,000 & 25\% contingency & 50--80k (R0.82--1.31\,M) \\
-Automated mineralogy & 1,443,000 & 44 specimens $\times$ US\$2,000 list \cite{camp} & \textbf{Total} & \textbf{250--400k (R4.10--6.56\,M)} \\
+Automated mineralogy & 1,443,000 & 44 specimens $\times$ US\$2,000 list \cite{camp} & \textbf{Belt track total} & \textbf{250--400k (R4.10--6.56\,M)} \\
 Bond ball-mill work index & 866,000 & 44 composites $\times$ up to US\$1,200 \cite{bondcost} & & \\
-Scanner access (rental or vendor laboratory) & 300,000 & Allowance; no quote yet & & \\
-Microscope imaging kit, edge computer, UPS & 120,000 & Allowance & & \\
+Microscope imaging kit & 120,000 & Allowance & & \\
 Independent review, IP and data terms, close-out & 120,000 & Allowance & & \\
-Contingency (15\%) & 688,000 & Released only on a documented risk event & & \\
-\textbf{Total pilot} & \textbf{5,273,000} & No overrun without a new decision & \textbf{Pilot plus belt stage} & \textbf{R9.37--11.83\,M} \\
+Contingency (15\%) & 643,000 & Released only on a documented risk event & & \\
+\textbf{Laboratory and team total} & \textbf{4,928,000} & No overrun without a new decision & \textbf{Pilot total, both tracks} & \textbf{R9.03--11.49\,M} \\
 \bottomrule
 \end{tabularx}
 \end{table*}
@@ -508,24 +507,24 @@ Superseded R49.2\,M installation grid, 2025 margin & 0.52\% \\
 \end{table}
 
 
-Annualising over five years describes continued successful use, not whether a six-month pilot pays for itself. The pilot cash view is simpler: the pilot is a research cost of at most R5.27\,million, released in tranches so that a stop at any review leaves later tranches unspent; no belt equipment is ordered before G1B and G1C; and if the belt stage proceeds and then stops, the exposure is up to R9.37--11.83\,million, with equipment resale assumed to be zero in the pessimistic case. The fee basis must be agreed so that no support cost is charged twice, and measured value needs an agreed metallurgical accounting boundary and attribution method under IPMVP \cite{ipmvp}.
+Annualising over five years describes continued successful use, not whether a six-month pilot pays for itself. The pilot cash view is simpler: the pilot costs at most R9.03--11.49\,million, released in tranches so that a stop at any gate leaves later tranches unspent. If the bench gate G1B fails in week~8, the leased sensor is returned before installation and the loss is about R1.1--1.5\,million plus any lease cancellation fee; if the pilot runs to the end and the host declines to continue, the full budget is spent, with equipment resale assumed to be zero in the pessimistic case. The fee basis must be agreed so that no support cost is charged twice, and measured value needs an agreed metallurgical accounting boundary and attribution method under IPMVP \cite{ipmvp}.
 
 % =====================================================================
 \section{The six-month pilot}\label{sec:pilot}
 
-As Team Sonar, our pilot problem is this: in six months at one host concentrator, find out whether the microscope meets a $\leq$10\% phase-abundance target on independent local specimens, and whether the hardness model transfers to local ore, before anyone buys belt equipment. Everything after the pilot depends on its evidence, and a clear negative answer is a useful result.
+As Team Sonar, our pilot problem is this: in six months at one host concentrator, find out whether the microscope meets a $\leq$10\% phase-abundance target on independent local specimens, and whether the hardness bound holds on the host's own belt, in shadow and then in a short supervised advisory window. Both layers run on site. A clear negative answer at any gate is a useful result, because it stops spending early.
 
 \subsection{Why six months is feasible}
 
-The following assumptions make six months realistic: (a) contracting (host letter, stream, quotes, scanner access, data and IP terms, signed acceptance contract) is finished before month~0 at gate G0, so the clock starts at a readiness event, not a funding announcement; (b) no belt hardware is bought or installed: the microscope runs on a laptop, and belt spectra are taken from host samples on a rented or vendor-laboratory scanner; (c) specimens come from the host's existing shift sampling, so 70 microscope specimens and 44 Bond composites over 14 collection weeks need only about 5 and 3 a week; (d) reference results return in fortnightly batches within an agreed three weeks, so the last batch is back before the locked evaluation in month~5; and (e) the software, model registry and abundance-error checks already exist, so the time goes on evidence, not on building. If sample supply or laboratory turnaround slips, the pilot is extended; the cohort is never cut to keep the date.
+The following assumptions make six months realistic: (a) contracting is finished before month~0 at gate G0, including a leased or demonstration sensor with a confirmed delivery date and a planned plant stop in weeks 8--10, so the clock starts at a readiness event, not a funding announcement; (b) the sensor is non-contact and mounts above an existing conveyor without modifying it, with read-only data, so installation is a job of days within that stop, not a construction project; (c) specimens come from the host's existing shift sampling and belt cuts, so 70 microscope specimens and 44 Bond composites over about 16 weeks need only about 5 and 3 a week; (d) reference results return in fortnightly batches within an agreed three weeks; and (e) the software, model registry and abundance-error checks already exist, so the time goes on evidence, not on building. Two limits apply: the sensor is mounted only if it passes a bench test on host samples (G1B, week~8), and the four-week advisory window can show the workflow, timing and operator response, but cannot measure a gain of about 2\% with useful precision, so independently measured value (G5) needs a longer trial after the pilot. If supply, delivery or the plant stop slips, the pilot is extended; the cohort is never cut to keep the date.
 
 \subsection{What the pilot must achieve}\label{sec:goals}
 
-Table~\ref{tab:goals} sets out the proposed targets, to be signed with the host before any evaluation specimen is collected. We use ``90\% accuracy'' in one strict sense: at least 90\% of locked specimens must meet the error contract for every decision-critical phase. With 30 locked specimens, an observed 27 of 30 shows only that the true pass rate exceeds 76\% (one-sided 95\%); demonstrating 90\% itself needs 29 of 29, or 45 of 46 if one failure is allowed. We fund 30 and report the lower bound; enlarging the locked set to 46 would add about R0.56\,million before contingency.
+Table~\ref{tab:goals} sets out the proposed targets, signed with the host before any evaluation specimen is collected. We use ``90\% accuracy'' in one strict sense for the microscope: at least 90\% of locked specimens must meet the error contract for every decision-critical phase. With 30 locked specimens, an observed 27 of 30 shows only that the true pass rate exceeds 76\% (one-sided 95\%); demonstrating 90\% itself needs 29 of 29, or 45 of 46 if one failure is allowed. We fund 30 and report the lower bound; 46 would add about R0.56\,million before contingency. On the belt, the matching target is that the 90\% hardness bound covers about 90\% of paired belt samples.
 
 \begin{table}[t]
 \centering\footnotesize
-\caption{Proposed pilot targets. ``Agreed'' values are signed with the host and statistician before evaluation specimens are collected.}
+\caption{Proposed pilot targets. ``Agreed'' values are signed with the host and statistician before evaluation data are collected.}
 \label{tab:goals}
 \begin{tabularx}{\columnwidth}{@{}L{1.45cm}YL{0.75cm}@{}}
 \toprule
@@ -533,9 +532,9 @@ Target & Pass condition (proposed) & Gate \\
 \midrule
 Phase abundance & Pentlandite, chalcopyrite, pyrrhotite: $\leq$10\% relative error above an agreed reporting limit, absolute tolerance below it; $\geq$27 of 30 locked specimens pass, lower bound reported & G1A \\
 Coverage & Refusals and failures stay in the denominator; answered share $\geq$ agreed minimum & G1A \\
-Hardness transfer & 44 host composites: out-of-fold error below a metadata baseline; 90\% bound coverage with its interval spanning 90\%; agreed width & G1B \\
-Moving bed & Error on moving, moist, unsorted ore within an agreed ratio of the static result & G1C \\
-Shift routine & 3-week shadow run in the host laboratory: turnaround, refusals, record integrity; nobody acts & TRL~6 \\
+Bench transfer & 20 host composites scanned on the bench: error below a metadata baseline, agreed bound width & G1B \\
+Belt shadow & 24 paired belt composites: error below baseline; 90\% bound coverage with its interval spanning 90\%; scoring inside the transit time; uptime and drift flags & G3 \\
+Advisory window & Proposals withdrawn when they should be; no setpoint outside the envelope; operator response logged & G4 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -547,33 +546,34 @@ Shift routine & 3-week shadow run in the host laboratory: turnaround, refusals, 
 \begin{tikzpicture}[x=0.4cm, y=0.32cm,
   bar/.style={draw=soft, fill=gray!14, rounded corners=1.5pt},
   hot/.style={draw=accent, fill=accent!18, rounded corners=1.5pt},
+  cop/.style={draw=copper, fill=copper!18, rounded corners=1.5pt},
   gate/.style={draw=accent, fill=white, diamond, aspect=1, inner sep=0.5pt, minimum size=0.36cm, font=\tiny\bfseries}]
 \foreach \w in {0,4,8,12,16,20,24} { \draw[gray!30] (\w,0.6) -- (\w,-10.6); \node[font=\scriptsize, soft] at (\w,0.95) {wk\,\w}; }
 \foreach \m in {1,...,6} { \node[font=\tiny, soft] at ({(\m-0.5)*26/6},1.6) {Month \m}; }
-\foreach \r/\t in {0/{Mobilise: inductions, medicals, custody register, illumination set-up}, 1/{Microscope specimens from shift sampling (about 5 a week)}, 2/{Bond composites and scanner spectra (about 3 a week)}, 3/{Reference batches to the laboratory (fortnightly)}, 4/{Model development on development and calibration sets only}, 5/{Freeze and hash the model}, 6/{Locked evaluation by the custodian (G1A, G1B)}, 7/{Moving-bed test on a rented scanner (G1C)}, 8/{Shadow run in the shift laboratory; nobody acts}, 9/{Independent review, TRL assessment, close-out}}
+\foreach \r/\t in {0/{Mobilise: inductions, medicals, custody register, set-up}, 1/{Microscope specimens from shift sampling (about 5 a week)}, 2/{Model development on development and calibration sets only}, 3/{Freeze the model; locked microscope evaluation (G1A)}, 4/{Reference batches to the laboratory (fortnightly)}, 5/{Leased sensor on the bench: host composites and Bond tests (G1B)}, 6/{Belt installation in a planned stop; site acceptance (G2)}, 7/{Belt shadow: every parcel scored, paired belt cuts; nobody acts}, 8/{Supervised advisory window after G4}, 9/{Independent review, TRL assessment, close-out}}
   { \node[font=\scriptsize, anchor=east] at (-0.2,-\r) {\t}; }
-\foreach \r/\a/\b/\s in {0/0/4/bar, 1/2/16/hot, 2/2/16/hot, 3/4/19/bar, 4/3/16/bar, 5/16/17/hot, 6/17/20/hot, 7/17/20/hot, 8/20/23/bar, 9/22/26/bar}
+\foreach \r/\a/\b/\s in {0/0/4/bar, 1/2/16/hot, 2/3/16/bar, 3/16/20/hot, 4/4/19/bar, 5/1/8/cop, 6/8/10/cop, 7/10/20/cop, 8/21/25/cop, 9/23/26/bar}
   { \draw[\s] (\a,-\r-0.32) rectangle (\b,-\r+0.32); }
-\foreach \x/\g in {0/G0, 8/B, 17/C, 20/G1, 26/G2} { \node[gate] at (\x,-10.0) {\g}; }
-\node[font=\scriptsize, anchor=east] at (-0.2,-10.0) {Gates and releases};
+\foreach \x/\g in {0/G0, 8/G1B, 10/G2, 20/G3, 21/G4, 26/end} { \node[gate] at (\x,-10.0) {\g}; }
+\node[font=\scriptsize, anchor=east] at (-0.2,-10.0) {Gates (tranche releases)};
 \end{tikzpicture}
-\caption{The six-month pilot, in weeks from the readiness event (planning estimate). Shaded blue bars are evidence-producing work. Diamonds: G0 releases tranche A; B is the week-8 review that releases tranche B; C releases tranche C once the model is frozen; G1 marks the G1A, G1B and G1C decisions; G2 is the decision on the belt stage. No belt equipment is ordered inside the pilot.}
+\caption{The six-month pilot, in weeks from the readiness event (planning estimate). Blue bars: microscope track; copper bars: belt track. G0 releases tranche A; G1B releases tranche B (installation and the rest of the programme); G4 releases tranche C (advisory window and close-out). G1A falls in week 20 with G3. If G1B fails, the leased sensor is returned before installation and the microscope track continues.}
 \label{fig:pilotplan}
 \end{figure*}
 
-Figure~\ref{fig:pilotplan} illustrates the plan, highlighting that the model is frozen before any locked reference is revealed. A typical day on site would run as follows (proposed; the host sets the hours and safety rules):
+Figure~\ref{fig:pilotplan} illustrates the plan, highlighting that the sensor is tested on host ore before it is mounted, and that the microscope model is frozen before any locked reference is revealed. A typical day on site would run as follows (proposed; the host sets the hours and safety rules):
 \begin{enumerate}[label=(\roman*)]
-\item shift handover and safety talk; collect the previous shift's sampler cuts with the host's sampling crew and log each in the custody register;
-\item split each cut into a section split, a Bond-composite split and a retained split; scan the Bond splits; the custodian's script, not the team, assigns each specimen to development, calibration or locked;
-\item image the returned polished sections under controlled light with a colour reference; the frozen model's outputs on locked images are hashed and sealed before any reference is seen;
-\item development work only on development and calibration specimens; data-quality, fault and refusal logs;
+\item shift handover and safety talk; check the sensor's health log, white and dark references, window and purge air; review the overnight parcel log and refusals;
+\item collect sampler cuts and belt cuts, each time-stamped to its scanned parcel, and log them in the custody register; split for sections, Bond composites and retention; the custodian's script assigns each specimen to development, calibration or locked;
+\item image returned sections under controlled light with a colour reference; locked outputs are hashed and sealed before any reference is seen;
+\item development work on development and calibration data only; compare shadow predictions with arriving Bond results; in the advisory window, sit with the control-room operator at each proposal review;
 \item a short review with the host metallurgist; back up and sign the day's records.
 \end{enumerate}
-Each week a reference batch is dispatched and the mineralogist reviews annotations; each month a steering meeting checks spend, risks and schedule against the gates.
+Weekly, a reference batch is dispatched; monthly, a steering meeting checks spend, risks and schedule.
 
 \subsection{The team to assemble}
 
-Table~\ref{tab:team} lists the people the pilot needs. The two authors are in place; the software and operational-technology (OT) security engineer must be recruited before G0, and the independent roles are contracted, so that assessment never collapses into self-certification. The host owns plant operation and stop authority, and nothing in the pilot writes to the plant.
+Table~\ref{tab:team} lists the people the pilot needs. The two authors are in place; the software and operational-technology (OT) security engineer must be recruited before G0, and the independent roles are contracted, so that assessment never collapses into self-certification. The host owns plant operation and stop authority; in shadow nothing is written to the plant, and in the advisory window only an operator can change a setpoint.
 
 \begin{table}[t]
 \centering\footnotesize
@@ -583,26 +583,27 @@ Table~\ref{tab:team} lists the people the pilot needs. The two authors are in pl
 \toprule
 Role & Time & During the pilot \\
 \midrule
-Pilot lead, field and systems (S.~Khumalo) & Full time, on site & Sampling, custody, imaging, integration, reporting \\
-Model and evaluation lead (L.~Hoaeane) & Full time & Model development and freeze, abundance contract, belt-transfer analysis \\
-Software and OT-security engineer & To recruit; full time & Release manifest, offline operation, security, signed record \\
-Independent mineralogist & About 35 days & Annotates development specimens, reviews references, phase taxonomy \\
+Pilot lead, field and systems (S.~Khumalo) & Full time, on site & Sampling, custody, imaging, sensor checks, reporting \\
+Model and evaluation lead (L.~Hoaeane) & Full time & Model freeze, abundance contract, belt-transfer and shadow analysis \\
+Software and OT-security engineer & To recruit; full time & Sensor integration, offline operation, read-only network, signed record \\
+Independent mineralogist & About 35 days & Annotates development specimens, reviews references \\
 Statistician and data custodian & About 18 days & Blind split, sealed predictions, power check, evaluation \\
-Host metallurgist; safety and OT officers & Host, in kind & Use case, sampling access, inductions, risk assessment, sign-off \\
-Reference laboratory & Quoted & Section preparation, automated mineralogy, Bond tests \\
+Vendor commissioning engineer & In the belt allowance & Sensor installation, calibration, site acceptance \\
+Host metallurgist, instrument technician, operators, safety and OT officers & Host, in kind & Use case, sampling, envelope, lockout, inductions, advisory reviews, sign-off \\
+Reference laboratory & Quoted & Sections, automated mineralogy, Bond tests \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsection{What the pilot costs, and why R210,000 was too low}\label{sec:pilotcost}
 
-The earlier first tranche of R210,000 paid for laboratory work, not for a pilot. Its R65,000 reference line over 70 specimens allowed about R929 a specimen, whereas one published university list price for automated mineralogy is US\$1,500--2,000 a sample (R24,600--32,800) \cite{camp} and a Bond ball-mill test typically costs up to about US\$1,200 (R19,700) \cite{bondcost}. It also paid nobody to be on site, no accommodation, inductions or medicals, and no scanner access for the belt-transfer test, so its loss cap depended on unfunded work. The left half of Table~\ref{tab:pricing} replaces it with a bottom-up budget of R5.27\,million. To keep it lean, the 30 development specimens are referenced by expert annotation, and only the 10 calibration, 30 locked and 4 duplicate specimens go to automated mineralogy. Staff rates are team planning rates, and every line is replaced by a quote at G0; if quotes exceed the ceiling, the question is narrowed or returned for a new decision, never quietly cut.
+The earlier first tranche of R210,000 paid for laboratory work, not for a pilot. Its R65,000 reference line over 70 specimens allowed about R929 a specimen, whereas one published university list price for automated mineralogy is US\$1,500--2,000 a sample (R24,600--32,800) \cite{camp} and a Bond ball-mill test typically costs up to about US\$1,200 (R19,700) \cite{bondcost}. It paid nobody to be on site, no accommodation, inductions or medicals, and no sensor. Table~\ref{tab:pricing} replaces it with a bottom-up budget of R9.03--11.49\,million: R4.93\,million for the laboratory and team track and R4.10--6.56\,million for the belt track. To keep it lean, the 30 development specimens are referenced by expert annotation, so only 44 specimens go to automated mineralogy. Staff rates are team planning rates, and every line is replaced by a quote at G0; if quotes exceed the ceiling, the question is narrowed or returned for a new decision, never quietly cut.
 
-Money is released in three tranches: A, R1.00\,million at G0 (two months of staff, imaging kit, inductions, scanner booking); B, R3.08\,million at the week-8 review, once sampling and custody work and quotes are accepted (reference programme and scanner time); and C, R0.50\,million after the model is frozen (evaluation and close-out). The R0.69\,million contingency is released only against a documented risk event. Laboratory orders already placed are the main cost that a stop decision cannot recover.
+Money is released in three tranches: A, about R1.1--1.5\,million at G0 (two months of staff, imaging kit, inductions, the sensor lease deposit and bench set-up); B, about R5.9--7.6\,million at G1B in week~8 (installation, the rest of the sensor, the reference programme and staff); and C, about R0.5\,million at G4 (advisory window and close-out). The two contingencies, R1.46--1.95\,million together, are released only against a documented risk event. Laboratory orders and lease commitments already made are the costs that a stop cannot recover.
 
 \subsection{How TIA fits}\label{sec:tia}
 
-TIA funds technology from proof of concept (TRL~3) to pre-commercialisation (TRL~8), with instruments matched to readiness \cite{tiafund}. Its Technology Development Fund covers TRL~4--7 and lists demonstration and pilot plants and techno-economic studies as fundable, so it fits this pilot. The Seed Fund covers TRL~5--6, up to R1.5\,million over 12--24 months, and excludes TRL~3--4 projects \cite{tiaseed}, so it fits a later productisation of the microscope, not the pilot. Seed applicants need a functional prototype with a technical report, a technology roadmap, an industry partner and an IP strategy \cite{tiaseed}; we have the first two, and the other two are G0 items. Beyond money, TIA links innovators with technology-transfer offices, incubators and investors \cite{tiafund}. Table~\ref{tab:tia} sets out the proposed structure; no application has been made and no amount is agreed.
+TIA funds technology from proof of concept (TRL~3) to pre-commercialisation (TRL~8), with instruments matched to readiness \cite{tiafund}. Its Technology Development Fund covers TRL~4--7 and lists demonstration and pilot plants and techno-economic studies as fundable, so it fits this pilot; its Industry Matching Fund shares risk with industry partners, which suits the belt hardware that the host would keep \cite{tiafund}. The Seed Fund covers TRL~5--6, up to R1.5\,million over 12--24 months, and excludes TRL~3--4 projects \cite{tiaseed}, so it fits a later productisation of the microscope, not the pilot. Seed applicants need a functional prototype with a technical report, a technology roadmap, an industry partner and an IP strategy \cite{tiaseed}; we have the first two, and the other two are G0 items. Beyond money, TIA links innovators with technology-transfer offices, incubators and investors \cite{tiafund}. Table~\ref{tab:tia} sets out the proposed structure; no application has been made and no amount or equipment ownership is agreed.
 
 \begin{table}[t]
 \centering\footnotesize
@@ -612,17 +613,17 @@ TIA funds technology from proof of concept (TRL~3) to pre-commercialisation (TRL
 \toprule
 Stage & TRL & TIA instrument & Cash and other parties \\
 \midrule
-Six-month pilot & 3--4 to 4--6 & Technology Development Fund & TIA R4.28\,M; host pays Bond tests (R1.00\,M with contingency) and gives site access, metallurgist time and laboratory space; Mintek reference work at cost \\
-Microscope product & 5--6 & Seed Fund, via a university office & Up to R1.5\,M; technology-transfer office and incubator \\
-One belt & 6--7 & Development Fund or Industry Matching Fund & R4.10--6.56\,M, co-funded by the host \\
-Roll-out & 8--9 & Commercialisation Support & Not set; investors \\
+Pilot: laboratory and team & 4 to 5--6 & Technology Development Fund & TIA R3.93\,M; host pays Bond tests (R1.00\,M with contingency) and gives site access, staff time and laboratory space; Mintek reference work at cost \\
+Pilot: belt & 3 to 6 & Development Fund with Industry Matching Fund & R4.10--6.56\,M, proposed 50:50, so TIA R2.05--3.28\,M and host R2.05--3.28\,M \\
+Microscope product & 5--6 & Seed Fund, via a university office & Up to R1.5\,M; technology-transfer office \\
+Value trial and roll-out & 7--9 & Matching or Commercialisation Support & Host-led; investors \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsection{Pilot risks and mitigations}\label{sec:risks}
 
-Table~\ref{tab:risks} sets out the risks of the pilot period, as the team assesses them, each with a mitigation before it happens and a fallback if it does. Contingency pays only for uncertain costs inside the approved scope. Risks of later use (belt dust and drift, cyber attack, operator over-reliance, no measured gain, price falls) are handled by gates G2--G5, read-only advisory tags, IEC~62443 zones \cite{iec62443} and a success fee that falls with value.
+Table~\ref{tab:risks} sets out the risks of the pilot period, as the team assesses them, each with a mitigation before it happens and a fallback if it does. Contingency pays only for uncertain costs inside the approved scope. Three fallbacks run through all of them: the host's controls keep authority, each stage ends at a gate where spending can stop, and no success fee is due without measured value.
 
 \begin{table*}[t]
 \centering\footnotesize
@@ -634,62 +635,61 @@ Table~\ref{tab:risks} sets out the risks of the pilot period, as the team assess
 \midrule
 P1 & Fewer than 5 specimens a week (stoppages, sampler faults) & Sampling plan agreed at G0; collect across shifts; weekly count & Extend collection; never shrink the locked cohort \\
 P2 & Laboratory turnaround over 3 weeks, or quotes above budget & Turnaround written into the quote; fortnightly batches; second laboratory pre-qualified & Narrow the question or seek a new decision; no silent cuts to repeats \\
-P3 & No scanner rental or vendor-laboratory time & Booking and quote at G0; two vendors approached & Belt track paused; microscope track continues \\
-P4 & The model misses the $\leq$10\% target on locked specimens & Development and calibration sets used fully; one frozen model & Report the negative result; stop or narrow; locked set becomes development material \\
-P5 & Leakage between development and locked sets & Independent custodian; split-integrity checks; sealed predictions & Withdraw the affected claim; collect a fresh cohort \\
-P6 & Illumination or preparation drift & Colour reference on every image; preparation duplicates & Refuse affected images; re-image \\
-P7 & Engineer not recruited, or a team member unavailable & Recruit before G0; named deputies; written runbooks & Hold tranche B; seek in-kind university support \\
-P8 & Site access delays (medicals, inductions, stand-downs) & Medicals and inductions budgeted in month 1; host escort & Shift work to the laboratory; extend \\
-P9 & Load-shedding or network loss & Offline laptop with UPS; local backups & Resume after checks; log the gap \\
-P10 & Host withdraws, or data and IP terms unsigned; LumenStone rights unclear & Signed letter and IP and data schedule at G0; ask the rights holder & No further release; keep lawful evidence; qualify another host \\
-P11 & Rand 10\% weaker on US\$-priced lines & Rand quotes where possible & Adds about R0.26\,M; covered by contingency \\
-P12 & Safety incident on site & Host induction and PPE; no work near moving plant without an escort & Stop work; follow the host's procedure \\
+P3 & Sensor delivered late, or no lease or demonstration unit & Delivery date and lease terms at G0; two vendors approached & Shift the belt track; the microscope track continues \\
+P4 & Planned plant stop missed for installation & Installation booked with the host at G0; mount pre-assembled and tested on the bench & Install at the next stop; shorten the advisory window, not shadow \\
+P5 & The sensor fails the bench test (G1B) & Bench test on host composites before mounting & Return the sensor; stop the belt track; spend only tranche A \\
+P6 & Dust, moisture, vibration or wavelength drift on the belt & Enclosure and purge air; references every cycle; wavelength check & Refuse affected parcels; clean or re-calibrate \\
+P7 & Scan and belt sample do not match in time & Time-stamped parcels; belt-cut timing checked against transit time & Exclude unmatched pairs and report them \\
+P8 & Operator over-trust or alarm fatigue in the advisory window & Deadband; training before G4; every proposal reviewed with an engineer & Advice expires; host control continues; end the window early \\
+P9 & Unsafe write to the plant or cyber incident & Read-only shadow; advisory tags only; IEC 62443 zones \cite{iec62443}; IT/OT sign-off & Disconnect; the plant runs on its own controls \\
+P10 & The microscope misses the $\leq$10\% target, or data leak between sets & One frozen model; independent custodian; sealed predictions & Report the negative result; collect a fresh cohort before any new claim \\
+P11 & Engineer not recruited, host withdraws, or data and IP terms unsigned & Recruit and sign before G0; named deputies; LumenStone rights clarified & Hold the next tranche; keep lawful evidence; qualify another host \\
+P12 & Rand 10\% weaker on US\$-priced lines; safety incident at the belt & Rand quotes where possible; lockout, escort and permits near moving plant & About R0.64--0.89\,M, met from contingency; stop work and follow host procedure \\
 \bottomrule
 \end{tabularx}
 \end{table*}
 
 \subsection{Governance, compliance and training}
 
-These are planned controls, not achieved compliance (Table~\ref{tab:compliance}). The Mine Health and Safety Act requires a risk assessment with the health and safety committee, and training before significant changes to plant \cite{mhsa}; POPIA governs approvers' names in the record \cite{popia}; Mining Charter clause 2.3.1 counts skills and R\&D spend \cite{charter2018}; IP from public funding falls under the IPR Act \cite{ipract}, although the contract, not the Act's name, settles ownership; and Mintek and TIA spend under the PFMA \cite{pfma}. Independent checks are outsourced: (a) a laboratory accredited by SANAS for the specific method \cite{sanas}; (b) Mintek's QEMSCAN for mineralogy; (c) an independent auditor for value, with a measurement plan adapted from IPMVP \cite{ipmvp}; (d) an IEC~62443 assessor; (e) an IP attorney through MOTT; and (f) a university reviewer for the model audit. Each group is trained before its phase, aligned with the site's skills plan \cite{mqa}: laboratory staff (one day, before G1A), metallurgists (one day, at G0), and later operators, technicians and IT/OT staff before G2--G4; competence is shown by observed tasks and sign-off, not attendance.
+These are planned controls, not achieved compliance (Table~\ref{tab:compliance}). The Mine Health and Safety Act requires a risk assessment with the health and safety committee, and training before significant changes to plant \cite{mhsa}, which applies to the belt installation; POPIA governs approvers' names in the record \cite{popia}; Mining Charter clause 2.3.1 counts skills and R\&D spend \cite{charter2018}; IP from public funding falls under the IPR Act \cite{ipract}, although the contract settles ownership; and Mintek and TIA spend under the PFMA \cite{pfma}. Independent checks are outsourced: (a) a laboratory accredited by SANAS for the specific method \cite{sanas}; (b) Mintek's QEMSCAN for mineralogy; (c) an independent auditor for value, with a plan adapted from IPMVP \cite{ipmvp}; (d) an IEC~62443 assessor; (e) an IP attorney through MOTT; and (f) a university reviewer for the model audit. Each group is trained before its phase, aligned with the site's skills plan \cite{mqa}: laboratory staff and metallurgists before G1A work starts, instrument technicians at installation, and control-room operators before G4; competence is shown by observed tasks and sign-off, not attendance.
 
 % =====================================================================
 \section{TRL milestones and gates}\label{sec:roadmap}
 
-Table~\ref{tab:trl} places each component on the standard readiness scale \cite{trl} and shows how each step is earned. A level is awarded only from evidence, by the independent reviewer, not from elapsed time. The microscope can climb faster because it needs no plant hardware; the belt model must cross three transfer steps: host samples on a laboratory scanner (G1B), a moving bed (G1C), and a host belt in shadow (G3).
+Table~\ref{tab:trl} places each component on the standard readiness scale \cite{trl} and shows how each step is earned. A level is awarded only from evidence, by the independent reviewer, not from elapsed time. The belt system climbs furthest in the pilot, because it moves from public core to the host's own belt in two steps: host samples on the bench (TRL~4, G1B) and shadow operation on the belt (TRL~6, G3). The advisory window starts the evidence for TRL~7 but cannot complete it, because that needs measured value.
 
 \begin{table}[t]
 \centering\footnotesize
 \caption{TRL now, and the evidence that would earn each next level.}
 \label{tab:trl}
-\begin{tabularx}{\columnwidth}{@{}L{1.35cm}L{1.75cm}YL{1.1cm}@{}}
+\begin{tabularx}{\columnwidth}{@{}L{1.35cm}L{1.75cm}YL{1.0cm}@{}}
 \toprule
-Component & Now & End of pilot, if gates pass & Belt stage \\
+Component & Now & End of pilot, if gates pass & After \\
 \midrule
-Microscope workflow & 4: validated in the laboratory on public analogue data & 5: independent host specimens (G1A); 6: shift shadow run & 6--7 \\
-Belt hardness model & 3: proof of concept on public core; simulated plant & 4: host samples, laboratory scanner (G1B); 5: moving bed (G1C) & 6 (G3), 7 (G5) \\
-Decision layer and record & 4: built; replayed data; simulated plant & 4 (not tested in the pilot) & 6--7 \\
+Microscope workflow & 4: validated in the laboratory on public analogue data & 5: independent host specimens (G1A); 6: shift routine & 7--8 \\
+Belt hardness model & 3: proof of concept on public core; simulated plant & 4: host samples on the bench (G1B); 6: shadow on the host belt (G3) & 7 (G5) \\
+Decision layer and record & 4: built; replayed data; simulated plant & 6: shadow; 7 begun in the advisory window (G4) & 7--8 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-Table~\ref{tab:milestones} lists what each gate must show, who decides, and what happens if it fails. After the pilot, a one-belt stage of about six months (G2--G5) follows only if G1B and G1C pass, so a commercial decision is about 12--18 months from the readiness event. A first pilot that ends with ``we found a narrower valid use and stopped an unjustified purchase'' should count as successful de-risking.
+Table~\ref{tab:milestones} lists what each gate must show, who decides, and what happens if it fails. After the pilot, an extended advisory trial with on/off operating blocks gives the independently measured value for G5, so a commercial decision is about 12 months from the readiness event.
 
 \begin{table}[t]
 \centering\footnotesize
 \caption{Gates, decision owners and stop outcomes. Numerical thresholds are signed before evaluation data are collected.}
 \label{tab:milestones}
-\begin{tabularx}{\columnwidth}{@{}L{0.55cm}YL{1.45cm}L{1.35cm}@{}}
+\begin{tabularx}{\columnwidth}{@{}L{0.55cm}YL{1.25cm}L{1.3cm}@{}}
 \toprule
 Gate & Release condition & Decides & If it fails \\
 \midrule
-G0 & Host letter, stream, quotes, scanner access, data and IP terms, signed contract & Funder, host sponsor & Fund preparation only \\
-G1A & Microscope targets met on locked specimens (Table~\ref{tab:goals}) & Independent reviewer, host metallurgist & Research image review only \\
-G1B & Hardness transfers to host samples & Same & Stop belt track \\
-G1C & Transfer holds on a moving bed & Same & Reversible instrument trial only \\
-G2 & Sensor quote, factory and site acceptance, risk assessment, read-only design & Host OT and safety leads & Repair or remove \\
-G3 & Timing, paired sampling, drift, refusals in shadow; site recovery curve measured & Host metallurgist & Extend or stop \\
-G4 & Envelope, change management, training, rollback & Host change board & Revert to host procedure \\
-G5 & Independently measured net value and total cost & Auditor, host & Close out; no success fee \\
+G0 & Host letter, quotes, sensor lease and delivery, plant stop booked, data and IP terms, signed contract & Funder, host & Preparation only \\
+G1B & Hardness transfers to host composites on the bench (week 8) & Reviewer, host & Return sensor \\
+G2 & Risk assessment, read-only design, site acceptance (week 10) & Host OT, safety & Repair or remove \\
+G1A & Microscope targets met on locked specimens (week 20) & Reviewer, host & Image review only \\
+G3 & Belt shadow targets: coverage, timing, drift, refusals (week 20) & Metallurgist & Extend or stop \\
+G4 & Envelope, change management, training, rollback (week 21) & Change board & No advisory window \\
+G5 & Independently measured net value and total cost (after the pilot) & Auditor, host & No success fee \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -759,10 +759,8 @@ IPMVP (EVO) \cite{ipmvp} & Measurement and verification: success fee only on val
 \toprule
 APC & Advanced process control, e.g.\ Mintek's MillStar and FloatStar \\
 Bond work index (\Wi{}) & Energy needed to grind ore, in kWh/t; harder ore has a higher \Wi{} \\
-Bound & Here, a hardness the true value should stay below 9 times in 10 (one-sided 90\% conformal bound) \\
-Fallback & In the demonstration, 100\% of design feed; at a site, the host's own operating policy under its existing controls \\
-Deadband & The smallest change worth showing the operator \\
-Envelope & The range of feed rates the site's metallurgist allows (demonstration: 85--110\% of design) \\
+Bound & A hardness the true value should stay below 9 times in 10 \\
+Fallback & Demonstration: 100\% of design feed; at a site, the host's own procedure \\
 Payload-dominant & A grain at least half payload by 2D area (``free'' in the app); a proxy, not liberation \\
 TRL & Technology readiness level, 1 (basic principles) to 9 (proven in operation) \cite{trl} \\
 IoU & Intersection over union: overlap of predicted and expert areas, 0 to 1 \\
@@ -778,7 +776,7 @@ SWIR, VNIR & Short-wave and visible--near infrared light \\
 % =====================================================================
 \section{Conclusions and recommendation}
 
-The present contribution is a functioning, inspectable evidence workflow and a falsifiable route to local validation. On public analogue data the hardness model improves on simple baselines and the microscope classifies three relevant sulphide phases, but the feed-rate benefit is a simulation, the microscope results are development-influenced, the active application checkpoint has shown large abundance errors on one section, and the $\leq$10\% error target is untested. We therefore recommend a six-month pilot at one host concentrator, costed at R5.27\,million and funded mainly through TIA's Technology Development Fund in three tranches, with the $\leq$10\% error target tested on at least 30 locked host specimens and belt capital only after separate transfer gates. A clear negative result from the pilot is a useful outcome: it stops an unjustified purchase. As of this submission, the independent local phase-abundance target has not been demonstrated; a commercial claim will depend on independent reference agreement, useful acceptance coverage and measured net value on the affected stream.
+The present contribution is a functioning, inspectable evidence workflow and a falsifiable route to local validation. On public analogue data the hardness model improves on simple baselines and the microscope classifies three relevant sulphide phases, but the feed-rate benefit is a simulation, the microscope results are development-influenced, the active application checkpoint has shown large abundance errors on one section, and the $\leq$10\% error target is untested. We therefore recommend a six-month pilot at one host concentrator that runs the microscope in the shift laboratory and a leased sensor on the host's belt, costed at R9.03--11.49\,million and shared between TIA and the host in gated tranches, with the $\leq$10\% error target tested on at least 30 locked host specimens and the sensor mounted only after it passes a bench test on host ore. A clear negative result from the pilot is a useful outcome: it stops an unjustified purchase. As of this submission, the independent local phase-abundance target has not been demonstrated; a commercial claim will depend on independent reference agreement, useful acceptance coverage and measured net value on the affected stream.
 
 % =====================================================================
 \small
@@ -786,7 +784,7 @@ The present contribution is a functioning, inspectable evidence workflow and a f
 \textbf{Lethabo Hoaeane:} Conceptualisation, domain lead, belt hyperspectral modelling, belt monitor and decision application, economics, presentation. \textbf{Sibusiso Khumalo:} Microscope segmentation model, accuracy and decision-level evaluation, advisor and safety gates, OPC~UA simulation, workbench review and verification, technical report.
 
 \backsec{Declaration of competing interest.}
-The authors declare no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+The authors declare no competing financial interests or personal relationships.
 
 \backsec{Acknowledgements.}
 We thank the Mintek mentors for a review session that reshaped the build.
@@ -848,14 +846,14 @@ Code and drafting were assisted by AI coding assistants. Every reported number w
 \appendix
 
 
-\section{Supporting results and reproducibility}\label{app:micro}\label{app:impl}\label{app:repro}
+\section{Supporting results}\label{app:micro}\label{app:impl}\label{app:repro}
 
 {\raggedright
-\noindent\emph{Supporting tables.} Tables~\ref{tab:perclass}--\ref{tab:confusion} give microscope per-class results and pixel confusion. Per-section mean IoU for \sha{de7135a9} (test\_01 to test\_12): 0.413, 0.728, 0.659, 0.466, 0.472, 0.340, 0.453, 0.504, 0.375, 0.378, 0.377, 0.443.
-\emph{Tests.} Workbench: 181 unit-test functions and 7 browser scenarios; belt software: 328 tests. These are counts of written tests, not a performance metric.
+\noindent\emph{Microscope} (Tables~\ref{tab:perclass}--\ref{tab:confusion}). Per-section mean IoU, \sha{de7135a9} (test\_01 to test\_12): 0.413, 0.728, 0.659, 0.466, 0.472, 0.340, 0.453, 0.504, 0.375, 0.378, 0.377, 0.443.
+\emph{Tests.} Workbench: 181 unit-test functions and 7 browser scenarios; belt software: 328 tests (counts, not a performance metric).
 \emph{Checkpoints (full SHA-256).} Historical: {\tiny\texttt{de7135a96541a46dc0981a991cb954186c7cd669ea1c1b33914d1929ae9b1357}}; audited build: {\tiny\texttt{fb78727d4859947d3605ccf9374f8defbc40897e9cf1b1922a52c1832d387067}}; candidate: {\tiny\texttt{42646cfafbeac5398386dba17f7ad3531ffcea572e6342cc4fcba42ed0b44b3b}}.
 \emph{Release.} Audited commit \sha{85061d4}; a release manifest is proposed.
-\emph{Reproducibility.} Inference reproduces from archived weights; retraining does not (an unseeded rerun scored 0.454; seeded since \sha{adeb1ee}).
+\emph{Reproducibility.} Inference reproduces from archived weights; retraining does not (unseeded rerun 0.454; seeded since \sha{adeb1ee}).
 
 
 
