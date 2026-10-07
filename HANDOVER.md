@@ -1,3 +1,43 @@
+## 2026-10-07 (night) — Sibusiso (Claude) — v10: Sibusiso's edits + v9 / Tasks A–D review applied
+
+**Sibusiso's requests:**
+- The §7.5 "What the pilot costs, and why R210,000 was too low" section is removed; its essentials moved into §6.2.
+- Headings are now report-flow nouns, not questions or "how/what/why" phrases:
+  - Methods; Evaluation method; Physical plausibility checks; Pilot budget and cash release;
+  - Pilot duration and feasibility; Pilot objectives and acceptance targets;
+  - Work plan and daily site routine; Pilot team; Funding structure and the role of TIA.
+- The abstract now describes the solution concretely:
+  - belt SWIR camera → hardness bound per 30-s parcel → Bond's-law feed proposal inside the metallurgist's limits;
+  - shift-lab microscope maps the three sulphides with grain evidence;
+  - the operator approves, modifies or rejects; plant control keeps authority; signed record.
+- **Lethabo is on site full time** (team table and text).
+
+**Review (`REEFPRINT_V9_AND_TASKS_AD_REVIEW.md`, 79/100) corrections applied:**
+- §2.4: the historical de7135a9 advisor (free/locked, ±0.335, simulator) is labelled historical. The current app (contract v3, `observed-target-support-v3`) reports target-area categories and support/exclusion causes, applies no historical margin, and always abstains.
+- §4.5: relabelling and the border policy are now described as implemented. Added the six-parent support audit: reference masks keep only 0–5.8% (Quick) and 0–70.5% (full) of target pixels; none passes the 80% policy; all 24 rows abstain. Flagged as supplied evidence, re-checked by the reviewer, not public. The decision-confusion table was folded into text.
+- §5.2(h): completed software containment is now separated from the unresolved science (preparation, component-as-particle assumption, calibration).
+- §2.6 and Table 6: one acceptance definition (per specimen, every critical phase). 27/30 is described as a proposed observed rule; the bounds assume independent specimens.
+- Belt gate:
+  - the 20 bench composites are for development and calibration;
+  - the 24 belt composites are a locked evaluation of a frozen version with no online recalibration;
+  - a predefined count criterion, interval method, maximum width and refusal rate; precision described as exploratory.
+- Calibration separation: Gantt and routine say method selection on development data only; calibration is fitted once after the freeze.
+- §7.1(e): the completed code fixes were removed from the schedule. Month 1 is now measurement feasibility, local data and development-only method selection. G0 adds a quoted measurement-feasibility review.
+- **Cash:** new Table 3 with independent tracks.
+  - L1 R1.13 M at G0 (includes the 20 pre-G1B Bond tests, about R0.39 M); L2 R3.15 M at the week-8 *laboratory* review, not G1B.
+  - B1 R0.57–0.90 M at G0; B2 R2.71–4.35 M at G1B.
+  - Reserves R1.46–1.95 M.
+  - A belt failure no longer stops the lab track. "Costs at most" became "scoped planning allowance, not maximum exposure".
+- TIA: the Seed Fund is listed TRL 3–8 on TIA's page. The SAMRC call (TRL 5–6, R1.5 M) is SAMRC-only, so it is not evidence of our eligibility. The Matching Fund is late-stage, so it is not assumed. 50:50 is labelled a team proposal. Terms are to be confirmed with TIA and a technology-transfer office.
+- TRL: provisional self-assessment, not awarded automatically at gates; G5 value is a commercial gate, not a TRL criterion.
+- Data availability: the public revision is separated from the local continuation bundle.
+- Appendix: tests by repository (85061d4: 181+7 / 328; continuation: 321 passed, 4 skipped, supplied; 59 re-run by reviewer); smoke checks 52.9 s and 72.9 s.
+- **Cut for space:** Table 2 (datasets, now text); some glossary and compliance rows; a few sentences.
+
+**Not done (build owner):** the review's measurement-feasibility package: endpoint separation, a preparation evidence request to a mineralogist, development-only geometry diagnostics, a local feasibility protocol, and release alignment of the served demo.
+
+---
+
 ## 2026-10-07 (evening) — Sibusiso (Claude) — v9: continuation review applied to the report
 
 **Input:** `REEFPRINT_Continuation_Review_20261007.md`. This is an independent review of Lethabo's continuation bundle (ZIP SHA-256 d2147814…). It keeps the 76/100 score and is not an approval.
