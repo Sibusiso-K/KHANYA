@@ -1,3 +1,43 @@
+## 2026-10-07 (final) — Sibusiso (Claude) — v13: V12/B03 review corrections; belt mineral composition added to the pilot
+
+**Input:** `REEFPRINT_V12_B03_REVIEW_AND_ACTIONS.md`. Sibusiso's instruction: apply the page corrections and align the pilot with belt mineralogy. Still 12 pages; `chk.py` is clean.
+
+**Belt mineralogy in the pilot (scope decision by Sibusiso):**
+- **Abstract and §1.2:** a roadmap sentence. The intended product extends belt sensing to parcel mineral composition. Today's evidence is exploratory copper-data regression plus local inference on recorded spectra; belt PGM mineralogy and its ≤10% target are unvalidated. Hardness is the current belt capability.
+- **References:** all 44 belt composites (20 bench + 24 shadow) now also get automated mineralogy (new budget line R1,443,000, at US$2,000 × 44 × R16.4), because Bond tests cannot validate mineral composition.
+- **New gate G1M (week 8):** bench mineral estimates must beat a metadata baseline. G1B or G1M releases B2 and R; a failed endpoint is not evaluated in shadow.
+- **G3 now covers hardness and minerals.** Shadow mineral target: ≤10% relative error per critical phase above the reporting limit, coverage, and grouping by sampling event. The text states that 22/24 bounds the pass rate only above 76% (Clopper–Pearson, computed), and that microscopy counts are never reused as belt evidence.
+- **New risk P10:** surface spectra may not represent bulk parcel composition. New TRL row: belt mineral model "below 3" now, 4 (G1M), then 6 (G3).
+- **Budget:** lab/team/reference track R6,587,000 (base 5,728,000 + 15% = 859,000); belt R4.10–6.56 M; **pilot total R10.69–13.15 M**.
+- **Tranches:**
+  - P0 pre-G0 (cap and payer to agree, outside the total);
+  - L1 R1.79 M (includes 20 bench Bond and mineralogy references);
+  - L2 R2.68 M;
+  - **R R1.26 M** (24 shadow references, ring-fenced behind G1B/G1M);
+  - B1 and B2 unchanged;
+  - reserves R1.68–2.17 M.
+- **TIA:** lab track TIA R5.59 M plus host Bond tests R1.00 M. The belt instrument is now "eligibility unconfirmed; checked before G0" (this resolves the TRL-3 vs TDF 4–7 mismatch).
+- **L2 gate:** measurable conditions (counts, turnaround limit, discrepancies, quotes) with values set by agreement; no invented thresholds.
+
+**Other review corrections:**
+- **Timing:** 92 ms is described as a Kaggle CPU scoring benchmark on prepared input, not camera-to-decision latency; microscope timings are log-reported; Table 1 says scoring only.
+- **AI-tools statement:** replaced with the bounded wording from the review.
+- **Appendix:**
+  - B02 now has process-line within-10% counts (21/65, 10/79, 49/99) and the kernel trade-off (chalcopyrite 0.40 vs quartz 5.71);
+  - B03 named as two separate builds (app-integrated PLS export; standalone SNV service) on recorded mean spectra, not live imagery;
+  - the hostile-input acceptance and pending provenance and reference-binding fixes are disclosed.
+- **Co-lead allocation:** marked "proposed, pending both co-leads' acceptance".
+- **EVIDENCE_MANIFEST.md:** B03a and B03b rows added, each needing a model hash, revision and release ID.
+
+**Cut for space:** the business-model figure (now a text description of the money and value flow); the break-even table (its five values are now in the text); the compliance and glossary float (§7.7 text keeps the laws; TRL is defined in §1); the abstract-change sentence; the load-shedding and Mintek 0.5% sentences; the band-sensitivity detail.
+
+**For Lethabo:**
+- the P0 fixes from the review (allowlisted recorded inputs with server-side hash binding; evaluator binding specimen to request);
+- add B03a/B03b hashes to the manifest;
+- confirm the belt-composite mineralogy reference method and its basis (bulk wt% vs surface).
+
+---
+
 ## 2026-10-07 (late night) — Sibusiso (Claude) — v12: B02 added as exploratory copper-data training
 
 **Input:** `B02_REVIEW_AND_NEXT.md` (findings and the "Pilot and report implication" section). Sibusiso's instruction: describe B02 as exploratory copper-data training; claim no ≤10% PGM accuracy and no completed live demo. Still 12 pages; `chk.py` is clean.
