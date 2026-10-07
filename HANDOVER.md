@@ -1,3 +1,35 @@
+## 2026-10-07 (late) — Sibusiso (Claude) — v11: v10 review (81/100) report edits applied
+
+**Input:** `REEFPRINT_V10_REVIEW_AND_NEXT_ASSIGNMENTS.md`. Still 12 pages; `chk.py` is clean.
+
+**A. Equal co-leads:**
+- Team table: Lethabo is pilot co-lead (belt modelling and evaluation coordination); Sibusiso is pilot co-lead (microscopy, field and systems). Both are full time and on site, as proposed, with shared planning, budget, host engagement and gates.
+- §7.4 uses the review's sentence: material changes need both co-leads, there is no casting vote, and a dispute pauses the change.
+- The co-leads are not independent approvers and have no access to locked labels.
+- Authorship order and CRediT are unchanged.
+
+**B. Alignment edits (all 12):**
+1. Abstract: "in the proposed belt deployment, a SWIR camera would…"; hardness evidence named as public-data replay; microscope advice withheld; TRL as "evidence for independent assessment toward…".
+2. §2.3: regrind advice marked historical; §3: offline analysis "in the verified local configuration".
+3. Fig. 1: microscope box shows the current method (support recorded, no approved calibration, advice withheld); regrind historical/simulated; belt feed rate proposed.
+4. §4.5: "raw edge-connected ore components and overlapping refined components"; whole-component exclusion can reach far into the image.
+5. Calibration alone no longer unlocks advice: advice is withheld pending validation, calibration, release review and host approval (§2.4, §7.1).
+6. §5.2: limitations "block deployment and performance commitments… justify a separately scoped feasibility investigation".
+7. Risk P5: do not release B2; settle B1; bench Bond costs stay with the lab track. Risk rows merged to 10 (P6+P7, P8+P9) for space.
+8. Gates table: new L2 laboratory review row (week 8; co-leads, funder, custodian; hold L2).
+9. Table 3: rounding note (rows rounded, total from unrounded values); committed versus avoidable costs after a belt stop are stated in §6.2.
+10. §7.7: checks "would be commissioned, subject to agreement and method capability"; SANAS scope to be confirmed.
+11. "Independent reviewer" became "separate AI-assisted computational review" wherever it meant the AI check; the future human reviewer is now "an appointed independent reviewer".
+12. Appendix: points to the new **`report/EVIDENCE_MANIFEST.md`**, which holds full checkpoint hashes, the public revision and the continuation bundle ZIP SHA-256 (d2147814…). **The Tasks A–D and feasibility package archive hashes are not on this machine: Lethabo, please add them to that file.**
+
+**C.** The geometry-diagnostic paragraph was added to §4.5: 27,855 edge pixels versus 10,263,972 component-excluded; repeated modes, not independent counts; no-refinement variant not promoted; thresholds unchanged.
+
+**Cut for space:** the Ballantyne sentence and reference; the Valterra price-rise sentence; two break-even rows (contingency, half output); the CRF and C equations set inline; the reference-lab team row; glossary rows for Fallback and Payload-dominant; one-line compliance rows; full hashes moved from the appendix to the manifest.
+
+**Not done here:** the review's "best Claude task", a claim-to-evidence ledger and QR/served-release trace, is a separate, non-editing audit; ask if you want it. The E1 validation harness is assigned to the GPT coding agent.
+
+---
+
 ## 2026-10-07 (night) — Sibusiso (Claude) — v10: Sibusiso's edits + v9 / Tasks A–D review applied
 
 **Sibusiso's requests:**
