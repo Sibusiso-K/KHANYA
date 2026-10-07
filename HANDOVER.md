@@ -1,3 +1,27 @@
+## 2026-10-07 (evening) — Sibusiso (Claude) — v9: continuation review applied to the report
+
+**Input:** `REEFPRINT_Continuation_Review_20261007.md`. This is an independent review of Lethabo's continuation bundle (ZIP SHA-256 d2147814…). It keeps the 76/100 score and is not an approval.
+Still 12 pages. `chk.py` is clean.
+
+**Report changes (from the review's "what your partner should change" table):**
+- **§3 architecture:** a plain-language traceability sentence. Results record the input and checkpoint hashes, a versioned measurement recipe, sampled-field coordinates and observed coverage, and stale results are refused.
+- **§4.4 results:** both BatchNorm continuations were rejected. On six reused development sections, foreground IoU fell from 0.647 to 0.593 and 0.597, and pentlandite abundance MAE rose from 2.2 to 5.4 and 4.4 points. **Provenance is flagged in the text:** the continuation bundle was recomputed by an independent reviewer, and these numbers are **not yet in the public repo**. Lethabo: please push the bundle so the citation resolves to committed files.
+- **§5.2 limitations, new (h), now a decision blocker:**
+  - edge exclusion can leave too little target area, yet the advisor can still say "grind finer";
+  - the new estimator still uses the old ±0.335 margin.
+  - Both are stated as **open fixes, not resolved**.
+- **§7.1 (e):** the two advice fixes and a method-specific calibration are finished in month 1, before the model freeze. As of 7 October no host, laboratory or sensor access is arranged; those agreements and the error definitions are G0 prerequisites; ≤10% stays a target.
+- **Appendix:** the smoke check is recorded: 18.18% coverage, 52.9 s server-side, zero retained target support, association unmeasurable, control held. It is labelled a functionality example, not an accuracy or latency test.
+- **Cut for space:** abstract tightened; some §2.5, §2.6, §4.1, §4.2 and §6.1 wording; DOIs in data availability (they remain in the references); CRediT shortened.
+
+**For Lethabo (code work from the review; NOT done by Claude, and the report does not claim it is fixed):**
+1. Finding 1 (P1): carry observed, retained and excluded target area into the advisor input; abstain on insufficient support; add reason codes; add regression tests for the 200×400 counterexample.
+2. Finding 2 (P1): a calibration record matched to estimator, checkpoint and mode; withhold advice on mismatch; drop the "conformal" wording on the current path.
+3. Bind recipe identity to the running build (restart on source drift); correct the reason text ("no target-bearing component survived the filters"); the UI support message; a declared Python environment, with the streamlit test kept rather than deleted.
+4. Then a development-specimen support audit (Quick vs full; the model's own masks vs the reference masks) before any further training.
+
+---
+
 ## 2026-10-07 (later) — Sibusiso (Claude) — v8: the six-month pilot now includes the belt on site
 
 **Sibusiso's decision:** the pilot must include the belt on site, not leave it for a later stage.
