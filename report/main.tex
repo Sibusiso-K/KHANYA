@@ -354,7 +354,7 @@ The current application implements the relabelling and a border policy: raw edge
 
 Published work supports the plausibility of the approach, not its validity here. Notole et al.\ \cite{notole2025} validated hyperspectral imaging and portable XRF against reference methods on Merensky Reef drill core scanned at the Council for Geoscience in Pretoria, with long-wave infrared as well as VNIR/SWIR sensing; that shows the sensing works on Bushveld material, not that our VNIR/SWIR hardness model does, and it is not a public paired conveyor dataset. The three sulphides the microscope classifies are the main base-metal sulphides of UG2 ore \cite{jones2005}, and our 50\% proxy line coincides with a boundary between middling classes in Mintek's liberation scheme \cite{moodley2026}, although that boundary does not by itself define free material. Mintek's AI optimisation raised a lead--zinc concentrator's throughput by 0.5\%, worth about R33\,million a year \cite{mintek2025}, so moves of this order are valued.
 
-Four ideas were tested and withdrawn, and they mark where the method stops. The belt spectra did not predict QEMSCAN mineralogy once size fraction and process line were accounted for; a grouped re-analysis (99 records, 36 composites) found only 23--91\% of eligible records within 10\% relative error, and a process-line baseline beat the spectral model for chalcopyrite and pyrite, so the belt claim is limited to hardness. Belt chemistry routed Bushveld PGE ore worse than the mine plan's seam label (balanced accuracy 0.79 against 0.82); the belt did not predict recovery, lime or pH; and plant tags never beat the last assay at forecasting concentrate silica.
+Four ideas were tested and withdrawn, and they mark where the method stops. The belt spectra did not predict QEMSCAN mineralogy once size fraction and process line were accounted for; a grouped re-analysis (99 records, 36 composites) found only 23--91\% of eligible records within 10\% relative error, and a process-line baseline beat the spectral model for chalcopyrite and pyrite; an exploratory comparison on the same copper data (B02, Appendix~\ref{app:repro}) narrowed but did not close that gap, so the belt claim is limited to hardness. Belt chemistry routed Bushveld PGE ore worse than the mine plan's seam label (balanced accuracy 0.79 against 0.82); the belt did not predict recovery, lime or pH; and plant tags never beat the last assay at forecasting concentrate silica.
 
 \subsection{Limitations}
 
@@ -502,7 +502,7 @@ The following assumptions make six months realistic: (a) contracting is finished
 
 \subsection{Pilot objectives and acceptance targets}\label{sec:goals}
 
-Table~\ref{tab:goals} sets out the proposed targets, signed with the host before any evaluation specimen is collected. We use ``90\% accuracy'' in one strict sense for the microscope: at least 90\% of locked specimens must meet the error contract for every decision-critical phase. With 30 locked specimens, an observed 27 of 30 shows only that the true pass rate exceeds 76\% (one-sided 95\%); demonstrating 90\% itself needs 29 of 29, or 45 of 46 if one failure is allowed, and these bounds assume independent specimens. So 27 of 30 is a proposed observed acceptance rule, not proof of a 90\% pass rate; 46 specimens would add about R0.56\,million before contingency. On the belt, 24 composites give exploratory evidence of limited precision, and because a bound can cover 90\% simply by being too wide, its width and refusal rate are judged with its coverage.
+Table~\ref{tab:goals} sets out the proposed targets, signed with the host before any evaluation specimen is collected. We use ``90\% accuracy'' in one strict sense for the microscope: at least 90\% of locked specimens must meet the error contract for every decision-critical phase. With 30 locked specimens, an observed 27 of 30 shows only that the true pass rate exceeds 76\% (one-sided 95\%); demonstrating 90\% itself needs 29 of 29, or 45 of 46 if one failure is allowed, and these bounds assume independent specimens. So 27 of 30 is a proposed observed acceptance rule, not proof of a 90\% pass rate; 46 specimens would add about R0.56\,million before contingency. On the belt, 24 composites give exploratory evidence of limited precision, and because a bound can cover 90\% simply by being too wide, its width and refusal rate are judged with its coverage. Beyond accuracy, the pilot first measures whether the estimates improve one named decision within its timing deadline, valued as incremental payable production or avoided cost against the baseline, minus operating, verification and error costs; reducing laboratory submissions would be a later, separately validated policy, not a consequence of a 10\% error target.
 
 \begin{table}[t]
 \centering\footnotesize
@@ -670,43 +670,7 @@ G5 & Independently measured net value and total cost (after the pilot) & Auditor
 
 
 \begin{table*}[t]
-{\fontsize{7}{8.3}\selectfont\renewcommand{\arraystretch}{0.92}\setlength{\extrarowheight}{0pt}\captionsetup{font=footnotesize,skip=2pt}
-\begin{minipage}[t]{0.50\textwidth}
-\captionof{table}{Microscope per-class results, historical checkpoint against the retrained candidate, 12 S2 publisher test sections reused in development (full-section inference).}
-\label{tab:perclass}
-\centering
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-& \multicolumn{3}{c}{Historical \sha{de7135a9}} & Candidate \\
-Class & IoU & Recall & Precision & IoU (precision) \\
-\midrule
-Resin & 0.871 & 0.920 & 0.942 & 0.848 (0.960) \\
-Chalcopyrite & 0.576 & 0.716 & 0.746 & 0.800 (0.937) \\
-Magnetite & 0.000 & 0.000 & -- & 0.248 (0.255) \\
-Pyrrhotite & 0.870 & 0.934 & 0.926 & 0.818 (0.950) \\
-Pentlandite & 0.547 & 0.742 & 0.675 & 0.446 (0.503) \\
-\midrule
-Mean & 0.573 & & & 0.632 \\
-\bottomrule
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.46\textwidth}
-\captionof{table}{Pixel confusion for the historical checkpoint (\% of each true class), 103.8 million pixels.}
-\label{tab:confusion}
-\centering
-\begin{tabular}{@{}lccccc@{}}
-\toprule
-True $\backslash$ predicted & Resin & Ccp & Mag & Po & Pn \\
-\midrule
-Resin & \cellcolor{accent!35}92.0 & 0.8 & 0.0 & 5.7 & 1.5 \\
-Chalcopyrite & 1.6 & \cellcolor{accent!30}71.6 & 0.0 & 3.1 & 23.7 \\
-Magnetite & 78.3 & 0.1 & 0.0 & 16.8 & 4.8 \\
-Pyrrhotite & 1.1 & 1.6 & 0.0 & \cellcolor{accent!35}93.4 & 3.9 \\
-Pentlandite & 0.7 & 0.8 & 0.0 & 24.3 & \cellcolor{accent!30}74.2 \\
-\bottomrule
-\end{tabular}
-\end{minipage}\par}
-\par\vspace{4pt}
+
 {\fontsize{7}{8.3}\selectfont\renewcommand{\arraystretch}{0.92}\setlength{\extrarowheight}{0pt}\captionsetup{font=footnotesize,skip=2pt}
 \begin{minipage}[t]{0.555\textwidth}
 \captionof{table}{Laws, policies and standards, and the planned controls (not achieved compliance).}
@@ -740,7 +704,7 @@ PGM, 4E & Platinum-group metals; 4E = Pt, Pd, Rh and Au \\
 % =====================================================================
 \section{Conclusions and recommendation}
 
-The present contribution is a functioning, inspectable evidence workflow and a falsifiable route to local validation. On public analogue data the hardness model improves on simple baselines and the microscope classifies three relevant sulphide phases, but the feed-rate benefit is a simulation, the microscope results are development-influenced, the active application checkpoint has shown large abundance errors on one section, and the $\leq$10\% error target is untested. We therefore recommend a six-month pilot at one host concentrator that runs the microscope in the shift laboratory and a leased sensor on the host's belt, costed at R9.03--11.49\,million and shared between TIA and the host in gated tranches, with the $\leq$10\% error target tested on at least 30 locked host specimens and the sensor mounted only after it passes a bench test on host ore. As of this submission, the independent local phase-abundance target has not been demonstrated; a commercial claim will depend on independent reference agreement, useful acceptance coverage and measured net value on the affected stream.
+The present contribution is a functioning, inspectable evidence workflow and a falsifiable route to local validation. On public analogue data the hardness model improves on simple baselines and the microscope classifies three relevant sulphide phases, but the feed-rate benefit is a simulation, the microscope results are development-influenced, the active application checkpoint has shown large abundance errors on one section, and the $\leq$10\% error target is untested. We therefore recommend the gated six-month, two-track pilot of Section~\ref{sec:pilot}, shared between TIA and the host. The $\leq$10\% local target has not been demonstrated; a commercial claim will depend on independent reference agreement, useful coverage and measured net value on the affected stream.
 
 % =====================================================================
 \small
@@ -757,7 +721,7 @@ We thank the Mintek mentors for a review session that reshaped the build.
 AI coding assistants helped with code and drafting; every number was computed by repository code and checked by the authors.
 
 \backsec{Data and code availability.}
-{\raggedright HIDSAG is available under CC0 \cite{ehrenfeld2023}; LumenStone under research-use terms \cite{korshunov2025}; the Bushveld assays under CC BY 4.0 \cite{bachmann2019}. Code, checkpoint hashes and results files for the public revision: \url{https://github.com/Sibusiso-K/KHANYA} (Appendix~\ref{app:repro}); the latest continuation evidence is a local, manifest-bound bundle, not yet public. A static demonstration of the belt monitor runs at \url{https://lethabomh14-reefprint.static.hf.space}.\par}
+{\raggedright Dataset licences are given in Section~\ref{sec:methods}. Public revision: \url{https://github.com/Sibusiso-K/KHANYA}; later evidence is local and manifest-bound (Appendix~\ref{app:repro}). A static replay of the belt monitor runs at \url{https://lethabomh14-reefprint.static.hf.space}.\par}
 
 \scriptsize
 % =====================================================================
@@ -812,9 +776,10 @@ AI coding assistants helped with code and drafting; every number was computed by
 \section{Supporting results}\label{app:micro}\label{app:impl}\label{app:repro}
 
 {\raggedright
-\noindent\emph{Microscope:} Tables~\ref{tab:perclass}--\ref{tab:confusion}.
-\emph{Evidence manifest:} \texttt{report/EVIDENCE\_MANIFEST.md} in the repository lists the public revision \sha{85061d4}, the full checkpoint hashes and the local packages (continuation bundle SHA-256 \sha{d2147814}).
-\emph{Tests} (counts, not performance; packages overlap, so counts are not added): public revision, workbench 181 unit-test functions and 7 browser scenarios, belt software 328; local package, 321 passed and 4 skipped (supplied), with 59 re-run in a separate AI-assisted computational review.
-\emph{Reproducibility.} Inference reproduces from archived weights; retraining does not (unseeded rerun 0.454; seeded since \sha{adeb1ee}). \emph{Smoke checks:} 52.9\,s, then 72.9\,s on one real image; zero retained support; control held.\par}
+\noindent\emph{Microscope, historical checkpoint} (recall/precision): chalcopyrite 0.716/0.746, pyrrhotite 0.934/0.926, pentlandite 0.742/0.675. Main confusions: chalcopyrite read as pentlandite (23.7\%) and pentlandite as pyrrhotite (24.3\%).
+\emph{Evidence manifest} (\texttt{report/EVIDENCE\_MANIFEST.md}): public revision \sha{85061d4}, full checkpoint hashes, local packages (continuation bundle \sha{d2147814}).
+\emph{Tests} (overlapping counts, not performance): public revision 181 unit and 7 browser (workbench), 328 (belt); local package 321 passed, 4 skipped, 59 re-run in a separate AI-assisted review.
+\emph{B02, exploratory copper-data training} (local; settings fixed in advance): on reused HIDSAG data (99 records, 36 composites, grouped folds), six-component PLS errors were 0.28, 0.67 and 1.34 points for chalcopyrite, pyrite and quartz (earlier spectral ridge 0.40, 0.75, 1.93; a metadata lookup, still better, 0.17, 0.39, 1.33), and 0.62, 0.98, 3.62 on an unseen process line; 41.5\%, 27.8\% and 85.9\% of records above an exploratory 1\,wt\% floor were within 10\% relative error. Copper development data only: no PGM accuracy, independent test, exported model, live demonstration or TRL change.
+\emph{Smoke checks:} 52.9 and 72.9\,s on one image; zero retained support; control held.\par}
 
 \end{document}

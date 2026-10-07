@@ -1,3 +1,23 @@
+## 2026-10-07 (late night) — Sibusiso (Claude) — v12: B02 added as exploratory copper-data training
+
+**Input:** `B02_REVIEW_AND_NEXT.md` (findings and the "Pilot and report implication" section). Sibusiso's instruction: describe B02 as exploratory copper-data training; claim no ≤10% PGM accuracy and no completed live demo. Still 12 pages; `chk.py` is clean.
+
+**Report changes:**
+- **Appendix A, new B02 paragraph:**
+  - PLS-6 on reused HIDSAG data (99 records, 36 composites, grouped folds): mean absolute errors 0.28 / 0.67 / 1.34 points for chalcopyrite / pyrite / quartz.
+  - The earlier spectral ridge scored 0.40 / 0.75 / 1.93; the metadata lookup is still better at 0.17 / 0.39 / 1.33.
+  - On an unseen process line: 0.62 / 0.98 / 3.62.
+  - Above an exploratory 1 wt% floor, 41.5% / 27.8% / 85.9% of records were within 10% relative error.
+  - Stated plainly: copper development data only; no PGM accuracy, no independent test, no exported model, no live demo, no TRL change.
+- **§5.1:** one clause says B02 narrowed but did not close the gap to the process-line baseline, so the belt claim stays hardness-only.
+- **§7.2:** the pilot first measures whether estimates improve one named decision within its timing deadline, valued as incremental payable production or avoided cost minus operating, verification and error costs. Reducing lab submissions is a later, separately validated policy.
+- **EVIDENCE_MANIFEST.md:** B02 row added (archive hash still to be added by the build owner).
+- **Cut for space:** the appendix per-class and confusion tables became one sentence (the candidate's scores remain in Table 2); the conclusion shortened to point to §7; the data-availability note tightened; the reproducibility sentence dropped (limitation (d) covers it).
+
+**For Lethabo:** B02 numbers are cited from the review file, not from committed CSVs. Please push `B02/metrics.csv` and the other artefacts so they resolve. The review's next build (wavelength provenance audit, 94 vs 99 records, exported model and CLI endpoint, Copper82 mapping, PostgreSQL storage contract) is yours and is not described in the report as done.
+
+---
+
 ## 2026-10-07 (late) — Sibusiso (Claude) — v11: v10 review (81/100) report edits applied
 
 **Input:** `REEFPRINT_V10_REVIEW_AND_NEXT_ASSIGNMENTS.md`. Still 12 pages; `chk.py` is clean.
