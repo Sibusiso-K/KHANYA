@@ -20,7 +20,12 @@ rows = [
     ("Sensor lease deposit or bench hire; edge computer", 0.57e6, 0.90e6, "B1", "TIA/host 50:50 (team proposal)", "G0", "Lease signed", "Deposit and cancellation fee", "25% belt"),
     ("Installation, rest of sensor, belt sampling, vendor support", 2.71e6, 4.35e6, "B2", "TIA/host 50:50 (team proposal)", "Bench outcome matrix, week 8", "After matrix decision", "Lease and vendor terms", "25% belt"),
     ("Belt contingency (25%)", 50000 * FX, 80000 * FX, "Reserve", "As line", "Documented risk event", "On release", "As released", "-"),
-    ("Pre-G0 feasibility stage (outside pilot total)", 0, 210000, "P0", "TIA or host (proposed)", "Joint co-lead and funder approval", "Written quotes", "Work done", "Cap"),
+    ("P0 (outside pilot total): host and stream scoping (co-leads)", 40000, 40000, "P0", "TIA or host (proposed)", "Joint co-lead and funder approval", "Written quotes", "Work done; stop if host or eligible route not secured", "Cap R210,000"),
+    ("P0 (outside pilot total): measurement and decision contract (co-leads, statistician)", 30000, 30000, "P0", "TIA or host (proposed)", "Joint co-lead and funder approval", "Written quotes", "Work done; stop if host or eligible route not secured", "Cap R210,000"),
+    ("P0 (outside pilot total): mass and split plan with trial checks (mineralogist, laboratory)", 60000, 60000, "P0", "TIA or host (proposed)", "Joint co-lead and funder approval", "Written quotes", "Work done; stop if host or eligible route not secured", "Cap R210,000"),
+    ("P0 (outside pilot total): laboratory, scanner and lease quotes (Hoaeane)", 20000, 20000, "P0", "TIA or host (proposed)", "Joint co-lead and funder approval", "Written quotes", "Work done; stop if host or eligible route not secured", "Cap R210,000"),
+    ("P0 (outside pilot total): funding eligibility, IP and data terms (Khumalo)", 25000, 25000, "P0", "TIA or host (proposed)", "Joint co-lead and funder approval", "Written quotes", "Work done; stop if host or eligible route not secured", "Cap R210,000"),
+    ("P0 (outside pilot total): reserve", 35000, 35000, "P0", "TIA or host (proposed)", "Joint co-lead and funder approval", "Written quotes", "Work done; stop if host or eligible route not secured", "Cap R210,000"),
 ]
 with open('PILOT_COST_LEDGER.csv', 'w', newline='', encoding='utf-8') as f:
     w = csv.writer(f)

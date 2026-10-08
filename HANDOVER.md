@@ -1,3 +1,31 @@
+## 2026-10-08 (evening) — Sibusiso (Claude) — v16: v15 review (81/100) applied; evidence package delivered
+
+**Input:** `REEFPRINT_V15_REPORT_REVIEW_20261008.md`. Still 12 pages; chk.py clean.
+
+1. **Timing (§2.3):** corrected. A parcel scanned over 0–30 s reaches the mill at 90–120 s, so a completed estimate leaves about 60 s, not 90 s. Advice expires when the material it concerns arrives; a late estimate is kept only as a record. These are design assumptions, measured at the host.
+2. **Mineral decision:** new Table 5. One primary action is chosen at P0. Investigation alert first; blend or hold only through an existing stockpile, blending point or manual procedure. Unresolved cells are marked "host". The camera cannot hold or redirect ore; mineral benefits are kept separate from the hardness simulation.
+3. **RODARE:** Stonepark bG11A5 hold added (unresolved geometry; historical results kept; exclusion means refitting folds; no transform accepted as alignment). §5.2(c) now reads "exploratory public-analogue development (copper and paired MLA–HSI)".
+4. **Evidence package:** `report/evidence/REEFPRINT_report_evidence_v16.zip` (ZIP SHA-256 90f3af63…bdb). Contents: ledger + generator, replay script + pinned inputs (ab333071) + output, manifest, README (policy, clipping, bootstrap unit/seed/method, Python version, rounding, cash released/committed/avoidable), SHA256SUMS. Built by `report/tools/make_evidence_zip.py`. The reviewer could not find these because they look in a different working copy; they are on GitHub, branch codex/launch-live-demo.
+5. **P0 broken down:** about 3 months, R210k cap:
+   - scoping R40k (co-leads);
+   - measurement and decision contract R30k;
+   - mass and split plan R60k;
+   - quotes R20k (Hoaeane);
+   - eligibility, IP and data terms R25k (Khumalo);
+   - reserve R35k.
+   - P0 stops and reports if host access or an eligible funding route isn't secured.
+   - Combined envelope with P0 is R10.90–13.36 M.
+   - The belt range is an allowance pending a lease quote.
+   - These amounts are Claude's proposed split; co-leads to confirm.
+6. **Table 4:** "44 analyses (10 cal + 30 locked + 4 repeats)".
+7. **Conclusion:** recommends P0 first; the pilot is conditional. The abstract's repeated product paragraph was removed.
+
+**Cut for space:** limitations (e) and (g) condensed; the appendix compressed (details now in the package); the decision table is 5 rows.
+
+**Lethabo's technical items (not report work):** keep the bG11A5 hold; seek original processing records; freeze the cohort before any comparison.
+
+---
+
 ## 2026-10-08 (later) — Sibusiso (Claude) — v15: v14 review (76/100) applied
 
 **Input:** `REEFPRINT_V14_REPORT_REVIEW_20261008.md`. Still 12 pages; `chk.py` is clean.
