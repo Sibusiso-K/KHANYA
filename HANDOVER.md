@@ -1,3 +1,57 @@
+## 2026-10-08 — Sibusiso (Claude) — v14: gates and spending reconciled; build status updated (binding v2/v3, B04, methods roadmap)
+
+**Inputs:**
+- `REEFPRINT_V13_BINDING_V2_REVIEW.md`
+- `REEFPRINT_BINDING_V3_CLOSEOUT_AND_B04.md`
+- `DECISION_AND_NEXT_TASK.md`
+- `ADVANCED_METHODS_AND_DATA_20261008.md`
+
+Still 12 pages; `chk.py` is clean.
+
+**Gates:**
+- A single **bench outcome matrix** (new Table 11) replaces "G1B or G1M":
+  - pass/pass → both endpoints, subject to G2;
+  - pass/fail → hardness only, R-M orders cancelled;
+  - fail/pass → minerals only, after a mineral-driven decision, compatible hardware and a revised value and acceptance plan are approved, otherwise shadow only;
+  - fail/fail → no installation, lease returned.
+- The caption states that a minerals-only path cannot claim the 1.7–1.9% hardness simulation.
+- Table 3, Fig. 5, §7.1, risk P5 and the gates table all point to the matrix.
+
+**Spending:**
+- Tranche R is split into **R-H (Bond, R0.47 M, released on G1B pass)** and **R-M (mineralogy, R0.79 M, on G1M pass)**.
+- A failed endpoint cancels its unneeded orders; the references the surviving endpoint needs stay.
+- The total is labelled a planning allowance excluding pre-G0 costs and the stated exclusions.
+- §7.1: the added mineral work must show up at G0 in quotes, sample access, lab throughput and staff capacity.
+
+**Statistics:**
+- The 20 bench composites are split into development and calibration subsets before collection; the method is chosen on development and the gate judged on calibration.
+- The exact pass-count rule, handling of every critical phase, refusals and reporting limits are fixed before testing.
+- G3 uses end-to-end latency (p50/p95/p99).
+
+**Build status (Appendix A):**
+- B03 now uses the review's binding-v3 wording: altered intake rejected; saved estimates recomputed from pinned inputs and weights; the forged-result case refused; storage-error classification still to correct; software consistency only.
+- B04 added as development evidence: three extraction recipes, phase-dependent effects (unseen-line chalcopyrite 0.62→0.57, pyrite 0.98→1.15, quartz 3.62→2.98); no recipe promoted.
+- B02 is compressed.
+
+**Planned validation (§8):**
+- A short roadmap paragraph. Output is a parcel estimate with uncertainty and valid/invalid status.
+- RODARE 4582 benchmark cited, after opening its record page today: 204 sections, 49 drillholes, 7 locations, co-registered MLA–hyperspectral, CC BY 4.0. Archives not inspected.
+- Patch pooling, teacher/student, unmixing, pretrained and video features, added one at a time against the best single model and a metadata baseline.
+- Explicitly "proposed, not yet trained"; no TRL change.
+
+**EVIDENCE_MANIFEST.md:** the B03a row is updated with binding v2/v3 status; a B04 row is added (hash to be added by the build owner).
+
+**Cut for space:** Fig. 4, the policy replay plot (its numbers remain in §4.2 text); §4.5 decision-agreement and support-audit paragraphs condensed; limitation (h) shortened.
+
+**For Lethabo:**
+- the storage-error ticket (404/409/503 codes);
+- raw-cube ingestion as a separate workstream;
+- the RODARE archive intake;
+- the 94-vs-99 identity audit;
+- archive hashes for B04 and the binding release.
+
+---
+
 ## 2026-10-07 (final) — Sibusiso (Claude) — v13: V12/B03 review corrections; belt mineral composition added to the pilot
 
 **Input:** `REEFPRINT_V12_B03_REVIEW_AND_ACTIONS.md`. Sibusiso's instruction: apply the page corrections and align the pilot with belt mineralogy. Still 12 pages; `chk.py` is clean.

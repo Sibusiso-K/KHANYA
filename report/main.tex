@@ -256,30 +256,8 @@ Figure~\ref{fig:calibration} illustrates how the bound behaves, highlighting tha
 
 
 
-Figure~\ref{fig:policies} illustrates four feed-rate policies replayed over all 146 composites against a fixed design-feed policy (the 90th-percentile hardness), highlighting the trade-off between throughput and overloads. In the replay a parcel is \emph{overloaded} when its true hardness exceeds the hardness the feed was set for; this is a model quantity, not a plant trip. Setting the feed from the bound, with OOD parcels withdrawn, gave a simulated throughput gain of +1.9\% (95\% CI +0.9 to +2.9\%), and the overload share was 6.8\% against 8.9\%; the one-sided 95\% upper bound on the difference (+1.4 points) is inside the +3-point margin in the evaluation plan. The original replay did not apply the 85--110\% envelope; a later analysis with it gives +1.7\% (+0.7 to +2.7\%) and the same overload share. Feeding from the best guess instead would add 13.6\% but overload 45.2\% of parcels, which is why the policy uses a bound. Perfect knowledge would add 14.0\%; the bound's width is where the rest is lost, so a tighter bound from site data is the main route to a larger gain.
+Four feed-rate policies were replayed over all 146 composites against a fixed design-feed policy (the 90th-percentile hardness), to show the trade-off between throughput and overloads (simulated; not PGM ore, not a time series). In the replay a parcel is \emph{overloaded} when its true hardness exceeds the hardness the feed was set for; this is a model quantity, not a plant trip. Setting the feed from the bound, with OOD parcels withdrawn, gave a simulated throughput gain of +1.9\% (95\% CI +0.9 to +2.9\%), and the overload share was 6.8\% against 8.9\%; the one-sided 95\% upper bound on the difference (+1.4 points) is inside the +3-point margin in the evaluation plan. The original replay did not apply the 85--110\% envelope; a later analysis with it gives +1.7\% (+0.7 to +2.7\%) and the same overload share. Feeding from the best guess instead would add 13.6\% but overload 45.2\% of parcels, which is why the policy uses a bound. Perfect knowledge would add 14.0\%; the bound's width is where the rest is lost, so a tighter bound from site data is the main route to a larger gain.
 
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=\columnwidth, height=4.1cm,
-  xmin=-4, xmax=52, ymin=-1.5, ymax=18.5,
-  xlabel={Overloaded parcels (\%)}, ylabel={Throughput gain (\%)},
-  tick label style={font=\scriptsize}, label style={font=\footnotesize},
-  axis lines*=left, grid=both, grid style={gray!15}]
-\addplot[only marks, mark=square*, mark size=2.2pt, black, error bars/.cd, y dir=both, y explicit] coordinates {(8.9,0) +- (0,0)};
-\addplot[only marks, mark=*, mark size=2.6pt, accent, error bars/.cd, y dir=both, y explicit] coordinates {(6.8,1.9) += (0,1.0) -= (0,1.0)};
-\addplot[only marks, mark=triangle*, mark size=3pt, red!70!black, error bars/.cd, y dir=both, y explicit] coordinates {(45.2,13.6) += (0,1.2) -= (0,1.3)};
-\addplot[only marks, mark=diamond*, mark size=3pt, gray, error bars/.cd, y dir=both, y explicit] coordinates {(0,14.0) += (0,2.4) -= (0,2.3)};
-\node[font=\scriptsize, anchor=west] at (axis cs:10.4,0.25) {No ore information: 0\%};
-\node[font=\scriptsize\bfseries, anchor=west, text=accent] at (axis cs:8.6,3.4) {Bound + fallback: +1.9\%};
-\node[font=\scriptsize, anchor=east, align=right, text=red!70!black] at (axis cs:43.5,12.6) {Best guess: +13.6\%,\\45\% overloaded};
-\node[font=\scriptsize, anchor=west, text=gray!60!black] at (axis cs:1.5,16.6) {Perfect information: +14.0\%};
-\end{axis}
-\end{tikzpicture}
-\caption{Feed-rate policies replayed over 146 composites against a fixed design-feed policy (simulated; not PGM ore, not a time series, original replay without the envelope), with 95\% confidence intervals. Up is more throughput; left is fewer replay overloads.}
-\label{fig:policies}
-\end{figure}
 
 The result is provisional for three reasons: the exact bound was adopted after the more efficient one failed, HIDSAG has no time order (so transit time, stockpile mixing and the asymmetric ramp limit are not simulated), and the ore is not Bushveld ore. Over 200 random parcel orders, a $\pm$10\% ramp limit left overloads unchanged but $\pm$2\% added 4.7 points, so feed must be cut fast. A predefined robustness test found the error unchanged for a new capture, half the field of view, added noise and $\pm$15\% illumination, but 1.25 times larger, unflagged, under wavelength drift, so a wavelength-calibration check was added.
 
@@ -338,14 +316,14 @@ Checkpoint & Evidence & Status \\
 
 \subsection{Laboratory: decisions and grain evidence}\label{sec:grains}
 
-We compared the historical advice from the model's masks with that from the expert masks: of 8 sections where the expert mask said \emph{grind finer}, the model agreed on 3, and of 3 \emph{continue} sections it agreed on 1, abstaining on the rest. The model produced 4 definite recommendations, 6 \emph{verify} outputs and 2 \emph{too few grains} outputs on the 12 sections, so its action coverage was 4 of 12 (33\%). No definite recommendation disagreed in the unsafe direction with the same advisor applied to expert masks. This is a small, development-influenced rule-agreement result: it does not validate the rules themselves, establish an independent unsafe-action rate or demonstrate plant safety. The one-sided 95\% upper bound of 22.1\% on 0 of 12 refers to all sections, not to risk when the system acts. Both the rules and the abstention thresholds need independent evaluation on the host stream. Only 4 definite actions occurred, so even an ideal independent 0 of 4 would bound the failure rate only at about 52.7\% (one-sided 95\%). The counts are for \sha{de7135a9}.
+In the historical experiments (\sha{de7135a9}), advice from the model's masks was compared with advice from the expert masks: the model gave 4 definite recommendations, 6 \emph{verify} and 2 \emph{too few grains} outputs on the 12 sections (action coverage 33\%), and none disagreed in the unsafe direction. This small, development-influenced rule-agreement result does not validate the rules or establish plant safety: 0 of 12 bounds the rate over all sections only at 22.1\%, and 0 of 4 definite actions only at 52.7\% (one-sided 95\%).
 
 
 It is important to note that the $\pm$0.335 verify band was calibrated on these same sections, so the agreement result is partly in-sample. A realistic exposure shift ($-35$ levels on each colour channel) changed the advice on 8 of 12 sections, so illumination control is also a pilot requirement.
 
 
 
-The current application implements the relabelling and a border policy: raw edge-connected ore components and overlapping refined components are excluded and counted, and whole-component exclusion can reach far into the image. A development audit of six reused parent images (24 Quick and full rows; supplied continuation evidence, re-checked by a separate AI-assisted computational review, not yet public) found that even the expert reference masks keep only 0--5.8\% of observed target pixels in Quick mode and 0--70.5\% in full mode, so none meets the provisional 80\% support policy and all 24 rows abstain. This points to the component-as-particle assumption and specimen preparation, not only to segmentation, and phase-area estimation may remain useful where particle association is not. In 12 reference-mode records (six parents, Quick and full), 27,855 target pixels lay directly on observation edges but 10,263,972 were excluded through connected ore components; the totals repeat modes and are not independent counts. Neither phase-area counts nor component geometry establish local accuracy, physical particles or liberation; the diagnostic no-refinement variant was not promoted and thresholds are unchanged, so the next study prioritises same-area references and verified specimen preparation.
+The current application implements the relabelling and a border policy: raw edge-connected ore components and overlapping refined components are excluded and counted, and whole-component exclusion can reach far into the image. A development audit of six reused parent images (local evidence, re-checked in a separate AI-assisted computational review) found that even the expert reference masks keep only 0--5.8\% of target pixels in Quick mode and 0--70.5\% in full mode, so none meets the provisional 80\% support policy and all 24 rows abstain; 27,855 target pixels lay on observation edges but 10,263,972 were excluded through connected components (repeated modes, not independent counts). This points to the component-as-particle assumption and specimen preparation, not only segmentation; thresholds are unchanged, and the next study prioritises same-area references and verified preparation.
 
 % =====================================================================
 \section{Comparison with literature and limitations}
@@ -358,7 +336,7 @@ Four ideas were tested and withdrawn, and they mark where the method stops. The 
 
 \subsection{Limitations}
 
-The following limitations apply, and (a), (b), (e) and (h) block deployment and performance commitments until tested, and justify a separately scoped feasibility investigation: (a) no South African ore has been evaluated, and a model trained on Chilean porphyry core may not transfer, because hardness also depends on silicification, grain size and fracturing; (b) the belt result is a replay of 146 composites without time order or drill-hole grouping, against a fixed design-feed policy rather than the plant's existing control, and a camera sees the belt surface, which may not represent the mass entering the mill; (c) belt mineral composition rests only on exploratory copper data, and the microscope has not been trained on chromite or the silicates; (d) the 12 microscope sections guided development, and the historical checkpoint cannot be regenerated exactly; (e) the advisor's rules (including the pyrrhotite-reject and 50\% assumptions) are unvalidated for any host ore, its band was set on the evaluation sections, and payload-dominance is a 2D proxy, not liberation; (f) only scoring latency is benchmarked, the plant is a simulator, and economic benefit has not been attributed at any site; and (g) there is no fresh paired PGM validation, the active application checkpoint differs from the evaluated one, chromite and silicate classes are missing, and reference-laboratory uncertainty is not yet quantified; and (h) the latest local build records retained target support and exclusion causes, binds results to its startup build identity and withholds operational advice; the earlier excluded-support counterexample now abstains and the historical margin is not applied, but inadequate support even in reference masks leaves specimen preparation, the component-as-particle assumption and method-specific calibration unresolved.
+The following limitations apply, and (a), (b), (e) and (h) block deployment and performance commitments until tested, and justify a separately scoped feasibility investigation: (a) no South African ore has been evaluated, and a model trained on Chilean porphyry core may not transfer, because hardness also depends on silicification, grain size and fracturing; (b) the belt result is a replay of 146 composites without time order or drill-hole grouping, against a fixed design-feed policy rather than the plant's existing control, and a camera sees the belt surface, which may not represent the mass entering the mill; (c) belt mineral composition rests only on exploratory copper data, and the microscope has not been trained on chromite or the silicates; (d) the 12 microscope sections guided development, and the historical checkpoint cannot be regenerated exactly; (e) the advisor's rules (including the pyrrhotite-reject and 50\% assumptions) are unvalidated for any host ore, its band was set on the evaluation sections, and payload-dominance is a 2D proxy, not liberation; (f) only scoring latency is benchmarked, the plant is a simulator, and economic benefit has not been attributed at any site; and (g) there is no fresh paired PGM validation, the active application checkpoint differs from the evaluated one, chromite and silicate classes are missing, and reference-laboratory uncertainty is not yet quantified; and (h) the latest build withholds microscope advice and refuses the earlier counterexample, but inadequate support even in reference masks leaves specimen preparation, the component-as-particle assumption and calibration unresolved.
 
 % =====================================================================
 \section{Business model and financial case}\label{sec:business}
@@ -374,9 +352,9 @@ Plants already have cross-belt neutron analysers (bulk elements, with isotope so
 
 \subsection{Pilot budget and cash release}\label{sec:pricing}
 
-Table~\ref{tab:pricing} sets out one scoped planning allowance for the six-month pilot, in two tracks: R6.59\,million for the laboratory, team and reference track and R4.10--6.56\,million for the belt track. It replaces the earlier first tranche and separate belt stage; the earlier R8.2--49.2\,million installation grid survives only as a superseded sensitivity in Section~\ref{sec:finance}. Staff rates are team planning rates; development microscope specimens are referenced by expert annotation, so 44 microscope specimens and the 44 belt composites go to automated mineralogy, because Bond tests cannot validate mineral composition; and every line is replaced by a local quote at G0, with the question narrowed or returned for a new decision if quotes exceed it. The sensor is leased or borrowed with a purchase option where possible, so that a failed bench gate (G1B) returns it before installation; the belt allowance is a purchase-equivalent ceiling. VAT, duties, major civil work, conveyors or sorters, shutdown costs and closed-loop control are excluded, so the totals are scoped budgets, not worst-case losses. After the pilot, annual support is assumed at US\$30,000--60,000 (R0.49--0.98\,million).
+Table~\ref{tab:pricing} sets out one scoped planning allowance for the six-month pilot, in two tracks: R6.59\,million for the laboratory, team and reference track and R4.10--6.56\,million for the belt track. It replaces the earlier first tranche and separate belt stage; the earlier R8.2--49.2\,million installation grid survives only as a superseded sensitivity in Section~\ref{sec:finance}. Staff rates are team planning rates; development microscope specimens are referenced by expert annotation, so 44 microscope specimens and the 44 belt composites go to automated mineralogy, because Bond tests cannot validate mineral composition; and every line is replaced by a local quote at G0, with the question narrowed or returned for a new decision if quotes exceed it. The sensor is leased or borrowed with a purchase option where possible, so that failing both bench gates returns it before installation; the belt allowance is a purchase-equivalent ceiling. VAT, duties, major civil work, conveyors or sorters, shutdown costs and closed-loop control are excluded, so the totals are scoped budgets, not worst-case losses. After the pilot, annual support is assumed at US\$30,000--60,000 (R0.49--0.98\,million).
 
-The tracks have independent tranches (Table~\ref{tab:tranches}), so a belt failure cannot stop the laboratory work. The 44 belt composites split into 20 bench composites, whose Bond and mineralogy references (about R1.05\,million) are in L1, and 24 shadow composites, whose references (about R1.26\,million) form tranche R, ring-fenced behind the bench gates even if host-funded. If both bench gates fail, B2, R and the belt reserve are never released (avoidable); B1, lease cancellation and the bench references already paid are committed, and the laboratory track continues under its own review. The pre-G0 feasibility work needs its own cap, payer and payment authority agreed before any spend; it is not charged to G0 tranches. Committed laboratory orders, staff notice periods and lease cancellation are the costs a stop cannot recover; the payer of each line is agreed at G0.
+The tracks have independent tranches (Table~\ref{tab:tranches}), so a belt failure cannot stop the laboratory work. The 44 belt composites split into 20 bench composites, whose Bond and mineralogy references (about R1.05\,million) are in L1, and 24 shadow composites, whose references form two ring-fenced tranches even if host-funded: R-H (Bond, about R0.47\,million) and R-M (mineralogy, about R0.79\,million), each released only for an endpoint that passes its bench gate. A failed endpoint cancels its unneeded orders; references the surviving endpoint needs for baselines and validation remain. If both bench gates fail, B2, R-H, R-M and the belt reserve are never released (avoidable); B1, lease cancellation and the bench references already paid are committed, and the laboratory track continues under its own review. The pre-G0 feasibility work needs its own cap, payer and payment authority agreed before any spend; it is not charged to G0 tranches, and the pilot total is a planning allowance excluding it and the stated exclusions. Committed laboratory orders, staff notice periods and lease cancellation are the costs a stop cannot recover; the payer of each line is agreed at G0.
 
 \begin{table}[t]
 \centering\footnotesize
@@ -389,9 +367,10 @@ Tranche & Released at & Pays for & Rand \\
 P0 & Before G0 & Feasibility review, quotes, funding eligibility & Cap and payer to agree; outside total \\
 L1 & G0 & Staff and site, months 1--2; kit; inductions; first sections; 20 bench Bond and mineralogy references & 1.79\,M \\
 L2 & Week-8 laboratory review (not G1B) & Remaining staff, site, sections, microscope mineralogy, review & 2.68\,M \\
-R & G1B or G1M & 24 shadow-composite Bond and mineralogy references & 1.26\,M \\
+R-H & G1B pass & 24 shadow-composite Bond references & 0.47\,M \\
+R-M & G1M pass & 24 shadow-composite mineralogy references & 0.79\,M \\
 B1 & G0 & Sensor lease deposit or bench hire; edge computer & 0.57--0.90\,M \\
-B2 & G1B, week 8 & Installation, rest of sensor, belt sampling, vendor support & 2.71--4.35\,M \\
+B2 & Bench matrix, week 8 & Installation, rest of sensor, belt sampling, vendor support & 2.71--4.35\,M \\
 Reserves & Documented risk event & 15\% laboratory, 25\% belt contingency & 1.68--2.17\,M \\
 \midrule
 Total & & & 10.69--13.15\,M \\
@@ -459,11 +438,11 @@ As Team Sonar, our pilot problem is this: in six months at one host concentrator
 
 \subsection{Pilot duration and feasibility}
 
-The following assumptions make six months realistic: (a) contracting is finished at gate G0, including a quoted measurement-feasibility review of specimen preparation and image--reference correspondence, a leased sensor with a delivery date and a plant stop booked for weeks 8--10, so the clock starts at a readiness event; (b) the sensor is non-contact and mounts above an existing conveyor with read-only data, so installation takes days within that stop; (c) specimens come from the host's existing shift sampling and belt cuts, so 70 microscope specimens and 44 belt composites (each split for Bond and mineralogy references) over about 16 weeks need only about 5 and 3 a week; (d) reference results return in fortnightly batches within an agreed three weeks; and (e) the software, registry and abundance checks already exist and the build already abstains where support is inadequate, so month~1 goes on measurement feasibility, local data and development-only method selection; calibration is fitted later on its own cohort, and advice stays withheld pending validation, release review and host approval. No host, laboratory or sensor access is arranged yet, so these are G0 prerequisites, and $\leq$10\% remains a target. Two limits apply: the sensor is mounted only if it passes a bench test on host samples (G1B, week~8), and the four-week advisory window can show the workflow, timing and operator response, but cannot measure a gain of about 2\% with useful precision, so independently measured value (G5) needs a longer trial after the pilot. If supply, delivery or the plant stop slips, the pilot is extended; the cohort is never cut to keep the date.
+The following assumptions make six months realistic: (a) contracting is finished at gate G0, including a quoted measurement-feasibility review of specimen preparation and image--reference correspondence, a leased sensor with a delivery date and a plant stop booked for weeks 8--10, so the clock starts at a readiness event; (b) the sensor is non-contact and mounts above an existing conveyor with read-only data, so installation takes days within that stop; (c) specimens come from the host's existing shift sampling and belt cuts, so 70 microscope specimens and 44 belt composites (each split for Bond and mineralogy references) over about 16 weeks need only about 5 and 3 a week; (d) reference results return in fortnightly batches within an agreed three weeks; and (e) the software, registry and abundance checks already exist and the build already abstains where support is inadequate, so month~1 goes on measurement feasibility, local data and development-only method selection; calibration is fitted later on its own cohort, and advice stays withheld pending validation, release review and host approval. No host, laboratory or sensor access is arranged yet, so these are G0 prerequisites, and $\leq$10\% remains a target. Two limits apply: the sensor is mounted only under the bench outcome matrix (Table~\ref{tab:benchmatrix}, week~8), and the four-week advisory window can show the workflow, timing and operator response, but cannot measure a gain of about 2\% with useful precision, so independently measured value (G5) needs a longer trial after the pilot. If supply, delivery or the plant stop slips, the pilot is extended; the cohort is never cut to keep the date. The added mineral work must be reflected at G0 in quotes, sample access, laboratory throughput and staff capacity.
 
 \subsection{Pilot objectives and acceptance targets}\label{sec:goals}
 
-Table~\ref{tab:goals} sets out the proposed targets, signed with the host before any evaluation specimen is collected. We use ``90\% accuracy'' in one strict sense for the microscope: at least 90\% of locked specimens must meet the error contract for every decision-critical phase. With 30 locked specimens, an observed 27 of 30 shows only that the true pass rate exceeds 76\% (one-sided 95\%); demonstrating 90\% itself needs 29 of 29, or 45 of 46 if one failure is allowed, and these bounds assume independent specimens. So 27 of 30 is a proposed observed acceptance rule, not proof of a 90\% pass rate; 46 specimens would add about R0.56\,million before contingency. On the belt, 24 composites give exploratory evidence of limited precision (22 of 24 within the contract bounds the pass rate only above 76\%), the sampled cut must match the scanned parcel although the camera sees only the surface, and microscopy acceptance counts are never reused as belt evidence; and because a bound can cover 90\% simply by being too wide, its width and refusal rate are judged with its coverage. Beyond accuracy, the pilot first measures whether the estimates improve one named decision within its timing deadline, valued as incremental payable production or avoided cost against the baseline, minus operating, verification and error costs; reducing laboratory submissions would be a later, separately validated policy, not a consequence of a 10\% error target.
+Table~\ref{tab:goals} sets out the proposed targets, signed with the host before any evaluation specimen is collected. We use ``90\% accuracy'' in one strict sense for the microscope: at least 90\% of locked specimens must meet the error contract for every decision-critical phase. With 30 locked specimens, an observed 27 of 30 shows only that the true pass rate exceeds 76\% (one-sided 95\%); demonstrating 90\% itself needs 29 of 29, or 45 of 46 if one failure is allowed, and these bounds assume independent specimens. So 27 of 30 is a proposed observed acceptance rule, not proof of a 90\% pass rate; 46 specimens would add about R0.56\,million before contingency. On the belt, 24 composites give exploratory evidence of limited precision (22 of 24 within the contract bounds the pass rate only above 76\%), and the exact pass-count rule, handling of every critical phase, refusals and reporting limits are fixed before testing; the sampled cut must match the scanned parcel although the camera sees only the surface, and microscopy acceptance counts are never reused as belt evidence; and because a bound can cover 90\% simply by being too wide, its width and refusal rate are judged with its coverage. Beyond accuracy, the pilot first measures whether the estimates improve one named decision within its timing deadline, valued as incremental payable production or avoided cost against the baseline, minus operating, verification and error costs; reducing laboratory submissions would be a later, separately validated policy, not a consequence of a 10\% error target.
 
 \begin{table}[t]
 \centering\footnotesize
@@ -475,9 +454,9 @@ Target & Pass condition (proposed) & Gate \\
 \midrule
 Phase abundance & Pentlandite, chalcopyrite, pyrrhotite: $\leq$10\% relative error above an agreed reporting limit, absolute tolerance below it; $\geq$27 of 30 locked specimens pass, lower bound reported & G1A \\
 Coverage & Refusals and failures stay in the denominator; answered share $\geq$ agreed minimum & G1A \\
-Bench hardness & 20 host composites (development and calibration): error below a metadata baseline; agreed bound width & G1B \\
-Bench minerals & Same 20 composites with laboratory mineralogy: host decision-critical phases beat a metadata baseline on an agreed basis and reporting limit & G1M \\
-Belt shadow & 24 belt composites, locked evaluation of a frozen version, no online recalibration. Hardness: predefined count inside the bound, width, refusals. Minerals: $\leq$10\% relative error per critical phase above the reporting limit, coverage, grouping by sampling event. Scoring inside the transit time & G3 \\
+Bench hardness & 20 host composites, split before collection into development and calibration subsets; method chosen on development, gate judged on calibration: error below a metadata baseline; agreed bound width & G1B \\
+Bench minerals & Same split, with laboratory mineralogy: decision-critical phases beat a metadata baseline on an agreed basis and reporting limit & G1M \\
+Belt shadow & 24 belt composites, locked evaluation of a frozen version, no online recalibration. Hardness: predefined count inside the bound, width, refusals. Minerals: $\leq$10\% relative error per critical phase above the reporting limit, coverage, grouping by sampling event. End-to-end latency (p50/p95/p99) inside the transit time & G3 \\
 Advisory window & Proposals withdrawn when they should be; no setpoint outside the envelope; operator response logged & G4 \\
 \bottomrule
 \end{tabularx}
@@ -501,7 +480,7 @@ Advisory window & Proposals withdrawn when they should be; no setpoint outside t
 \foreach \x/\g in {0/G0, 8/G1B, 10/G2, 20/G3, 21/G4, 26/end} { \node[gate] at (\x,-10.0) {\g}; }
 \node[font=\scriptsize, anchor=east] at (-0.2,-10.0) {Gates (tranche releases)};
 \end{tikzpicture}
-\caption{The six-month pilot, in weeks from the readiness event (planning estimate). Blue bars: microscope track; copper bars: belt track. G0 releases L1 and B1; the week-8 laboratory review releases L2; G1B or G1M releases B2 and R, and a failed endpoint is not evaluated in shadow (Table~\ref{tab:tranches}). G1A falls in week 20 with G3. If G1B fails, the leased sensor is returned before installation and the microscope track continues.}
+\caption{The six-month pilot, in weeks from the readiness event (planning estimate). Blue bars: microscope track; copper bars: belt track. G0 releases L1 and B1; the week-8 laboratory review releases L2; the bench outcome matrix (Table~\ref{tab:benchmatrix}) decides B2, R-H and R-M (Table~\ref{tab:tranches}). G1A falls in week 20 with G3. If both bench gates fail, the leased sensor is returned before installation and the microscope track continues.}
 \label{fig:pilotplan}
 \end{figure*}
 
@@ -574,7 +553,7 @@ P1 & Fewer than 5 specimens a week (stoppages, sampler faults) & Sampling plan a
 P2 & Laboratory turnaround over 3 weeks, or quotes above budget & Turnaround written into the quote; fortnightly batches; second laboratory pre-qualified & Narrow the question or seek a new decision; no silent cuts to repeats \\
 P3 & Sensor delivered late, or no lease or demonstration unit & Delivery date and lease terms at G0; two vendors approached & Shift the belt track; the microscope track continues \\
 P4 & Planned plant stop missed for installation & Installation booked with the host at G0; mount pre-assembled and tested on the bench & Install at the next stop; shorten the advisory window, not shadow \\
-P5 & The sensor fails the bench test (G1B) & Bench test on host composites before mounting & Do not release B2; settle B1 commitments or cancellation; bench Bond costs already incurred stay with the laboratory track, which follows its own review \\
+P5 & One or both bench gates fail (G1B, G1M) & Bench tests on host composites before mounting & Apply the bench matrix; if both fail, do not release B2, settle B1 or cancellation; bench references already paid stay with the laboratory track \\
 P6 & Belt drift (dust, moisture, wavelength) or scan--sample timing mismatch & Enclosure, purge air, references every cycle; time-stamped parcels & Refuse affected parcels; exclude unmatched pairs and report them \\
 P7 & Operator over-trust, unsafe write or cyber incident & Deadband; training before G4; read-only shadow; advisory tags only; IEC 62443 zones \cite{iec62443} & Advice expires or is disconnected; the plant runs on its own controls \\
 P8 & The microscope misses the $\leq$10\% target, or data leak between sets & One frozen model; independent custodian; sealed predictions & Report the negative result; collect a fresh cohort before any new claim \\
@@ -612,6 +591,8 @@ Decision layer and record & 4: built; replayed data; simulated plant & 6: shadow
 
 Table~\ref{tab:milestones} lists what each gate must show, who decides, and what happens if it fails. After the pilot, an extended advisory trial with on/off operating blocks gives the independently measured value for G5, so a commercial decision is about 12 months from the readiness event.
 
+\emph{Planned validation route (proposed, not yet trained).} The product's output is a time-stamped parcel estimate with uncertainty and a valid/invalid measurement status. Before host data arrive, a public benchmark of 204 sections from 49 drillholes at seven locations, with mineral liberation analysis co-registered to VNIR--MWIR--LWIR hyperspectral images \cite{rodare}, would test spectral--spatial models with whole drillholes, then sites, held out; its archives are not yet inspected, and its section surfaces are not moving PGM ore. Where only bulk labels exist, patches are pooled to a specimen estimate; a laboratory-informed teacher may train a belt-only student; and unmixing, pretrained spectral features and video are added one at a time against the best single model and a metadata baseline. None of this replaces matched PGM belt and laboratory data.
+
 \begin{table}[t]
 \centering\footnotesize
 \caption{Gates, decision owners and stop outcomes. Numerical thresholds are signed before evaluation data are collected.}
@@ -622,13 +603,29 @@ Gate & Release condition & Decides & If it fails \\
 \midrule
 G0 & Host letter, quotes, sensor lease and delivery, plant stop booked, data and IP terms, signed contract & Funder, host & Preparation only \\
 L2 & Laboratory review (week 8): agreed counts collected and split, reference turnaround within the agreed limit, discrepancies resolved, quotes accepted (values set by agreement) & Co-leads, funder, custodian & Hold L2; fix or narrow \\
-G1B & Hardness transfers to host composites on the bench (week 8) & Reviewer, host & Drop hardness endpoint \\
-G1M & Mineral estimates beat a metadata baseline on bench composites (week 8) & Reviewer, mineralogist & Drop mineral endpoint; return sensor if G1B also fails \\
+G1B & Hardness transfers to host composites on the bench (week 8) & Reviewer, host & Table~\ref{tab:benchmatrix} \\
+G1M & Mineral estimates beat a metadata baseline on bench composites (week 8) & Reviewer, mineralogist & Table~\ref{tab:benchmatrix} \\
 G2 & Risk assessment, read-only design, site acceptance (week 10) & Host OT, safety & Repair or remove \\
 G1A & Microscope targets met on locked specimens (week 20) & Reviewer, host & Image review only \\
 G3 & Belt shadow targets for hardness and minerals: coverage, timing, drift, refusals (week 20) & Metallurgist & Extend or stop \\
 G4 & Envelope, change management, training, rollback (week 21) & Change board & No advisory window \\
 G5 & Independently measured net value and total cost (after the pilot) & Auditor, host & No success fee \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Bench outcome matrix (week 8). A minerals-only path cannot claim the hardness-derived 1.7--1.9\% throughput simulation.}
+\label{tab:benchmatrix}
+\begin{tabularx}{\columnwidth}{@{}L{0.75cm}L{0.75cm}Y@{}}
+\toprule
+G1B & G1M & Proposed outcome \\
+\midrule
+Pass & Pass & Both endpoints proceed, subject to G2 and release approval \\
+Pass & Fail & Hardness only; mineral claims and unneeded R-M orders removed \\
+Fail & Pass & Minerals only, after a mineral-driven decision, compatible hardware and a revised value and acceptance plan are approved; otherwise shadow only \\
+Fail & Fail & No installation; leased equipment returned under contract; laboratory track judged separately \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -660,7 +657,7 @@ AI coding assistants helped with code and drafting. Model and simulation results
 \scriptsize
 % =====================================================================
 \begin{thebibliography}{99}\setlength{\itemsep}{-1.8pt}
-\item[] \hspace{-\labelsep}\textit{All URLs were opened on 5 or 7 October 2026.}
+\item[] \hspace{-\labelsep}\textit{All URLs were opened on 5, 7 or 8 October 2026.}
 \bibitem{trl} European Commission, ``Technology readiness levels (TRL),'' Horizon 2020 Work Programme 2014--2015, General Annex G, 2014. [Online]. Available: \url{https://ec.europa.eu/research/participants/data/ref/h2020/wp/2014_2015/annexes/h2020-wp1415-annex-g-trl_en.pdf}
 \bibitem{brief} Mintek, ``Problem 3: Computer vision for real-time mineralogical characterisation,'' Mintek--SCi Grad Hackathon 2026 problem statement, provided to participants, 2026.
 \bibitem{moodley2026} T.~L. Moodley, I. Govender, S. Nkwanyana, V. Govender, and J. Tshilongo, ``Mineralogy-constrained interpretation of rougher flotation kinetics in a copper sulphide ore,'' \emph{Results in Engineering}, vol.~32, p.~112959, 2026, doi:10.1016/j.rineng.2026.112959.
@@ -700,6 +697,7 @@ AI coding assistants helped with code and drafting. Model and simulation results
 \bibitem{pfma} National Treasury, ``Public entities listed in the PFMA schedules,'' 1 Dec. 2024. [Online]. Available: \url{https://www.treasury.gov.za/legislation/pfma/public%20entities/2024-12-01%20Nat%20depts%20and%20ents.pdf}
 \bibitem{sanas} South African National Accreditation System (SANAS). [Online]. Available: \url{https://www.sanas.co.za/}
 \bibitem{mqa} Mining Qualifications Authority. [Online]. Available: \url{https://www.mqa.org.za/}
+\bibitem{rodare} S.~T. Thiele \emph{et al.}, ``Data for upscaling mineralogy with hyperspectral data: a benchmark dataset and machine learning framework to enable hyperspectral geometallurgy,'' RODARE, 2026, doi:10.14278/rodare.4582. [Online]. Available: \url{https://rodare.hzdr.de/record/4582}
 \end{thebibliography}
 \normalsize
 
@@ -711,7 +709,7 @@ AI coding assistants helped with code and drafting. Model and simulation results
 
 {\raggedright
 \noindent\emph{Evidence manifest} (\texttt{report/EVIDENCE\_MANIFEST.md}): public revision \sha{85061d4}, full checkpoint hashes, local packages. \emph{Tests} (overlapping counts): public 181 unit, 7 browser, 328 belt; local 321 passed, 4 skipped. \emph{Smoke checks:} 52.9 and 72.9\,s on one image; zero retained support; control held.
-\emph{B02, exploratory copper-data training} (local; settings fixed in advance; 99 records, 36 composites, grouped folds): six-component PLS errors were 0.28, 0.67 and 1.34 points for chalcopyrite, pyrite and quartz (earlier spectral ridge 0.40, 0.75, 1.93; a metadata lookup, still better, 0.17, 0.39, 1.33), and 0.62, 0.98, 3.62 on unseen process lines. Above an exploratory 1\,wt\% floor, 41.5\%, 27.8\% and 85.9\% were within 10\% relative error in grouped folds and 21/65, 10/79 and 49/99 on unseen lines. A kernel model improved chalcopyrite transfer (0.40) but worsened quartz (5.71). A copper development experiment: no PGM accuracy, independent test or TRL change.
-\emph{B03:} two separately identified exports were then built, an app-integrated PLS export and a standalone SNV service, processing recorded mean spectra, not live imagery. The integrated export accepted altered inputs ($\times$100, reversed bands), giving clipped estimates with advice withheld; input provenance and reference binding are pending correction, and the two are not combined.\par}
+\emph{B02} (copper development data; 99 records, 36 composites, grouped folds): six-component PLS errors 0.28, 0.67 and 1.34 points for chalcopyrite, pyrite and quartz, rising to 0.62, 0.98 and 3.62 on unseen process lines (21/65, 10/79, 49/99 within 10\% relative above an exploratory 1\,wt\% floor); a metadata lookup was still better (0.17, 0.39, 1.33) and a kernel model traded chalcopyrite for quartz. \emph{B04} (8 October): three extraction recipes had phase-dependent effects (unseen-line chalcopyrite 0.62 to 0.57, pyrite 0.98 to 1.15, quartz 3.62 to 2.98 points); none met the target or replaced the model. Neither gives PGM accuracy or changes TRL.
+\emph{B03} (recorded mean spectra, not live imagery): an app-integrated PLS export and a separate SNV service. The demonstration now rejects altered intake records and recomputes saved estimates from pinned inputs and weights before laboratory comparison, so the earlier forged-result case is refused; storage-error classification still needs correction. This is software consistency, not custody, acquisition validity or PGM performance.\par}
 
 \end{document}
