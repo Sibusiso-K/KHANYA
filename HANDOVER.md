@@ -1,3 +1,16 @@
+## 2026-10-08 (late night) — Sibusiso (Claude) — v18: v17 review final fixes
+
+- **Release checked signed out:** an unauthenticated download of the release ZIP returned HTTP 200, and 8/8 SHA-256 checks passed. The reviewer's fetch failure was on their side; the ZIP is also sent directly with the PDF.
+- **Precision and recall restored** in the supporting-evidence note (historical de7135a9); evidence cut-off stated as 8 Oct 2026.
+- **Table 12** moved back with §8, before the conclusion; references no longer interrupted; bibliography font restored to scriptsize.
+- **Duplicate acknowledgement** removed.
+- **§6.2:** "44 microscope analyses (40 distinct specimens plus four repeats)".
+- **§6.1** restores: "the host trial must test incremental value against existing control and blending practice".
+- **TIA paragraph** shortened to fit.
+- **Not added:** DEV-CMP-1 (Lethabo's latest copper-analogue experiment, not run by Claude); the evidence cut-off covers it. Its correction runs are not validated yet.
+
+---
+
 ## 2026-10-08 (night) — Sibusiso (Claude) — v17: v16 review (84/100) closeout
 
 - **Evidence ZIP:** delivered as v17 (report/evidence/REEFPRINT_report_evidence_v17.zip). Claude verified it: 8/8 checksums OK, ledger tranches reconcile, replay +1.7% [+0.8, +2.7] reproduced. Published as GitHub release report-evidence-v17.
