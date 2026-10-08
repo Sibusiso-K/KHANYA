@@ -1,3 +1,29 @@
+## 2026-10-08 (later) — Sibusiso (Claude) — v15: v14 review (76/100) applied
+
+**Input:** `REEFPRINT_V14_REPORT_REVIEW_20261008.md`. Still 12 pages; `chk.py` is clean.
+
+**Required changes 1–12:**
+1. **RODARE (§8):** "not yet inspected / not yet trained" replaced by the review's wording: inspected, exploratory site-held-out experiments, a 20-specimen alignment comparison with no material gain, mask, alignment and provenance problems, computational (not physical) reproducibility, drillhole crosswalk missing.
+2. **Storage (App. A):** v3.1 storage-error defects closed (simulated faults only). The subject is now "tested local integrated build"; the public demo does not serve it.
+3. **New title:** "REEFPRINT/KHANYA: belt mineralogy decision support. Analogue-data evidence and a staged PGM validation plan". The abstract separates the intended product, the current implementation and demonstrated performance.
+4. **Figure 1:** the microscope box shows phase-area estimates with advice withheld; the feed-rate box reads "proposed; not integrated".
+5. **§7.2:** a proposed mineral decision as a hypothesis: UG2 or Merensky (host to confirm); decision-critical phases named by the host mineralogist (candidates: sulphides, and chromite for UG2); operator-reviewed blend/hold/investigate; checked against mineralogy on the matched cut; no PGM-grade assumption; thresholds set by host specialists.
+6. **Timing (§2.3):** transit counted from the last scanned line; the 90 s is a shared budget; advice expires; vendor line rate and p50/p95/p99 with backlog required.
+7. **Sample ledger:** 77 = 70 + 7 preparation duplicates; 44 microscope = 10 + 30 + 4 repeats; 44 belt = 20 + 24. Belt-composite preparation scope awaits the vendor; G0 split plan.
+8. **P0 is the first request:** allowance capped at **R210,000** (the earlier first-tranche figure, reused as a labelled allowance until quoted); proposed TIA or host funding; joint co-lead and funder approval; deliverables listed. The abstract asks for P0 first, with the pilot conditional.
+9. **New `report/PILOT_COST_LEDGER.csv`:** line → tranche, payer, release, commitment, cancellation, contingency. It derives L1 = R1.75 M and L2 = R2.72 M (Table 3 updated; total unchanged at R10.69–13.15 M). Belt-mineral reference eligibility follows the belt component.
+10. **Replay interval rerun:** `report/tools/replay_envelope.py` on inputs pinned at ab333071 reproduces the unclipped +1.9% [+0.9, +2.9] and gives clipped **+1.7% [+0.8, +2.7]**. The old +0.7 was wrong; the earlier audit's +0.8 was right. Output is in `report/evidence/replay_envelope.json`.
+11. **TRL:** microscope row is now "provisional laboratory proof of concept; advice unvalidated"; bench gates are "readiness screens"; a level needs an integrated demonstration and assessor review.
+12. **Appendix:** precision and recall restored; manifest now has a pinned commit link and a historical vs active build vs public demo table.
+
+**Other edits:** "two measurement cadences, one operator workflow"; "Today" capitalised; "sampling pitch" not "pixels"; the magnetite claim is limited to this dataset; lease cash cost vs depreciation noted.
+
+**Cut for space:** §4.3 merged into §4.2; daily routine as one sentence; risks merged (P1+P2, P3+P4 → 9 rows); team and Table 1 cells shortened; test counts moved to the manifest.
+
+**Open (Lethabo):** v3.1 release ID and hash; STORAGE_V31 and RODARE audit identifiers; confirm the R210k P0 allowance; obtain the 2026 brief and rubric.
+
+---
+
 ## 2026-10-08 — Sibusiso (Claude) — v14: gates and spending reconciled; build status updated (binding v2/v3, B04, methods roadmap)
 
 **Inputs:**
