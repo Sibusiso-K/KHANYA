@@ -1,3 +1,15 @@
+## 2026-10-08 (night) — Sibusiso (Claude) — v17: v16 review (84/100) closeout
+
+- **Evidence ZIP:** delivered as v17 (report/evidence/REEFPRINT_report_evidence_v17.zip). Claude verified it: 8/8 checksums OK, ledger tranches reconcile, replay +1.7% [+0.8, +2.7] reproduced. Published as GitHub release report-evidence-v17.
+- **Sample-size sentence:** 29/29 and 45/46 are now described as illustrative lower-bound outcomes, not a powered design; at a true 95% pass rate, 29/29 has about a 23% chance (computed).
+- **Phase/sensor:** P0 picks phases with the host and laboratory and checks the sensor carries enough information for them; any change of phase set is declared before evaluation.
+- **Table 5 outcome:** alert metrics first (lead time, false alerts); avoided off-spec feed counted only if a host intervention is executed.
+- **Schedule:** about 3 months of P0 plus the 6-month pilot, roughly 9 months in total (not a deadline).
+- **Smaller fixes:** abstract says relative error above reporting limits; TRL row reads public analogue data; dangling sentence fixed; outputs evaluated unrounded; B02 counts restored (full set in the manifest).
+- **Layout:** Appendix A became a "Supporting evidence" note before the references; bibliography font set to 6.6 pt.
+
+---
+
 ## 2026-10-08 (evening) — Sibusiso (Claude) — v16: v15 review (81/100) applied; evidence package delivered
 
 **Input:** `REEFPRINT_V15_REPORT_REVIEW_20261008.md`. Still 12 pages; chk.py clean.

@@ -1,4 +1,4 @@
-"""Build report/evidence/REEFPRINT_report_evidence_v16.zip. Run from report/."""
+"""Build report/evidence/REEFPRINT_report_evidence_v17.zip. Run from report/."""
 import hashlib, json, subprocess, sys, zipfile, platform
 
 COMMIT = "ab333071d184fa8f853ea96e78fd81a2f948d547"
@@ -14,9 +14,9 @@ files = {
 for p in INPUTS:
     files["inputs/" + p] = subprocess.check_output(["git", "show", f"{COMMIT}:{p}"])
 out = json.load(open("evidence/replay_envelope.json"))
-readme = f"""# REEFPRINT/KHANYA report evidence package (v16, 8 October 2026)
+readme = f"""# REEFPRINT/KHANYA report evidence package (v17, 8 October 2026)
 
-Supports report v16 (report/main.tex). Planning allowances are not quotes; software checks are not accuracy results.
+Supports report v17 (report/main.tex). Planning allowances are not quotes; software checks are not accuracy results.
 
 ## Contents
 - PILOT_COST_LEDGER.csv: every pilot cost line with tranche, proposed payer, release condition, commitment point,
@@ -41,8 +41,8 @@ Supports report v16 (report/main.tex). Planning allowances are not quotes; softw
 files["README.md"] = readme.encode()
 sums = "".join(f"{hashlib.sha256(v).hexdigest()}  {k}\n" for k, v in sorted(files.items()))
 files["SHA256SUMS"] = sums.encode()
-with zipfile.ZipFile("evidence/REEFPRINT_report_evidence_v16.zip", "w", zipfile.ZIP_DEFLATED) as z:
+with zipfile.ZipFile("evidence/REEFPRINT_report_evidence_v17.zip", "w", zipfile.ZIP_DEFLATED) as z:
     for k, v in files.items():
         z.writestr(k, v)
 print(sums)
-print("zip sha256", hashlib.sha256(open("evidence/REEFPRINT_report_evidence_v16.zip", "rb").read()).hexdigest())
+print("zip sha256", hashlib.sha256(open("evidence/REEFPRINT_report_evidence_v17.zip", "rb").read()).hexdigest())

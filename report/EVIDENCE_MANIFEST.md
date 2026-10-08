@@ -48,3 +48,8 @@ Pinned link: https://github.com/Sibusiso-K/KHANYA/commit/85061d418d8938cf79ba740
 | RODARE development work and v3.1 storage audit (8 Oct 2026) | §8 RODARE status; Appendix A storage closure | STORAGE_V31_AUDIT and RODARE audit packages; **identifiers to be added by the build owner**; reported by reviewer, not rerun by Claude | L. Hoaeane |
 
 Counts from different packages overlap and must not be added. None of these packages contains independent local specimens or laboratory references.
+
+## B02 / B04 full results (moved from Appendix A, v17)
+
+B02 (reused HIDSAG copper data, 99 records, 36 composites, composite-grouped folds; exploratory 1 wt% floor): PLS-6 MAE 0.28 / 0.67 / 1.34 pp (chalcopyrite / pyrite / quartz); unseen process line 0.62 / 0.98 / 3.62; within 10% relative 41.5% / 27.8% / 85.9% (grouped) and 21/65, 10/79, 49/99 (unseen line). Metadata lookup 0.17 / 0.39 / 1.33 (better). Kernel model: chalcopyrite transfer 0.40, quartz 5.71.
+B04: unseen-line chalcopyrite 0.62→0.57, pyrite 0.98→1.15, quartz 3.62→2.98; within 10%: 20/65, 7/79, 56/99; no recipe promoted.
