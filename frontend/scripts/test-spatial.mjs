@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+const source = readFileSync(new URL('../src/spatialData.ts', import.meta.url), 'utf8');
+const js = ts.transpileModule(source, {compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const {parseSurvey} = await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`);
+const fixture = {type:'FeatureCollection',features:[{type:'Feature',properties:{id:'TEST-01',sample_id:'test_11',depth_m:120},geometry:{type:'Point',coordinates:[28,-26,1500]}},{type:'Feature',properties:{id:'TEST-02',sample_id:'test_01',depth_m:90},geometry:{type:'Point',coordinates:[28.002,-25.999,1490]}}]};
+const parse = x => parseSurvey(JSON.stringify(x),'test.geojson');
+let count=0;
+function test(name, fn){fn();console.log(`PASS ${name}`);count++;}
+test('preserves geographic coordinates and sample IDs',()=>{const s=parse(fixture);assert.deepEqual(s.original,fixture);assert.equal(s.points[0].sampleId,'test_11');assert.equal(s.points[0].elevation,1500);});
+test('north maps toward negative Z and east toward positive X',()=>{const s=parse(fixture);assert(s.points[1].x>s.points[0].x);assert(s.points[1].z<s.points[0].z);});
+test('rejects legacy projected CRS',()=>assert.throws(()=>parse({...fixture,crs:{type:'name'}}),/WGS84/));
+test('rejects duplicate identifiers',()=>assert.throws(()=>parse({...fixture,features:[fixture.features[0],fixture.features[0]]}),/unique/));
+test('requires numeric depth',()=>{const x=structuredClone(fixture);x.features[0].properties.depth_m='120';assert.throws(()=>parse(x),/depth_m/);});
+test('rejects negative depth',()=>{const x=structuredClone(fixture);x.features[0].properties.depth_m=-1;assert.throws(()=>parse(x),/depth_m/);});
+test('requires 3D points, not silent zero elevation',()=>{const x=structuredClone(fixture);x.features[0].geometry.coordinates.pop();assert.throws(()=>parse(x),/elevation/);});
+test('rejects projected metres passed as longitude',()=>{const x=structuredClone(fixture);x.features[0].geometry.coordinates[0]=500000;assert.throws(()=>parse(x),/bounds/);});
+test('rejects sites beyond the supported radius',()=>{const x=structuredClone(fixture);x.features[1].geometry.coordinates[0]=30;assert.throws(()=>parse(x),/25 km/);});
+test('rejects empty and oversized collections',()=>{assert.throws(()=>parse({type:'FeatureCollection',features:[]}),/1–500/);assert.throws(()=>parse({type:'FeatureCollection',features:Array(501).fill(fixture.features[0])}),/1–500/);});
+test('rejects line geometries',()=>{const x=structuredClone(fixture);x.features[0].geometry.type='LineString';assert.throws(()=>parse(x),/Point/);});
+test('single point has a nonzero scene span',()=>{const s=parse({...fixture,features:[fixture.features[0]]});assert(s.span>=100);assert(Number.isFinite(s.points[0].y));});
+console.log(`${count} spatial contract tests passed.`);

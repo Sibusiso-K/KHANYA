@@ -1,0 +1,25 @@
+{
+  "commit": "ab333071d184fa8f853ea96e78fd81a2f948d547",
+  "bootstrap": {
+    "units": "samples",
+    "B": 4000,
+    "seed": 1,
+    "interval": "percentile 2.5/97.5"
+  },
+  "deployed_unclipped": {
+    "throughput_vs_blind_p90": 0.0193174572741468,
+    "ci95": [
+      0.009131021173504162,
+      0.029118911714911933
+    ],
+    "overload_share": 0.0684931506849315
+  },
+  "deployed_envelope_85_110": {
+    "throughput_vs_blind_p90": 0.01747871066340001,
+    "ci95": [
+      0.007891091186496052,
+      0.026586402592056822
+    ],
+    "overload_share": 0.0684931506849315
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "lethabomh14/reefprint-s2-extended-dice",
+  "title": "REEFPRINT S2 extended-dice",
+  "code_file": "experiment.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": []
+}

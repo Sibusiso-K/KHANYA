@@ -1,0 +1,14 @@
+{
+  "variant": "extended-dice",
+  "run_id": "20260930-s2-seed42-extended-dice-v1",
+  "seed": 42,
+  "epochs": 24,
+  "patches_per_epoch": 192,
+  "loss": "CE+Dice",
+  "selection": "native full-validation foreground macro IoU",
+  "test_evaluation": false,
+  "automatic_deployment": false,
+  "crop_policy": "native512px",
+  "source_sha": "4cffd60c88fea1a7553f8f154040cf2ce93f7312f0571f3dc6784b5938988528",
+  "promotion": "Compare same validation sections; require rare-phase recall/IoU and no substantial common-phase regression; independent quality review before final test/deployment."
+}

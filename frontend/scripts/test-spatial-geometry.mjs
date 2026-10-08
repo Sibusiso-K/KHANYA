@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+import {test} from 'node:test';
+const source = readFileSync(new URL('../src/spatialGeometry.ts', import.meta.url), 'utf8');
+const js = ts.transpileModule(source, {compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const {fitMap,localToWgs84,gridInterval,inSection,zoomMap} = await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`);
+test('map fits extents at a fixed aspect without compressing one coordinate axis',()=>{const points=[{x:-250,z:-100},{x:250,z:100}];const e=fitMap(points,1.5);assert.equal(e.width/e.height,1.5);assert(e.width>=500&&e.height>=200);assert.equal(e.cx,0);assert.equal(e.cz,0);});
+test('query exactly inverts the existing local equirectangular projection',()=>{const origin=[28,-26,1300];const lon=28.002,lat=-25.999;const x=(lon-origin[0])*111320*Math.cos(origin[1]*Math.PI/180),z=-(lat-origin[1])*111320;const result=localToWgs84(x,z,origin);assert(Math.abs(result[0]-lon)<1e-10);assert(Math.abs(result[1]-lat)<1e-10);});
+test('section excludes records beyond corridor while including boundary records',()=>{const points=[{id:'a',z:-50},{id:'b',z:50},{id:'c',z:50.001}];assert.deepEqual(inSection(points,0,100).map(p=>p.id),['a','b']);assert.deepEqual(inSection(points,100,20),[]);});
+test('single collar and empty survey produce a finite nonzero viewport',()=>{for(const points of [[],[{x:0,z:0}]]){const e=fitMap(points);assert(Number.isFinite(e.width)&&e.width>0);assert(Number.isFinite(e.height)&&e.height>0);}});
+test('zoom preserves aspect and bounds without negative or microscopic extents',()=>{const e={cx:20,cz:30,width:100,height:60};assert.deepEqual(zoomMap(e,.5),{cx:20,cz:30,width:50,height:30});assert.equal(zoomMap(e,1e-9).width,1);assert.equal(zoomMap(e,1e12).width,250000);assert.equal(gridInterval(1200),200);});

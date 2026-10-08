@@ -1,0 +1,59 @@
+name: Offline frontend bundle
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: offline frontend bundle
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: Confirm the committed bundle matches the source
+        working-directory: .
+        run: |
+          git ls-files --error-unmatch frontend/dist/index.html
+          git diff --exit-code HEAD -- frontend/dist
+      - name: Static assets must not depend on external hosts
+        working-directory: .
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, sys
+          pattern = re.compile(r"https?://")
+          allowed_prefix = "http://www.w3.org/"
+          bad = []
+          for path in Path("frontend/dist").rglob("*"):
+              if not path.is_file() or path.suffix not in {".css", ".html", ".svg"}:
+                  continue
+              text = path.read_text(encoding="utf-8")
+              for match in pattern.finditer(text):
+                  if text[match.start():].startswith(allowed_prefix):
+                      continue
+                  bad.append(f"{path}: {match.group(0)}")
+          if bad:
+              print("\n".join(bad))
+              sys.exit("Static frontend asset contains an external URL")
+          print("no external asset dependencies (SDK JavaScript may contain documentation URLs; runtime checked below)")
+          PY
+      - name: Verify local-mode UI has no external requests
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e -- --workers=1

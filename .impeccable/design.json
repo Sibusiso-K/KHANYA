@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-30T11:32:18.6254374Z",
+  "title": "Design System: REEFPRINT",
+  "extensions": {
+    "colorMeta": {
+      "blue": {
+        "role": "primary",
+        "displayName": "Workbench blue"
+      },
+      "active-nav-copper": {
+        "role": "secondary",
+        "displayName": "Active navigation copper"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "White instrument surface"
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Workspace heading",
+        "purpose": "27px desktop; 25px at 1000px and 22px at 700px."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Paragraph text; dense captions and provenance use local 11px rules."
+      }
+    },
+    "shadows": [
+      {
+        "name": "selected-segment",
+        "value": "0 1px 3px #17304e0a",
+        "purpose": "Selected segmented control."
+      },
+      {
+        "name": "spatial-mode-badge",
+        "value": "0 2px 6px #152a3610",
+        "purpose": "Source/mode label over the canvas."
+      }
+    ],
+    "motion": [
+      {
+        "name": "button-background",
+        "value": "background .15s",
+        "purpose": "Button hover transition."
+      },
+      {
+        "name": "image-transform",
+        "value": "transform .18s",
+        "purpose": "Image zoom transform."
+      },
+      {
+        "name": "inference-spinner",
+        "value": "spin 1.2s linear infinite",
+        "purpose": "Pending inference status; reduced-motion media query removes transitions and reduces animation duration to .01ms."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile-max",
+        "value": "700px"
+      },
+      {
+        "name": "two-column-max",
+        "value": "1000px"
+      },
+      {
+        "name": "compact-desktop-max",
+        "value": "1250px"
+      },
+      {
+        "name": "large-desktop-min",
+        "value": "1600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Explicit analysis or workflow action; disabled until its prerequisites exist.",
+      "html": "<button class=\"ds-button\">Open mineral analysis</button>",
+      "css": ".ds-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:9px 13px;border:1px solid var(--blue,#22578d);border-radius:6px;background:var(--blue,#22578d);color:#fff;font-family:'Public Sans Variable','Segoe UI',sans-serif;font-size:12px;font-weight:550;cursor:pointer;transition:background .15s}.ds-button:hover:not(:disabled){background:#18466f}.ds-button:focus-visible{outline:3px solid #2e70df;outline-offset:3px}.ds-button:disabled{opacity:.45;cursor:not-allowed}@media(max-width:700px){.ds-button{min-height:40px}}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}"
+    },
+    {
+      "name": "Spatial source badge",
+      "kind": "chip",
+      "description": "Persistent disclosure attached to the illustrative canvas.",
+      "html": "<span class=\"ds-source-badge\">Illustrative geology · not inferred</span>",
+      "css": ".ds-source-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 7px;border-radius:4px;background:#fff3d7;color:#856013;font-family:'Public Sans Variable','Segoe UI',sans-serif;font-size:11px;font-weight:550;line-height:1.3;white-space:nowrap;box-shadow:0 2px 6px #152a3610}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Approved white three-panel workbench; no additional creative metaphor approved.",
+    "overview": "White bordered instrument panels, restrained blue actions and a copper active navigation state refine the approved workbench. Public Sans Variable supports compact labels and tabular values. Source imagery, checkpoint provenance and visible limitations govern the presentation.",
+    "keyCharacteristics": [
+      "White instrument panels",
+      "Compact Public Sans Variable typography",
+      "Independent phase and geological-domain palettes",
+      "Dedicated phase identification, accuracy and simulator workflows"
+    ],
+    "rules": [
+      {
+        "name": "Separate colour meanings",
+        "body": "Mineral class colours, synthetic geological domain colours and interface state colours remain independent.",
+        "section": "colors"
+      },
+      {
+        "name": "Flat by default",
+        "body": "Borders and tonal fills structure UI panels; tiny shadows belong to selected segments and the canvas mode badge.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep source and checkpoint labels with results.",
+      "Do identify procedural geology as synthetic and unlinked to S2 images.",
+      "Do distinguish uncalibrated confidence from recorded accuracy.",
+      "Do show simulator scope and actual response."
+    ],
+    "donts": [
+      "Don't invent assays, grade, recovery gains or inferred orebody geometry.",
+      "Don't imply that the current analysis sample is located at a demo point.",
+      "Don't claim local records are cloud synced."
+    ]
+  }
+}

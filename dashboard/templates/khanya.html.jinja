@@ -48,50 +48,59 @@ depending on how Streamlit happens to serve static files this version.
 @font-face { font-family:'Plus Jakarta Sans'; src:url('data:font/ttf;base64,{{ font_sans_b64 }}') format('truetype'); font-weight:300 700; font-display:swap; }
 @font-face { font-family:'JetBrains Mono'; src:url('data:font/ttf;base64,{{ font_mono_regular_b64 }}') format('truetype'); font-weight:400; font-display:swap; }
 @font-face { font-family:'JetBrains Mono'; src:url('data:font/ttf;base64,{{ font_mono_bold_b64 }}') format('truetype'); font-weight:700; font-display:swap; }
-body { background:#00131D; color:#E3EAEB; font-family:'Plus Jakarta Sans',sans-serif; overflow-x:hidden; }
-.reticle-grid { background-image:
-  linear-gradient(to right, rgba(30,62,75,0.25) 1px, transparent 1px),
-  linear-gradient(to bottom, rgba(30,62,75,0.25) 1px, transparent 1px);
-  background-size:40px 40px; }
+body { background:#F4F6F8; color:#1D2B35; font-family:'Plus Jakarta Sans',sans-serif; overflow-x:hidden; }
+header { background:#FFFFFF !important; border-color:#DDE4E8 !important; }
+header > div:nth-child(2) { background:#F8FAFB !important; border-color:#E3E8EB !important; }
+main { max-width:1840px !important; padding:18px 24px 24px !important; }
+footer { background:#FFFFFF !important; border-color:#DDE4E8 !important; color:#65737D !important; }
+.bg-background { background-color:#F4F6F8 !important; }
+.bg-surface { background-color:#FFFFFF !important; }
+.bg-surface-container { background-color:#F5F8F9 !important; }
+.bg-surface-container-lowest { background-color:#FBFCFD !important; }
+.bg-surface-container-high { background-color:#E9EFF1 !important; }
+.text-on-surface { color:#1D2B35 !important; }
+.text-on-surface-variant { color:#63717B !important; }
+.text-teal-accent { color:#267C75 !important; }
+.text-primary { color:#B8572C !important; }
+.text-warning { color:#805810 !important; }
+.border-outline,.border-outline\/40,.border-outline\/60,.border-outline\/70,.border-outline\/90 { border-color:#DCE4E8 !important; }
+.border-primary { border-color:#C36537 !important; }
+.shadow-elevation-1,.shadow-elevation-2 { box-shadow:0 5px 18px rgba(27,47,58,.08),0 0 0 1px rgba(27,47,58,.04) !important; }
+.bg-\[\#00131D\]\/90 { background-color:#FFFFFF !important; }
+.result-grid { display:grid; grid-template-columns:minmax(0,2fr) minmax(260px,1fr) minmax(260px,1fr); gap:16px; align-items:start; }
+.result-grid > div:first-child,.result-grid > div:nth-child(2),.result-grid > .spatial-context { min-width:0; }
+.result-grid > div:first-child { grid-column:1; grid-row:1; }
+.result-grid > .spatial-context { grid-column:2; grid-row:1; }
+.result-grid > div:nth-child(2) { grid-column:3; grid-row:1; }
+.result-card { background:#FFFFFF; border:1px solid #DCE4E8; border-radius:10px; box-shadow:0 5px 18px rgba(27,47,58,.07); }
+.image-frame { min-height:300px; background:#101820; }
+.image-frame img { width:100%; height:100%; min-height:300px; object-fit:contain; }
+.spatial-placeholder { min-height:220px; position:relative; overflow:hidden; border:1px solid #DCE4E8; border-radius:8px; background:linear-gradient(160deg,#F5F8F6,#E8EFEB); }
+.spatial-block { position:absolute; inset:25px 22px 38px; clip-path:polygon(0 28%,45% 0,100% 20%,100% 78%,54% 100%,0 76%); background:linear-gradient(150deg,#E0E9E2 0 30%,#D1DED4 30% 55%,#E9EEE7 55% 100%); border:1px solid #AFBEB3; }
+.spatial-strata { position:absolute; left:0; right:0; height:2px; background:#94A99A; opacity:.7; transform:rotate(-9deg); }
+.spatial-strata.one{top:76px}.spatial-strata.two{top:112px}.spatial-strata.three{top:150px}
+.spatial-hole { position:absolute; top:22px; bottom:27px; width:5px; border:1px solid #FFFFFF; border-radius:6px; background:linear-gradient(#6D9180 0 22%,#C37B4C 22% 48%,#91A99D 48% 74%,#6F8996 74%); }
+.spatial-hole.one{left:30%}.spatial-hole.two{left:62%}
+.spatial-heading { align-items:flex-start !important; flex-wrap:wrap; gap:4px 8px; }
+.spatial-heading > span:last-child { white-space:normal; line-height:1.35; }
+.data-warning { background:#FFF8E9; border:1px solid #EDDBAA; color:#715A22; border-radius:7px; padding:10px; font-size:11px; line-height:1.5; }
+.xrf-placeholder { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:10px; }
+.xrf-placeholder div { background:#F6F8F9; border:1px solid #E3E8EB; border-radius:6px; padding:8px 5px; text-align:center; font:10px 'JetBrains Mono',monospace; color:#7A8790; }
+.result-lower { display:grid; grid-template-columns:1fr 1.35fr; gap:16px; margin-top:16px; }
+.score-row,.flow-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.score-tile,.flow-step { border:1px solid #E0E6E9; border-radius:8px; background:#F8FAFB; padding:12px; }
+.score-tile b { display:block; font:700 21px 'JetBrains Mono',monospace; color:#254B5F; }
+.score-tile small,.flow-step small { display:block; color:#64737D; font-size:10px; line-height:1.4; margin-top:5px; }
+.flow-step b { display:block; font-size:11px; color:#213541; margin-bottom:5px; }
+.flow-step.emphasis { background:#F1F7F5; border-color:#B8D5CB; }
+.reticle-grid { background-image:linear-gradient(to right,rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.12) 1px,transparent 1px); background-size:40px 40px; }
+@media(max-width:1100px){.result-grid{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}.result-grid > div:first-child{grid-column:1 / -1 !important;grid-row:auto}.result-grid > .spatial-context,.result-grid > div:nth-child(2){grid-column:auto;grid-row:auto}.result-lower{grid-template-columns:1fr}}
+@media(max-width:680px){main{padding:12px !important}.result-grid{grid-template-columns:1fr}.result-grid > div:first-child,.result-grid > div:nth-child(2),.result-grid > .spatial-context{grid-column:1 !important;grid-row:auto !important}.image-frame,.image-frame img{min-height:230px}.score-row,.flow-row{grid-template-columns:1fr}.spatial-placeholder{min-height:190px}}
 </style>
 </head>
 <body class="min-h-screen bg-background antialiased selection:bg-primary selection:text-white">
 
-<header class="w-full bg-[#00131D]/90 border-b border-outline/70">
-  <div class="h-14 px-6 md:px-8 flex items-center justify-between gap-4">
-    <div class="flex items-center gap-4 min-w-0">
-      <div class="flex items-center gap-2.5 shrink-0">
-        <div class="h-8 px-2 bg-primary flex items-center justify-center rounded-[3px] shadow-[0_0_15px_rgba(210,45,32,0.4)]">
-          <span class="font-mono text-[11px] font-black tracking-widest text-white">MINTEK-SCI</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="font-sans text-[15px] font-bold tracking-[0.22em] text-on-surface uppercase">REEFPRINT :: KHANYA</span>
-          <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-surface-container border border-outline text-teal-accent font-semibold tracking-wider">prototype</span>
-        </div>
-      </div>
-      <div class="h-4 w-[1px] bg-outline hidden sm:block"></div>
-      <div class="hidden lg:flex items-center gap-2 text-[11px] font-mono tracking-[0.18em] text-on-surface-variant uppercase">
-        <span class="text-teal-accent">{{ subset_label }}</span>
-      </div>
-    </div>
-    <div class="flex items-center gap-4 shrink-0">
-      <div class="hidden md:flex flex-col text-right">
-        <span class="font-mono text-[11px] font-semibold text-on-surface tracking-wider">Team Sonar</span>
-        <span class="font-mono text-[9px] uppercase tracking-[0.2em] text-on-surface-variant">Mintek-SCi Grad Hackathon 2026</span>
-      </div>
-    </div>
-  </div>
-  <div class="h-10 px-6 md:px-8 bg-surface-container-lowest/80 border-t border-outline/40 flex items-center justify-between text-[11px]">
-    <nav class="flex items-center gap-1 overflow-x-auto">
-      <a class="h-10 px-4 flex items-center gap-2 border-b-2 border-primary text-on-surface font-semibold tracking-[0.16em] uppercase" href="#">
-        <span class="">Ore Processability Advisor</span>
-      </a>
-    </nav>
-    <div class="hidden xl:flex items-center gap-4 text-on-surface-variant font-mono text-[10px] tracking-widest">
-      <span class="text-teal-accent font-semibold">S2 REFERENCE BAND · PROTOTYPE</span>
-    </div>
-  </div>
-</header>
+
 
 <main class="w-full max-w-[1720px] mx-auto px-4 md:px-8 py-6 flex flex-col gap-6">
 
@@ -141,7 +150,7 @@ body { background:#00131D; color:#E3EAEB; font-family:'Plus Jakarta Sans',sans-s
     </div>
   </section>
 
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+  <div class="result-grid grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
     <!-- Left: input versus measured phase mask -->
     <div class="lg:col-span-7 flex flex-col gap-6">
       <div class="rounded-lg bg-surface border border-outline shadow-elevation-2 p-5 md:p-6 flex flex-col gap-4 animate-fade-up" style="animation-delay:100ms">
@@ -154,13 +163,13 @@ body { background:#00131D; color:#E3EAEB; font-family:'Plus Jakarta Sans',sans-s
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
             <span class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">uploaded micrograph</span>
-            <div class="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-surface-container-lowest border border-outline/90">
+            <div class="image-frame relative w-full aspect-[4/3] rounded-md overflow-hidden bg-surface-container-lowest border border-outline/90">
               <img alt="Uploaded reflected-light micrograph" class="w-full h-full object-contain" src="data:image/png;base64,{{ input_micrograph_b64 }}">
             </div>
           </div>
           <div class="flex flex-col gap-2">
             <span class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">predicted mineral phases</span>
-            <div class="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-surface-container-lowest border border-outline/90">
+            <div class="image-frame relative w-full aspect-[4/3] rounded-md overflow-hidden bg-surface-container-lowest border border-outline/90">
               <img alt="Predicted mineral phases" class="w-full h-full object-contain" src="data:image/png;base64,{{ predicted_phases_b64 }}">
               <div class="absolute inset-0 reticle-grid pointer-events-none opacity-30"></div>
             </div>
@@ -269,7 +278,34 @@ body { background:#00131D; color:#E3EAEB; font-family:'Plus Jakarta Sans',sans-s
       </div>
       {% endif %}
     </div>
+
+    <!-- Geology/XRF context panel: display the missing-data state honestly. -->
+    <aside class="spatial-context rounded-lg bg-surface border border-outline shadow-elevation-1 p-4 flex flex-col gap-3">
+      <div class="spatial-heading flex items-center justify-between gap-2 pb-2 border-b border-outline">
+        <span class="font-mono text-xs font-bold tracking-[0.12em] uppercase text-on-surface">GEOLOGY / 3D CONTEXT</span>
+        <span class="font-mono text-[9px] text-on-surface-variant">NOT LINKED</span>
+      </div>
+      <div class="spatial-placeholder" role="img" aria-label="Illustrative geology schematic; no georeferenced survey data connected">
+        <div class="spatial-block"></div><i class="spatial-strata one"></i><i class="spatial-strata two"></i><i class="spatial-strata three"></i><i class="spatial-hole one"></i><i class="spatial-hole two"></i>
+      </div>
+      <div class="data-warning"><b>SCHEMATIC ONLY.</b> No collar coordinates, downhole survey or lithology intervals are linked. This is not a 3D model of the deposit.</div>
+      <div class="spatial-heading flex items-center justify-between pb-2 border-b border-outline pt-1"><span class="font-mono text-[11px] font-bold tracking-[0.12em] uppercase text-on-surface">FIELD XRF</span><span class="font-mono text-[9px] text-on-surface-variant">NO READINGS</span></div>
+      <div class="xrf-placeholder"><div>Cu<br>—</div><div>Ni<br>—</div><div>S<br>—</div></div>
+      <p class="text-[10px] text-on-surface-variant leading-relaxed">XRF measures elemental composition; it does not identify mineral phases. Link a reading to this sample when an instrument export is available.</p>
+    </aside>
   </div>
+
+  <section class="result-lower">
+    <article class="result-card p-4 flex flex-col gap-3">
+      <div class="flex items-center justify-between gap-2 pb-2 border-b border-outline"><span class="font-mono text-xs font-bold tracking-[0.12em] uppercase text-on-surface">VALIDATION · HELD-OUT S2</span><span class="font-mono text-[9px] text-on-surface-variant">LATEST KAGGLE RUN · 12 SECTIONS</span></div>
+      <div class="score-row"><div class="score-tile"><b>0.4543</b><small>mean IoU · five classes</small></div><div class="score-tile"><b>0.7716</b><small>pixel accuracy · not mineral accuracy</small></div><div class="score-tile"><b>0 / 4</b><small>magnetite IoU · class missed</small></div></div>
+      <p class="text-[10px] text-on-surface-variant leading-relaxed">Nonzero IoU for chalcopyrite, pyrrhotite and pentlandite. Benchmark results do not establish performance on South African ore or plant benefit.</p>
+    </article>
+    <article class="result-card p-4 flex flex-col gap-3">
+      <div class="flex items-center justify-between gap-2 pb-2 border-b border-outline"><span class="font-mono text-xs font-bold tracking-[0.12em] uppercase text-on-surface">MODEL OUTPUT → PROCESS SCENARIO</span><span class="font-mono text-[9px] font-bold text-warning">SIMULATION ONLY · NO LIVE CONTROL</span></div>
+      <div class="flow-row"><div class="flow-step"><b>1 · Model output</b><small>Measured predicted phases and confidence for this image.</small></div><div class="flow-step"><b>2 · Human-reviewed advisory</b><small>{{ recommendation.action }} · {{ recommendation.reason }}</small></div><div class="flow-step emphasis"><b>3 · Simulated plant parameter</b><small>{% if simulation_preview %}{{ simulation_preview.parameter }}: {{ simulation_preview.before }} → {{ simulation_preview.after }} · {{ simulation_preview.state|upper }}{% else %}No simulator command recorded for this run.{% endif %}</small></div></div>
+    </article>
+  </section>
 </main>
 
 <footer class="w-full border-t border-outline/60 bg-surface-container-lowest/90 mt-4 py-4 px-6 md:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-on-surface-variant font-mono text-[10px]">

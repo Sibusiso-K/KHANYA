@@ -190,7 +190,8 @@ _VERDICT_CSS = {
 
 def render(image, labels, mean_confidence, result, recommendation,
            mode_label="Full section, native resolution", elapsed_seconds=None,
-           opcua_status=None):
+           opcua_status=None, sample_title=None, sample_caption=None,
+           simulation_preview=None):
     """Render the dashboard for one measured field. Returns an HTML string.
 
     mode_label, elapsed_seconds: which analysis path produced this result
@@ -223,8 +224,8 @@ def render(image, labels, mean_confidence, result, recommendation,
         model_name="DeepLabV3 · ResNet-50",
         model_checkpoint="KHANYA S2 native-patch checkpoint",
         model_scope="LumenStone S2 v2 analogue · Bushveld validation pending",
-        sample_title="Uploaded polished section",
-        sample_caption=(
+        sample_title=sample_title or "Uploaded polished section",
+        sample_caption=sample_caption or (
             "Reflected-light micrograph, user-supplied. Every number below is "
             "measured from the predicted mask, not asserted."
         ),
@@ -254,4 +255,5 @@ def render(image, labels, mean_confidence, result, recommendation,
         mode_label=mode_label,
         elapsed_display=None if elapsed_seconds is None else f"{elapsed_seconds:.1f}",
         opcua_status=opcua_status,
+        simulation_preview=simulation_preview,
     )

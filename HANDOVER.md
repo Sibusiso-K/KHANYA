@@ -1,3 +1,863 @@
+## 2026-10-08 (late night) — Sibusiso (Claude) — v18: v17 review final fixes
+
+- **Release checked signed out:** an unauthenticated download of the release ZIP returned HTTP 200, and 8/8 SHA-256 checks passed. The reviewer's fetch failure was on their side; the ZIP is also sent directly with the PDF.
+- **Precision and recall restored** in the supporting-evidence note (historical de7135a9); evidence cut-off stated as 8 Oct 2026.
+- **Table 12** moved back with §8, before the conclusion; references no longer interrupted; bibliography font restored to scriptsize.
+- **Duplicate acknowledgement** removed.
+- **§6.2:** "44 microscope analyses (40 distinct specimens plus four repeats)".
+- **§6.1** restores: "the host trial must test incremental value against existing control and blending practice".
+- **TIA paragraph** shortened to fit.
+- **Not added:** DEV-CMP-1 (Lethabo's latest copper-analogue experiment, not run by Claude); the evidence cut-off covers it. Its correction runs are not validated yet.
+
+---
+
+## 2026-10-08 (night) — Sibusiso (Claude) — v17: v16 review (84/100) closeout
+
+- **Evidence ZIP:** delivered as v17 (report/evidence/REEFPRINT_report_evidence_v17.zip). Claude verified it: 8/8 checksums OK, ledger tranches reconcile, replay +1.7% [+0.8, +2.7] reproduced. Published as GitHub release report-evidence-v17.
+- **Sample-size sentence:** 29/29 and 45/46 are now described as illustrative lower-bound outcomes, not a powered design; at a true 95% pass rate, 29/29 has about a 23% chance (computed).
+- **Phase/sensor:** P0 picks phases with the host and laboratory and checks the sensor carries enough information for them; any change of phase set is declared before evaluation.
+- **Table 5 outcome:** alert metrics first (lead time, false alerts); avoided off-spec feed counted only if a host intervention is executed.
+- **Schedule:** about 3 months of P0 plus the 6-month pilot, roughly 9 months in total (not a deadline).
+- **Smaller fixes:** abstract says relative error above reporting limits; TRL row reads public analogue data; dangling sentence fixed; outputs evaluated unrounded; B02 counts restored (full set in the manifest).
+- **Layout:** Appendix A became a "Supporting evidence" note before the references; bibliography font set to 6.6 pt.
+
+---
+
+## 2026-10-08 (evening) — Sibusiso (Claude) — v16: v15 review (81/100) applied; evidence package delivered
+
+**Input:** `REEFPRINT_V15_REPORT_REVIEW_20261008.md`. Still 12 pages; chk.py clean.
+
+1. **Timing (§2.3):** corrected. A parcel scanned over 0–30 s reaches the mill at 90–120 s, so a completed estimate leaves about 60 s, not 90 s. Advice expires when the material it concerns arrives; a late estimate is kept only as a record. These are design assumptions, measured at the host.
+2. **Mineral decision:** new Table 5. One primary action is chosen at P0. Investigation alert first; blend or hold only through an existing stockpile, blending point or manual procedure. Unresolved cells are marked "host". The camera cannot hold or redirect ore; mineral benefits are kept separate from the hardness simulation.
+3. **RODARE:** Stonepark bG11A5 hold added (unresolved geometry; historical results kept; exclusion means refitting folds; no transform accepted as alignment). §5.2(c) now reads "exploratory public-analogue development (copper and paired MLA–HSI)".
+4. **Evidence package:** `report/evidence/REEFPRINT_report_evidence_v16.zip` (ZIP SHA-256 90f3af63…bdb). Contents: ledger + generator, replay script + pinned inputs (ab333071) + output, manifest, README (policy, clipping, bootstrap unit/seed/method, Python version, rounding, cash released/committed/avoidable), SHA256SUMS. Built by `report/tools/make_evidence_zip.py`. The reviewer could not find these because they look in a different working copy; they are on GitHub, branch codex/launch-live-demo.
+5. **P0 broken down:** about 3 months, R210k cap:
+   - scoping R40k (co-leads);
+   - measurement and decision contract R30k;
+   - mass and split plan R60k;
+   - quotes R20k (Hoaeane);
+   - eligibility, IP and data terms R25k (Khumalo);
+   - reserve R35k.
+   - P0 stops and reports if host access or an eligible funding route isn't secured.
+   - Combined envelope with P0 is R10.90–13.36 M.
+   - The belt range is an allowance pending a lease quote.
+   - These amounts are Claude's proposed split; co-leads to confirm.
+6. **Table 4:** "44 analyses (10 cal + 30 locked + 4 repeats)".
+7. **Conclusion:** recommends P0 first; the pilot is conditional. The abstract's repeated product paragraph was removed.
+
+**Cut for space:** limitations (e) and (g) condensed; the appendix compressed (details now in the package); the decision table is 5 rows.
+
+**Lethabo's technical items (not report work):** keep the bG11A5 hold; seek original processing records; freeze the cohort before any comparison.
+
+---
+
+## 2026-10-08 (later) — Sibusiso (Claude) — v15: v14 review (76/100) applied
+
+**Input:** `REEFPRINT_V14_REPORT_REVIEW_20261008.md`. Still 12 pages; `chk.py` is clean.
+
+**Required changes 1–12:**
+1. **RODARE (§8):** "not yet inspected / not yet trained" replaced by the review's wording: inspected, exploratory site-held-out experiments, a 20-specimen alignment comparison with no material gain, mask, alignment and provenance problems, computational (not physical) reproducibility, drillhole crosswalk missing.
+2. **Storage (App. A):** v3.1 storage-error defects closed (simulated faults only). The subject is now "tested local integrated build"; the public demo does not serve it.
+3. **New title:** "REEFPRINT/KHANYA: belt mineralogy decision support. Analogue-data evidence and a staged PGM validation plan". The abstract separates the intended product, the current implementation and demonstrated performance.
+4. **Figure 1:** the microscope box shows phase-area estimates with advice withheld; the feed-rate box reads "proposed; not integrated".
+5. **§7.2:** a proposed mineral decision as a hypothesis: UG2 or Merensky (host to confirm); decision-critical phases named by the host mineralogist (candidates: sulphides, and chromite for UG2); operator-reviewed blend/hold/investigate; checked against mineralogy on the matched cut; no PGM-grade assumption; thresholds set by host specialists.
+6. **Timing (§2.3):** transit counted from the last scanned line; the 90 s is a shared budget; advice expires; vendor line rate and p50/p95/p99 with backlog required.
+7. **Sample ledger:** 77 = 70 + 7 preparation duplicates; 44 microscope = 10 + 30 + 4 repeats; 44 belt = 20 + 24. Belt-composite preparation scope awaits the vendor; G0 split plan.
+8. **P0 is the first request:** allowance capped at **R210,000** (the earlier first-tranche figure, reused as a labelled allowance until quoted); proposed TIA or host funding; joint co-lead and funder approval; deliverables listed. The abstract asks for P0 first, with the pilot conditional.
+9. **New `report/PILOT_COST_LEDGER.csv`:** line → tranche, payer, release, commitment, cancellation, contingency. It derives L1 = R1.75 M and L2 = R2.72 M (Table 3 updated; total unchanged at R10.69–13.15 M). Belt-mineral reference eligibility follows the belt component.
+10. **Replay interval rerun:** `report/tools/replay_envelope.py` on inputs pinned at ab333071 reproduces the unclipped +1.9% [+0.9, +2.9] and gives clipped **+1.7% [+0.8, +2.7]**. The old +0.7 was wrong; the earlier audit's +0.8 was right. Output is in `report/evidence/replay_envelope.json`.
+11. **TRL:** microscope row is now "provisional laboratory proof of concept; advice unvalidated"; bench gates are "readiness screens"; a level needs an integrated demonstration and assessor review.
+12. **Appendix:** precision and recall restored; manifest now has a pinned commit link and a historical vs active build vs public demo table.
+
+**Other edits:** "two measurement cadences, one operator workflow"; "Today" capitalised; "sampling pitch" not "pixels"; the magnetite claim is limited to this dataset; lease cash cost vs depreciation noted.
+
+**Cut for space:** §4.3 merged into §4.2; daily routine as one sentence; risks merged (P1+P2, P3+P4 → 9 rows); team and Table 1 cells shortened; test counts moved to the manifest.
+
+**Open (Lethabo):** v3.1 release ID and hash; STORAGE_V31 and RODARE audit identifiers; confirm the R210k P0 allowance; obtain the 2026 brief and rubric.
+
+---
+
+## 2026-10-08 — Sibusiso (Claude) — v14: gates and spending reconciled; build status updated (binding v2/v3, B04, methods roadmap)
+
+**Inputs:**
+- `REEFPRINT_V13_BINDING_V2_REVIEW.md`
+- `REEFPRINT_BINDING_V3_CLOSEOUT_AND_B04.md`
+- `DECISION_AND_NEXT_TASK.md`
+- `ADVANCED_METHODS_AND_DATA_20261008.md`
+
+Still 12 pages; `chk.py` is clean.
+
+**Gates:**
+- A single **bench outcome matrix** (new Table 11) replaces "G1B or G1M":
+  - pass/pass → both endpoints, subject to G2;
+  - pass/fail → hardness only, R-M orders cancelled;
+  - fail/pass → minerals only, after a mineral-driven decision, compatible hardware and a revised value and acceptance plan are approved, otherwise shadow only;
+  - fail/fail → no installation, lease returned.
+- The caption states that a minerals-only path cannot claim the 1.7–1.9% hardness simulation.
+- Table 3, Fig. 5, §7.1, risk P5 and the gates table all point to the matrix.
+
+**Spending:**
+- Tranche R is split into **R-H (Bond, R0.47 M, released on G1B pass)** and **R-M (mineralogy, R0.79 M, on G1M pass)**.
+- A failed endpoint cancels its unneeded orders; the references the surviving endpoint needs stay.
+- The total is labelled a planning allowance excluding pre-G0 costs and the stated exclusions.
+- §7.1: the added mineral work must show up at G0 in quotes, sample access, lab throughput and staff capacity.
+
+**Statistics:**
+- The 20 bench composites are split into development and calibration subsets before collection; the method is chosen on development and the gate judged on calibration.
+- The exact pass-count rule, handling of every critical phase, refusals and reporting limits are fixed before testing.
+- G3 uses end-to-end latency (p50/p95/p99).
+
+**Build status (Appendix A):**
+- B03 now uses the review's binding-v3 wording: altered intake rejected; saved estimates recomputed from pinned inputs and weights; the forged-result case refused; storage-error classification still to correct; software consistency only.
+- B04 added as development evidence: three extraction recipes, phase-dependent effects (unseen-line chalcopyrite 0.62→0.57, pyrite 0.98→1.15, quartz 3.62→2.98); no recipe promoted.
+- B02 is compressed.
+
+**Planned validation (§8):**
+- A short roadmap paragraph. Output is a parcel estimate with uncertainty and valid/invalid status.
+- RODARE 4582 benchmark cited, after opening its record page today: 204 sections, 49 drillholes, 7 locations, co-registered MLA–hyperspectral, CC BY 4.0. Archives not inspected.
+- Patch pooling, teacher/student, unmixing, pretrained and video features, added one at a time against the best single model and a metadata baseline.
+- Explicitly "proposed, not yet trained"; no TRL change.
+
+**EVIDENCE_MANIFEST.md:** the B03a row is updated with binding v2/v3 status; a B04 row is added (hash to be added by the build owner).
+
+**Cut for space:** Fig. 4, the policy replay plot (its numbers remain in §4.2 text); §4.5 decision-agreement and support-audit paragraphs condensed; limitation (h) shortened.
+
+**For Lethabo:**
+- the storage-error ticket (404/409/503 codes);
+- raw-cube ingestion as a separate workstream;
+- the RODARE archive intake;
+- the 94-vs-99 identity audit;
+- archive hashes for B04 and the binding release.
+
+---
+
+## 2026-10-07 (final) — Sibusiso (Claude) — v13: V12/B03 review corrections; belt mineral composition added to the pilot
+
+**Input:** `REEFPRINT_V12_B03_REVIEW_AND_ACTIONS.md`. Sibusiso's instruction: apply the page corrections and align the pilot with belt mineralogy. Still 12 pages; `chk.py` is clean.
+
+**Belt mineralogy in the pilot (scope decision by Sibusiso):**
+- **Abstract and §1.2:** a roadmap sentence. The intended product extends belt sensing to parcel mineral composition. Today's evidence is exploratory copper-data regression plus local inference on recorded spectra; belt PGM mineralogy and its ≤10% target are unvalidated. Hardness is the current belt capability.
+- **References:** all 44 belt composites (20 bench + 24 shadow) now also get automated mineralogy (new budget line R1,443,000, at US$2,000 × 44 × R16.4), because Bond tests cannot validate mineral composition.
+- **New gate G1M (week 8):** bench mineral estimates must beat a metadata baseline. G1B or G1M releases B2 and R; a failed endpoint is not evaluated in shadow.
+- **G3 now covers hardness and minerals.** Shadow mineral target: ≤10% relative error per critical phase above the reporting limit, coverage, and grouping by sampling event. The text states that 22/24 bounds the pass rate only above 76% (Clopper–Pearson, computed), and that microscopy counts are never reused as belt evidence.
+- **New risk P10:** surface spectra may not represent bulk parcel composition. New TRL row: belt mineral model "below 3" now, 4 (G1M), then 6 (G3).
+- **Budget:** lab/team/reference track R6,587,000 (base 5,728,000 + 15% = 859,000); belt R4.10–6.56 M; **pilot total R10.69–13.15 M**.
+- **Tranches:**
+  - P0 pre-G0 (cap and payer to agree, outside the total);
+  - L1 R1.79 M (includes 20 bench Bond and mineralogy references);
+  - L2 R2.68 M;
+  - **R R1.26 M** (24 shadow references, ring-fenced behind G1B/G1M);
+  - B1 and B2 unchanged;
+  - reserves R1.68–2.17 M.
+- **TIA:** lab track TIA R5.59 M plus host Bond tests R1.00 M. The belt instrument is now "eligibility unconfirmed; checked before G0" (this resolves the TRL-3 vs TDF 4–7 mismatch).
+- **L2 gate:** measurable conditions (counts, turnaround limit, discrepancies, quotes) with values set by agreement; no invented thresholds.
+
+**Other review corrections:**
+- **Timing:** 92 ms is described as a Kaggle CPU scoring benchmark on prepared input, not camera-to-decision latency; microscope timings are log-reported; Table 1 says scoring only.
+- **AI-tools statement:** replaced with the bounded wording from the review.
+- **Appendix:**
+  - B02 now has process-line within-10% counts (21/65, 10/79, 49/99) and the kernel trade-off (chalcopyrite 0.40 vs quartz 5.71);
+  - B03 named as two separate builds (app-integrated PLS export; standalone SNV service) on recorded mean spectra, not live imagery;
+  - the hostile-input acceptance and pending provenance and reference-binding fixes are disclosed.
+- **Co-lead allocation:** marked "proposed, pending both co-leads' acceptance".
+- **EVIDENCE_MANIFEST.md:** B03a and B03b rows added, each needing a model hash, revision and release ID.
+
+**Cut for space:** the business-model figure (now a text description of the money and value flow); the break-even table (its five values are now in the text); the compliance and glossary float (§7.7 text keeps the laws; TRL is defined in §1); the abstract-change sentence; the load-shedding and Mintek 0.5% sentences; the band-sensitivity detail.
+
+**For Lethabo:**
+- the P0 fixes from the review (allowlisted recorded inputs with server-side hash binding; evaluator binding specimen to request);
+- add B03a/B03b hashes to the manifest;
+- confirm the belt-composite mineralogy reference method and its basis (bulk wt% vs surface).
+
+---
+
+## 2026-10-07 (late night) — Sibusiso (Claude) — v12: B02 added as exploratory copper-data training
+
+**Input:** `B02_REVIEW_AND_NEXT.md` (findings and the "Pilot and report implication" section). Sibusiso's instruction: describe B02 as exploratory copper-data training; claim no ≤10% PGM accuracy and no completed live demo. Still 12 pages; `chk.py` is clean.
+
+**Report changes:**
+- **Appendix A, new B02 paragraph:**
+  - PLS-6 on reused HIDSAG data (99 records, 36 composites, grouped folds): mean absolute errors 0.28 / 0.67 / 1.34 points for chalcopyrite / pyrite / quartz.
+  - The earlier spectral ridge scored 0.40 / 0.75 / 1.93; the metadata lookup is still better at 0.17 / 0.39 / 1.33.
+  - On an unseen process line: 0.62 / 0.98 / 3.62.
+  - Above an exploratory 1 wt% floor, 41.5% / 27.8% / 85.9% of records were within 10% relative error.
+  - Stated plainly: copper development data only; no PGM accuracy, no independent test, no exported model, no live demo, no TRL change.
+- **§5.1:** one clause says B02 narrowed but did not close the gap to the process-line baseline, so the belt claim stays hardness-only.
+- **§7.2:** the pilot first measures whether estimates improve one named decision within its timing deadline, valued as incremental payable production or avoided cost minus operating, verification and error costs. Reducing lab submissions is a later, separately validated policy.
+- **EVIDENCE_MANIFEST.md:** B02 row added (archive hash still to be added by the build owner).
+- **Cut for space:** the appendix per-class and confusion tables became one sentence (the candidate's scores remain in Table 2); the conclusion shortened to point to §7; the data-availability note tightened; the reproducibility sentence dropped (limitation (d) covers it).
+
+**For Lethabo:** B02 numbers are cited from the review file, not from committed CSVs. Please push `B02/metrics.csv` and the other artefacts so they resolve. The review's next build (wavelength provenance audit, 94 vs 99 records, exported model and CLI endpoint, Copper82 mapping, PostgreSQL storage contract) is yours and is not described in the report as done.
+
+---
+
+## 2026-10-07 (late) — Sibusiso (Claude) — v11: v10 review (81/100) report edits applied
+
+**Input:** `REEFPRINT_V10_REVIEW_AND_NEXT_ASSIGNMENTS.md`. Still 12 pages; `chk.py` is clean.
+
+**A. Equal co-leads:**
+- Team table: Lethabo is pilot co-lead (belt modelling and evaluation coordination); Sibusiso is pilot co-lead (microscopy, field and systems). Both are full time and on site, as proposed, with shared planning, budget, host engagement and gates.
+- §7.4 uses the review's sentence: material changes need both co-leads, there is no casting vote, and a dispute pauses the change.
+- The co-leads are not independent approvers and have no access to locked labels.
+- Authorship order and CRediT are unchanged.
+
+**B. Alignment edits (all 12):**
+1. Abstract: "in the proposed belt deployment, a SWIR camera would…"; hardness evidence named as public-data replay; microscope advice withheld; TRL as "evidence for independent assessment toward…".
+2. §2.3: regrind advice marked historical; §3: offline analysis "in the verified local configuration".
+3. Fig. 1: microscope box shows the current method (support recorded, no approved calibration, advice withheld); regrind historical/simulated; belt feed rate proposed.
+4. §4.5: "raw edge-connected ore components and overlapping refined components"; whole-component exclusion can reach far into the image.
+5. Calibration alone no longer unlocks advice: advice is withheld pending validation, calibration, release review and host approval (§2.4, §7.1).
+6. §5.2: limitations "block deployment and performance commitments… justify a separately scoped feasibility investigation".
+7. Risk P5: do not release B2; settle B1; bench Bond costs stay with the lab track. Risk rows merged to 10 (P6+P7, P8+P9) for space.
+8. Gates table: new L2 laboratory review row (week 8; co-leads, funder, custodian; hold L2).
+9. Table 3: rounding note (rows rounded, total from unrounded values); committed versus avoidable costs after a belt stop are stated in §6.2.
+10. §7.7: checks "would be commissioned, subject to agreement and method capability"; SANAS scope to be confirmed.
+11. "Independent reviewer" became "separate AI-assisted computational review" wherever it meant the AI check; the future human reviewer is now "an appointed independent reviewer".
+12. Appendix: points to the new **`report/EVIDENCE_MANIFEST.md`**, which holds full checkpoint hashes, the public revision and the continuation bundle ZIP SHA-256 (d2147814…). **The Tasks A–D and feasibility package archive hashes are not on this machine: Lethabo, please add them to that file.**
+
+**C.** The geometry-diagnostic paragraph was added to §4.5: 27,855 edge pixels versus 10,263,972 component-excluded; repeated modes, not independent counts; no-refinement variant not promoted; thresholds unchanged.
+
+**Cut for space:** the Ballantyne sentence and reference; the Valterra price-rise sentence; two break-even rows (contingency, half output); the CRF and C equations set inline; the reference-lab team row; glossary rows for Fallback and Payload-dominant; one-line compliance rows; full hashes moved from the appendix to the manifest.
+
+**Not done here:** the review's "best Claude task", a claim-to-evidence ledger and QR/served-release trace, is a separate, non-editing audit; ask if you want it. The E1 validation harness is assigned to the GPT coding agent.
+
+---
+
+## 2026-10-07 (night) — Sibusiso (Claude) — v10: Sibusiso's edits + v9 / Tasks A–D review applied
+
+**Sibusiso's requests:**
+- The §7.5 "What the pilot costs, and why R210,000 was too low" section is removed; its essentials moved into §6.2.
+- Headings are now report-flow nouns, not questions or "how/what/why" phrases:
+  - Methods; Evaluation method; Physical plausibility checks; Pilot budget and cash release;
+  - Pilot duration and feasibility; Pilot objectives and acceptance targets;
+  - Work plan and daily site routine; Pilot team; Funding structure and the role of TIA.
+- The abstract now describes the solution concretely:
+  - belt SWIR camera → hardness bound per 30-s parcel → Bond's-law feed proposal inside the metallurgist's limits;
+  - shift-lab microscope maps the three sulphides with grain evidence;
+  - the operator approves, modifies or rejects; plant control keeps authority; signed record.
+- **Lethabo is on site full time** (team table and text).
+
+**Review (`REEFPRINT_V9_AND_TASKS_AD_REVIEW.md`, 79/100) corrections applied:**
+- §2.4: the historical de7135a9 advisor (free/locked, ±0.335, simulator) is labelled historical. The current app (contract v3, `observed-target-support-v3`) reports target-area categories and support/exclusion causes, applies no historical margin, and always abstains.
+- §4.5: relabelling and the border policy are now described as implemented. Added the six-parent support audit: reference masks keep only 0–5.8% (Quick) and 0–70.5% (full) of target pixels; none passes the 80% policy; all 24 rows abstain. Flagged as supplied evidence, re-checked by the reviewer, not public. The decision-confusion table was folded into text.
+- §5.2(h): completed software containment is now separated from the unresolved science (preparation, component-as-particle assumption, calibration).
+- §2.6 and Table 6: one acceptance definition (per specimen, every critical phase). 27/30 is described as a proposed observed rule; the bounds assume independent specimens.
+- Belt gate:
+  - the 20 bench composites are for development and calibration;
+  - the 24 belt composites are a locked evaluation of a frozen version with no online recalibration;
+  - a predefined count criterion, interval method, maximum width and refusal rate; precision described as exploratory.
+- Calibration separation: Gantt and routine say method selection on development data only; calibration is fitted once after the freeze.
+- §7.1(e): the completed code fixes were removed from the schedule. Month 1 is now measurement feasibility, local data and development-only method selection. G0 adds a quoted measurement-feasibility review.
+- **Cash:** new Table 3 with independent tracks.
+  - L1 R1.13 M at G0 (includes the 20 pre-G1B Bond tests, about R0.39 M); L2 R3.15 M at the week-8 *laboratory* review, not G1B.
+  - B1 R0.57–0.90 M at G0; B2 R2.71–4.35 M at G1B.
+  - Reserves R1.46–1.95 M.
+  - A belt failure no longer stops the lab track. "Costs at most" became "scoped planning allowance, not maximum exposure".
+- TIA: the Seed Fund is listed TRL 3–8 on TIA's page. The SAMRC call (TRL 5–6, R1.5 M) is SAMRC-only, so it is not evidence of our eligibility. The Matching Fund is late-stage, so it is not assumed. 50:50 is labelled a team proposal. Terms are to be confirmed with TIA and a technology-transfer office.
+- TRL: provisional self-assessment, not awarded automatically at gates; G5 value is a commercial gate, not a TRL criterion.
+- Data availability: the public revision is separated from the local continuation bundle.
+- Appendix: tests by repository (85061d4: 181+7 / 328; continuation: 321 passed, 4 skipped, supplied; 59 re-run by reviewer); smoke checks 52.9 s and 72.9 s.
+- **Cut for space:** Table 2 (datasets, now text); some glossary and compliance rows; a few sentences.
+
+**Not done (build owner):** the review's measurement-feasibility package: endpoint separation, a preparation evidence request to a mineralogist, development-only geometry diagnostics, a local feasibility protocol, and release alignment of the served demo.
+
+---
+
+## 2026-10-07 (evening) — Sibusiso (Claude) — v9: continuation review applied to the report
+
+**Input:** `REEFPRINT_Continuation_Review_20261007.md`. This is an independent review of Lethabo's continuation bundle (ZIP SHA-256 d2147814…). It keeps the 76/100 score and is not an approval.
+Still 12 pages. `chk.py` is clean.
+
+**Report changes (from the review's "what your partner should change" table):**
+- **§3 architecture:** a plain-language traceability sentence. Results record the input and checkpoint hashes, a versioned measurement recipe, sampled-field coordinates and observed coverage, and stale results are refused.
+- **§4.4 results:** both BatchNorm continuations were rejected. On six reused development sections, foreground IoU fell from 0.647 to 0.593 and 0.597, and pentlandite abundance MAE rose from 2.2 to 5.4 and 4.4 points. **Provenance is flagged in the text:** the continuation bundle was recomputed by an independent reviewer, and these numbers are **not yet in the public repo**. Lethabo: please push the bundle so the citation resolves to committed files.
+- **§5.2 limitations, new (h), now a decision blocker:**
+  - edge exclusion can leave too little target area, yet the advisor can still say "grind finer";
+  - the new estimator still uses the old ±0.335 margin.
+  - Both are stated as **open fixes, not resolved**.
+- **§7.1 (e):** the two advice fixes and a method-specific calibration are finished in month 1, before the model freeze. As of 7 October no host, laboratory or sensor access is arranged; those agreements and the error definitions are G0 prerequisites; ≤10% stays a target.
+- **Appendix:** the smoke check is recorded: 18.18% coverage, 52.9 s server-side, zero retained target support, association unmeasurable, control held. It is labelled a functionality example, not an accuracy or latency test.
+- **Cut for space:** abstract tightened; some §2.5, §2.6, §4.1, §4.2 and §6.1 wording; DOIs in data availability (they remain in the references); CRediT shortened.
+
+**For Lethabo (code work from the review; NOT done by Claude, and the report does not claim it is fixed):**
+1. Finding 1 (P1): carry observed, retained and excluded target area into the advisor input; abstain on insufficient support; add reason codes; add regression tests for the 200×400 counterexample.
+2. Finding 2 (P1): a calibration record matched to estimator, checkpoint and mode; withhold advice on mismatch; drop the "conformal" wording on the current path.
+3. Bind recipe identity to the running build (restart on source drift); correct the reason text ("no target-bearing component survived the filters"); the UI support message; a declared Python environment, with the streamlit test kept rather than deleted.
+4. Then a development-specimen support audit (Quick vs full; the model's own masks vs the reference masks) before any further training.
+
+---
+
+## 2026-10-07 (later) — Sibusiso (Claude) — v8: the six-month pilot now includes the belt on site
+
+**Sibusiso's decision:** the pilot must include the belt on site, not leave it for a later stage.
+Still 12 pages. `chk.py` is clean.
+
+**How the belt fits six months without buying hardware ahead of evidence:**
+- **Lease first:** a leased or demonstration sensor, with a purchase option, arrives at G0.
+- **Bench test:** weeks 1–8, it scans 20 host composites with Bond tests on a bench. **G1B (week 8):** if hardness does not transfer, the sensor is returned before installation and only tranche A is spent.
+- **Install:** weeks 8–10, mounted in a planned plant stop booked at G0. It is non-contact over an existing conveyor, read-only. G2 is site acceptance.
+- **Shadow:** weeks 10–20, every parcel is scored and paired with 24 belt-cut Bond composites; nobody acts on the output. G3 is in week 20.
+- **Advisory window:** weeks 21–25, supervised, operator-approved only, after G4. The report states plainly that four weeks cannot measure a gain of about 2% precisely, so independently measured value (G5) needs an extended on/off trial after the pilot.
+- The old G1C (moving-bed gate) was removed; shadow operation on the real belt tests that directly.
+
+**Money:**
+- Laboratory and team track: R4,928,000. This is the v7 lines minus the R300k scanner-rental line, with 15% contingency.
+- Belt track: the v9 allowance of US$250–400k (R4.10–6.56 M, including 25% contingency).
+- **Pilot total: R9.03–11.49 M.**
+- Tranches:
+  - A, about R1.1–1.5 M at G0;
+  - B, about R5.9–7.6 M at G1B;
+  - C, about R0.5 M at G4;
+  - contingencies R1.46–1.95 M.
+- TIA (proposal): TDF R3.93 M for the lab and team track; the belt split 50:50 with the host through the TDF plus the Industry Matching Fund (R2.05–3.28 M each). The host also pays the Bond tests (R1.00 M). Equipment ownership is not agreed.
+- Rand risk: a 10% weaker rand adds R0.64–0.89 M on US$-priced lines.
+
+**TRL at the end of the pilot, if the gates pass:**
+- microscope 5–6;
+- belt model 4 (bench), then 6 (shadow on the host belt);
+- decision layer 6, with evidence for 7 begun in the advisory window.
+- A commercial decision is about 12 months from the readiness event.
+
+**Other changes:**
+- The risk register was rewritten: sensor delivery, a missed plant stop, a failed bench test, belt dust and drift, scan-to-sample timing, operator over-trust, OT/cyber, and safety at the belt.
+- The team now includes a vendor commissioning engineer and host instrument technicians and operators.
+- The daily routine now includes sensor checks and time-stamped belt cuts.
+- Gates table rows are in week order with owners.
+
+**Cut for space:** detail on the abstract-change log, load-shedding and the MINERAL1 re-analysis; two glossary rows; the appendix heading shortened.
+
+**Open:** a sensor vendor and lease quote; a host plant stop; Lethabo to check the 20/24 bench and shadow split of the 44 Bond composites; plus everything from the v7 entry below.
+
+---
+
+## 2026-10-07 — Sibusiso (Claude) — v7: six-month pilot section, realistic pilot budget, TIA route, TRL milestones, pilot risks
+
+**Inputs:** Sibusiso's brief (emphasise a 6-month pilot, explain why 6 months is feasible, show on-site work, data collection, team and daily routine, target <10% error and 90% accuracy; make the pilot price realistic; structure around TIA; add TRL milestones and pilot risks), plus `REEFPRINT_KHANYA_Report_v6_Agent_Handover.md` and its PDF (v6 review, 76/100).
+Still 12 pages. `chk.py` is clean. No VERIFY markers. **All 5 orange TECH NUMBERS PENDING flags are gone:** each became a dated status sentence ("as of 7 October 2026, no frozen model / protocol drafted, not signed"). No new model numbers went in.
+
+**New Section 7, "The six-month pilot":**
+- 7.1 Why six months is feasible, as lettered assumptions (a)–(e):
+  - G0 contracting is done before month 0;
+  - no belt hardware is bought: the microscope runs on a laptop, and belt spectra come from a rented or vendor-lab scanner;
+  - collection needs about 5 microscope specimens and 3 Bond composites a week over 14 weeks;
+  - reference results return in batches within 3 weeks;
+  - the software already exists.
+  - If supply slips, the pilot is extended; the cohort is never cut.
+- 7.2 Targets (Table 7). "90% accuracy" is defined as ≥90% of locked specimens meeting the ≤10% contract for every decision-critical phase.
+  - **Statistical honesty:** 27/30 only shows a pass rate >76% (one-sided 95% Clopper–Pearson).
+  - Proving 90% needs 29/29, or 45/46. Enlarging the locked set to 46 costs about R0.56 M more.
+- 7.3 A 26-week Gantt (Fig. 7) and a five-step daily routine on site.
+- 7.4 Team table (Table 8): the two authors, a software/OT-security engineer to recruit, an independent mineralogist (35 days), a statistician/custodian (18 days), and host roles in kind.
+- 7.5 Why R210k was too low, with a bottom-up budget of **R5,273,000** (Table 5, left half).
+  - Public anchors: CAMP (Montana Tech) TIMA list price US$1,500–2,000 per sample; Bond test "typically under US$1,200" (911 Metallurgist).
+  - Development specimens use expert annotation, so only 44 specimens go to automated mineralogy.
+  - Staff rates (R40k and R60k a month, R8k a day) are **team planning rates, not benchmarks**. Every line must be replaced by a quote at G0.
+  - Release schedule: A R1.00 M at G0; B R3.08 M at the week-8 review; C R0.50 M after the model freeze; R0.69 M contingency.
+- 7.6 TIA (Table 9), from TIA's funding-instruments page and the TIA Seed Fund framework (Nov 2025 annexure on the SAMRC site):
+  - TDF covers TRL 4–7 and funds pilot plants, so it is the pilot instrument;
+  - Seed covers TRL 5–6, up to R1.5 M over 12–24 months, and excludes TRL 3–4, so it suits later microscope productisation;
+  - Commercialisation Support Fund covers TRL 8–9.
+  - Proposed split: TIA R4.28 M; host pays Bond tests (about R1.00 M with contingency) plus in-kind support. Nothing is applied for or agreed.
+- 7.7 Pilot risk register P1–P12 (Table 10), replacing the old product risk table. Product-stage risks now get one sentence.
+- 7.8 Governance, compliance and training, compressed. The training table became a sentence.
+
+**New Section 8, "TRL milestones and gates":**
+- TRL table (EU H2020 definitions):
+  - microscope 4 → 5 (G1A) → 6 (shadow run);
+  - belt 3 → 4 (G1B) → 5 (G1C, new moving-bed gate) → 6/7 in the belt stage.
+- The gates table now has a **decision owner** column, and G1C was added.
+
+**v6 review fixes applied:**
+- Fig. 3: no "truth layer" and no "liberation"; shared controls are split from branch-specific checks; benchmark and audited checkpoints are both shown; 81 s audited-scan timing added.
+- "Held-out" replaced by "publisher test (reused in development)"; "approved" replaced by "historical".
+- LumenStone "right teacher" claim softened; Notole qualified; 0/4 → 52.7% bound added.
+- Fallback wording now consistent; one fee policy: fixed support fee plus a success fee that is zero when value ≤0.
+- The scanner pre-purchase route is funded inside the pilot.
+- FAQ labelled as the 2025 edition; SX25 line rate flagged; full SHA-256 hashes; test counts reworded.
+
+**Cut for space:**
+- Fig. 1 (world PGM chart) became a sentence;
+- the cadence and break-even figures removed (their text and table remain);
+- the alternatives table became a sentence;
+- the accountability, maintenance and training tables removed;
+- the glossary moved to the appendix float;
+- bibliography set in scriptsize; `\linespread{0.97}`.
+- `tools/bibsort.py` reorders the bibliography.
+
+**For Lethabo:**
+- The abundance audit and the rejected sampling experiment (v6 handover §10–11A) are **not** in the report: branch `build/accuracy-contract-20261006` is not on the remote. Push it and the numbers can be cited.
+- Please check the R40k/R60k staff rates and the 35/18-day allowances.
+
+**Still open:**
+- Quotes (lab, scanner rental), a host letter, the TIA application, the IP/data schedule, LumenStone commercial rights;
+- the 2026 brief and rubric; v9 deck and narration alignment; the team roster (two people vs three).
+
+---
+
+## 2026-10-06 — Sibusiso (Claude) — report refined from the pilot audit handover (structure, pilot, funding, governance, limitations, business)
+
+**Split of work (Sibusiso's instruction):** Lethabo handles model accuracy, independent testing and app features. This pass covered structure, pilot plan, funding, governance, limitations and the business case only.
+- The audit's test findings are the current baseline.
+- ≤10% error is kept as a **validation target**, not a result.
+- No improved results were invented, and no planned feature is described as implemented.
+- **5 orange "[TECH NUMBERS PENDING]" flags** in the PDF mark where Lethabo's final numbers go: abstract, §2.6 protocol, model registry, §4.5 decision results, conclusion.
+
+**Adopted from the audit:**
+- **Abstract:** says "working microscope workflow + separate hardness research track". The active app checkpoint differs from the evaluated one and showed large errors on one section. ≤10% and independent QEMSCAN agreement are labelled targets. The ask is now the capped R210k tranche plus belt capital only after G1B.
+- **Table 1:** new row "≤10% error = Target"; accuracy is now "Partial".
+- **New §2.6** "Validation targets and independent protocol (proposed)":
+  - absolute vs relative error, and 2D area vs QEMSCAN wt%;
+  - a signed acceptance contract;
+  - custodian blind test;
+  - 30 development / 10 calibration / ≥30 locked evaluation specimens;
+  - 0/30 failures bounds the failure rate at about 9.5%;
+  - new cohort after any failure.
+- **New Table 3, model registry:**
+  - de7135a9: historical evaluated;
+  - fb78727d: active in the audited build, not approved. Audit on test_11: pixel accuracy 64.1%, pyrrhotite 61.1% vs 90.7%, pentlandite 34.8% vs 2.0%. Described as one development section, not QEMSCAN;
+  - 42646cfa: candidate, quarantined.
+- **§5.1:** the MINERAL1 grouped re-analysis was added. All records fell within 10 absolute points, but only 23–91% were within 10% relative error, and the baseline beat the spectral model on chalcopyrite and pyrite. The belt claim stays hardness-only.
+- **Limitations:** new item (g) covers no fresh paired PGM validation, the active/evaluated checkpoint mismatch, missing chromite and silicate classes, and unquantified reference uncertainty.
+- **One budget (Table 6)** replaces the R8.2–49.2 M grid, which survives only as a "superseded" row in Table 7:
+  - first tranche R210,000 in capped lines (15/25/20/65/35/15k plus a 35k reserve);
+  - v9 one-belt allowance US$250–400k (about R4.10–6.56 M) including 25% contingency; with the tranche, R4.31–6.77 M;
+  - exclusions stated;
+  - annual support US$30–60k is not double counted.
+- **Finance:** recomputed for the commercial-life case (installed excluding support; running = post-trial support). Annual cost R1.25–2.20 M (R2.50 M with contingency). Break-even in relative metal:
+  - 0.015% low cost;
+  - 0.050% high cost;
+  - 0.057% high cost with contingency;
+  - 0.063% with the fee charged before costs;
+  - 0.10% at half the output;
+  - 0.20% at a quarter of the output;
+  - 0.20% with a 30% lower price;
+  - 0.52% on the superseded grid.
+  - The break-even figure has been rescaled.
+  - Pilot cash view: at most R210k if G1A or G1B fails; up to R4.31–6.77 M if the belt stage stops; zero resale assumed.
+- **Commercial structure:** a capped validation contract, a service fee after acceptance, and an optional fee capped at 20% of verified net value with defined terms. Willingness to pay is untested, and laboratory savings are not claimed.
+- **Risks:**
+  - R7 has numbers: a 25% sensor overrun uses half the reserve; a 10% weaker rand adds R0.41–0.66 M.
+  - R9 now covers host withdrawal.
+  - Contingency is not a scope-expansion fund.
+- **Governance:** host metallurgist, reference lab, independent custodian and team roles are set out, with read-only start. Appendix Table 12 is now a 7-row accountability table (functions, not appointments).
+- **Gates G0, G1A, G1B and G2–G5** replace the old L1/H1/S1/A1/V1. G1A and G1B are separate, and microscope success never releases belt spend. The roadmap now runs 0–18 months from a readiness event. "Stopping an unjustified purchase" is framed as a valid outcome.
+- **Appendix C:** audited release 85061d4; a release manifest is proposed; inference and retraining reproducibility are separated; hashes are shown as prefixes.
+- **Removed for space:** the hardness R² chart (numbers moved into the text) and the grain-inspector figure (now a sentence; "free/locked" relabelling is planned, not done).
+
+**Not done here (needs Lethabo or partners):**
+- frozen model, independent results, sample counts, metric definitions;
+- v9 deck, narration and video alignment (the deck file was not found locally; the audit's numbers were used);
+- the third team member roster question raised by the audit (the decks list three people; the report lists two by Sibusiso's earlier decision);
+- release manifest, supplier and lab quotes, host agreement.
+
+---
+
+## 2026-10-06 — Sibusiso (Claude) — report revised from Lethabo's detailed revision handover
+
+Lethabo's handover (simulated Mintek/TIA panel, 70/100) was read in full. Most of it was adopted; it asks for **no invented evidence**, and every change below is editorial or a recalculation from committed numbers. Still 12 pages, no VERIFY markers.
+
+**Change log by issue ID** (status: E = editorially resolved, R = verified by recalculation, U = still unresolved):
+
+- **A01/A02 (title and abstract), E.** New title: "ore-hardness prediction on the belt and sulphide characterisation in the laboratory: an analogue-data proof of concept and staged validation plan". The abstract now:
+  - separates the belt-hardness result from the laboratory phase classification;
+  - states that the microscope sections were reused during development;
+  - reports 4 definite and 8 abstaining outputs;
+  - asks for local validation before any belt.
+- **A03, E.** The problem statement acknowledges that operators, APC and the mine plan already carry ore information, and the decision being improved is now named.
+- **Table 1, E.** Now has a status column (demonstrated / partial / proposed / scenario). Real-time mineralogy on the belt is explicitly not claimed.
+- **M01, E.** The microscope sections are now called "development-influenced evaluation sections". Sections, not pixels, are the independent units.
+- **M02, E.** "Pyrrhotite = reject" is now a demonstration assumption for this ore; PGM deportment decides in reality.
+- **M03, E.** "Free/locked" is now "payload-dominant" on a 2D payload-area proxy. The 50% line is a declared choice, and the Moodley boundary is no longer claimed to define "free". "Grind finer" and the other outputs are hypotheses for a metallurgist.
+- **M04, E.** The approved checkpoint was "retained on a precautionary rationale"; comparative decision safety is untested.
+- **Safety claim, E.** Replaced with a rule-agreement result:
+  - action coverage 4/12 (33%);
+  - the 22.1% bound covers all sections, not risk conditional on acting;
+  - it does not validate the rules or plant safety.
+- **B01/B02, E.**
+  - The search over 5 targets is exploratory selection.
+  - With no drill-hole IDs, grouped independence cannot be verified.
+  - "Pre-registered" is now "evaluation plan committed before the run".
+- **B03, E.** The bound is a marginal coverage target under an exchangeability assumption; its CI (88.4–96.6%) is compatible with 90% but does not establish it.
+- **B04, E.** The Bond-ratio sentence is qualified: the terms cancel only if power, size and efficiency are held constant.
+- **C01, E.** The universal 100% "conservative setting" is gone from the pilot design (it remains as the demo fallback). At a site, advice is withdrawn and the host's own controls keep authority. The glossary entry is now "Fallback".
+- **C02, E.** The 90 s window is defined from the end of the scan. The operator-facing rate is measured in the shadow phase.
+- **C03, E.** Figure 3 separates built, simulated and designed parts. The feed-rate path is designed, not built. The signed record supports traceability, not correctness.
+- **Replay overloads, E.** Defined as a model quantity, compared against a fixed design-feed policy. The envelope result is labelled as a later analysis.
+- **Recovery loss, E.** The 0.25 pp is the largest loss among the modelled scenarios, not a bound.
+- **F02, R.** Exact formula now used: ΔM/M = (1+ΔT)(1+ΔG)(1+ΔR) − 1. 1.75% throughput with −0.287% recovery gives 1.458%, which matches.
+- **F01, E/R.** Affected-output fraction f added to V = u·f·Q·m. New Table 6 of sensitivities, recomputed with our inputs (R1.64/9.84 M running):
+  - 0.045% (low cost, all output);
+  - 0.52% / 0.58% (high cost, all output; with contingency);
+  - 0.65% (20% fee charged before system costs);
+  - 1.04% (half of output affected);
+  - 2.09% (a quarter of output affected);
+  - 2.05% (30% lower basket price).
+  - The Valterra margin is flagged as a cross-company proxy, and "average cost is conservative" is softened.
+- **F03, E.** Funding resequenced as evidence before capital:
+  - Stage A1: laboratory study, about R210k (hypothesis);
+  - Stage A2: hardness feasibility on host samples, cost to be quoted;
+  - no belt purchase before gate H1;
+  - Stage B: shadow sensing; Stage C: advisory trial.
+  - Exposure is reported by stage. The fee basis (before or after system costs) is left to agree.
+- **Gates, E.** New gates G0 / L1 / H1 / S1 / A1 / V1, each with its evidence and decision owner. Thresholds are to be agreed before data collection. The new Gantt chart covers about 30 months, labelled as a planning estimate, with TRL no longer tied to dates.
+- **G01, E.** Partner roles are proposals, with no agreements implied. LumenStone is research-use only, so commercial rights must be clarified (new risk R10). TIA is described as a "possible funder, subject to programme criteria".
+- **G02, E.** Team Sonar has two roles filled and one to recruit or source in kind (also new risk R9).
+- **G03, E.** The compliance table is now "planned controls", not achieved compliance.
+- **Literature section, E.** Renamed "Comparison with literature"; each source is framed as plausibility, with the transfer gap stated alongside.
+- **Limitations, E.** Items (a), (b) and (e) are now marked as decision blockers. Surface-versus-mass representativeness and attribution have been added.
+- **G04, E.** Appendix D separates inference reproducibility (archived weights) from retraining reproducibility (not regenerable).
+- **Removed for space:** the Decisions-view screenshot (it carried no evidence beyond the architecture figure), the risk-matrix figure (the risk table remains) and the scenario table (folded into the text).
+
+**Not adopted, or only partly:**
+- The full claim-to-evidence register. The status column in Table 1 covers its core; a full register would not fit in 12 pages.
+- A separate sampling/turnaround timing table. Only the cadence wording was fixed.
+
+**Unresolved (U), needs people rather than editing:**
+- The official 2026 brief and rubric. The criteria are cited from the published FAQ, which is labelled 2025.
+- The hackathon IP agreement text.
+- LumenStone commercial permission.
+- Vendor and laboratory quotes, including A2.
+- A named host stream and its circuit boundary (f).
+- Stage A thresholds, agreed with a host.
+- Staffing for the third role.
+- An end-to-end seeded retraining run.
+
+---
+
+## 2026-10-06 (final) — Sibusiso (Claude) — reviewer sign-off
+
+- The reviewer accepted that the earlier typo list came from a garbled extraction; the PDF is authoritative.
+- Section 2.4 now lists four advisor outputs, including 'adjust reagent', matching Table 3.
+- The proposal-rate sentence now separates the computed rate (at most 120 an hour) from the operator-facing rate (only changes past the deadband; measured in shadow).
+- This commit is the version for review and submission: 12 pages, no VERIFY markers.
+
+---
+
+## 2026-10-06 (evening) — Sibusiso (Claude) — second review checked
+
+- The second review's typo list was checked against main.tex and the compiled PDF. None of these exist in either: pyrrhite, Communication, Amandelbut, Hoaenea/Hoaieane, REEFPRIIT, the duplicated Fig. 7 caption, mi croscoe, Fees involved, R16.9, the Bond F80/P80 error, the Table 5 row merge, the missing parenthesis. The reviewer's copy is a garbled text extraction. Send them the PDF itself.
+- Real points addressed: proposal rate (at most 120 an hour computed; the share past the deadband is measured in shadow); bound width is where the gain is lost; Table 3 caption explains the expert-only 'adjust reagent' case; G3 now also requires the site recovery curve to be measured.
+- Still 12 pages, no VERIFY markers.
+
+---
+
+## 2026-10-06 (later) — Sibusiso (Claude) — report edits on request
+
+- Removed the executive summary box and the 'Technical, business and pilot report' subtitle prefix.
+- Intro now opens 'As Team Sonar' (no 'graduate engineers').
+- Acknowledgements shortened to: 'We thank the Mintek mentors for a review session that reshaped the build.'
+- Business-model figure redrawn on a clean grid: TIA and Mintek on the left, the producer and the auditor on the right, Team Sonar in the centre, right-angle connectors. The auditor-to-Team arrow is now assurance (blue). Mintek's lab billing is a legend note instead of a long wrap-around arrow.
+- Still 12 pages; no VERIFY markers.
+
+---
+
+## 2026-10-06 — Sibusiso (Claude) — report revised after an external review (industry-par pass); training sampler seeded
+
+**Context:** Sibusiso got outside feedback on the 12-page report and agreed with most of it. Several "typos" the reviewer quoted (REEFPRIIN, Hoaenea, Amandelbut, "reprint setting", "Bond W1", a duplicated paragraph) are **not in the source or the PDF**; they came from the reviewer's text extraction. Everything substantive was acted on.
+
+**New analysis (numbers computed from committed results, nothing invented):**
+- **Bound calibration** (from v6 + v8 per-sample results): the one-sided 90% bound held for 136/146 samples (93.2%, CI 88.4–96.6%). It sits on average 1.64 kWh/t above the prediction (range 1.04–2.14). OOD: 137 pass, 5 borderline, 4 refused. New Fig. 6 plots the bound against measured Wi.
+- **Envelope-clipped replay:** the pre-registered +1.9% did not clip to the 85–110% envelope. Clipped, it is +1.7% [+0.7, +2.7] with the same overload share (6.8%). The report now quotes 1.7–1.9%.
+- **Ramp limits** (value_chain results): ±10%/parcel −0.3 pp overloads, ±5% +2.1, ±2% +4.7.
+- **Decision confusion** (decision_gap_patches_refined.json):
+  - expert grind → model grind 3, verify 3, too-few 2;
+  - continue → continue 1, verify 2;
+  - reagent → verify 1.
+  - So 4 definite answers, all correct; 8 hedges; 0 unsafe.
+- **Verify-band sensitivity** (replayed on stored section liberation values): 0 wrong for bands ≥ ±0.25 (7 correct at ±0.25). Below that, test_04 becomes unsafe; with no band, 2 are unsafe. **The ±0.335 band was calibrated on the test sections**, so the safety result is partly in-sample; this is now stated.
+- **Candidate 42646cfa** (codex/themes-launch metrics):
+  - IoU 0.632 overall; chalcopyrite 0.800; magnetite 0.248;
+  - pyrrhotite 0.818 and pentlandite 0.446, with pentlandite precision 0.50 against 0.68.
+  - False pentlandite pushes advice toward "continue", so de7135a9 stays.
+- **Magnetite:** 0.8% of test pixels. 78% is predicted as resin, 17% as pyrrhotite and 5% as pentlandite, which is about 0.3% of predicted pentlandite.
+- **Net value:** uses Valterra cash unit costs of R19,488 (2025) and R20,677 (H1 2026) per PGM oz. 1% more metal = R43.7–84.3 M/yr net. **Break-even on net value: 0.05–0.52%** (0.58% with contingency). Revenue basis was 0.02–0.21%.
+- **Producer exposure if the pilot stops:** R8.5–50.8 M at G1, R8.9–53.3 M at G2, R9.4–56.6 M at G3, up to R66.4 M with full contingency.
+- **Throughput→metal bridge:** ΔM/M ≈ ΔT/T + ΔR/R, with ΔR/R = −0.29% on the steep curve. Table 6 gives four scenarios (1.75%, 1.46%, 0.44%, and 0 when the plant is ore-limited).
+
+**Report changes (`report/main.tex`, still exactly 12 pages):**
+- New front-page executive summary.
+- Shorter, structured abstract and conclusion.
+- New: decision-cadence figure (30 s parcel, deadband, 90 s window, shift-level approvals).
+- "Parcel" is now defined.
+- Clarified that the pilot is paid at cost and at risk; only the post-pilot fee is value-linked.
+- New appendix glossary.
+- The held-out sections are disclosed as "never trained on, but evaluated many times during development".
+- Advisor thresholds are spelled out.
+- The full checkpoint hashes are in Appendix D.
+- Detailed tables moved to Appendices B–D (implementation, compliance, maintenance and training on the final page). The physics table became prose.
+
+**Code fix (adeb1ee, pushed):**
+- `src/segmentation/patches.py`: training patches were drawn from `random.Random(None)`, i.e. unseeded. That is why the recipe re-ran at 0.4543. Draws are now seeded by (seed, epoch, index).
+- `train_patches.py` calls `set_epoch()`.
+- New test `test_training_patches_are_reproducible_from_seed_and_epoch`.
+- Full suite: 263 passed, 1 skipped. One test errored only on a long Windows temp path and passes with a short `--basetemp`.
+- de7135a9 itself still cannot be regenerated; a seeded re-run is a lab-pilot task.
+
+**Resolved (6 Oct):** Sibusiso made `Sibusiso-K/KHANYA` public; the link returns 200, and the last red VERIFY is removed. The report has no VERIFY markers left.
+
+---
+
+## 2026-10-05 — Sibusiso (Claude) — report rebuilt as a technical, business and pilot report (12 pages, rand, references verified)
+
+**Sibusiso's answers to the verify questions:**
+- "Product report principles" = the judging criteria (Innovation, Feasibility, Impact, Technical Execution, Presentation Clarity; Mintek hackathon FAQ). Table 1 now maps each one, and the brief's requirements, to a section.
+- Model: `de7135a9` (mIoU 0.5725). The deck's 0.454 is explained as the unseeded re-run.
+- Pricing hypotheses kept, labelled as estimates: lab pilot about R210k; licence about R12k per site per month; at most 20% of measured net value; belt pilot R8.2–49.2 M installed plus R1.6–9.8 M a year.
+- Funder split: TIA bridge-funds the lab pilot; the host mine pays the belt pilot; Mintek's lab work is billed to the pilot.
+- Mentors thanked by role, not named. CRediT roles kept as written.
+- Code: a public GitHub link (see Open). Judges unknown, so the report is written for a Mintek/TIA panel.
+
+**Did:**
+- All money in rand at R16.4/US$ (FRED EXSFUS, Jan–Sep 2026 mean 16.37). Break-even recomputed: 0.02–0.21% more recovered metal (0.23% with a 20% contingency).
+- New sections:
+  - business model and justification: Fig. 9 money and value flows, four revenue streams, why Mintek, why now, alternatives table;
+  - pricing by stage and what it pays for (Table 5);
+  - financial methodology: CRF, annualised cost, break-even, sensitivities (Fig. 10);
+  - risks with contingency and fallbacks: risk matrix (Fig. 11) and register R1–R10 (Table 6);
+  - support needed (Table 7) and maintenance (Table 8);
+  - compliance, committees and outsourced fact-checkers (Table 9);
+  - training (Table 10: MHSA s.10, MQA);
+  - roadmap after funding: Gantt to month 36 (Fig. 12) and gates L1, G1–G4 (Table 11).
+- New charts and figures: world PGM production (USGS 2026), hardness R², feed-policy trade-off, IoU by class, and a grain-inspector crop (field plus evidence panel). The HSI figure was re-rendered in Times.
+- Cut: the S1/confusion appendix, the reproduction commands and the CI flag. The negative-results table and the proposed-vs-delivered table are now short paragraphs. The 911 Metallurgist reference was replaced by Moodley 2026's liberation classes.
+- Written in Sibusiso's report voice: role framing, a problem statement, lettered assumptions, cost equations followed by "which is equivalent to", "Figure X illustrates…, highlighting…", validation against literature, and limitations.
+- Exactly 12 pages including references; no appendix. About half a column is spare on page 12.
+
+**Fact-check corrections this round:**
+- **Valterra recoveries:** "1.2–1.7 percentage points at Mototolo and Amandelbult", not "+1/+2 pp".
+- **Mining Charter 2018:** the High Court ([2021] ZAGPPHC 623, 21 Sep 2021) set aside all of clause 2.2, including the R&D 70% and the 100% sample-analysis clauses. They are not cited. Clause 2.3.1 (5% of the leviable amount on skills development, including R&D in processing) still stands and is cited.
+- **Radiation licensing:** isotope sources are licensed by SAHPRA Radiation Control (Hazardous Substances Act 15 of 1973, Group IV), not by the National Nuclear Regulator as docs/18 and docs/21 say.
+- **PFMA:** Mintek is Schedule 3B and TIA is Schedule 3A (Treasury list, 1 Dec 2024).
+- **MHSA:** s.10 requires training before significant changes to plant or equipment, a training record, and a workplace skills plan to the MQA; s.11 covers risk assessment; s.34 covers committees.
+- **New source:** Notole et al. 2025, *Minerals Engineering* 234, 109682. It validates HSI on Merensky core scanned at the Council for Geoscience. Only the indexed abstract was read; ScienceDirect asked for a CAPTCHA.
+- **Jones 2005:** Merensky ore has up to 3% base-metal sulphides, and UG2's are mainly pentlandite, chalcopyrite, pyrrhotite and pyrite. This supports the three phases the microscope identifies.
+
+**References:** 36, in IEEE style with URLs and access dates. Every URL was opened on 5 Oct 2026. FRED, SAFLII, gov.za and the Taylor & Francis DOI block curl but load in a browser.
+
+**Open (1 red VERIFY):** `Sibusiso-K/KHANYA` is **private**, but the report gives the public GitHub link (Sibusiso's choice), which returns 404 for anyone else. Before submitting, make the repo public or change that line. Check the hackathon IP agreement with MOTT first: public disclosure before MOTT's IP assessment could affect patentability, and LumenStone is under research-use terms.
+
+**Files:**
+- `report/main.tex` and `main.pdf`;
+- `report/figures/grain_inspector_test11_g30_pair.png` (new);
+- `report/figures/hsi_parcel_gmet0004.*` (re-rendered);
+- the Overleaf zip (4 files).
+
+Build with `tectonic -X compile main.tex` from `report/`.
+
+---
+
+## 2026-10-04 — Sibusiso (Claude) — report rebuilt belt-first (pitch v8), Mintek/SA framing, fact-checked, pilot investment case
+
+**Did (Sibusiso's direction):**
+- **Structure:** follows Lethabo's pitch v8 ("three speeds, one decision"). The belt hyperspectral layer is the site system; the microscope is the truth layer delivering the brief's three phases; the decision layer sits between them.
+- **New Figure 2:** HIDSAG parcel GMET-0004, rendered from the showcase data (VNIR colour, Al-OH and Mg-OH depth maps, mean spectrum).
+- **New Figure 3:** the Decisions view (from the v8 deck). The test_11 micrograph mosaic figure was dropped.
+- **New Section 5.2:** why Mintek needs this, from Mintek's 2025 Impact Report: footprint, Molycop/Mercantil, the HZL benefit-sharing model, the 0.5% AI throughput result.
+- **New Section 6:** the ask and roadmap to a pilot — partner table, go/no-go gates G1–G3, investment case, risk table.
+- Now 11 pages, compiled and checked page by page.
+
+**Verified by recomputation:** belt work index from the stored v6 out-of-fold predictions: R² 0.479 (RGB only 0.210, fold mean −0.027), MAE 1.052, 80% coverage 0.795.
+
+**Fact-check corrections (recent primary sources):**
+- **Platinum share:** the deck's "71% in 2024 (120/170 t)" is actually the 2025 figure (USGS MCS 2026). 2024 was 126/179 t.
+- **Zondereinde tonnage:** "2.25 Mt milled" could not be confirmed; ROM milled is reported as 1.07 Mt (F2025) and 1.39 Mt (F2026). The value example now uses Northam's primary 333,050 oz 4E (F2026, SENS 13 Jul 2026) × Valterra basket prices R32,611 (2025) / R45,993 (H1 2026). That gives R108.6–153.2 M per +1% recovered metal; break-even 0.03–0.23%.
+- **Comminution:** "~50% of a mine's energy" is wrong; it is 52% of site electricity and 36% of total energy (Ballantyne, Powell & Tiang 2012).
+- **Dropped:** dated or [S] figures — Impala 2018 recoveries, SRC 2017 QEMSCAN price, fire-assay 24–72 h, Knights 2012.
+
+**Open:** 11 red VERIFY markers (citation details, the Merensky hyperspectral paper, CRediT confirmation, mentor names, code access, the CI URL).
+
+---
+
+## 2026-10-04 — Sibusiso (Claude) — report: grain inspector figure; Ipeleng removed
+
+**Did:**
+- **Author list (Sibusiso's request):** Ipeleng Modise removed from the author line, affiliations and CRediT. The report now lists Lethabo Hoaeane (UNISA) and Sibusiso Khumalo (Wits).
+- **New Figure 4 in Section 4.3:** the grain inspector on test_11, captured headless with the system Edge via playwright-core. Grain 30 is selected: 76.5% pyrrhotite, 23.5% pentlandite, LOCKED. Panel (b) magnifies the same render, showing grain 31 (free pentlandite) beside it.
+
+**Found while choosing the grain:**
+- Quick-mode fields are classified without context beyond their edge, so grains are cut at field borders.
+- On test_11, 19 of 24 grains (8 of 10 payload-bearing) come within 6 px of a field edge.
+- Grain 21 is a thin L-shaped strip along a field border, i.e. an artefact.
+- This is disclosed in Section 4.3 and limitation 7. Full-section mode has no internal field borders.
+- Product follow-up for the workbench: flag or exclude edge-truncated grains in Quick mode.
+
+**Report:** still 9 pages; 17 VERIFY markers (Ipeleng's replaced by "Lethabo to confirm these roles").
+
+---
+
+## 2026-10-04 — Sibusiso (Claude) — technical report compiled: 9 pages
+
+**Did:** Installed Tectonic 0.17.0 (`C:\Users\lovilocal.adm\tools\tectonic`) and compiled `report/main.tex` to `report/main.pdf`: **9 A4 pages**, under the 12-page cap, no unresolved references. Rendered every page and fixed the layout:
+- column stretching (`\raggedbottom`) and float limits;
+- ragged-right table columns (Tables 1, 2, 7, 10, App. C) and the Fig. 2 legend;
+- compact back-matter headings and the Appendix B file list.
+
+One 1.85 pt overfull line remains (invisible). The Overleaf zip is rebuilt.
+
+**Still open:** the 17 red VERIFY markers listed in the previous entry. Rebuild with `tectonic -X compile main.tex` from `report/`.
+
+---
+
+## 2026-10-04 — Sibusiso (Claude) — technical report first draft (LaTeX)
+
+**Did:** Wrote the Mintek technical report from the blueprint: `report/main.tex` (two-column, about 4,500 words; estimated 9–10 pages, under the 12-page cap). It follows the Mintek paper's structure: abstract; introduction; methods; architecture; results; discussion with scope, limitations and proposed-vs-delivered; roadmap; conclusions; back matter; 22 references; appendices A–C. Figures: architecture and roadmap (TikZ), per-section mIoU (pgfplots), and the real test_11 Quick scan from de7135a9 (`report/figures/`). Overleaf bundle: `report/Team-Sonar-Mintek-Technical-Report-overleaf.zip`.
+
+**Decisions applied (from the blueprint):** de7135a9 is the model under report; fb78727 is the recipe re-run; 42646cfa is a quarantined candidate. Latency is a table with hardware and n. Withdrawn results are in a negative-results table. Economics are a worked example with an assumptions register.
+
+**Not verified:** not compiled here (no TeX engine). Structure, refs, citations and bibliography order were checked by script.
+
+**Before submitting (17 red VERIFY markers in the PDF):** complete 9 citations (Jones 2005, Molefe & Baloyi 2022, Eksteen 2011, Knights 2012, Korshunov 2025, Ehrenfeld 2023, Bachmann 2019, 911 Metallurgist, the ResUNet benchmark); the fire-assay turnaround source; Northam F2025 tonnage and grade; the Napier-Munn journal source; CRediT roles (Ipeleng especially); mentor names; the funder; code-access wording; the CI run URL.
+
+---
+
+## 2026-10-04 — Sibusiso (Claude review) — technical report audit for Mintek (12 pages)
+
+**Did:** Pulled every branch and audited the build against the template Mintek supplied (Moodley et al. 2026, *Results in Engineering* 32, 112959). Every figure for the report was checked against its source file, and both economic calculations were recomputed. The full blueprint is a private Claude doc, which Sibusiso will share.
+
+**Five decisions before anyone writes:**
+1. **Model under report = `de7135a9`** (pooled mIoU 0.5725, per-section 0.4671). `fb78727` (0.4543) is the non-reproducing re-run, not "deployed". `42646cfa` (0.632) stays quarantined: it loses pyrrhotite (0.818 vs 0.870) and pentlandite (0.446 vs 0.547). Pitch v8 slide 5 and deck v6 slides 8/10 say otherwise and must not be copied.
+2. **Scan time:** the latency table with hardware and n. Not "about 80 s" (one run on Lethabo's laptop). Plugged-in i7-1265U: 16.7–21.2 s server-side over 5 runs; 30.8 s on battery.
+3. **"Live online":** the QR link is a static HF Space with an unsigned sandbox record. The secure server (17/17 security tests) was tested locally and not published; Azure is blocked by MFA.
+4. **Negative results stay in:** MINERAL1 withdrawn, the Bushveld seam beats chemistry (0.82 vs 0.79), the plant soft sensor never beats the last assay, and v7/v8/seed-43 brought no gain.
+5. **Cite only [P] figures** from docs/17. Read the primary source for fire-assay 24–72 h, Zondereinde tonnage and grade, Sibanye ransomware and Blue Cube, or drop them. Present R64.0/94.6/152.8 M per pp (recomputed) and the 6,159–18,476 t as worked examples with stated assumptions.
+
+**Also:** a "proposed vs delivered" table against the accepted abstract (docs/archive/submitted-application.md). Bushveld phases, QEMSCAN distillation, DINOv3, Hailo edge and AAS/MLflow were not built. The abstention rule was deliberately reversed, from "hold last value" to "apply the conservative setting".
+
+---
+
+## 2026-10-01 — Sibusiso (Claude review) — prompt-6 fixes checked live
+
+**Checked c9fb323 on 127.0.0.1:8510 (de7135a9):**
+- Fix 1 works. Starting with httpx removed from the runtime, the API started, /api/health returned 200, and /api/assistant/status reported provider_ready false with "Optional provider client unavailable (httpx is not installed)". The local assistant answered (mIoU 0.573, magnetite 0.000). httpx was restored afterwards.
+- Fix 2 works. "Model warming up…" is disabled until model_ready, then reads "Run analysis".
+- Fix 3 works. "Background / resin 3.0%" row; provisional rows sum to 100.0% at field 3. Timing line: "inference 28.7 s · analysis 0.8 s · saving 0.8 s · 6 fields ≈ 4.8 s each".
+- **Fixed (this entry's commit):** mid-run, the card showed "Runtime: Not measured yet" beside the previous run's timing line. The line now shows only once this result is measured.
+
+**Process gaps:** c9fb323 is one commit, not three, and adds no tests, though the prompt named each test. The 29 API and 7 Playwright passes Codex reported are existing tests.
+
+**Power warning:** at 17% battery Windows starved the server (0 CPU-s over 5 s). One run took 88 s of inference (14.7 s per field) and looked hung at 5 of 6. That is power management, not a code fault, but on stage it would look like a crash. Present plugged in, on Best performance.
+
+---
+
+## 2026-10-01 — Sibusiso (Claude review) — overnight commits reviewed live
+
+**Checked 2b763b2 on 127.0.0.1:8510 (de7135a9):** all four CI checks green. Progress telemetry correct (provisional pyrrhotite 96.8 → 93.6%; final 93.6%, Grind finer 0.9066). Assistant off by default and local-only, provider opt-in per question. Voice consent text present. Zero requests to other origins.
+
+**Found:**
+- `assistant.py` imports httpx at module top, so the app won't start without it. Locally I installed the pinned httpx 0.27.2 (+ httpcore 1.0.9, certifi, sniffio) into the git-ignored `.runtime_packages`. Ask: make the import lazy.
+- A run started before model_ready waits on warm-up (prepare 6.2 s).
+- On battery (35%), the bare model takes 31.6 s for six fields vs 23.3 s plugged in. Present plugged in.
+
+**Open:** the timing line on the result card; a background row in the provisional bars; gating "Run analysis" on model_ready. No approved PRs, so nothing merged.
+
+---
+
+## 2026-09-30 — Sibusiso (Claude review) — progressive scan checked live at 375 px
+
+**Checked 9c4661c on 127.0.0.1:8510 (de7135a9, test_11 Quick, 375 px):**
+- Works: lifespan warm-up; provisional bars during the run (pyrrhotite 96.7% at field 3, final 93.6%); "Mean confidence provisional"; the "no final advisory until completion" note. "Test in simulator" stays disabled until the result is complete, and "Grind finer" appears only after. Run took 16.7 s. No horizontal overflow and no text under 12 px mid-run.
+- **Fixed (this entry's commit):** the status line read "Field 3 of 63 / 6 fields classified", two labels with no separator. It now reads "Field 3 of 6 classified".
+
+**Still missing from codex-prompt-5b:**
+1. The timing line on the result card: it shows only "Runtime 16.7 s", while result.timings has the measured breakdown.
+2. Outlines of the finished fields on the image. The card covers the image and the reticle is decoration only.
+3. New tests: 9c4661c adds none. The Playwright provisional/advisory test, the model_ready test and the single-model-load test are all still to write.
+
+Provisional bars list the four minerals without background, so on test_11 they sum to 97%. Either show "background/resin" as a fifth row, like the final panel's "Background / other", or label them "share of analysed area".
+
+---
+
+## 2026-09-30 — Sibusiso (Claude review) — warm start verified; provisional mix and timings fixed
+
+**Checked 3e68f12 on 127.0.0.1:8510 (de7135a9, test_11 Quick, two runs after a fresh start):**
+- Warm start works: model_ready was true when the page loaded, and runs took 19–21 s with no first-run penalty.
+- **Bug, fixed:** the provisional mix counted the zero-filled, not-yet-analysed section as background. After 5 of 6 fields it read background 85.7% / pyrrhotite 14.2% (final: 5.6% / 93.6%). It now counts only pixels inside finished boxes, each once. Measured: pyrrhotite 96.8 → 97.8 → 96.7 → 94.1 → 93.6% across fields 1–5; final 93.6%.
+- **Bug, fixed:** the timings were placeholders (analysis_s 0, write_s 0, per_field_s [], inference_s = total). Now measured: prepare 0.41, inference 17.83, analysis 0.85, write 0.44, total 19.52 s; per field 2.3–3.4 s. The four stages sum to total_s.
+- provisional_confidence is now the running mean over finished fields (it was the last field's value).
+- New test `test_provisional_mix_counts_only_analysed_fields_and_timings_add_up`.
+
+**Still not built (from codex-prompt-5):**
+- UI: provisional bars with the "Provisional · k of 6 fields" label; field outlines filling in; the timing line on the result card; hiding the advisory until the final result.
+- Tests: Playwright for those, and API tests for model_ready and a single model load under concurrent first requests.
+
+---
+
+## 2026-09-30 — Sibusiso (Claude review) — approved-checkpoint change verified, three fixes
+
+**Decision:** the approved demo checkpoint is `de7135a9…` (mIoU 0.5725, pixel acc 0.8914). `fb78727…` is not approved. Lethabo: put `de7135a9` in `checkpoints/lumenstone_s2_patches/best.pt` on your host; the header badge will turn from amber to "approved".
+
+**Fixed on top of Codex's 21fee43 / 3a05241:**
+- `295c9cf`: CI "local workbench API tests" failed 5 safety tests. CI has no checkpoint, so MODEL_SHA is empty and the new approval gate refused everything first. The tests now pin an approved host; added a test that an unapproved checkpoint is held at 0.95 confidence.
+- `49cb1cb`: the badge separator was a lone cp1252 byte in App.tsx, which browsers showed as "�". Saved as UTF-8 and rebuilt dist (npm ci picked up the new @supabase/supabase-js dependency).
+- The startup line went to a logger uvicorn keeps silent. It now logs on `uvicorn.error` (WARNING when not approved).
+
+**Verified on 127.0.0.1:8510:**
+- de7135a9: log "KHANYA model active sha=de7135a9 mIoU=0.5725 APPROVED"; badge "Model de7135a9 · approved"; no warning.
+- One-byte-changed copy (5e43deee, restored afterwards): badge "not approved"; warning "Active model 5e43deee is not the approved demo checkpoint. Approved: de7135a9."; /api/report metrics null.
+
+**Still open:** screenshots of both states at 375 px (Codex); re-run test_11 on de7135a9 on Lethabo's host and fill the TODO in the audit report.
+
+---
+
+## 2026-09-30 — Sibusiso (Claude review) — the two hosts run different checkpoints
+
+**Found:** `reports/LIVE-RESULT-AND-CONTROL-AUDIT-2026-09-30.md` says the live model is `fb78727…` (mIoU 0.4543 / pixel acc 0.7716). The app loads whatever file sits at `checkpoints/lumenstone_s2_patches/best.pt`, so Lethabo's host (the Cloudflare demo) is serving the weaker Kaggle run. Sibusiso's host (127.0.0.1:8510) serves `de7135a9…` (0.5725 / 0.8914, the checkpoint `reports/ACCURACY-REPORT.md` is about).
+
+**Same image, different answers (test_11, Quick, 6 fields, 18.2%):**
+| | fb78727 (Lethabo's host) | de7135a9 (Sibusiso's host) |
+|---|---|---|
+| pentlandite | 34.66% | 0.8% |
+| pyrrhotite | 60.84% | 93.6% |
+| mean confidence | 0.5535 | 0.907 |
+| advisor | HOLD, below the 0.85 floor | Grind finer (0.9066) |
+
+`END-TO-END-LOCAL-DEMO-2026-09-30.md` itself says "Do not promote the weaker Kaggle run; retain de7135a…". The new audit header contradicts that.
+
+**Ask (Lethabo):** put `de7135a9…` in `best.pt` on your host (sha256 must match), re-run test_11, and correct the audit's header and live-run numbers. Consider having `/api/health` refuse to start, or show a warning, when the sha isn't the one the accuracy report covers.
+
+---
+
+## 2026-09-30 — Sibusiso (Claude review) — independent check of 48d3375 / cec2245
+
+**Did:** Pulled to 998c7b4, restarted the local workbench (127.0.0.1:8510) and ran a fresh real `test_11` Quick analysis (checkpoint de7135a9, no cached result). Tapped grains through the Explore-grains canvas at pixels decoded from `grain-ids.png`.
+
+**Verified:**
+- Local mode: `/api/config` auth_required false, cloud_sync false; zero requests to other origins on page load.
+- 24 grains: 14 NO VALUABLE MINERALS, 9 LOCKED, 1 FREE (API).
+- UI cards: grain 12 (pyrrhotite 100%, payload 0) shows **NO VALUABLE MINERALS**; grain 31 (pentlandite 100%) **FREE**; grain 21 (payload 0.0019) **LOCKED** at 0.2%, not 0.0%. Explanations match each state.
+- PR #15 checks: tests, offline frontend bundle, local workbench API tests, GitGuardian all SUCCESS; mergeable.
+
+**Caveat:** clicks were dispatched pointer events at computed canvas positions (the preview pane's screenshots were offset), so they test the component's mapping and decoding, not a physical touch.
+
+**Pitch note:** present from local mode on 8510 with wifi off; the Cloudflare tunnel depends on the host staying up and is not the demo path.
+
+**Next:** Sibusiso to decide on the retired Streamlit PRs (#11–#13, #18–#22); microns-per-pixel value still outstanding; human Supabase sign-in proof still pending (Lethabo).
+
+---
+
+## 2026-09-30 — Codex — grain liberation labels and API CI dependencies
+
+**Did:** Updated the visible Grain Explorer to report no valuable mineral, locked, or free using the advisor’s 50% rule. Small nonzero payload percentages retain enough precision to remain visibly nonzero; each state has a matching explanation. Pinned the image-analysis dependencies used by API tests, including SciPy and headless OpenCV, and installed them with the API pins in CI without Streamlit. Inference test failures now show the job error before reading its result.
+
+**Changed:** `frontend/src/GrainExplorer.tsx`, `frontend/src/GrainInspector.tsx`, `frontend/src/grainSelection.js`, grain unit/Playwright tests, built bundle; `.github/workflows/ci.yml`, `requirements-lock.txt`, `tests/test_workbench_inference.py`.
+
+**Verified:** `npm ci`, frontend build; grain pixel tests (2), grain selection/state/letterbox tests (3), Spatial contracts (12), Playwright (2); all workbench API tests (68 passed, 1 skipped); dependency install dry run. On the current Cloud workbench UI, actual cached Quick inference for `test_11` was opened at 375px; physical clicks selected grain 12 (pyrrhotite 100%, payload 0), which displayed **NO VALUABLE MINERALS**, and grain 31 (pentlandite 100%, payload 1), which displayed **FREE**. Its real inference had completed in 99.8 s with six fields, 18.2% coverage, and 24 grains / 10 with valuable mineral. Test image and checkpoint were read from the sibling checkout, never committed.
+
+**Blocked on:** Waiting for all PR checks to pass on this revision.
+
+**Next:** Review the updated PR checks.
+
+---
+
+## 2026-09-30 — authenticated Cloudflare demo and white workbench
+
+White responsive React workbench now has Dashboard, Workspace, Samples, Spatial, Process and Reports; exact result-bound grain selection/export, keyboard navigation, protected image/download loading, account-scoped browser caches and private Supabase records. Supabase RLS/storage/schema deployed; bearer auth fails closed in public mode. Simulator sessions remain host-local and isolated, not durable cloud controls. No real plant connection.
+
+Temporary user-approved HTTPS demo: https://arnold-orange-malpractice-transmitted.trycloudflare.com (upstream localhost:8766). Local offline research mode: http://127.0.0.1:8510. Both need this host running; this is not permanent Cloudflare Pages deployment. Public health/config reachable; unauthenticated sample requests return 401. A real human sign-in/upload round trip is still pending user login; SQL ownership/CAS checks and mocked auth tests are not that proof.
+
+Verification: 69 focused workbench Python tests passed; frontend production build and TypeScript passed; two grain utility tests and two desktop/mobile browser tests passed, including no external HTTP requests in local mode. Credit: collaborator six-field sampling, input gates and grain evidence backend retained. CE+Dice validation experiment completed, magnetite IoU still zero; matched CE control launched on Kaggle. No held-out test improvement verified; deployed checkpoint remains mIoU 0.4543 / accuracy 0.7716. See reports/MODEL-TRAINING-AUDIT-2026-09-30.md, SUPABASE-DEPLOYMENT.md and UI-EVIDENCE-HANDOVER.md.
+
+Next: human private workspace sign-in/upload persistence proof, permanent deployment after Azure MFA, matched training-control comparison without test-set tuning, evaluate selected final checkpoint once, and resolve open review blockers before merging Sibusiso PRs.
 # Handover Log
 
 Required for every collaborator. Before pushing, read the latest entry below.
@@ -19,60 +879,103 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
-## 2026-09-30 — Sibusiso (74) — no advice on thin evidence; six fields, not one (PR A)
+## 2026-09-30 — Codex — quick workbench, input gate, and offline build
 
-**Why:** running the build as a judge would, the flagship *Grind finer* that
-moved the plant rested on **2 particles** (1 payload-bearing) in a single centre
-field. A system whose thesis is refusing weak evidence was commanding a plant on
-it.
+**Did:** Integrated six real 512×512 fields in Quick mode and expose the actual
+field count and sampled area coverage; the prediction image is labelled as a
+field mosaic. Restored the provisional confidence gate and copied the reviewed
+input-eligibility helpers/manifest byte-for-byte from `origin/khanya/speed`.
+Only exact held-out image bytes are eligible for the local simulator; colour
+cast checks refuse grayscale/cool images before inference. Pinned the API test
+runtime, committed the built frontend, added CI reproducibility/network checks,
+and replaced `.runtime_packages` startup dependency with documented Python
+installation steps.
 
-**Did:**
-- **Evidence-sufficiency gate** in `src/advisor.py`: *No recommendation - too
-  few payload particles* below `MIN_PAYLOAD_PARTICLES`. It is **derived**, not
-  tuned: `ceil((1.96*0.5/LIBERATION_MARGIN)^2) = 9`, the smallest n whose
-  worst-case 95% interval on a proportion is narrower than the band the advisor
-  already decides against. Missing counts fail closed. `modal.liberation_stats`
-  counts payload-bearing particles; `liberation_index`'s interface is unchanged.
+**Changed:** `webapi/`, `src/advisor.py`, `src/validated_samples.py`,
+`dashboard/inputs.py`, `dashboard/validated_samples.json`, `frontend/`,
+`requirements-web.txt`, `.github/workflows/`, `scripts/start_workbench.ps1`,
+`README.md`, workbench and renderer tests.
 
-  > **CORRECTED 30 September (Lethabo, PR #10 review). The rationale above is
-  > withdrawn and kept only as history.** 9 is a **provisional operating floor,
-  > a conservative policy choice, not a statistical bound**. The binomial
-  > interval is not valid for an area-weighted ratio over spatially dependent
-  > particles. The floor is now hard-coded and does not follow the margin. A
-  > real uncertainty estimate for this estimator, on training/validation data,
-  > is post-deadline work.
-- **Six sampled fields** replace the single centre field as the live path
-  (`multi_field_predict`, 3x2 grid, fixed by a latency budget before
-  measuring). Fields sit in a mosaic with background gaps, so the unchanged
-  measurement chain cannot merge particles across fields.
-- **Bug fixed:** `decision_gap.classify` counted only Marginal/Flag as hedges,
-  so a *No recommendation* abstention would have scored as a confident error. It
-  now uses the advisor's own `ABSTAINING_PREFIXES`.
+**Verified:** `pytest tests/ -q` — 173 passed, 1 skipped (local checkout lacks
+`test_11.jpg`). `npm ci` and `npm run build` passed; the emitted executable
+bundle has no external URLs apart from W3C namespace identifiers. A synthetic
+1600×1100 inference contract verified six distinct, non-overlapping fields and
+89.4% computed coverage. On 2026-09-30 the current worktree API was run on
+127.0.0.1:8511 against read-only assets from the sibling checkout: real
+`test_01.jpg` bytes uploaded and recognized as `test_01`; real six-field
+inference completed in 33.171 s with 18.2% coverage, confidence 0.7722, and
+the confidence gate withheld advice. Report metrics matched the loaded
+`de7135a…` checkpoint SHA.
 
-**Measured** (`reports/field_sampling_s2.json`, held-out S2):
-- Single field: 0-20 payload particles; matches whole-section advice on
-  **0/12**.
-- Six fields: match on **9/12**.
-- Expert whole sections: never refused (12-224 payload particles).
-- Model whole sections: refused on 2 (test_02, test_07: 5 and 8 payload
-  particles against the expert's 12 and 13).
-- Decision gap, S2 refined: 0 unsafe still, disagreements 6 -> 8, all hedges.
-- Decision gap, S2 raw: errors 5 -> 2. The 2 unsafe (test_03/04) are the raw
-  estimator's broken particle identity, not thin evidence.
-- S1 unchanged.
+**Blocked on:** Visible-browser interaction could not be completed: the CUA
+runtime exited unexpectedly on initialization. The real image was submitted to
+the API over HTTP, not through the browser file picker. The current worktree
+contains no checkpoint or image data; the live API test used sibling assets
+read-only. Do not describe this as browser-verified.
 
-**Live, in the running dashboard:** test_11 -> six fields -> *Grind finer* on 10
-payload particles (24 total), 17.2 s end to end, plant 0 -> 1. test_04 ->
-refused on 4 payload particles, plant held.
+**Next:** Re-run the upload and result inspection through the browser once CUA is
+available, and verify the committed checkpoint/data on the presentation laptop.
 
-**Changed:** `src/{advisor,modal,decision_gap}.py`,
-`src/segmentation/patches.py`, `src/field_sampling_check.py` (new),
-`dashboard/app.py`, tests (+10), S2 decision-gap JSONs,
-`reports/field_sampling_s2.json`, `ACCURACY-REPORT.md` s7/s10, `PITCH.md`,
-`BACKUP-DEMO-SCRIPT.md` beat 4. Suite 132 passed.
+## 2026-09-30 — Codex — checkpoint-bound Reports API
 
-**Next:** Lethabo - review as a hostile Mintek judge (PR). Sibusiso - PR B,
-lighting consistency check.
+**Did:** Replaced the hard-coded active/inactive report split with a committed
+full-SHA checkpoint manifest. `/api/report` now displays metrics only for the
+loaded checkpoint, identifies exactly one matching known checkpoint as active,
+and returns an explicit unknown-checkpoint/no-metrics message otherwise.
+
+**Changed:** `reports/checkpoint-metrics.json`, `webapi/app.py`,
+`tests/test_workbench_report.py`.
+
+**Verified:** `pytest tests/test_workbench_report.py -q` — 3 passed, including
+both known SHAs and an unknown SHA.
+
+**Next:** Continue with the six-field inference API path.
+
+## 2026-09-30 — Codex — merge main evidence sufficiency and six-field sampler
+
+**Did:** Merged `origin/main` into `codex/launch-live-demo` per the live-demo
+workbench task. Resolved the shared dashboard conflict in favour of main's
+six-field predictor and retained the launch branch's workbench history and
+files. Main adds a provisional nine-payload-particle refusal floor and reports
+that six fields matched whole-section advice on 9 of 12 held-out sections.
+
+**Next:** Complete the FastAPI adaptation on this branch; its request and
+response contract is separate from the Streamlit dashboard.
+
+## 2026-09-30 — Codex — local end-to-end launch and evidence
+
+**Did:** Launched the Streamlit KHANYA app at `http://127.0.0.1:8501/` from an
+isolated checkout, loaded the private Kaggle S2 patch checkpoint strictly,
+ran a fresh 512×512 held-out `test_01` inference, computed modal phase output,
+and passed the actual advisor action through the local OPC UA simulator. The
+simulated consumer acknowledged `regrind_enabled` changing 1 → 0 after a
+“Continue at current setpoint” advisory. Fresh CPU inference was 12.776 s;
+mean confidence 0.5316, so the advisor labeled it low confidence / verify
+manually. The full native-resolution evidence view was stopped because it
+kept consuming CPU for minutes; the measured whole-section path is not the
+right live demo mode.
+
+**Accuracy:** Kaggle run `20260929-185547`, checkpoint SHA-256
+`fb78727d4859947d3605ccf9374f8defbc40897e9cf1b1922a52c1832d387067`, has
+held-out mIoU 0.4543 / pixel accuracy 0.7716 and misses magnetite. This is
+weaker than `reports/ACCURACY-REPORT.md`'s `de7135a…` checkpoint (0.5725 /
+0.8914), so keep the latter as the report baseline until a comparable run
+beats it. No dataset or checkpoint was added to Git.
+
+**Checks:** 122 tests passed (2 pytest-cache permission warnings); checkpoint
+strict load, held-out inference, OPC UA simulated ack and localhost health
+checks passed. Full record: `reports/END-TO-END-LOCAL-DEMO-2026-09-30.md`.
+
+**Blocked on:** No Cloudflare Pages/Wrangler auth or deployment exists on this
+host. The active Supabase project has no application schema/storage/API; Azure
+is not deployed. The live build therefore remains localhost-only and has no
+PWA phone sync, cloud auth/persistence, 3D geology or real plant connection.
+
+**Next:** Keep the stronger checkpoint/report as baseline; run comparable
+training/evaluation before model promotion. Then connect Cloudflare and
+Supabase for a real cloud build, implement app schema/auth and private uploads,
+and validate on representative South African reference sections before
+describing this as a plant tool.
 
 ---
 
@@ -3692,3 +4595,58 @@ per team decision to wait on official acceptance.
 **Next:** Lethabo — accept the GitHub invite (check email/GitHub notifications).
 Once accepted, pull `main` and read `DATA-SOURCES.md` + `reports/KHANYA-01-research-phase.md`
 before touching code.
+
+## 2026-09-30 continuation — responsive application
+See reports/WORKBENCH-HANDOVER-2026-09-30.md first for the new React + FastAPI workbench, localhost:8510, actual test evidence and remaining cloud/integration work. Source implementation in frontend/ and webapi/. Do not confuse this application's Kaggle checkpoint with the stronger historical baseline.
+
+## 2026-09-30 spatial continuation
+Read reports/SPATIAL-UI-HANDOVER-2026-09-30.md for the current UI/spatial/decision-export implementation and remaining cloud work.
+
+
+Latest backend continuation: reports/LOCAL-RECORDS-HANDOVER-2026-09-30.md (versioned notes/assays and cloud login blockers).
+
+## 2026-09-30 — Codex — grain evidence inspector and source layout
+
+**Did:** Added a result-bound grain inspector to Workspace. Clicks on the predicted phase map decode the exact lossless 24-bit grain ID, highlight the selected region, and display advisor-matched grain measurements plus explicitly estimated phase-weight, mineral-contact and size-bin liberation evidence. Added a Playwright click test and narrow 375px layout coverage. Moved the workbench input-check helper and hash-only held-out manifest under `src/`; updated all imports and tests.
+
+**Changed:** `frontend/src/GrainInspector.tsx`, `frontend/src/App.tsx`, `frontend/src/grainSelection.js`, `frontend/src/grainPixels.js`, styles, tests, built offline bundle; moved `dashboard/inputs.py` and `dashboard/validated_samples.json` to `src/input_checks.py` and `src/data/validated_samples.json`.
+
+**Verified:** `npm run build`; grain pixel/selection tests (2); Spatial contract tests (12); `npm run test:e2e` (2, including physical selection of mocked grain 7 at 375px); focused Python suite (52 passed, 1 skipped). Attempted a real `test_11.jpg` browser inference against the sibling checkout's checkpoint and data: API health confirmed checkpoint SHA `de7135a…` and 12 samples, but browser inference did not complete within the run window, so a real-image grain click is **not verified**. The checkpoint and images remain outside this repository.
+
+**Blocked on:** Nothing for code review; re-run the real-image browser test on a machine/runtime where checkpoint inference completes.
+
+**Next:** Review PR #15 and verify the real Quick-mode grain click on the presentation laptop.
+
+---
+## 2026-09-30 — Codex — approved checkpoint contract
+
+**Did:** Bound the local API and simulator to the approved `de7135a9` checkpoint, exposed approval state in health/report responses and startup logs, added explicit non-approved refusal coverage, and restyled the workbench header with a model badge and warning banner. Corrected the demo evidence header and added the live-result/control audit with a TODO to rerun the historical `test_11` result on the approved checkpoint.
+
+**Verified:** API report/simulator tests 6 passed; frontend build passed; grain-selection and Playwright tests passed (2). Browser verification of the new badge/banner against both mocked approval states remains to be captured after this commit.
+
+---
+
+## 2026-09-30 — Sibusiso (via Codex) — warm start and truthful progress
+
+**Did:** Added background model warm-up with a `model_ready` health signal, retained the request lock so first requests cannot load twice, and exposed field progress/provisional phase data from the real label arrays. Added timing fields to results and a warming-up header state. Missing checkpoints still leave the service running with the existing error path.
+
+**Verified:** Focused report tests and frontend production build pass. The inference test initially exposed a mocked callback with no labels; the progress handler now handles that test double without treating it as ore. Full browser mid-run capture and fresh-start timing evidence remain to be collected on the host with the approved checkpoint.
+
+---
+
+## 2026-09-30 — Sibusiso (via Codex) — progressive scan presentation
+
+**Did:** Replaced the deprecated startup hook with a FastAPI lifespan warm-up and completed the running scan presentation: field k of 6, real provisional phase bars/confidence from the API, and no-final-advisory disclosure while inference is active. Existing completion behavior remains unchanged.
+
+**Verified:** API focused tests 7 passed and production build passed. Existing Playwright grain/mobile tests passed; the scan test was adjusted to retain its measured `2 / 6 fields classified` assertion alongside the clearer field label and is being rerun.
+
+---
+
+## 2026-10-01 — Sibusiso (via Codex) — optional assistant and warm-up guard
+
+**Did:** Made `httpx` optional at import time so the local evidence assistant and API still start without provider dependencies; provider status now reports the missing client. The analysis button waits for `model_ready`, polls health every second, and labels warm-up explicitly. Result provenance now includes measured stage timing breakdowns when present, while live provisional evidence retains the background/resin row.
+
+**Verified:** Assistant/API tests 29 passed; frontend build passed; Playwright 7 passed. The prior assistant provider tests failed after the strict lazy import until the compatibility seam was added, then passed unchanged. No model, field placement, confidence gate, or progress counting rule changed.
+
+---
+
