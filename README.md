@@ -69,6 +69,55 @@ computable from XRF majors. Each is documented with its evidence, and the
 registration finding is still evolving on `reefprint`'s `WORKBOARD.md`. The
 system that reports these is the product — see [`ENDGAME.md`](ENDGAME.md) §3.
 
+## Local workbench (offline demo)
+
+The React workbench is served as a committed static bundle by the local FastAPI
+API. Install packages and build the bundle once while connected; the presentation
+run itself makes no network requests and can be tested with Wi-Fi disabled. The
+API binds only to `127.0.0.1`.
+
+On Windows PowerShell, from the repository root:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt -r requirements-web.txt
+Push-Location frontend
+npm ci
+npm run build
+Pop-Location
+.\scripts\start_workbench.ps1
+```
+
+Open `http://127.0.0.1:8510/`. The local checkpoint belongs at
+`checkpoints/lumenstone_s2_patches/best.pt`; held-out images, when installed,
+belong under `data/raw/lumenstone/S2_v2/imgs/test/`. Neither weights nor image
+data are committed. The API computes the checkpoint SHA from the file actually
+loaded. Confirm `/api/health` reports `deployment: local`, an available model,
+and a nonzero sample count; then confirm `/api/report` binds metrics to that
+same SHA. The committed report manifest recognizes only the explicitly recorded
+checkpoint hashes; an unknown SHA has no accuracy numbers. Do not present
+without the checkpoint or claim a plant connection: the simulator is local and
+advisory.
+
+Quick analysis runs up to six separate 512 × 512 model passes over non-overlapping
+fields. The UI reports the number actually classified and their area coverage;
+its displayed mask is the field mosaic, not full-section segmentation. This
+costs more than the former one-field shortcut, but samples the section rather
+than silently treating a centre crop as the whole specimen.
+
+The root requirements include Streamlit/dashboard dependencies; `requirements-web.txt`
+pins the API runtime separately for CI and repeatable installation. If a host's
+Streamlit and FastAPI dependency constraints conflict, create a dedicated API
+environment with `requirements-web.txt`, `numpy`, `pillow`, `torch`, and
+`torchvision`, then set `$env:KHANYA_PYTHON` to that environment's Python before
+running `scripts/start_workbench.ps1`. Build the frontend in Node 22 using
+`npm ci` / `npm run build`.
+`frontend/dist/` is committed intentionally: CI rebuilds it and fails if it
+differs from the checked-in bundle or contains external network URLs (apart from
+the SVG namespace).
+
 ## Repository map
 
 ```

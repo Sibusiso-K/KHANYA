@@ -4,7 +4,7 @@ import io
 import pytest
 from PIL import Image
 
-from dashboard.inputs import load_image, unavailable_reason
+from src.input_checks import load_image, unavailable_reason
 
 
 def test_corrupt_image_is_rejected():

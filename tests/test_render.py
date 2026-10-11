@@ -5,6 +5,7 @@ missing vendored asset must say how to repair the build, and only a genuinely
 marginal verdict may offer the two equally weighted candidate actions.
 """
 import ast
+import re
 from pathlib import Path
 
 import pytest
@@ -45,9 +46,11 @@ def test_dashboard_can_show_stitch_before_the_model_stack_is_loaded():
 def test_pre_upload_state_is_stitch_rendered_without_fabricated_claims():
     html = render.render_landing()
 
-    assert "Awaiting a reflected-light micrograph" in html
-    assert "REEFPRINT :: KHANYA" in html
-    assert "No network required" in html
+    assert "Upload a reflected-light micrograph" in html
+    assert "Ore intelligence workbench" in html
+    assert "LOCAL INFERENCE" in html
+    assert "data:font/ttf;base64," in html
+    assert not re.search(r'(?:src|href)=[\"\'](?:https?:)?//', html)
     assert "Dr. K. Vance" not in html
     assert "ISO/IEC 17025" not in html
     assert "DISPATCH" not in html

@@ -1,0 +1,6 @@
+# Pinned image-analysis runtime used by the isolated local workbench API job.
+# Streamlit is intentionally excluded; this job exercises the FastAPI workbench.
+numpy==2.2.1
+pillow==12.2.0
+scipy==1.18.0
+opencv-python-headless==4.10.0.84

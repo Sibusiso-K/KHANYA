@@ -1,0 +1,18 @@
+{
+  "purpose": "files allowed to publish to or command the OPC UA simulator; every other upload is advisory only",
+  "set": "LumenStone S2 v2, 12 held-out test sections",
+  "sha256": {
+    "test_01": "dfde94393f4697960ce0c9590f3a3e3e9151957b91539eeac95413f356ca41f4",
+    "test_02": "2ce0b6ecbad28834c16f7e63591e03078287c3945dae9957472a8c295d24803b",
+    "test_03": "522c1938fe55170e2838af5d88c617c07b2c6db2b88e54a7c37b4e7e3f293a4d",
+    "test_04": "ada2f99df160eb40183f37e85181a491e6bb4d76f93b2857d246b550d9c4ba84",
+    "test_05": "b427e6cc0e842318a3dbed00f8788ee835a2b3fb44a85fe1c420380c3f70ea0a",
+    "test_06": "352ca663f776979174f009a8faec0475f800d563b49813c97497c62a3047c89a",
+    "test_07": "4c79f87721faed0c6032000492860a389643bd6415c5e7be26fe4709c16dc6db",
+    "test_08": "68b48f54ee3d99cabcc7f2bd3111b7aef43550bf02dd7f0c43096226ee5cecb6",
+    "test_09": "a5a6ec27574f7ac871b6094c0f477e6deb180740a28f1022eec53394cc0a141c",
+    "test_10": "871c3c6efcc69f94b6d25a488b01871fa5b2ceaa4ff4f75edab761336b160d83",
+    "test_11": "8f4f6899aa75a026935eb889c8b25ac218de4f46de2e319cb85eb80d76631976",
+    "test_12": "d4c06582be115da9e93adc4f0d38cc48a1d4c1b4ef8ee58f837deb0b9e4bf504"
+  }
+}

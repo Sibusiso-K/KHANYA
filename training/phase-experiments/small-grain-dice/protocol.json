@@ -1,0 +1,14 @@
+{
+  "variant": "small-grain-dice",
+  "run_id": "20260930-s2-seed42-small-grain-dice-v1",
+  "seed": 42,
+  "epochs": 24,
+  "patches_per_epoch": 192,
+  "loss": "CE+Dice",
+  "selection": "native full-validation foreground macro IoU",
+  "test_evaluation": false,
+  "automatic_deployment": false,
+  "crop_policy": "50% training 256px crops resized to512; nearest masks",
+  "source_sha": "c80b593ed86aff95a47596fa4559af43f773908542f56dce70b0f1c431099c69",
+  "promotion": "Compare same validation sections; require rare-phase recall/IoU and no substantial common-phase regression; independent quality review before final test/deployment."
+}

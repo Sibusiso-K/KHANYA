@@ -130,8 +130,16 @@ class BalancedPatches(Dataset):
         self.length = length
         self.train = train
         self.seed = seed
+        self.epoch = 0
         self.classes_present = sorted({c for _, c in index})
         self._cache = {}
+
+    def set_epoch(self, epoch):
+        """Training draws are seeded by (seed, epoch, index), so a re-run - or a
+        resumed run - sees exactly the same patches. Before 2026-10-06 the train
+        draws used an unseeded generator, which is why a second run of the same
+        recipe scored 0.4543 instead of 0.5725."""
+        self.epoch = int(epoch)
 
     def __len__(self):
         return self.length
@@ -151,9 +159,10 @@ class BalancedPatches(Dataset):
         return self._cache[stem]
 
     def __getitem__(self, i):
-        # Deterministic for val (fixed patches every epoch, so val numbers are
-        # comparable across epochs), random for train.
-        rng = random.Random(None if self.train else self.seed + i)
+        # Deterministic for val (the same patches every epoch, so val numbers are
+        # comparable across epochs); for train, different patches each epoch but
+        # reproducible from (seed, epoch, index).
+        rng = random.Random(f"{self.seed}:{self.epoch}:{i}" if self.train else self.seed + i)
 
         target = rng.choice(self.classes_present)
         candidates = [s for s in self.ids if (s, target) in self.index]

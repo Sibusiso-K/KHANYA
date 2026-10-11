@@ -3,6 +3,7 @@ needs the real trained checkpoint and is covered by the eval scripts, not CI.
 """
 import numpy as np
 import pytest
+import torch
 from PIL import Image
 
 from src.segmentation import lumenstone as ls
@@ -123,3 +124,35 @@ def test_small_uploads_get_fewer_distinct_fields_never_repeated_crops():
         w, h = rng.randint(512, 5000), rng.randint(512, 5000)
         boxes = field_boxes(w, h)                     # raises if any two overlap
         assert len(set(boxes)) == len(boxes)
+
+
+def _synthetic_dataset(seed=42):
+    """A BalancedPatches over two fake 600x700 images, with no file I/O."""
+    from src.segmentation.patches import BalancedPatches
+
+    rng = np.random.default_rng(0)
+    images = {s: (rng.integers(0, 256, (600, 700, 3), dtype=np.uint8),
+                  rng.integers(0, ls.NUM_CLASSES, (600, 700), dtype=np.int64))
+              for s in ("a", "b")}
+    index = {(s, c): [(int(y), int(x)) for y, x in zip(rng.integers(0, 600, 50), rng.integers(0, 700, 50))]
+             for s in images for c in range(ls.NUM_CLASSES)}
+    shapes = {s: (600, 700) for s in images}
+    ds = BalancedPatches(sorted(images), index, shapes, length=8, train=True, seed=seed)
+    ds._image = lambda stem: images[stem]
+    return ds
+
+
+def test_training_patches_are_reproducible_from_seed_and_epoch():
+    """The unseeded train sampler made the recipe irreproducible (0.5725 vs
+    0.4543 on a re-run). Same seed and epoch must now give identical patches;
+    a new epoch must give new ones."""
+    first, second = _synthetic_dataset(), _synthetic_dataset()
+    for ds in (first, second):
+        ds.set_epoch(3)
+    for i in range(8):
+        x1, y1 = first[i]
+        x2, y2 = second[i]
+        assert torch.equal(x1, x2) and torch.equal(y1, y2)
+
+    first.set_epoch(4)
+    assert any(not torch.equal(first[i][1], second[i][1]) for i in range(8))

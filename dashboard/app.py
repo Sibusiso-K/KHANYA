@@ -15,7 +15,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from dashboard import render
-from dashboard.inputs import load_image, unavailable_reason
+from src.input_checks import load_image, unavailable_reason
 from src.segmentation import config
 
 

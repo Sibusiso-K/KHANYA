@@ -276,6 +276,26 @@ def advise(result, mean_confidence: float,
 #: colour that means "do not act on this yet". Keeping the rule in one place is
 #: what makes "amber on stage always means the same thing" checkable.
 ABSTAINING_PREFIXES = ("Marginal", "Flag", "No recommendation")
+CONFIDENCE_FLOOR = 0.85
+LOW_CONFIDENCE_ACTION = "No recommendation - model confidence too low"
+
+
+def confidence_gate(recommendation: Recommendation, mean_confidence: float) -> Recommendation:
+    """Withhold a confident action when model confidence is below the provisional floor.
+
+    Existing abstentions pass through unchanged; this gate only protects against
+    issuing a positive action from an uncertain prediction.
+    """
+    if recommendation.action.startswith(ABSTAINING_PREFIXES) or mean_confidence >= CONFIDENCE_FLOOR:
+        return recommendation
+    return Recommendation(
+        LOW_CONFIDENCE_ACTION,
+        f"The model would say '{recommendation.action}', but its mean confidence on "
+        f"these pixels is {mean_confidence:.0%}, below the {CONFIDENCE_FLOOR:.0%} it needs "
+        "before advice is issued. That line is a provisional operating rule, not a "
+        "validated bound. Verify manually.",
+        "low - verify manually",
+    )
 
 
 def verdict_state(action: str) -> tuple[str, str]:

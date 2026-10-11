@@ -109,6 +109,7 @@ def train(loss_name="ce"):
             print("last.pt is from a different budget; starting fresh")
 
     for epoch in range(start_epoch, patches.EPOCHS + 1):
+        train_loader.dataset.set_epoch(epoch)
         train_loss, train_summary = run_epoch(
             model, train_loader, criterion, optimiser, dev, True
         )
