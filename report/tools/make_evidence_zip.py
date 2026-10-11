@@ -1,4 +1,4 @@
-"""Build report/evidence/REEFPRINT_report_evidence_v17.zip. Run from report/."""
+"""Build report/evidence/REEFPRINT_report_evidence_v19.zip. Run from report/."""
 import hashlib, json, subprocess, sys, zipfile, platform
 
 COMMIT = "ab333071d184fa8f853ea96e78fd81a2f948d547"
@@ -10,13 +10,15 @@ files = {
     "replay_envelope.py": open("tools/replay_envelope.py", "rb").read(),
     "replay_envelope.json": open("evidence/replay_envelope.json", "rb").read(),
     "EVIDENCE_MANIFEST.md": open("EVIDENCE_MANIFEST.md", "rb").read(),
+    "CHANGELOG_v19.md": open("CHANGELOG_v19.md", "rb").read(),
+    "REEFPRINT_AZURE_QR.png": open("evidence/REEFPRINT_AZURE_QR.png", "rb").read(),
 }
 for p in INPUTS:
     files["inputs/" + p] = subprocess.check_output(["git", "show", f"{COMMIT}:{p}"])
 out = json.load(open("evidence/replay_envelope.json"))
-readme = f"""# REEFPRINT/KHANYA report evidence package (v17, 8 October 2026)
+readme = f"""# REEFPRINT/KHANYA report evidence package (v19, 11 October 2026)
 
-Supports report v17 (report/main.tex). Planning allowances are not quotes; software checks are not accuracy results.
+Supports report v19 (report/main.tex). Planning allowances are not quotes; software checks are not accuracy results.
 
 ## Contents
 - PILOT_COST_LEDGER.csv: every pilot cost line with tranche, proposed payer, release condition, commitment point,
@@ -36,13 +38,15 @@ Supports report v17 (report/main.tex). Planning allowances are not quotes; softw
   Run by Claude on 8 Oct 2026 with Python {platform.python_version()}; the script reads inputs with `git show` from the repository root.
 - EVIDENCE_MANIFEST.md: checkpoint hashes, release index (historical model, tested local build, public static demo,
   research datasets) and local packages, with items still missing marked.
+- CHANGELOG_v19.md: section-by-section changes and claim-to-evidence ledger for report v19.
+- REEFPRINT_AZURE_QR.png: QR for the deployed research application (account required); decoded and verified.
 - SHA256SUMS: checksums of every file above.
 """
 files["README.md"] = readme.encode()
 sums = "".join(f"{hashlib.sha256(v).hexdigest()}  {k}\n" for k, v in sorted(files.items()))
 files["SHA256SUMS"] = sums.encode()
-with zipfile.ZipFile("evidence/REEFPRINT_report_evidence_v17.zip", "w", zipfile.ZIP_DEFLATED) as z:
+with zipfile.ZipFile("evidence/REEFPRINT_report_evidence_v19.zip", "w", zipfile.ZIP_DEFLATED) as z:
     for k, v in files.items():
         z.writestr(k, v)
 print(sums)
-print("zip sha256", hashlib.sha256(open("evidence/REEFPRINT_report_evidence_v17.zip", "rb").read()).hexdigest())
+print("zip sha256", hashlib.sha256(open("evidence/REEFPRINT_report_evidence_v19.zip", "rb").read()).hexdigest())

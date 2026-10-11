@@ -1,3 +1,18 @@
+## 2026-10-11 — Sibusiso (Claude) — v19: post-v18 handover applied
+
+**Input:** REEFPRINT_Report_Partner_Post_V18_20261011.zip (consolidated handover + 13 supporting files). Still 12 pages; chk.py clean. Full section-by-section log and claim ledger: `report/CHANGELOG_v19.md`.
+
+- **Framing:** mineralogical decision support is the primary objective; hardness is an additional processability route. The abstract now uses the handover text: 12/20 beside 0/20, EXP subsets, null studies, and hardness R² 0.479 beside the later 0.25.
+- **New §4.3 + Table 2:** mineral-composition development results (EXP21–26, deployed copper cohort) with denominators and evidence levels.
+- **§3:** Azure revision 0000007 replaces the obsolete static-demo text. Personal workspaces are not team RBAC.
+- **§2.6:** joint-endpoint definitions added. **§7.2:** causal chain before actuation. **§6.4:** hosting cost separated; 1.7–1.9% labelled simulated.
+- **Microscope:** condensed to one supplementary subsection (IoU bar figure removed).
+- **Back matter:** Azure URL replaces the HF link; evidence release **report-evidence-v19**; evidence frozen at the 11 Oct handover.
+- **Checked by Claude:** the QR decodes to the Azure URL (OpenCV); app root returns HTTP 200 signed out. QR files are in report/evidence/.
+- **For Lethabo/both:** replace the old HF QR in the deck and video; test cross-account isolation; approve the final PDF jointly.
+
+---
+
 ## 2026-10-08 (late night) — Sibusiso (Claude) — v18: v17 review final fixes
 
 - **Release checked signed out:** an unauthenticated download of the release ZIP returned HTTP 200, and 8/8 SHA-256 checks passed. The reviewer's fetch failure was on their side; the ZIP is also sent directly with the PDF.

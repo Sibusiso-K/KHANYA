@@ -15,8 +15,9 @@ Pinned link: https://github.com/Sibusiso-K/KHANYA/commit/85061d418d8938cf79ba740
 | Item | Identity | Status |
 |---|---|---|
 | Historical checkpoint | `de7135a9…` (below) | Evaluated on 12 reused sections; historical simulator advice only |
-| Active local build | integrated recorded-spectrum release v3.1 (B03a); **release ID and package hash to be added by the build owner** | Local only; advice withheld |
-| Public static demo | https://lethabomh14-reefprint.static.hf.space | Precomputed belt replay; does **not** serve v3.1; not rechecked 8 Oct |
+| Deployed research application | Azure Container Apps revision `reefprint-judges--0000007`, image `sha256:fa41bb17383faaacb25e4a081eff9c18ef938cff645807e64ec8be8369a3089a`; https://reefprint-judges.ambitiousflower-ff5d4625.francecentral.azurecontainerapps.io/ (account required) | Recorded copper inference and evaluation, image inspection, simulator; no conveyor sensor; frontend-only change in revision 7 |
+| Earlier local build | integrated recorded-spectrum release v3.1 (B03a) | Superseded for deployment by revision 7 |
+| Older static demo | https://lethabomh14-reefprint.static.hf.space | Precomputed belt replay; a different build from the Azure app |
 
 ## Replay interval (§4.2)
 
@@ -53,3 +54,29 @@ Counts from different packages overlap and must not be added. None of these pack
 
 B02 (reused HIDSAG copper data, 99 records, 36 composites, composite-grouped folds; exploratory 1 wt% floor): PLS-6 MAE 0.28 / 0.67 / 1.34 pp (chalcopyrite / pyrite / quartz); unseen process line 0.62 / 0.98 / 3.62; within 10% relative 41.5% / 27.8% / 85.9% (grouped) and 21/65, 10/79, 49/99 (unseen line). Metadata lookup 0.17 / 0.39 / 1.33 (better). Kernel model: chalcopyrite transfer 0.40, quartz 5.71.
 B04: unseen-line chalcopyrite 0.62→0.57, pyrite 0.98→1.15, quartz 3.62→2.98; within 10%: 20/65, 7/79, 56/99; no recipe promoted.
+
+## Report-to-evidence version map
+
+| Report | Evidence release | Notes |
+|---|---|---|
+| v17, v18 | report-evidence-v17 | Ledger, replay, manifest |
+| v19 | report-evidence-v19 | Adds Azure release identity, QR, EXP21–26 entries, handover hashes |
+
+## Evidence freeze for v19
+
+Frozen at the 11 October 2026 post-v18 handover (REEFPRINT_Report_Partner_Post_V18_20261011.zip). Included: B02–B04, EXP21–26 as tabulated in report Table 2, Azure revision 0000007. Anything dated after that handover is excluded. Not independently rerun by Claude: EXP21–26 numbers, Azure acceptance, browser test counts (all from the bundled reports, with the evidence levels stated in Table 2's caption).
+
+## Deployed-app evidence (from the post-v18 handover; not rerun by Claude except where noted)
+
+- Azure acceptance, 10 Oct 2026: the 20-record copper cohort completed evaluation (7 composite groups); post-selected quartz/biotite/muscovite–sericite panel 12/20 jointly within 10% relative error; all eligible phases 0/20 (1 wt% floor). One-band alteration refused; restart preserved prediction, receipt, evaluation and ledger.
+- Release tests: 42/42 production-preview browser tests, 7/7 request-helper unit tests (software functionality, not accuracy). Earlier backend 422 passed / 4 skipped belongs to its own scope; counts are not added.
+- QR: `report/evidence/REEFPRINT_AZURE_QR.png` (SHA-256 b1ab205e…2a16). Claude decoded it with OpenCV on 11 Oct 2026: exact match to the Azure URL. App root returned HTTP 200 signed out on 11 Oct 2026 (sign-in required for use).
+- Not established: cross-account adversarial isolation, team RBAC, live camera ingest, PGM accuracy, plant savings.
+
+## Development experiments EXP21–26 (report Table 2)
+
+EXP21 kaolinite (Li-clay): all eligible median 16.34%; high-prediction subset median 7.33%, 84/129 within 10%, about 18.3% of 703 issued. EXP22 infrared dolomite: all-eligible median 11.44%; selected median 5.9%, 6/9; quartz subset median 9%, 5/9. EXP23: copper recovery 96.58% within 10% vs constant baseline 93.84%; Bond work index MAE 1.2622 kWh/t, R² 0.2474, 65.07% within 10%, baseline MAE 1.4541, failed combined gate. EXP25 pretraining: kaolinite medians 19.13% pretrained, 19.25% scratch, 18.46% larger-compute control; no gain. EXP26 pooling: all adjusted p = 1. Repeated hybrid recipes: kaolinite median about 16.7–19.3%. Evidence levels: EXP21–23 developer reports inspected in the 9 Oct alignment; EXP25 coordinator recomputation; EXP26 developer report with developer recomputation.
+
+## Post-v18 handover documents (held locally, not published; SHA-256 from the bundle index)
+
+01 V18 review 479a8f9a…; 02 evidence alignment bfc67556…; 03 R2/D2 review 7c87f902…; 04 Azure addendum 2dc081a9…; 05 product handover a783a94e…; 06 access and scan handover 6f833dcb…; 07 scan tests c97e665e…; 08 release tests e5526a33…; 09 FINAL_RELEASE.json 825f945d…; 10 production suite 8efb8df5…; 11 QR verification 23961c56…; 12 completion event 52829a90…; 13 EXP26 results d3038814….
