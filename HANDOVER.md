@@ -1,3 +1,17 @@
+## 2026-10-11 (later) — Sibusiso (Claude) — v20: REPORT_EDIT_TABLE applied
+
+**Input:** REPORT_EDIT_TABLE.md, a review of our v19 PDF (hash matched a32c06cd). Still 12 pages; chk.py clean. Full list: `report/CHANGELOG_v20.md`.
+
+- **Scope fixes:** historical vs deployed routes everywhere (§1.2, §3, Fig. 1, Table 1); signature claims scoped; microscope not a PGM endpoint.
+- **Revision 0000008:** cited as a frontend-only overlay with **authenticated acceptance pending**. Lethabo: add the image digest and acceptance evidence ID to the manifest when done.
+- **Statistics and roles:** 30/10/30 are budget placeholders; 27/30 is an observed rule; bench gates are exploratory readiness screens; locked shadow references are held by the custodian.
+- **Economics:** f unknown first (zero if ore-supply limited; negative possible); fee bases distinguished; Azure hosting scenario US$9.32–13.64/month; continuity undecided.
+- **Fig. 4:** gate labels legible; L2, G1B and G1M (week 8) and G1A and G3 (week 20) shown.
+- **Ledger:** line IDs, endpoint and quote-status columns.
+- **Not done:** a Table 3 row for the current audited checkpoint (needs technical verification), and the legal applicability review (needs a qualified reviewer).
+
+---
+
 ## 2026-10-11 — Sibusiso (Claude) — v19: post-v18 handover applied
 
 **Input:** REEFPRINT_Report_Partner_Post_V18_20261011.zip (consolidated handover + 13 supporting files). Still 12 pages; chk.py clean. Full section-by-section log and claim ledger: `report/CHANGELOG_v19.md`.

@@ -12,7 +12,7 @@ rows = [
     ("Polished sections, remaining", 154000 * 2 / 3, 154000 * 2 / 3, "L2", "TIA (proposed)", "Week-8 laboratory review", "Lab order", "Orders placed", "15% lab"),
     ("Bond tests, 20 bench composites", 20 * 1200 * FX, 20 * 1200 * FX, "L1", "Host (proposed)", "G0", "Lab order before week 8", "Orders placed", "15% lab"),
     ("Automated mineralogy, 20 bench composites", 20 * 2000 * FX, 20 * 2000 * FX, "L1", "TIA (proposed); eligibility follows belt component, unconfirmed", "G0", "Lab order before week 8", "Orders placed", "15% lab"),
-    ("Automated mineralogy, 44 microscope specimens (10 cal + 30 locked + 4 repeats)", 44 * 2000 * FX, 44 * 2000 * FX, "L2", "TIA (proposed)", "Week-8 laboratory review", "Fortnightly batches", "Batches ordered", "15% lab"),
+    ("Automated mineralogy, 44 microscope analyses (40 distinct specimens: 10 cal + 30 locked; 4 repeat analyses)", 44 * 2000 * FX, 44 * 2000 * FX, "L2", "TIA (proposed)", "Week-8 laboratory review", "Weekly dispatch", "Batches ordered", "15% lab"),
     ("Independent review, IP and data terms, close-out", 120000, 120000, "L2", "TIA (proposed)", "Week-8 laboratory review", "Contract", "Work done", "15% lab"),
     ("Bond tests, 24 shadow composites", 24 * 1200 * FX, 24 * 1200 * FX, "R-H", "Host (proposed)", "G1B pass", "After G1B", "Orders placed", "15% lab"),
     ("Automated mineralogy, 24 shadow composites", 24 * 2000 * FX, 24 * 2000 * FX, "R-M", "TIA (proposed); eligibility follows belt component, unconfirmed", "G1M pass", "After G1M", "Orders placed", "15% lab"),
@@ -29,9 +29,28 @@ rows = [
 ]
 with open('PILOT_COST_LEDGER.csv', 'w', newline='', encoding='utf-8') as f:
     w = csv.writer(f)
-    w.writerow(["line", "rand_low", "rand_high", "tranche", "proposed_payer", "release_condition", "commitment_point", "cancellation_exposure", "contingency"])
+    w.writerow(["line_id", "line", "endpoint", "rand_low", "rand_high", "tranche", "proposed_payer", "release_condition", "commitment_point", "cancellation_exposure", "contingency", "quote_status"])
+    seq = {}
     for r in rows:
-        w.writerow([r[0], round(r[1]), round(r[2])] + list(r[3:]))
+        seq[r[3]] = seq.get(r[3], 0) + 1
+        name = r[0].lower()
+        if r[3] == "P0":
+            endpoint = "P0 feasibility"
+        elif r[3] in ("B1", "B2") or "belt contingency" in name:
+            endpoint = "Belt track (both endpoints)"
+        elif "laboratory contingency" in name:
+            endpoint = "Laboratory track"
+        elif "bond" in name:
+            endpoint = "Belt hardness (G1B)" if "bench" in name else "Belt hardness, shadow (G3)"
+        elif "belt" in name or "shadow" in name or "bench" in name:
+            endpoint = "Belt minerals (G1M)" if "bench" in name else "Belt minerals, shadow (G3)"
+        elif r[3] in ("B1", "B2") or "sensor" in name or "installation" in name:
+            endpoint = "Belt track (both endpoints)"
+        elif "microscope" in name or "section" in name:
+            endpoint = "Microscope (G1A)"
+        else:
+            endpoint = "Shared"
+        w.writerow([f"{r[3]}-{seq[r[3]]:02d}", r[0], endpoint, round(r[1]), round(r[2])] + list(r[3:]) + ["Planning allowance; no quote"])
 tot = {}
 for r in rows:
     tot.setdefault(r[3], [0, 0])

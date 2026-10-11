@@ -61,6 +61,7 @@ B04: unseen-line chalcopyrite 0.62→0.57, pyrite 0.98→1.15, quartz 3.62→2.9
 |---|---|---|
 | v17, v18 | report-evidence-v17 | Ledger, replay, manifest |
 | v19 | report-evidence-v19 | Adds Azure release identity, QR, EXP21–26 entries, handover hashes |
+| v20 | report-evidence-v20 | Ledger line IDs/endpoints/quote status; revision-8 addendum; REPORT_EDIT_TABLE changes |
 
 ## Evidence freeze for v19
 
@@ -80,3 +81,11 @@ EXP21 kaolinite (Li-clay): all eligible median 16.34%; high-prediction subset me
 ## Post-v18 handover documents (held locally, not published; SHA-256 from the bundle index)
 
 01 V18 review 479a8f9a…; 02 evidence alignment bfc67556…; 03 R2/D2 review 7c87f902…; 04 Azure addendum 2dc081a9…; 05 product handover a783a94e…; 06 access and scan handover 6f833dcb…; 07 scan tests c97e665e…; 08 release tests e5526a33…; 09 FINAL_RELEASE.json 825f945d…; 10 production suite 8efb8df5…; 11 QR verification 23961c56…; 12 completion event 52829a90…; 13 EXP26 results d3038814….
+
+## Revision-8 addendum (v20)
+
+Deployment records reported in REPORT_EDIT_TABLE.md (review of v19 PDF, SHA-256 a32c06cd…) identify Azure revision `reefprint-judges--0000008`, a frontend-only overlay on the revision-7 backend and model; served frontend hashes were checked by the team. **Authenticated live acceptance of revision 8 is pending; image digest and test evidence ID to be added by the build owner.** The scientific evidence freeze (revision 7, 11 Oct handover) is unchanged.
+
+## Hosting cost (v20)
+
+11 October Azure calculation (reported in REPORT_EDIT_TABLE.md): US$9.32 and US$13.64 a month for 20 and 40 active hours plus a Basic registry, excluding other charges and before grants. A scenario, not a quote, cap or bill. A proposed Google trial deployment has not passed migration acceptance; continuity is undecided.
