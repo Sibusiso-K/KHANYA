@@ -1,3 +1,23 @@
+## 2026-10-11 (evening) — Sibusiso (Claude) — v21: V20_REPORT_HANDOFF consistency fixes
+
+**Input:** V20_REPORT_HANDOFF.md, a review of our v20 PDF. Still 12 pages; chk.py clean.
+
+- **§1.2:** "The proposed system combines a belt measurement stream with supplementary laboratory inspection"; the belt stream is described in the conditional; "Historical" capitalised; the microscope's three-phase claim is replaced with "analogue labels, no independent PGM belt performance".
+- **Artifact claims checked against what exists:**
+  - per-route signature coverage does not exist → "must be documented before release";
+  - revision-8 addendum has no hash → "evidence addendum remains to be verified";
+  - the ledger line IDs do exist (PILOT_COST_LEDGER.csv, release v20), and the v20 release downloads with 10/10 checksums, verified by Claude.
+- **§6.3:** if ore supply limits production, the throughput gain is set to zero but f is kept (a recovery loss can still cut metal).
+- **Table 7 bench rows:** development and calibration support selection and fitting; promotion is an exploratory readiness screen; recipe frozen before locked shadow evaluation; the same status applies to G1M.
+- **Risk P4:** unmatched parcels are refused, their causes recorded and kept in coverage counts; excluded only from reference-conditioned error.
+- **§7.7:** qualified legal review "remains required".
+- **§3:** "Each microscope result records…".
+- **§5.2(a):** no matched SA hyperspectral or microscope cohort; Bushveld assay routing kept separate.
+- **Layout:** the bench matrix moved into §7 next to the pilot targets; the conclusion no longer split; trimmed §7.2 stats wording and §4.2.
+- **Not changed:** reference access dates (no sources reopened). Remaining mid-sentence page breaks at §3 (p3–4) and §4.4 (p5–6) are normal float breaks.
+
+---
+
 ## 2026-10-11 (later) — Sibusiso (Claude) — v20: REPORT_EDIT_TABLE applied
 
 **Input:** REPORT_EDIT_TABLE.md, a review of our v19 PDF (hash matched a32c06cd). Still 12 pages; chk.py clean. Full list: `report/CHANGELOG_v20.md`.
