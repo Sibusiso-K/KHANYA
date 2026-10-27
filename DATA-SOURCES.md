@@ -293,6 +293,67 @@ Searched UG2 / Merensky / Bushveld specifically. Mintek's mineralogical work on
 these ores is published as papers, not datasets. No competing team will have local
 data either, so asking Mintek directly is the highest-value request available.
 
+## 6. Open PGM datasets found 2026-10-27 — downloaded, NOT YET USED
+
+Found while searching for a South African PGM hyperspectral image dataset.
+**No public hyperspectral image dataset of South African PGM ore was found.**
+Bushveld hyperspectral core scans exist (the Council for Geoscience's SisuROCK
+scanner; Notole et al. 2025, Minerals Engineering 234, 109682; a German DFG/BGR
+project, 2021–2024), but none is published as data. Requests to their holders
+are on hold until Mintek's technology transfer office (MOTT) gives its written
+IP position.
+
+The two datasets below are open-licence and were downloaded and checked on
+2026-10-27. Raw files are not committed. Re-create them with
+`python scripts/fetch_open_pgm_datasets.py`, which verifies each SHA-256.
+**Neither is reflected-light imagery**, so neither can train the S2
+segmentation model as it stands. Whether to use them at all is an open team
+decision (see HANDOVER, 2026-10-27).
+
+### 6a. GFZ: Thaba Mine Middle Group chromitites — CC BY 4.0
+
+- Trumbull, R.B., Veksler, I., Wilke, F., Kaufmann, F. (2025). *Platinum group
+  element concentrations, mineral chemistry and microtextures of Middle Group
+  chromitite layers at the Thaba Mine, northwestern Bushveld Complex, South
+  Africa.* GFZ Data Services. https://doi.org/10.5880/GFZ.DMJQ.2025.006
+  (the data description prints the DOI as 10.58800/..., which looks like a typo;
+  10.5880 resolves).
+- **Licence: CC BY 4.0.** Cite as above.
+- `data/raw/gfz_thaba_chromitite_2025/`, about 6 MB: a data description PDF, two
+  figures, three EPMA tables (MG1, MG4a, MG3), a whole-rock PGE + Au table
+  (Table 4: 16 samples from MD17 layers MG4zero, MG4a, MG4b and S100b layers
+  MG3, MG3b), and chromite crystal-size distributions (Table 5: per-grain
+  ImageJ areas and diameters for MG1 and MG3, plus CSDCorrections output for
+  MG1, MG3, MG4a).
+- Boreholes **MD17** and **S100b**. The authors say these *layers* were not in
+  Bachmann et al. (2018, 2019). **Not yet checked:** whether the Bachmann CSV
+  used by `reefprint`'s experiment 006 contains MD17 or S100b. If it does, the
+  two sets may join by borehole and layer.
+- **Why it matters:** it pairs chromite texture with chemistry and PGE assays,
+  which is what `reefprint`'s week-2 falsification was blocked on (CONTEXT.md,
+  T1). **Limit:** texture covers only three layers in one borehole, below
+  `MIN_LOCALITIES_FOR_INFERENCE = 5`, and there are no micrographs, only
+  measured grain tables and two figures. The MG4a–MG4zero interval is affected
+  by iron-rich ultramafic pegmatite (IRUP); the authors warn its chromite
+  analyses may be atypical.
+
+### 6b. NIST: SEM/EDS spectrum image of PGM ore — NIST open licence
+
+- *SEM/EDS hyperspectral data set from platinum group mineral ore embedded in
+  epoxy.* NIST, 2021. https://doi.org/10.18434/mds2-2471. Contact listed:
+  Nicholas Ritchie. Licence: https://www.nist.gov/open/license
+- `data/raw/nist_pgm_sem_eds_2021/PGM.tar.gz`, 75 MB compressed. Contents:
+  `map[15].raw` (**1 GB**: 512 × 512 pixels × 2,048 energy channels, 16-bit
+  unsigned, big-endian, record-by vector; header in `map[15].rpl`), two PNG
+  images, and EDS standards spectra including Pt, Ni, Cr, Fe, FeS2 and MgO.
+- "Hyperspectral" here means an **X-ray energy spectrum per pixel**, not
+  optical reflectance. **The ore's origin is not stated**, so it is not
+  South African evidence.
+- **Possible use:** testing how SEM-EDS maps become mineral labels (the
+  correlative-label route in `reports/LITERATURE-ROADMAP-2026-10-27.md`, S1),
+  before any QEMSCAN data arrives. It is one field of view, so it is not a
+  training set.
+
 ## Method references
 
 - DeepLabv3+ opaque/non-opaque segmentation: https://www.sciencedirect.com/science/article/abs/pii/S0892687521002363

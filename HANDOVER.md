@@ -19,6 +19,38 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-10-27 — Sibusiso (75) — two open PGM datasets found; train on them or not?
+
+**Did:** searched for a South African PGM hyperspectral image dataset. None is
+public. Downloaded and checksummed the two open datasets the search found:
+- **GFZ, CC BY 4.0:** Thaba Mine Middle Group chromitites (Trumbull, Veksler,
+  Wilke, Kaufmann 2025). EPMA, PGE assays and chromite crystal-size
+  distributions, boreholes MD17 and S100b. Tables, not images.
+- **NIST, open licence:** one SEM/EDS spectrum image of PGM ore in epoxy
+  (512 × 512 × 2,048 channels, 1 GB extracted). Origin not stated.
+
+Raw files are not committed, per `.gitignore`. `scripts/fetch_open_pgm_datasets.py`
+re-creates them under `data/raw/` and verifies each SHA-256.
+
+**Changed:** `DATA-SOURCES.md` (new section 6), `scripts/fetch_open_pgm_datasets.py`,
+this entry.
+
+**Blocked on:** all data requests (Council for Geoscience, Mintek's
+characterisation cluster, academic authors, producers) are held until MOTT
+gives its written IP position.
+
+**Next (Lethabo): decide whether to train on either dataset.** My read, for you
+to overrule:
+- **Neither can train the S2 segmentation model.** Neither is reflected-light
+  imagery.
+- **GFZ** is the texture-plus-chemistry pairing `reefprint`'s week-2
+  falsification was blocked on, but with three layers in one borehole it sits
+  below `MIN_LOCALITIES_FOR_INFERENCE = 5`. Could you check whether your
+  Bachmann CSV has boreholes MD17 or S100b? If yes, the sets may join. Otherwise
+  use it as a descriptive check, not for inference?
+- **NIST** could prototype turning SEM-EDS maps into mineral labels, ahead of
+  any QEMSCAN pairs. One field, unknown ore: a method test, not training data.
+
 ## 2026-09-30 — Sibusiso (74) — no advice on thin evidence; six fields, not one (PR A)
 
 **Why:** running the build as a judge would, the flagship *Grind finer* that
