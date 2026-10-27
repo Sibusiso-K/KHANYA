@@ -15,6 +15,12 @@ data/raw/
 data/processed/
 data/derived/
 
+# NotebookLM source packs: third-party papers (copyright stays with their
+# publishers) and PDF copies of files already tracked as Markdown. The list of
+# what to fetch is notebooklm/SOURCES.md.
+notebooklm/papers/
+notebooklm/*.pdf
+
 # Model weights. Large, regenerable from the training scripts.
 checkpoints/
 

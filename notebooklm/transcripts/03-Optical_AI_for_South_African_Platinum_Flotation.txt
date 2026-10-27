@@ -1,0 +1,299 @@
+# duration 1077s
+[00:00] Welcome to the debate. Imagine you are standing in a South African platinum plant.
+[00:05] Oh, I know the feeling well.
+[00:06] Right. The roar of the secondary milling circuit is just deafening. And you are staring at a
+[00:11] flotation control dashboard that dictates, you know, millions of rands and payload recovery
+[00:16] every single shift.
+[00:17] Exactly. Massive sticks.
+[00:18] Yeah. And now imagine the software telling you how to grind your ore has never actually seen a
+[00:22] single rock from South Africa. It has only ever been trained on Russian ore. Would you trust it?
+[00:28] I absolutely would not.
+[00:29] Well, that is exactly the scenario we are looking at today. We are engaged in round two of the
+[00:34] debate. Can 2D optical AI control flotation? And this is a direct response to the rebuttal
+[00:40] document from Sibisusu Kumalo and Latabo Hawani, the founders of the Konya Optical AI system.
+[00:45] And to be perfectly clear to everyone listening and to Sibisusu and Latabo themselves,
+[00:50] this is an engineering clinic, not a final verdict. The goal here is to outline a weakness
+[00:55] repair plan to help them turn a hackathon prototype into a critical real-time mineral
+[01:00] characterization system for South African PGM concentrators.
+[01:04] And they really need a rigorous repair plan because the stakes on that plant floor are
+[01:07] just unforgiving. I come at this from the perspective of a process mineralogist.
+[01:11] I spend my life looking at the physical reality of the Bushville complex. And what I see here
+[01:16] is the harsh physical reality of mineral processing pushing back extremely hard against
+[01:21] some very optimistic software engineering.
+[01:23] I hear that. I really do. But as a computer vision engineer, I look at the founder's latest rebuttal
+[01:28] and I see, well, a masterclass in intellectual honesty. That is my position right out of the
+[01:33] gate. A masterclass? Yes, because they have provided a solid evidence-based foundation for
+[01:38] a feasibility study precisely because they didn't hide their flaws. I mean, they transparently
+[01:43] retired to superseded performance figures. They fixed the mathematical leak and their
+[01:47] conformal prediction bands. Well, they had to fix that. Sure. But most importantly,
+[01:51] they explicitly acknowledged the limitations of relying entirely on 12 test images of Norrell score.
+[01:57] Mathematically, they have established a sound baseline. And by reframing this system as
+[02:01] an optical alternative to a scanning electron microscope, specifically on the exact same 2D
+[02:06] physical section, they neutralize the old 2D versus 3D critique. I see where you're going.
+[02:11] Yeah, they are paving the way for Kaniya to become the real-time input for predictive
+[02:14] kinetic models. I am not entirely convinced by that line of reasoning, to be honest.
+[02:20] You are treating mathematical honesty as a substitute for metallurgical capability.
+[02:24] How so? Here is my position. Yes, the software engineering and the mathematical corrections
+[02:29] are commendable. But acknowledging that your 50% binary liberation rule is just a proxy
+[02:35] or admitting the system has never seen South African ore, well, it doesn't magically fix the
+[02:39] massive domain shift to a sub 1% payload environment. But they fenced it off.
+[02:43] Stereological bias still persists. Simply replacing QEM scan with a faster,
+[02:47] cheaper optical tool doesn't solve the fundamental metallurgical problem,
+[02:51] not of the topological accuracy. The exact physical boundaries of the particles isn't tightly bound.
+[02:56] Okay, let's dive straight into that domain shift then, because the founders made explicit
+[03:00] concessions here. Like, as I mentioned, they fixed the leaked conformal band using a proper
+[03:04] split conformal calibration on held-out sections. And they admitted they're working
+[03:09] off an empirical base of exactly zero South African samples. They fenced off the areas where
+[03:14] their model is ignorant. Wait, wait, I have to stop you there. You cannot just wave away
+[03:17] the Norwell's dataset by saying they fenced it off. Why not? They're being honest about it.
+[03:22] Let's apply some operational skepticism here. They acknowledged that the Lumenstone S2 dataset
+[03:27] they trained on is composed of 62.8% base metal sulfide pixels. Do you know what the volume
+[03:33] of base metal sulfides is in South African UG2 ore? It's very low, yes. It is under 1%.
+[03:38] That is not just a slight adjustment in calibration. That is a completely different
+[03:42] abundance regime. Which is exactly why they are using Norwell's as an assemblage analog.
+[03:47] They aren't claiming that Norwell's weights will work out of the box on UG2 ore.
+[03:51] They are just using the high-grade Russian data to prove that the pipeline architecture
+[03:55] actually functions. The neural network predicting mineral boundaries works.
+[03:59] But how does it function when the payload practically disappears? I mean, if you are
+[04:03] listening to this and you work on the plant floor, you are probably screaming at your radio
+[04:06] right now. Probably. This directly ties into one of the brutal self-reflective questions
+[04:11] the founders themselves posed in their own adversarial critique. They asked,
+[04:15] how will the model transfer to a sub-1% UG2 payload when it scored an absolute zero
+[04:21] on the 1.8% magnetite class in the Russian ore? And the direct answer to their question is,
+[04:26] it won't. It absolutely will not transfer unless they completely change their training
+[04:30] methodology for the rare classes. To solve the rare class collapse, you cannot just feed it raw
+[04:35] images. Right, so what is the fix? You have to use correlative QEM scan labels.
+[04:40] Like the approach outlined in the May 2025 archive paper, 2505.17008. By using historical QEM scan
+[04:48] maps registered directly to the optical images, you specifically and aggressively oversample
+[04:53] the rare phases during training. Interesting. Yeah, you force the model to look at the sub-1%
+[04:59] phases a million times until it mathematically cannot ignore their boundaries. And actually,
+[05:04] that ties into their second question. They asked, why is the published benchmark higher than ours?
+[05:08] Oh right, critique 1.2. Exactly. The answer is simply because the published benchmark likely
+[05:13] didn't penalize for topological boundary precision the way your operational advisor does.
+[05:18] But even if you force it to see those rare phases, the pipeline's survival depends on morphological
+[05:22] accuracy. The boundary topology in their system is deeply brittle. It is fragile, yes.
+[05:28] A few misclassify boundary pixels can bridge two distinct particles into one or split one
+[05:32] into two. In a sub-1% UG2 environment, if your model hallucinates perfectly liberated tiny
+[05:37] particles just because it got the boundary wrong, well, your payload fraction changes
+[05:41] discontinuously. Right. The system fails. Conceding they only have 12 images doesn't
+[05:46] magically fix that topological brittleness. I would argue that their updated numbers
+[05:50] specifically address that exact safety concern. Let's formally bring in the corrections from
+[05:55] round one because we are retiring the superseded figures right now. Good. The 0.089
+[06:00] margin, the 33% and the 17% flip rates, those are gone. The founders clarified that
+[06:07] Konya is an advisory system, not a control system. That is a crucial distinction?
+[06:11] Very. It attracts PGM carriers, the base metal sulfides, not the PGM grains directly,
+[06:17] because those are sub-resolution. Now, the correct current figures at native resolution
+[06:22] show 50% recommendation flips, but crucially, they expanded the conformal margin to 0.335.
+[06:29] Okay. And the result? Under that new band, there are exactly zero unsafe flips. Zero.
+[06:34] They use the math to guarantee they won't make a dangerous recommendation.
+[06:37] Hold on. Let's unpack what a 0.335 conformal margin actually means in the real world.
+[06:42] Achieving exactly zero unsafe flips sounds brilliant in a venture capital pitch.
+[06:47] It does. But because their decision floor for liberation is 0.50, applying a 0.335
+[06:53] margin means their uncertainty band spans from roughly 16.5% all the way to 83.5%.
+[06:58] Exactly. It's a mathematically guaranteed confidence interval.
+[07:01] But look at the sheer size of it. It effectively means the system flags half of all the polished
+[07:07] sections as marginal verify. It abstains on 50% of the data. I have to ask, if your automated
+[07:13] advisor abstains half the time, is it actually advising, or is it just delegating the problem
+[07:18] back to the metallurgist? This brings up another of their internal critique questions.
+[07:22] Is the wide uncertainty band calibration or ignorance?
+[07:25] It is absolutely calibration. And knowing when you don't know is the single most
+[07:30] valuable trait in an automated industrial system. But abstaining 50% of the time?
+[07:34] In flotation, an unsafe flip means telling the plant to push
+[07:38] ore through while the payload is actually locked inside composite particles.
+[07:42] That lost metal goes straight to the tailing stand. That is the million rand error.
+[07:46] True.
+[07:47] But using split conformal calibration, they converted dangerous,
+[07:50] invisible errors into flagged, honest disagreements. Yes, it reflects the topological
+[07:55] brittleness you mentioned. It proves the system knows its boundary definitions are too fragile
+[08:00] to bet the plant's recovery on, which highlights the urgent need for morphological refinement,
+[08:04] specifically marker controlled watershed separations.
+[08:07] Oh, let's define that for the listener, because marker controlled watershed sounds like,
+[08:11] I don't know, hydrology, not mining.
+[08:13] Fair point.
+[08:14] Think of marker controlled watershed separation, like dropping a different colored die into the
+[08:19] center of two touching particles on a topographic map. The die spreads out until the two colors
+[08:24] meet at the highest ridge between them. Right.
+[08:27] It mathematically forces the system to draw a boundary where two minerals are clumped together.
+[08:32] Right now, Kanya's boundaries are too blurry, which is why the uncertainty band is massive.
+[08:37] Okay, so they are masking poor boundary detection with a massive mathematical safety net.
+[08:42] But that safety net allows a system to operate safely while they improve the core vision
+[08:46] architecture. And this ties perfectly into the central reframing of the whole project.
+[08:51] The founders realized the benchmark was wrong.
+[08:53] The 3D benchmark.
+[08:54] Yeah, we shouldn't be comparing 2D optical AI against 3D reality.
+[08:58] We should be comparing optical AI against a scanning electron microscope, like QEM scan,
+[09:03] on the exact same 2D physical section. Because the industry standard operates on 2D polished
+[09:09] sections, it is the correct and fair benchmark for Kanya.
+[09:12] I agree that QIM scan is the correct comparative benchmark. But we cannot just gloss over the
+[09:18] physical limitations of 2D measurements. Both QIM scan and optical microscopy suffer from
+[09:23] severe stereological bias.
+[09:25] Ah, the chocolate chip cookie problem.
+[09:27] Exactly. If you slice a chocolate chip cookie in half, the 2D surface might look like it is
+[09:31] 50% chocolate. But the 3D reality of the whole cookie is completely different.
+[09:36] Right.
+[09:36] As noted in the 2017 Reyes paper and the 2021 Guntoro study,
+[09:40] 2D measurements inevitably overestimate the true degree of liberation compared to 3D.
+[09:46] If your ultimate goal is true 3D liberation analysis, X-ray micro-CT is the established
+[09:51] route.
+[09:51] But that's not their goal.
+[09:53] I know, but by accepting the 2D framing, Kanya inherits all of QIM scan's
+[09:57] stereological blind spots. And worse, it inherits them without QIM scan's chemical precision.
+[10:02] QIM scan actually reads the atomic X-ray spectra to definitively identify elements.
+[10:07] Kanya is just looking at reflected light bouncing off of a rock.
+[10:10] That is true, but let's look at the time and the cost, right? Like X-ray micro-CT,
+[10:15] it takes hours, sometimes days, and costs a fortune per scan.
+[10:19] Polished section SEM, that takes hours.
+[10:22] That's true.
+[10:22] Yeah. So Kanya, on the other hand, is aiming for rapid, near real-time turnaround,
+[10:27] and actually influence a live shift. Now, if we accept that it is replacing QIM scan to speed up
+[10:32] the loop, that brings us to what I consider is like the most exciting part of this repair plan.
+[10:37] Kanya is the missing input for Toswold Moodle's kinetic equations.
+[10:41] You want to plug the optical mass straight into the kinetic models.
+[10:44] Exactly.
+[10:45] Yeah, okay. Yeah, yeah. I see.
+[10:47] Moodle's 2026 work uses feed QEM scan data to define copper deportment and free surface exposure,
+[10:53] placing them into liberation classes to predict kinetic recovery in the flotation cells.
+[10:57] Right.
+[10:58] I propose that reproducing QEM scan's feed liberation classes should be the primary pass-fail
+[11:03] test for Kanya in this feasibility stage. If it can seamlessly feed into Moodle's models without
+[11:08] breaking them, it has immense commercial value. See, I come at it from a completely different
+[11:13] way because we need to heavily scrutinize Moodle's feed before we just plug a brittle
+[11:17] optical AI into it.
+[11:19] Why?
+[11:20] Moodle's mineralogy constraint fitting framework is weakly over-determined.
+[11:23] Meaning what exactly for the layman?
+[11:25] Meaning the math equations have slightly more constraints than unknowns, but just barely.
+[11:29] It has only one nominal degree of freedom, and the fitted parameter vector is not unique.
+[11:34] I see.
+[11:35] The parameters in his model can compensate for each other to arrive at the same answer.
+[11:38] However, the mineral-specific recovery contributions are comparatively stable.
+[11:42] Moodle showed that under residual weight sensitivity analysis, the individual sulfide
+[11:46] contributions moved by at most 0.440 percentage points.
+[11:50] Okay.
+[11:50] Total copper moved by up to 0.686 percentage points, and the residual by up to 0.830 percentage points.
+[11:57] So the outputs are highly sensitive to the inputs.
+[12:00] Extremely sensitive.
+[12:01] So here is the concrete tolerance we must enforce on the founders.
+[12:05] Kanya can only replace QEM scan if its variance in Moodle-style recovery estimates
+[12:10] shifts by less than 0.440 percentage points.
+[12:14] That is a very tight window.
+[12:16] It has to be.
+[12:17] If the optical AI's blurry boundaries push the kinetic predictions outside that 0.440 window,
+[12:22] the model fails.
+[12:23] The plant would literally be optimizing for a ghost.
+[12:26] So how do we guarantee optical mass won't blow past this tolerance?
+[12:29] Well, we guarantee you by looking at the roadmap the founders laid out.
+[12:33] They aren't standing still.
+[12:34] First, they plan to upgrade their architecture to segment anything,
+[12:37] moving away from the current DeepLab V3.
+[12:40] The referencing can't boast 2026 work.
+[12:43] Okay.
+[12:44] Then they want to use machine learning to predict PGM floatability directly from QEM scan and MLA data,
+[12:49] as discussed by Kebemba in 2026 and Pireya in 2020.
+[12:53] Right, but...
+[12:54] And finally, they plan to handle the inevitable domain drift.
+[12:57] When the ore properties change mid-shift, using adaptive conformal prediction,
+[13:01] citing Li and Li 2026, this roadmap addresses the brittleness.
+[13:05] I have to pull the emergency brake here.
+[13:07] What?
+[13:08] You are rattling off citations, but several of those, like Campo 2026 on segment anything,
+[13:13] and Li and Li 2026 on adaptive conformal prediction,
+[13:16] they are proposed methodologies drawn from conference abstracts.
+[13:20] Well, yes.
+[13:21] They are not measure realities yet.
+[13:23] You cannot build a multi-million-round pilot plant based on an abstract.
+[13:27] But they represent the cutting edge of where the computer vision field is heading.
+[13:30] The order of operations here must change completely.
+[13:34] Before this team starts chasing segment anything architectures,
+[13:37] they have to address the physical reality of the rock.
+[13:40] They need to address UG2 chromite and chromium oxide entrainment.
+[13:44] A UG2 issue.
+[13:46] Yes, the UKZN secondary milling thesis makes this incredibly clear.
+[13:50] UG2 ore has massive chromite issues.
+[13:52] Chromite naturally sinks, but it gets entrained in the flotation froth
+[13:55] and poisons the final concentrate.
+[13:57] If Kanya cannot visually differentiate chromite gang from the payload in UG2 ore,
+[14:01] then the rest of the software roadmap is entirely irrelevant.
+[14:05] Differentiating chromite has to be step one.
+[14:07] I can see that point.
+[14:09] Chromite is the ultimate gating factor for South African ore.
+[14:12] And this actually brings us to another of the founders' questions.
+[14:16] Go ahead.
+[14:17] They are using three placeholder thresholds right now for payload floor,
+[14:21] reject ceiling, and deleterious ceiling.
+[14:24] Their question was, how do we justify these three placeholder thresholds?
+[14:28] And my answer is, you don't.
+[14:30] You cannot justify them fundamentally because they aren't universal laws of physics.
+[14:34] Right.
+[14:34] You must frame them purely as configurable plant parameters.
+[14:37] They are dials on a dashboard meant to be set by the host metallurgist
+[14:40] based on the specific campaign, the current chromite penalty
+[14:43] from the smelter and the existing control layer.
+[14:45] You hand the authority back to the plant.
+[14:48] Which leads directly to their final question,
+[14:50] a major product logic gap that impacts the plant floor.
+[14:54] How does a plant use a per-section grind recommendation
+[14:57] when set points move once a shift?
+[14:59] It makes no sense.
+[15:00] Exactly.
+[15:01] No plant manager is going to change their PAD grinding size every five minutes
+[15:04] just because one polished section said so.
+[15:06] Right.
+[15:07] So how do you solve that from a software integration standpoint?
+[15:10] By changing the product logic entirely.
+[15:13] Konya must aggregate the individual section data over a full shift
+[15:16] to provide trend-based advice.
+[15:18] It cannot be an immediate per-section actuation loop.
+[15:21] That makes sense.
+[15:22] It has to act as a rolling moving average that informs the shift metallurgist's
+[15:26] wider campaign strategy.
+[15:28] It's an advisory system, not a panic button.
+[15:30] That is a highly defensible posture.
+[15:33] If they can frame the system as a rolling advisor,
+[15:35] dialed in by the metallurgist, they will survive the judging panel.
+[15:38] Which brings us to the final step of this clinic,
+[15:40] summarizing the path forward and agreeing on the feasibility stage design.
+[15:44] Let's lay it out.
+[15:45] The founders have a strict budget cap of $210,000 for this next feasibility stage.
+[15:50] We have to design a pass failgate that proves the concept without touching the
+[15:54] $10.69 to $13.15 million budget that is strictly reserved for the later pilot.
+[16:00] The R210,000 must be spent exclusively on physical validation.
+[16:04] No more simulated proxies.
+[16:06] Here's the agreed design.
+[16:07] First, the samples.
+[16:09] They must secure real UG2 and Marensky ore cuts.
+[16:11] And, crucially, they need to scan these exact same physical sections
+[16:15] using both the optical system and QEM scan.
+[16:18] To isolate the modality gap, by comparing the exact same 2D physical slices,
+[16:23] we remove sample variance entirely.
+[16:25] Any difference in the data is purely the difference between the camera and the X-ray.
+[16:29] And the pass failgate for this feasibility study?
+[16:32] It ties directly back to Mutli's kinetic equations.
+[16:35] Konya's optical liberation masks must stay strictly within that 0.440%
+[16:39] point tolerance when plugged into Mutli's equations, compared to the QEM scan baseline.
+[16:44] Right.
+[16:45] If the predicted recovery shifts by more than 0.440% points,
+[16:49] the optical segmentation is too topologically brittle to advise a plant.
+[16:53] Full stop.
+[16:53] And finally, the co-authorship requirements.
+[16:56] To get Mintek's characterization cluster to co-author the first UG2 study,
+[17:00] what do you need to see?
+[17:01] We will need to see zero hallucination on chromite.
+[17:04] Zero.
+[17:04] Zero.
+[17:05] The model must differentiate chromite gain perfectly from the background and the payload.
+[17:09] And it must independently validate the tracking of the PGM carriers.
+[17:12] If they can hit the 0.440% point tolerance on Mutli's fit
+[17:16] and show zero chromite hallucination on real South African UG2 ore,
+[17:20] well, Mintek will sign the paper.
+[17:23] But I have to warn them, that is a massive, physical, metallurgical mountain to climb.
+[17:28] The code might be ready, but the physics is waiting.
+[17:31] This weakness by weakness audit has been immensely valuable.
+[17:35] Konya has safely navigated the software and mathematical hurdles by being intellectually
+[17:39] honest and structurally rigorous.
+[17:41] They have.
+[17:41] But just like testing a bridge, the math can be flawless on paper,
+[17:45] but the ultimate truth only reveals itself when you apply the physical load.
+[17:49] The rock will be the final judge.
+[17:51] Cebu Siso and Lathabo, you have your blueprint.
+[17:54] Now it's on the build it and see if it holds up.

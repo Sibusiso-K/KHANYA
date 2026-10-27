@@ -1,0 +1,509 @@
+# duration 1095s
+[00:00] Welcome to the debate.
+[00:01] So I want you to imagine flying a commercial jet, right?
+[00:04] But your dashboard only tells you your altitude
+[00:07] from like three days ago.
+[00:09] That sounds terrifying.
+[00:10] It is.
+[00:11] But in a modern mining concentrator,
+[00:13] that is essentially what is happening.
+[00:15] A delay of just a few hours in knowing what is actually
+[00:17] inside your rock means thousands of tons of material
+[00:20] and potentially millions of dollars have already been
+[00:23] processed completely blindly.
+[00:25] Yeah, and that is exactly the reality
+[00:26] of mineral processing today.
+[00:27] I mean, you might have screens and sensors absolutely
+[00:30] everywhere in the plant.
+[00:31] But without real-time mineralogy,
+[00:33] you are fundamentally driving while looking
+[00:35] in the rearview mirror.
+[00:37] Which is exactly why we are evaluating
+[00:39] a pretty fascinating attempt to compress that timeline today.
+[00:42] So we are looking at a computer vision research protocol
+[00:45] called ReefPrint, or KANYA.
+[00:47] Right.
+[00:48] It was built by founders Cebu Siso and Lathabo
+[00:50] to provide real-time mineralogy and decision
+[00:53] support for a platinum group metal or PGM concentrators.
+[00:56] And they are doing this using a lightweight 2D optical machine
+[00:59] learning pipeline.
+[01:00] Which is a huge task.
+[01:02] Absolutely.
+[01:03] And they are preparing to defend their system
+[01:04] to min-tech and various mining executives.
+[01:07] But to do that, they have to understand
+[01:08] how their software holds up against the absolute gold
+[01:11] standard for mineralogy constraint flotation.
+[01:14] Specifically, we are measuring their build
+[01:16] against the 2026 min-tech paper by Mootley and colleagues
+[01:19] on copper sulfide ore.
+[01:20] And we hold two very different views
+[01:22] on whether their software is actually ready for that room.
+[01:25] We definitely do.
+[01:27] I argue that KANYA is a highly defensible agile stepping stone.
+[01:30] By reasoning over metallurgical roles
+[01:32] rather than strict mineral identification,
+[01:34] and by wrapping its predictions in explicit uncertainty bounds,
+[01:38] it represents a valid operational approach
+[01:40] to process control, assuming it is appropriately
+[01:43] constrained, of course.
+[01:44] Right.
+[01:44] Well, I come at it from a very different angle.
+[01:46] I argue that severe stereological biases,
+[01:50] reliance on unrepresented data proxies,
+[01:52] and frankly, a lack of true physical kinetic linkages
+[01:56] make the current build mathematically and metallurgically
+[01:58] unsafe for a pilot.
+[01:59] I mean, without a fundamental redesign
+[02:01] to match the rigor of that min-tech standard,
+[02:03] it just isn't ready.
+[02:05] OK, well, before we can even judge the code,
+[02:06] we have to understand the physical environment
+[02:08] Sibisizio and Lathabo are trying to control.
+[02:11] Let's just briefly ground this in the mechanics
+[02:13] of a concentrator plan.
+[02:15] The ultimate goal is to take a rock
+[02:16] and separate the highly valuable payload
+[02:18] from the useless waste rock, which we call gang, right?
+[02:21] Right, the gang.
+[02:22] And this begins with milling.
+[02:23] You grind the rock down to achieve liberation,
+[02:25] which is literally breaking the physical bond
+[02:27] so the valuable mineral is freed from the waste.
+[02:30] And once you have physically broken the rock,
+[02:33] you enter the chemical phase, which is flotation.
+[02:36] You introduce bubbles and chemical reagents into a slurry.
+[02:39] To make it float.
+[02:39] Yeah, those chemicals selectively coat the liberated payload,
+[02:42] making it hydrophobic, so water repellent.
+[02:45] The payload attaches to the bubbles, floats to the surface,
+[02:48] and is skimmed off as concentrate.
+[02:50] But you are constantly battling entrainment.
+[02:53] Entrainment.
+[02:54] It is the worst.
+[02:55] Which is the worst.
+[02:55] It is the absolute enemy of efficiency.
+[02:57] It's the unwanted, non-selective recovery
+[03:00] of very fine waste rock or locked particles
+[03:02] that just get mechanically swept up into the froth
+[03:04] along with the water.
+[03:05] I always think of traditional bulk curve fitting,
+[03:08] like trying to guess the exact ingredients
+[03:10] of a complex soup by only tasting the final spoonful.
+[03:14] That is a great analogy.
+[03:15] You know something is wrong.
+[03:16] Maybe it's too salty, right?
+[03:18] But you don't know which specific ingredient threw off
+[03:21] the entire flavor profile.
+[03:23] Exactly.
+[03:24] And Mootley Standard says you have
+[03:25] to track the individual components from the beginning
+[03:27] to really optimize the recipe.
+[03:29] So they introduce a standard for measuring free surface
+[03:32] exposure.
+[03:33] With QEM scan.
+[03:34] Right.
+[03:35] They use QEM scan, which is an automated electron microscopy
+[03:38] technique, to group the crushed particles
+[03:40] into five distinct liberation classes.
+[03:42] So you have a locked, meaning 0% to 30% exposed,
+[03:45] low mittlings at 30% to 50%, high mittlings
+[03:49] at 50% to 80%, liberated at 80% to under 100%,
+[03:52] and finally fully liberated at 100%.
+[03:54] And this is where the Mootley paper becomes just
+[03:56] an absolute masterclass in physical metallurgy.
+[03:59] Because bulk curve fitting fails to explain the mechanics,
+[04:02] let's look at how the Mintech Standard precisely tracks
+[04:05] those five ingredients.
+[04:06] If you look at figure one, they establish
+[04:08] an incredibly rigorous chain of evidence.
+[04:10] It really is rigorous.
+[04:11] Oh, entirely.
+[04:12] They use that QEM scan feed data as a fixed physical
+[04:15] input.
+[04:16] Then, instead of just looking at the bulk copper,
+[04:19] they assign first order kinetic recovery rates
+[04:21] to each of those five specific liberation classes.
+[04:24] Right.
+[04:25] They are tracking the actual physics
+[04:26] of how fast each individual class floats.
+[04:29] But you know what makes this a true yardstick
+[04:32] is how they lock in reality.
+[04:34] They constrain their model using timed concentrate
+[04:36] masses and grades from actual batch tests.
+[04:39] And they use cumulative concentrate QXRD
+[04:41] mineralogy as their endpoint.
+[04:43] QXRD being the X-ray technique?
+[04:45] Yeah.
+[04:46] It identifies the exact crystal structure
+[04:48] of the final product.
+[04:49] And by doing this, they mathematically
+[04:51] anchor their model to the reality of what actually
+[04:53] floated out of the tank.
+[04:55] Which is crucial.
+[04:56] And I think Cebu Siso and Lathabo
+[04:57] need to pay very close attention to how Moodle
+[05:00] handles degrees of freedom here.
+[05:02] Because in section 2.3.2 in table four,
+[05:05] Moodle meticulously separates what is measured
+[05:08] from what is fitted.
+[05:09] Yeah, that balance is so important.
+[05:10] They balance 15 fitted parameters,
+[05:12] so things like those kinetic rates and entrainment
+[05:15] coefficients against exactly 16 independent physical
+[05:18] measurements.
+[05:19] The 16 measurements are four timed concentrate masses,
+[05:23] four timed copper grades, and eight independent final QXRD
+[05:26] modal fractions.
+[05:27] And why does that balance matter so much?
+[05:30] Because they created a mathematical straightjacket.
+[05:32] It is a weakly overdetermined system.
+[05:34] I mean, if you have more variables than measurements,
+[05:37] your math can just cheat and curve fit anything you want.
+[05:40] Right, it just invents an answer.
+[05:42] Exactly.
+[05:43] But by having 16 measurements constrained 15 parameters,
+[05:47] the numbers have nowhere to hide, which
+[05:48] is why their robustness checks are so impressive.
+[05:51] They ran 88 near equivalent fits,
+[05:54] and they did a plus or minus 25% residual weight
+[05:56] sensitivity analysis.
+[05:58] And the result?
+[05:59] The maximum recovery change across all of that
+[06:01] was less than 0.5 percentage points.
+[06:04] They proved their mineral specific recovery estimates
+[06:06] are completely stable.
+[06:08] OK, sure.
+[06:08] But all of that precision takes time.
+[06:11] QEM scan and QXRD are slow.
+[06:14] They are expensive, and they require a laboratory.
+[06:16] If Moodle's standard requires this incredibly deliberate
+[06:20] electron microscopy, how on earth are Sibussiso
+[06:23] and Lathabo planning to do this in real time
+[06:25] on a conveyor belt?
+[06:26] Well, by building a proxy.
+[06:28] Knowing that the Mintek standard requires intense data
+[06:31] generation, they basically attempted
+[06:32] to build a faster, lighter substitute using
+[06:35] standard reflected light optical micrographs.
+[06:37] A camera, basically.
+[06:39] Right.
+[06:40] Let's trace how the Konya pipeline works
+[06:41] based on the TeamZone, our finalists report,
+[06:43] and their status document.
+[06:45] It starts with the data.
+[06:46] They train their model on the public Lumenstone S2 data
+[06:49] setting.
+[06:49] Though we should note, this is Norrall's copper nickel
+[06:52] or not PGM or.
+[06:54] Oh, we will definitely come back
+[06:55] to that massive assumption later.
+[06:57] Fair enough.
+[06:58] So for the segmentation stage, they
+[07:00] use a convolutional neural network, specifically
+[07:03] a TorchVision DeepLab V3 model to classify five phases
+[07:07] in the images.
+[07:08] Then they apply a really crucial topology repair step.
+[07:11] What does that do?
+[07:12] They compute modal mineralogy by converting the pixels
+[07:15] into area fractions, but they explicitly
+[07:17] exclude the mounting resin.
+[07:19] This is vital because it means the measurement
+[07:21] is in skewed by how densely the slide was mounted in the lab.
+[07:24] It only cares about the rock itself.
+[07:26] OK, then comes their association index,
+[07:28] which is their attempt to replace Moodly's five
+[07:30] liberation classes.
+[07:32] Konya uses connected components to find 2D particles
+[07:35] in the image.
+[07:36] And their operational rule is strictly binary.
+[07:38] The particle is considered liberated if the payload phase
+[07:41] is 50% or greater.
+[07:42] Right.
+[07:43] And based on this, they have a decision
+[07:45] rule acting via an OPC UA digital advisory link
+[07:48] to simulate plan control.
+[07:50] And honestly, this decision rule is
+[07:52] where the architectural brilliance really shines.
+[07:54] The advisor reasons over metallurgical roles,
+[07:56] so payload, gang, reject, rather than specific mineral names.
+[08:00] Why is that better?
+[08:01] Because it means if you swap the ore body from Norrall's
+[08:04] to the Bushfeld complex, you just change the mapping.
+[08:07] You don't have to rewrite the core logic of the system.
+[08:09] Furthermore, they wrap this decision in a conformal band.
+[08:12] Right, the uncertainty margin.
+[08:13] Yes, they set a statistical margin of 0.335 or 0.089
+[08:18] around that 50% threshold.
+[08:19] If a prediction falls in that gray area,
+[08:21] the system refuses to act and outputs marginal verify
+[08:24] before acting.
+[08:25] Look, I'm sorry, but I just don't buy
+[08:28] that this pipeline is ready for a pilot.
+[08:31] If I am a skeptical min-tech metallurgist listening
+[08:33] to this pitch, I have major concerns.
+[08:36] Konya is an ingenious software build, yes.
+[08:39] It is attempting to rapidly simulate the QEM scan feed
+[08:43] inputs on the very first step of Moodle's chain of evidence.
+[08:46] Right.
+[08:46] But software cannot bypass physical reality.
+[08:49] Let's start with stereological bias versus 3D reality.
+[08:53] The 2D versus 3D problem.
+[08:55] Exactly.
+[08:56] A 2D association index is fundamentally
+[08:59] flawed compared to a 3D QEM scan assessment.
+[09:02] If you cite the Minerals 2017 paper from the sources,
+[09:05] 2D cross-sections consistently overestimate true 3D liberation.
+[09:10] You are looking at a flat plane of a three-dimensional rock.
+[09:13] It is like cutting a slice of raisin bread.
+[09:15] Yes.
+[09:15] If you slice through a raisin, it
+[09:17] looks fully exposed on the surface of your slice.
+[09:19] So in a 2D view, it appears completely liberated.
+[09:22] But in 3D reality, that raisin might be deeply locked
+[09:25] inside the surrounding dough.
+[09:26] So 2D will always tell you things are more liberated
+[09:29] than they actually are.
+[09:30] Precisely.
+[09:31] But I have to push back here.
+[09:32] Because to their credit, Sibosiso and Lathabo
+[09:35] openly admit this limitation.
+[09:37] In status section five, they explicitly
+[09:39] state their index is biased high.
+[09:41] And therefore, it is safe for grind finer,
+[09:44] unsafe for continue.
+[09:45] They have operationally accounted for the bias.
+[09:48] Well, admitting a bias is not the same
+[09:49] as structurally fixing it.
+[09:51] And that defense completely ignores the optical resolution
+[09:54] limit for fines.
+[09:55] How so?
+[09:56] Let's look at Moodle's copper ore in table seven.
+[09:58] Exactly 53.75% of its copper was below 20 microns in size.
+[10:04] Optical microscopes fundamentally
+[10:05] hit resolution limits for fine particles
+[10:07] that electron microscopes like QEM scan do not.
+[10:10] That is a fair point.
+[10:11] If I am a mining executive, I am thinking, wait,
+[10:14] if this camera is physically incapable of seeing
+[10:16] half of the payload because it is too small,
+[10:19] why on earth am I handing plant control over to it?
+[10:21] Look, I see why you think that optical limit is
+[10:23] a deal breaker.
+[10:24] But let me give you a slightly different perspective.
+[10:27] Konya is a proof of concept prototype built in the hackathon.
+[10:31] And despite that, it tracks uncertainty
+[10:32] in a really highly sophisticated way.
+[10:34] Go on.
+[10:35] Instead of just obsessing over machine learning pixel accuracy,
+[10:38] Konya tracks the stability of the plan recommendations.
+[10:41] They found that 33% of recommendations
+[10:43] flipped when the model was evaluated
+[10:45] at different resolutions.
+[10:46] Tracking operational decision flips
+[10:48] is an incredibly relevant metric for a plant manager.
+[10:51] It mirrors exactly what Moodle did when testing parameter
+[10:53] compensation.
+[10:54] That's a compelling argument, sure.
+[10:55] But have you considered how they count their independent evidence
+[10:58] to validate those flips?
+[11:00] What do you mean?
+[11:01] Well, Moodle painstakingly gathered 16
+[11:03] independent physical measurements.
+[11:05] Konya bases its entire conformal band and pitch
+[11:08] on just 12 test images, according to critique section 2.5.
+[11:12] We are talking about a hardness prediction
+[11:14] where the R squared collapse from 0.479 down to 0.25
+[11:19] upon later evaluation.
+[11:20] That is a drop, yeah.
+[11:22] 12 images is a catastrophic sample size for a pilot pitch
+[11:25] to MinTech.
+[11:25] Hold on, though.
+[11:26] You are evaluating a resource-constrained ML prototype
+[11:29] with the exact same yardstick as a multiyear, well-funded
+[11:33] MinTech research paper.
+[11:34] That is not a fair comparison.
+[11:36] They use the public data that was available to them.
+[11:39] That is a function of resources, not a fundamental flaw
+[11:41] in the system's architecture.
+[11:43] But that lack of data leads directly
+[11:44] to a critical flaw in their architecture,
+[11:47] specifically the conformal band leakage.
+[11:49] The leakage.
+[11:50] Yeah.
+[11:51] Moodle splits uncertainty explicitly
+[11:52] into replicate scatter, parameter compensation,
+[11:55] and weighting sensitivity in section 2.3.4.
+[11:59] Konya's conformal band, that uncertainty margin
+[12:02] you praised earlier, was derived via leave one out
+[12:05] cross validation on the exact same 12 test images used
+[12:08] for the final evaluation.
+[12:11] So they evaluated their uncertainty on the data
+[12:13] they trained with?
+[12:13] Yes.
+[12:14] It's like a teacher giving a student the exact answers
+[12:17] of the final exam, testing them on it,
+[12:19] and then confidently declaring the student is a genius.
+[12:23] I see the problem.
+[12:24] The software evaluated its own uncertainty
+[12:26] using the exact same rocks it was calibrated on.
+[12:29] Of course it looks confident.
+[12:31] It has no clean statistical meaning for unseen data.
+[12:34] The critique explicitly calls us a rebranded failure.
+[12:38] The system isn't abstaining selectively.
+[12:40] It is so fundamentally uncertain it cannot answer half
+[12:43] the time on the very data it was calibrated on.
+[12:45] OK.
+[12:46] I will concede that point.
+[12:47] Calibrating the uncertainty band on the test set
+[12:49] is a statistical leakage issue that must absolutely
+[12:52] be for a pilot.
+[12:53] But let's move to the most glaring assumption, the PGM gap.
+[12:57] The system was trained on Lumenstone S2, which is Norlix ore.
+[13:01] Right.
+[13:02] Massive sulfide.
+[13:03] It is 62.8% base metal sulfide pixels.
+[13:06] And UG2 PGM ore from the Bushville complex
+[13:09] is less than 1% sulfide by volume.
+[13:11] The team admits in status section 2.1
+[13:13] that the S2 data set is an assemblage analog, not
+[13:17] an abundance one.
+[13:18] Which is exactly why borrowing Moodly's kinetic framework
+[13:21] directly for PGM's requires massive, completely untested
+[13:25] assumptions.
+[13:26] I mean, Moodly themselves warn in sections 1 and 4
+[13:29] of their paper that their method is strictly limited
+[13:32] to one copper ore under one set of conditions
+[13:34] using an empirical entrainment term.
+[13:37] We do not know how fine UG2 gain
+[13:39] entrains compared to copper gain.
+[13:41] Assuming software can bridge that physical gap
+[13:43] without new physical kinetic data is dangerous.
+[13:47] So this brings us to the blueprint.
+[13:48] How do Sibisiso and Lutapo build it better?
+[13:51] To move from a prototype to a funded pilot,
+[13:53] they really must structurally close the gaps
+[13:55] you just identified.
+[13:57] Let's lay out a prioritized concrete roadmap for them.
+[13:59] First, they need to upgrade the integration
+[14:02] between their machine learning and the physical metallurgy.
+[14:04] They absolutely must stop using a binary 50%
+[14:07] threshold for liberation.
+[14:08] It's too simplistic.
+[14:10] They need to report Konya's visual results
+[14:12] mapped directly to Moodly's five specific exposure classes.
+[14:16] Locked, the two midlings, and the two liberated classes.
+[14:19] Yes.
+[14:20] And once they have those classes,
+[14:22] they need to convert those fractions
+[14:23] into predicted recovery at risk by applying
+[14:26] class rate constants.
+[14:27] Right now, their decision rule is just
+[14:29] re-grind or continue.
+[14:30] Which isn't enough.
+[14:31] Exactly.
+[14:32] They need to extend that binary output
+[14:34] into three specific chemically relevant diagnoses.
+[14:37] Like, is this a liberation failure,
+[14:39] a reagent and hydrodynamic failure,
+[14:40] or fine gain entrainment?
+[14:42] And to address that optical limit we discussed earlier,
+[14:44] they must add size resolve reporting.
+[14:47] The software must explicitly trigger a refusal
+[14:49] and make a recommendation when fine particles dominate
+[14:52] the image.
+[14:53] They must respect the optical resolution limit where
+[14:55] QEM scan is structurally required.
+[14:58] That brings us to designing the feasibility validation,
+[15:01] the P0 stage.
+[15:02] To prove this actually works to min-tech executives,
+[15:05] they need a shared sample validation protocol.
+[15:07] Right.
+[15:08] Take the exact same physical OR sample,
+[15:10] run feed QEM scan on it, run timed batch flotation,
+[15:14] capture Konya micrographs, and strictly measure
+[15:17] the QXRD mineralogy of each timed concentrate.
+[15:21] You have to put Konya's proxy data right next
+[15:23] to the physical kinetic reality.
+[15:25] And they must run identifiability and sensitivity checks
+[15:28] exactly like Moodly's plus or minus 25% weight variation
+[15:32] to prove their proxy parameters are mathematically stable.
+[15:35] So when Cebu, Siso, and Lathabo walk into the room
+[15:37] to pitch this to min-tech, what is their strategy?
+[15:41] I believe they have three incredibly strong points
+[15:43] to defend.
+[15:44] Let's hear them.
+[15:45] Number one, the role-based advisor.
+[15:47] By swapping the mineral mapping but keeping the logic,
+[15:49] they have built a flexible tool that can easily
+[15:51] adapt to Bushfeld OR.
+[15:53] Number two, measuring operational recommendation flips
+[15:55] rather than just pixel accuracy shows they deeply understand
+[15:59] real process control.
+[16:00] And number three, their transparent honest failure
+[16:03] disclosure in their documentation
+[16:04] builds immense trust.
+[16:06] I agree.
+[16:06] They are a highly capable team.
+[16:08] But they will be eviscerated if they
+[16:10] don't fix three glaring weaknesses
+[16:12] before asking for money.
+[16:13] Which are?
+[16:13] One, they must apply a mathematical 2D to 3D
+[16:16] stereological correction from the literature
+[16:18] to fix that built-in raisin bread bias.
+[16:21] Two, they must recalibrate that conformal ban
+[16:24] on a truly held-out validation set so the uncertainty
+[16:26] statistics actually mean something for unseen rock.
+[16:29] And three, they must implement that size-resolved limit
+[16:32] for fines.
+[16:33] Fair.
+[16:34] And finally, when they are in the room
+[16:35] with the min-tech authors, they
+[16:36] need to ask the right question to prove
+[16:38] they respect the physics.
+[16:40] They should really ask, how do we
+[16:41] parameterize your empirical entrainment
+[16:43] term for UG2 fines, where our optical mapping fundamentally
+[16:46] fails?
+[16:47] That is the golden question right there.
+[16:49] It shows they understand the exact boundary
+[16:51] between where computer vision ends
+[16:53] and where physical chemistry begins.
+[16:55] So to summarize our positions in light of this roadmap,
+[16:58] I still maintain that Kanya is an architectural triumph.
+[17:02] Its ability to map metallurgical roles and quantify decision
+[17:05] flips provides just an incredible software foundation
+[17:08] for the future of concentrator control.
+[17:10] It just needs the right guard wells.
+[17:12] And I maintain that physics and stereological realities cannot
+[17:15] be bypassed by software alone.
+[17:18] A 2D proxy is not 3D kinetics.
+[17:20] And pushing machine learning into physical metallurgy
+[17:23] requires deep structural respect for the limitations
+[17:26] of both disciplines.
+[17:28] I think we converge on that point perfectly.
+[17:30] Sibosiso and Lothabo have built something remarkable.
+[17:32] But bridging that optical to 3D kinetic gap
+[17:35] is the true frontier they must cross.
+[17:37] It really brings us back to that control room
+[17:39] we started with.
+[17:40] Yeah, exactly.
+[17:42] The screens might show you a clean digital dashboard.
+[17:45] But the reality inside the rock is messy.
+[17:47] It's three-dimensional.
+[17:48] And it's governed by unyielding physics.
+[17:51] The software is only ever as good
+[17:52] as its understanding of the physical black box it
+[17:55] is trying to illuminate.
+[17:56] Precisely.
+[17:57] It leaves you wondering just how quickly
+[17:59] we can safely allow software to assume
+[18:01] control of heavy physical processes
+[18:03] when the fundamental data is still just
+[18:06] a two-dimensional shadow on a wall.
+[18:08] A lingering question for anyone working
+[18:10] at the intersection of artificial intelligence and heavy
+[18:12] industry.
+[18:13] Thank you for joining us on the debate.
