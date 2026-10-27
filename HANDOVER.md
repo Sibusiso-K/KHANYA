@@ -19,6 +19,34 @@ Entry format:
 
 **For current state, read `STATUS.md` first** - it is the synthesised snapshot. This log is the append-only session history behind it.
 
+## 2026-10-27 — Sibusiso (76) — three AI podcast reviews of the build, for you to evaluate
+
+**Did:** ran three NotebookLM debate episodes on the build, transcribed them
+locally, and checked every claim against `STATUS.md`, the critique,
+`src/advisor.py` and Moodley et al. (2026). Wrote a reply to round one in my
+own voice, and a literature roadmap that goes beyond the single Moodley paper
+the episodes leaned on. (Entry 75 is on the `data/open-pgm-datasets` branch,
+PR #23.)
+
+**Changed:** `reports/LITERATURE-ROADMAP-2026-10-27.md`; `notebooklm/`
+(`DEBATE-2-ANALYSIS.md`, `EPISODE-3-ANALYSIS.md`, `FOUNDER-REBUTTAL-DEBATE-2.md`,
+`SOURCES.md`, three transcripts); `.gitignore` (keeps third-party papers and
+PDF copies out).
+
+**Blocked on:** nothing. All data requests stay on hold until MOTT answers.
+
+**Next (Lethabo): evaluate, and push back where I'm wrong.** Start with
+`notebooklm/EPISODE-3-ANALYSIS.md`. The decisions I'd like from you:
+1. Make `PAYLOAD_FLOOR`, `REJECT_CEILING` and `DELETERIOUS_CEILING`
+   plant-configurable rather than defending them as physics?
+2. Add a shift-level rolling recommendation over a shift's sections
+   (critique §2.4)?
+3. Is chromite the first class the paired UG2 data must cover?
+4. The feasibility-stage pass/fail gate: should it come from UG2 replicate
+   QEMSCAN variance? The episode proposed Moodley's 0.440 pp, which is a
+   misreading of a copper-ore sensitivity figure.
+5. Does the rebuttal say anything you disagree with? It speaks for both of us.
+
 ## 2026-09-30 — Sibusiso (74) — no advice on thin evidence; six fields, not one (PR A)
 
 **Why:** running the build as a judge would, the flagship *Grind finer* that

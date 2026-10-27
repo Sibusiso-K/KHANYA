@@ -1,0 +1,453 @@
+# duration 1230s
+[00:00] Welcome to the debate.
+[00:02] You know, usually when we talk about industrial control systems,
+[00:05] there's this expectation of absolute immediate precision.
+[00:10] You look at a manufacturing line, a laser sensor flags a millimeter defect,
+[00:14] and a robotic arm just plucks the part off the belt.
+[00:17] It's binary. It's clean.
+[00:19] The state of the system is completely visible.
+[00:21] Yeah, you measure the state. You change the state.
+[00:23] It is a very comforting, closed feedback loop.
+[00:26] You always know exactly what you are dealing with.
+[00:29] Exactly.
+[00:30] But then you step into the world of mineral processing.
+[00:32] Specifically, you walk into a platinum-group metal concentrator,
+[00:36] and suddenly, well, all of that pristine precision just vanishes.
+[00:40] You're looking at a diagnostic landscape that is quite honestly
+[00:43] opulating in the dark.
+[00:44] Very much in the dark, yeah.
+[00:46] So today's discourse is structured as a formal adversarial peer review
+[00:49] of an attempt to actually turn those lights on.
+[00:52] We are examining the transition from batch laboratory mineralogy,
+[00:56] which takes days, to real-time machine learning decisions aboard.
+[01:00] Right, and specifically, this review is designed for Sibisiso and Lathabo.
+[01:04] They're the developers of the ReefPrint and Konya research prototype.
+[01:07] And for the mining executives who are currently evaluating their build for funding,
+[01:11] the core of our discussion really comes down to a question of
+[01:14] metallurgical physical reality versus algorithmic elegance.
+[01:18] We have to ask, does Konya's machine learning-driven optical mineralogy
+[01:22] actually provide a robust, defensible foundation for real-time plant control?
+[01:26] We are going to measure it strictly against the metallurgical gold standard,
+[01:30] which is established in the Moodly et al. 2026 min-tech paper
+[01:33] on mineralogy-constrained flotation kinetics.
+[01:35] Right.
+[01:36] I will be arguing that it absolutely does provide that foundation.
+[01:40] I mean, Konya is a highly mature, completely inspectable software prototype.
+[01:44] Mature is a strong word, but okay.
+[01:46] Well, Sibisiso and Lathabo have built something that uses explicit uncertainty bounding,
+[01:50] specifically conformal prediction bands and refusal rules,
+[01:53] which I believe makes it a viable, profoundly safe bridge to real-time decision support.
+[01:58] It is intellectually honest about what it doesn't know,
+[02:00] which means it's more than ready for its proposed 10.69 to 13.15 million
+[02:05] ran feasibility pilot.
+[02:06] I come at it from a very different angle.
+[02:08] While the software architecture Sibisiso and Lathabo built is undeniably elegant,
+[02:14] its metallurgical foundation is frankly built on sand.
+[02:18] When you use the Moodly 2026 paper as our yardstick,
+[02:20] you see what true metallurgical rigor actually requires.
+[02:23] Okay, Ben.
+[02:24] Hang on.
+[02:25] Konya uses 2D pixel association as a proxy for 3D physical liberation.
+[02:29] It relies on Chilean copper and Russian nickel analogues
+[02:32] rather than moving South African PGM ore.
+[02:35] And from an ML perspective, it suffers from alarming instability in its models.
+[02:39] We are seeing ML metric optimization just being used to pave over physical realities.
+[02:43] I see why you think that. I do.
+[02:45] But let me give you a different perspective on the sheer magnitude
+[02:48] of the problem Konya is actually solving here.
+[02:51] Alright.
+[02:52] To do that, we need to ground this in the physical reality of a concentrator plant,
+[02:55] just in plain language.
+[02:57] A plant operates in a highly specific sequence.
+[03:00] First is milling, where you literally crush and grind the ore
+[03:03] to expose the valuable minerals.
+[03:04] Right, breaking it apart.
+[03:06] Next is liberation, which is the physical freeing of those valuable minerals
+[03:09] from the worthless waste rock, the gang.
+[03:11] Then comes flotation.
+[03:13] Here you put the slurry into these massive tanks, inject bubbles,
+[03:16] and add chemical reagents so the valuable minerals stick to the bubbles
+[03:19] and, well, they float to the top to be collected.
+[03:22] And finally, you battle entrainment.
+[03:24] This is the absolute parasite of the process.
+[03:26] Yeah, it really is.
+[03:27] Entrainment is when fine, unwanted waste rock gets accidentally swept up
+[03:31] into the water surrounding your bubbles and just ends up in your concentrate.
+[03:34] It dilutes your grade and costs you an absolute fortune in smelting later.
+[03:38] Precisely.
+[03:39] And the timing of recovery during that flotation stage,
+[03:42] that dictates your revenue.
+[03:43] If you recover your valuable metals fast, you make money.
+[03:46] If it's slow, you lose efficiency, you lose grade, and you waste power.
+[03:50] Which is a massive problem.
+[03:51] But historically, metallurgists have evaluated that timing
+[03:54] using something called bulk Kelsel fits.
+[03:56] Kelsel fits are essentially just mathematical curves.
+[03:59] You take your total recovery over time
+[04:01] and you just arbitrarily divide it into a fast floating fraction
+[04:04] and a slow floating fraction.
+[04:06] Arbitrary being the key word there.
+[04:08] Exactly.
+[04:09] The problem is, a plant shift team right now,
+[04:11] they set their mill feed and their reagents entirely blind.
+[04:14] They wait days for automated mineralogy from the lab
+[04:16] to tell them what they just processed.
+[04:18] Konya solves this timing gap.
+[04:20] I understand the timing gap. I really do.
+[04:22] But I want to challenge the premise that faster is better
+[04:25] if the underlying measurement is flawed.
+[04:27] How so?
+[04:28] Let's talk about why Kelsel fits fail
+[04:30] and why Moodly et al. had to invent a completely new standard in a 2026 paper.
+[04:34] Kelsel fits fail because they are purely curve fitting.
+[04:37] They tell you how fast your copper or your platinum group metals float,
+[04:40] but they cannot tell you why the slow fraction is slow.
+[04:43] Right, they lack diagnostic power.
+[04:45] Exactly.
+[04:46] Is it slow because the valuable mineral is still locked inside a chunk of waste rock
+[04:49] and the bubble just can't reach it?
+[04:51] Or is it slow because it's fully liberated but is just fine gang being entrained?
+[04:55] A mathematical curve has absolutely no idea.
+[04:57] So think of a bulk Kelsel fit as a stopwatch timing a race, right?
+[05:02] It tells you the final times of the runners.
+[05:04] But Moodly's method is like putting biometric sensors on every single runner.
+[05:08] I like that analogy, yeah.
+[05:09] It tells you exactly who is running, what their heart rate is,
+[05:12] and what specific physiological limit is holding them back.
+[05:16] Moodly's careful separation of measured data versus fitted data is masterful.
+[05:21] It is.
+[05:22] Moodly solves this by abandoning arbitrary curves entirely.
+[05:25] They use QEM scan, which is automated 3D mineralogy utilizing scanning electron microscopy.
+[05:31] It doesn't just look at light,
+[05:33] it maps the actual chemistry of the particles to measure true free surface exposure.
+[05:37] Right.
+[05:38] Moodly physically divides the particles into five explicit liberation classes.
+[05:42] Locked, low midlings, high midlings, liberated, and fully liberated.
+[05:47] Then, and this is the crucial part,
+[05:49] Moodly assigns first order kinetic rates to these measured physical classes.
+[05:53] They are not arbitrary mathematical constructs.
+[05:55] And look at the chain of evidence there.
+[05:57] They feed the QEM scan deportment and liberation data
+[06:00] into the model as fixed unalterable inputs.
+[06:03] Then they use time batch concentrates
+[06:05] to find the final quantitative x-ray diffraction,
+[06:07] or QXRD endpoint to constrain the fit.
+[06:10] What impresses me most about the paper is how strictly they account for their degrees of freedom.
+[06:14] You know, in machine learning, it's very easy to just add parameters until the model fits the data perfectly.
+[06:19] Overfitting, yeah.
+[06:20] Exactly.
+[06:21] But in Moodly's physical model, they have 15 parameters fitted against 16 independent measurements.
+[06:26] That leaves virtually no room to cheat the math.
+[06:29] Right, it's tightly constrained.
+[06:31] They verified this parameter profile across 88 near equivalent fits
+[06:34] and ran a rigorous plus or minus 25% weight sensitivity analysis.
+[06:38] They know exactly how stable their physics are.
+[06:40] So let's look at how Konya attempts to automate this pipeline,
+[06:43] because Cibuciso and Latabo are trying to map to this exact reality.
+[06:48] They are just trying to do it in 92 milliseconds instead of three days.
+[06:51] A very ambitious goal.
+[06:53] It is.
+[06:54] They built a software pipeline that starts with public data sources.
+[06:57] They use HID SAG for the infrared belt scans and Lumenstone S2,
+[07:01] which is a data set of microscope sections.
+[07:03] They run these images through a segmentation model called DeepLab V3.
+[07:07] And we should probably clarify what DeepLab V3 actually does for those unfamiliar.
+[07:11] For sure.
+[07:12] It's not just a basic image classifier that says, you know, this is a picture of a rock.
+[07:15] It's a deep learning computer vision architecture designed for semantic segmentation.
+[07:19] It attempts to draw precise mathematical boundaries around individual minerals,
+[07:23] classifying the image pixel by pixel.
+[07:25] Exactly.
+[07:26] In once DeepLab V3 segments the image,
+[07:28] the software runs a topology repair protocol to fix any broken edges
+[07:32] or unnatural shapes in the prediction.
+[07:34] Then it calculates the modal mineralogy,
+[07:36] which is really just a term for the total abundance of different minerals present.
+[07:40] Right.
+[07:41] Finally, it generates an apparent 2D sulfide association index.
+[07:45] I have to say, the word apparent carries a lot of weight in that sentence.
+[07:49] It does, it does.
+[07:50] And we will debate the physics of that.
+[07:52] But let's follow the data first.
+[07:54] This 2D index feeds a decision rule.
+[07:56] Based on the index, the software might recommend regrinding the ore
+[08:00] or continue current operation.
+[08:02] Which it delivers directly to the plant?
+[08:04] Yes, it delivers this recommendation via an OPC UA advisory link.
+[08:07] OPC UA is essentially the universal translator for industrial automation.
+[08:11] It allows Konya's software to talk directly to the plant's legacy hardware control system.
+[08:16] I mean, the software engineering is robust.
+[08:19] I will concede that.
+[08:20] But where is the safety mechanism?
+[08:22] Because sending an automated command to a multi-million-rand grinding mill
+[08:26] based on a pixel classifier is, frankly, terrifying for a plant manager.
+[08:30] That is the genius here, though.
+[08:32] And it's what executives evaluating this pilot really need to understand.
+[08:36] Konya uses conformal prediction bands.
+[08:39] Okay.
+[08:40] Conformal prediction is a statistical method that mathematically guarantees
+[08:43] that the true answer will fall within a predicted range
+[08:46] a certain percentage of the time.
+[08:48] In Konya's case, they target 90% coverage.
+[08:51] It ensures that the true hardness of the ore stays below the predicted bound
+[08:54] nine times out of ten.
+[08:56] And if it doesn't?
+[08:57] If the model sees an ore type it doesn't recognize,
+[08:59] an out-of-distribution refusal mechanism kicks in.
+[09:02] It simply refuses to give advice and hands control back to the human operator.
+[09:06] I argue this maps conceptually perfectly to Moodle's feed characterization step,
+[09:11] but it delivers it instantly.
+[09:13] I have to push back hard on that mapping.
+[09:15] The fact that they both characterize the feed
+[09:17] doesn't mean they are doing the same thing physically.
+[09:19] We really have to step into the shoes of a skeptical min-tech metallurgist here.
+[09:22] Does a 2D optical micrograph actually map to Moodle's 3D volumetric framework?
+[09:27] We have to talk about stereological bias.
+[09:29] Well, stereological bias is a known constraint of optical mineralogy.
+[09:33] Konya isn't hiding it.
+[09:34] They aren't hiding it, but I don't think the ML metrics fully capture
+[09:38] how destructive it is to the physical reality.
+[09:40] Stereological bias means a 2D slice of a rock under a microscope
+[09:44] does not accurately represent a 3D particle.
+[09:47] Because of the cross-section.
+[09:48] Right.
+[09:49] If you slice a 3D sphere perfectly through its edge,
+[09:51] it looks like a tiny dot in 2D.
+[09:53] More importantly for liberation,
+[09:55] if you slice a complex locked particle the wrong way,
+[09:58] say you just shear off the exposed valuable mineral,
+[10:01] it looks perfectly liberated under the microscope,
+[10:04] even though in 3D it's mostly gang.
+[10:06] Konya is using a 2D pixel association proxy
+[10:10] and trying to call it a liberation index.
+[10:12] I see your point.
+[10:13] If you misclassify a locked particle as liberated,
+[10:16] the system might tell the plant to stop grinding.
+[10:18] Which means that locked particle goes into the flotation tank.
+[10:21] It sinks and is lost to the tailings forever.
+[10:24] Exactly.
+[10:25] That is a direct loss of revenue.
+[10:27] And the issue isn't just the 2D slice.
+[10:29] It's the absolute optical resolution limit for fine particles.
+[10:32] In the Mootley 2026 paper,
+[10:35] 54% of the copper mass in their ore was below 20 microns in size.
+[10:39] Wow, 54%.
+[10:40] Yeah, standard optical microscopes hit diffraction limits
+[10:44] and essentially go blind at this scale.
+[10:46] You literally cannot resolve the physical boundaries of the minerals
+[10:49] to see what is locked and what is free.
+[10:51] The sonar team's own report admits the prototype
+[10:54] lacks independent PGM belt validation.
+[10:56] But these machine learning proxy metrics
+[10:58] are actively obscuring the physical reality of fines.
+[11:01] It's a blind spot.
+[11:03] A massive one.
+[11:04] If your camera cannot see 54% of your payload,
+[11:07] your ML bounding math doesn't matter.
+[11:09] The physics simply aren't there.
+[11:11] That optical limit is indeed a massive road block
+[11:13] for a plan operator.
+[11:14] I concede that.
+[11:15] But let me pivot and examine this from a machine learning perspective
+[11:18] because there are critiques that be made about how they count evidence to.
+[11:22] Mootley, as you noted, counted independent evidence perfectly.
+[11:26] 15 parameters against 16 measurements.
+[11:28] Yes.
+[11:29] Konya's approach to data independence is much weaker.
+[11:32] The report shows they reused 12 publisher sections
+[11:34] from the Lumenstone S2 data set during their development phase.
+[11:37] Which is a classic ML trap.
+[11:39] You contaminate your testing environment with data
+[11:41] your model has already learned from.
+[11:43] Precisely.
+[11:44] And we see the consequence of that.
+[11:46] When they tested the out-of-fold hardness models
+[11:48] on the completely separate HID sag data,
+[11:50] meaning they tested the model on data it truly had never seen before,
+[11:54] the R-squared plummeted from 0.479 in one experimental run
+[11:58] all the way down to 0.25 in another.
+[12:00] Ouch.
+[12:01] Yeah, an R-squared of 0.25 means the model's only explaining
+[12:05] 25% of the variance in the data.
+[12:07] 75% of what is happening is a complete mystery to the model.
+[12:10] That data reuse is a massive red flag.
+[12:13] And the instability of the recommendations
+[12:15] is exactly what concerns me.
+[12:17] Moodly explicitly split replicate scatter
+[12:19] and parameter compensation across 88 physical fits.
+[12:22] They proved the physics were stable.
+[12:24] Konya reports this conformal band as a safety net,
+[12:26] but what does that band actually cover?
+[12:28] Conformal prediction relies on the assumption of exchangeability.
+[12:31] It assumes the new ore you are looking at
+[12:33] comes from the exact same distribution as the training data.
+[12:36] It only covers statistical coverage.
+[12:38] Exactly.
+[12:39] It does not account for physical parameter compensation
+[12:41] if the ore fundamentally changes.
+[12:43] If the ore changes, that conformal bound is just a mathematical illusion.
+[12:46] Well, I wouldn't call it an illusion
+[12:48] because if the exchangeability assumption breaks,
+[12:50] that is exactly what the add-a-distribution flag is designed to catch.
+[12:53] True.
+[12:54] The refusal mechanism is the safety net for the conformal bound,
+[12:57] but I will agree that Konya's current value case is heavily assumed.
+[13:01] They simulate a 1.7 to 1.9% throughput gain,
+[13:04] but that is a proxy built entirely on Chilean porphyry copper
+[13:07] and Russian nickel data.
+[13:09] And applying that to South African PGM ore
+[13:11] is an entirely different universe.
+[13:14] It is. It is.
+[13:15] But let's be fair to Sibisio and Lathabo for a second.
+[13:19] Applying Moodly's method to South African PGM ore
+[13:22] also carries huge assumptions.
+[13:24] We are holding Konya to the Moodly standard,
+[13:27] but Moodly has limits too.
+[13:29] I'm curious what you think those limits are.
+[13:31] Well, Moodly used one specific low-grade copper sulfide ore.
+[13:36] They didn't have timed product mineralogy for the intermediate concentrates.
+[13:40] They only had the final QXRD endpoint.
+[13:43] Furthermore, their model used an empirical mathematical entrainment term
+[13:47] rather than a true mechanistic one.
+[13:49] That's true.
+[13:50] And the raw data is confidential, so it can't be independently verified.
+[13:55] Barwing Moodly's framework, which was built for copper,
+[13:57] and applying it to highly complex Bushfeld PGM ore is a massive leave.
+[14:02] That is a completely fair critique of Moodly's limits.
+[14:05] Bushfeld PGM ores have base metal sulfides,
+[14:08] like pentlandite and chocopyrite at, what, maybe 3% total mass.
+[14:12] The gang is full of complex chromite constraints.
+[14:15] Meanwhile, the Russian Lumenzone data that Konya trained on
+[14:18] is 62.8% sulfides by area.
+[14:21] Right. It's visually and chemically a totally different environment.
+[14:24] Which is exactly why Sibisio and Lathabo
+[14:26] cannot just take this prototype to a pilot as is.
+[14:29] They need a rigorous roadmap to build this better
+[14:31] before anyone signs off on a 13 million rand pilot.
+[14:35] So let's talk about what that minimum viable product looks like for the pilot.
+[14:39] If Sibisio and Lathabo want funding,
+[14:41] they have to move past this binary regrind or continue 2D proxy.
+[14:45] Agreed.
+[14:46] The model needs to take its optical results
+[14:48] and map them directly into Moodly's five specific exposure classes.
+[14:52] Walked, low middleings, high middleings, liberated and fully liberated.
+[14:57] Even with the limitations of stereological bias,
+[15:00] categorizing the optical data this way forces the machine learning output
+[15:03] to align with physical metallurgy.
+[15:05] I take it a step further.
+[15:07] It's not enough to just categorize the pixels into classes.
+[15:10] A plant manager doesn't care about pixel fractions.
+[15:13] They have to convert those image fractions
+[15:15] into a prediction of actual metal recovery over time.
+[15:18] Right. Tie it to the economics.
+[15:20] Yeah. They need to integrate Moodly's first order class rate constants
+[15:23] directly into Konya's output so it predicts recovery at risk.
+[15:26] That makes the data actionable.
+[15:28] Yeah.
+[15:29] But let's talk about the OPC UA decision rule.
+[15:31] Right now, Konya gives a very simplistic recommendation.
+[15:34] I would argue they need to extend this into three specific,
+[15:37] physically grounded diagnoses.
+[15:39] Okay. What are they?
+[15:40] First, the model should flag if the problem is liberation,
+[15:43] meaning it detects a high fraction of locked particles,
+[15:46] telling the operator to ramp up the mill power and grind finer.
+[15:49] Second, it should diagnose if the problem is reagents or hydrodynamics.
+[15:53] If the model sees that the particles are fully liberated,
+[15:55] but the recovery rate is still slow,
+[15:57] that tells the operator the physical grind is fine,
+[16:00] but they need to add more collector chemical
+[16:02] or change the airflow in the flotation cells.
+[16:04] And third, it needs to diagnose fine gang.
+[16:07] If it detects entrainment diluting the grade,
+[16:09] the operator knows it's a water recovery issue, not a grinding issue.
+[16:13] Breaking the recommendation into those three diagnoses
+[16:16] makes Konya infinitely more valuable.
+[16:18] But implementing that third diagnosis requires them to face the optical limit head-on.
+[16:22] They must add size resolve reporting to the model.
+[16:24] More importantly, they need an absolute, hard-coded refusal trigger
+[16:28] when fines dominate the feed.
+[16:29] Yes, agreed.
+[16:30] If the model detects that the ore feed is largely below 20 microns,
+[16:33] the optical system is blind.
+[16:35] The model must have the humility to say,
+[16:37] I cannot see the physical boundaries of this payload,
+[16:39] revert to standard operating procedure.
+[16:41] I agree.
+[16:42] That refusal rule is critical for safety.
+[16:45] Finally, we need to look at the feasibility stage validation.
+[16:48] When they run this pilot, they cannot operate in silos.
+[16:51] You cannot have the ML model look at one rock on a belt
+[16:54] while the lab looks at a different rock two days later.
+[16:57] Right. That introduces too much variance.
+[16:59] The validation must be designed around shared identical samples.
+[17:03] They need to take one stream of ore and feed it through QEM scan.
+[17:06] Run timed batch flotation on it,
+[17:08] take Konya micrographs of it,
+[17:10] and analyze the mineralogy of each timed concentrate.
+[17:13] Put everything into the exact same evaluation pipeline.
+[17:16] And once they have that shared sample data,
+[17:18] Konya must run identifiability and sensitivity checks identical to moodlies.
+[17:22] Siwisiso and Lathabo shouldn't just report an R-squared
+[17:24] or an intersection over union score to a metallurgist.
+[17:27] Those are computer science metrics.
+[17:29] They don't mean anything to a plant manager.
+[17:31] Exactly.
+[17:32] They need to do the plus or minus 25% weight sensitivity analysis.
+[17:35] They have to prove mathematically that the model's physical recommendations are stable,
+[17:39] not just statistically optimized for a clean data set.
+[17:42] You know, if Siwisiso and Lathabo are standing in front of a mining executive tomorrow,
+[17:46] pitching this pilot, they have three massive points in their favor.
+[17:49] First, the providence of the software is completely inspectable.
+[17:52] Every single prediction Konya makes is hash-chained back to its source image,
+[17:56] so you can audit exactly why it made a decision.
+[17:58] Which is rare in ML.
+[17:59] Very rare.
+[18:00] Furthermore, the explicit uncertainty bounding via the conformal ban
+[18:03] shows world-class software engineering.
+[18:06] It proves ML doesn't have to be a black box.
+[18:08] And lastly, they have the intellectual honesty
+[18:11] to transparently acknowledge their limits.
+[18:13] Their report explicitly states they are only a technology readiness level 3
+[18:17] using public data.
+[18:18] But they cannot ignore the three critical hurdles
+[18:21] they must fix before that executive writes a check.
+[18:23] The 2D stereological bias is a physical reality.
+[18:26] You cannot pretend a slice-sphere is just a dot without correcting for it.
+[18:30] The data reuse instability is a major ML flaw.
+[18:33] That R-square drop from .479 to .25
+[18:36] proves the model is brittle when it encounters new environments.
+[18:39] And the lack of fines resolution means they are essentially guessing on half the payload.
+[18:43] My strongest advice to the founders?
+[18:45] Go to MendTec.
+[18:47] Sit down with Moodly.
+[18:48] Yes, sit down with Moodly and his co-authors.
+[18:50] Ask them directly how to adapt their empirical entrainment terms
+[18:53] specifically for Bushveld PGM-Rs
+[18:55] because copper entrainment physics will absolutely not mat cleanly to platinum group metals.
+[18:59] So, to summarize the core of my position today,
+[19:02] Konya is a brilliant piece of software scaffolding.
+[19:05] It demonstrates exactly how modern, probabilistically aware machine learning
+[19:10] can interface safely with legacy industrial control systems.
+[19:13] The uncertainty bounding shows that an algorithm can function
+[19:16] as an epistemologically humble assistant to a plant operator.
+[19:19] And to summarize mine, while the software is undoubtedly elegant,
+[19:23] you cannot simply code your way out of physical metallurgical reality.
+[19:27] Optical limits, light diffraction, and stereological bias
+[19:30] remain massive physical hurdles that machine learning alone simply cannot solve,
+[19:34] no matter how good the architecture is.
+[19:36] What we converge on, though, is that the MinTech standard laid out by Moodly
+[19:40] isn't just an academic hurdle for Konya to clear.
+[19:43] It is the exact step-by-step blueprint Sibu Siso and Latabo need to design their pilot.
+[19:48] Absolutely. We encourage everyone listening,
+[19:51] especially the teams involved in this specific build,
+[19:53] to dive deeper into both the Sonar prototype report and the Moodly 2026 paper.
+[19:58] Together, they really do represent the frontier where mineral processing is heading.
+[20:02] Which brings us back to where we started, that dark concentrator plant.
+[20:06] For decades, the industry has essentially been operating without an X-ray,
+[20:10] guessing at the fractures based purely on the pain of poor recovery.
+[20:14] Konya isn't magically turning on the lights.
+[20:17] It's more like an early-stage autopilot trying to land a plane in the fog.
+[20:21] It's a brilliant system with incredible potential,
+[20:24] but if its optical sensors can't actually see the runway,
+[20:27] you don't want to take control of the yoke just yet.
